@@ -68,10 +68,10 @@ def analyze_with_gemini(events):
     DATA TO ANALYZE:
     """
 
-    print("Sending direct REST API request to Gemini 1.5 Flash...")
+    print("Sending direct REST API request to Gemini 2.0 Flash...")
     
-    # Direct REST API call bypassing the Google SDK
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    # Updated to gemini-2.0-flash to fix the 404 error
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     payload = {
         "contents": [{
             "parts": [{"text": prompt_instructions + prompt_data}]
