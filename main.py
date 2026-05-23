@@ -1,26 +1,22 @@
 import os
 import requests
-import google.generativeai as genai
+from google import genai
 
 # Load API Keys from GitHub Secrets
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not ODDS_API_KEY or not GEMINI_API_KEY:
-    raise ValueError("Error: API Keys are missing in GitHub Secrets!")
-
-# Configure Gemini AI
-genai.configure(api_key=GEMINI_API_KEY)
+    raise ValueError("Error: API Keys are missing in GitHub Secrets! Make sure they are set in Settings -> Secrets AND in the bot.yml env section.")
 
 def get_upcoming_events():
     print("Fetching top upcoming events across all sports...")
     
-    # The 'upcoming' endpoint gets the next 8 active events globally
     url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
     params = {
         "apiKey": ODDS_API_KEY,
         "regions": "eu",
-        "markets": "h2h", # Head-to-Head (Win/Loss) odds
+        "markets": "h2h",
         "oddsFormat": "decimal"
     }
     
@@ -35,10 +31,8 @@ def analyze_with_gemini(events):
     if not events:
         return "No upcoming events found to analyze."
 
-    # 1. Structure the raw data for the AI
     prompt_data = "Raw Data of upcoming sports events and their decimal odds:\n\n"
     
-    # Limit to 5 matches per post to keep the Telegram message clean
     for i, event in enumerate(events[:5]):
         sport = event.get("sport_title", "Unknown Sport")
         home = event.get("home_team", "Unknown")
@@ -47,14 +41,11 @@ def analyze_with_gemini(events):
         bookmakers = event.get("bookmakers", [])
         if not bookmakers: continue
         
-        # Get the first bookmaker's H2H odds
         outcomes = bookmakers[0].get("markets", [])[0].get("outcomes", [])
         odds_str = " | ".join([f"{o['name']}: {o['price']}" for o in outcomes])
         
         prompt_data += f"Match {i+1}:\nSport: {sport}\nTeams: {home} vs {away}\nOdds (Decimal): {odds_str}\n---\n"
 
-    # 2. The Prompt Engineering section (Visual Coding for Text)
-    # This forces the AI to output exactly the format we want.
     prompt_instructions = """
     You are an elite sports betting analyst managing a VIP Telegram channel.
     Analyze the provided upcoming matches and their decimal odds. 
@@ -78,9 +69,12 @@ def analyze_with_gemini(events):
 
     print("Sending structured prompt to Gemini for analysis...")
     
-    # Using the fast and free gemini-1.5-flash model
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(prompt_instructions + prompt_data)
+    # Using the new Google GenAI SDK syntax
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    response = client.models.generate_content(
+        model='gemini-1.5-flash',
+        contents=prompt_instructions + prompt_data,
+    )
     
     return response.text
 
