@@ -31,7 +31,7 @@ def get_next_2_hours_events() -> list:
     
     logger.info(f"Scanning for matches between {now_utc.strftime('%H:%M')} and {end_window_utc.strftime('%H:%M')} UTC...")
     
-    url = "[https://api.the-odds-api.com/v4/sports/upcoming/odds](https://api.the-odds-api.com/v4/sports/upcoming/odds)"
+    url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
     params = {
         "apiKey": ODDS_API_KEY,
         "regions": "eu",
