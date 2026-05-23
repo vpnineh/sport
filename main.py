@@ -5,9 +5,11 @@ from google import genai
 # Load API Keys from GitHub Secrets
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 if not ODDS_API_KEY or not GEMINI_API_KEY:
-    raise ValueError("Error: API Keys are missing in GitHub Secrets! Make sure they are set in Settings -> Secrets AND in the bot.yml env section.")
+    raise ValueError("Error: ODDS and GEMINI API Keys are missing in GitHub Secrets!")
 
 def get_upcoming_events():
     print("Fetching top upcoming events across all sports...")
@@ -69,14 +71,33 @@ def analyze_with_gemini(events):
 
     print("Sending structured prompt to Gemini for analysis...")
     
-    # Using the new Google GenAI SDK syntax
     client = genai.Client(api_key=GEMINI_API_KEY)
+    
+    # FIXED: Updated model name to resolve the 404 error
     response = client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-2.0-flash',
         contents=prompt_instructions + prompt_data,
     )
     
     return response.text
+
+def send_to_telegram(message_text):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("Telegram credentials missing. Outputting to console only.")
+        return
+
+    print("Sending analysis to Telegram channel...")
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message_text
+    }
+    
+    response = requests.post(url, json=payload)
+    if response.status_code == 200:
+        print("✅ Successfully posted to Telegram!")
+    else:
+        print(f"❌ Telegram Error: {response.text}")
 
 if __name__ == "__main__":
     events = get_upcoming_events()
@@ -86,3 +107,6 @@ if __name__ == "__main__":
     print("🚀 AI GENERATED TELEGRAM POST:")
     print("="*40 + "\n")
     print(ai_prediction_post)
+    
+    # Trigger Telegram broadcast
+    send_to_telegram(ai_prediction_post)
