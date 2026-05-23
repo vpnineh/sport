@@ -74,12 +74,12 @@ def analyze_with_groq(events):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama3-70b-8192",
+        "model": "llama-3.3-70b-versatile",
         "messages": [
             {"role": "system", "content": prompt_instructions},
             {"role": "user", "content": prompt_data}
         ],
-        "temperature": 0.3 # Low temperature for more logical/analytical output
+        "temperature": 0.3
     }
     
     response = requests.post(url, headers=headers, json=payload)
