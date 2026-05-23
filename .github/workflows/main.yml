@@ -1,9 +1,10 @@
-name: Daily Football AI Predictor
+name: Hourly Sports AI Predictor
 
 on:
-  schedule:
-    - cron: '0 8 * * *'
-  workflow_dispatch:
+  #schedule:
+    # Runs every 2 hours (00:00, 02:00, 04:00, etc.)
+    #- cron: '0 */2 * * *'
+  workflow_dispatch: # Allows manual run anytime
 
 jobs:
   run-predictor:
