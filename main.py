@@ -1,87 +1,94 @@
 import os
 import requests
-import json
-from datetime import datetime, timezone
+import google.generativeai as genai
 
-# Fetch API Key from GitHub Secrets
-API_KEY = os.getenv("ODDS_API_KEY")
+# Load API Keys from GitHub Secrets
+ODDS_API_KEY = os.getenv("ODDS_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not API_KEY:
-    raise ValueError("Error: ODDS_API_KEY is missing in GitHub Secrets!")
+if not ODDS_API_KEY or not GEMINI_API_KEY:
+    raise ValueError("Error: API Keys are missing in GitHub Secrets!")
 
-def get_todays_odds():
-    # Target major football (soccer) leagues
-    target_leagues = [
-        "soccer_epl",                 # Premier League
-        "soccer_spain_la_liga",       # La Liga
-        "soccer_italy_serie_a",       # Serie A
-        "soccer_germany_bundesliga",  # Bundesliga
-        "soccer_france_ligue_one",    # Ligue 1
-        "soccer_uefa_champs_league"   # Champions League
-    ]
+# Configure Gemini AI
+genai.configure(api_key=GEMINI_API_KEY)
+
+def get_upcoming_events():
+    print("Fetching top upcoming events across all sports...")
     
-    # Get today's date in UTC format (required by The Odds API)
-    today_date = datetime.now(timezone.utc).date()
-    print(f"Fetching matches and odds for {today_date}...\n")
+    # The 'upcoming' endpoint gets the next 8 active events globally
+    url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
+    params = {
+        "apiKey": ODDS_API_KEY,
+        "regions": "eu",
+        "markets": "h2h", # Head-to-Head (Win/Loss) odds
+        "oddsFormat": "decimal"
+    }
+    
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Odds API Error: {response.status_code}")
+        return []
 
-    important_matches = []
+def analyze_with_gemini(events):
+    if not events:
+        return "No upcoming events found to analyze."
 
-    for sport_key in target_leagues:
-        url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds"
+    # 1. Structure the raw data for the AI
+    prompt_data = "Raw Data of upcoming sports events and their decimal odds:\n\n"
+    
+    # Limit to 5 matches per post to keep the Telegram message clean
+    for i, event in enumerate(events[:5]):
+        sport = event.get("sport_title", "Unknown Sport")
+        home = event.get("home_team", "Unknown")
+        away = event.get("away_team", "Unknown")
         
-        # Parameters: European bookmakers, Decimal odds (1.50, 2.10), Head-to-Head & Over/Under
-        params = {
-            "apiKey": API_KEY,
-            "regions": "eu",
-            "markets": "h2h,totals",
-            "oddsFormat": "decimal",
-            "commenceTimeFrom": f"{today_date}T00:00:00Z",
-            "commenceTimeTo": f"{today_date}T23:59:59Z"
-        }
+        bookmakers = event.get("bookmakers", [])
+        if not bookmakers: continue
         
-        response = requests.get(url, params=params)
+        # Get the first bookmaker's H2H odds
+        outcomes = bookmakers[0].get("markets", [])[0].get("outcomes", [])
+        odds_str = " | ".join([f"{o['name']}: {o['price']}" for o in outcomes])
         
-        if response.status_code == 200:
-            matches = response.json()
-            
-            for match in matches:
-                home_team = match.get("home_team")
-                away_team = match.get("away_team")
-                start_time = match.get("commence_time")
-                
-                # Extract odds from the first available bookmaker
-                bookmakers = match.get("bookmakers", [])
-                if not bookmakers:
-                    continue
-                    
-                first_bookie = bookmakers[0]
-                bookie_name = first_bookie.get("title")
-                
-                h2h_odds = None
-                totals_odds = None
-                
-                for market in first_bookie.get("markets", []):
-                    if market["key"] == "h2h":
-                        h2h_odds = market["outcomes"]
-                    elif market["key"] == "totals":
-                        # Filter to only get Over/Under 2.5 goals
-                        totals_odds = [o for o in market["outcomes"] if o.get("point") == 2.5]
-                
-                important_matches.append({
-                    "league": sport_key,
-                    "home_team": home_team,
-                    "away_team": away_team,
-                    "start_time": start_time,
-                    "bookmaker": bookie_name,
-                    "odds_h2h": h2h_odds,
-                    "odds_totals_2.5": totals_odds
-                })
-        else:
-            print(f"Error fetching {sport_key}: HTTP {response.status_code}")
+        prompt_data += f"Match {i+1}:\nSport: {sport}\nTeams: {home} vs {away}\nOdds (Decimal): {odds_str}\n---\n"
 
-    return important_matches
+    # 2. The Prompt Engineering section (Visual Coding for Text)
+    # This forces the AI to output exactly the format we want.
+    prompt_instructions = """
+    You are an elite sports betting analyst managing a VIP Telegram channel.
+    Analyze the provided upcoming matches and their decimal odds. 
+    Use the odds to determine the clear favorite and the underdog.
+    
+    RULES:
+    - Write the analysis in English.
+    - Provide a structured, engaging post.
+    - DO NOT hallucinate statistics; rely purely on the logic of the provided odds.
+    - Format EACH match exactly like the template below, using emojis.
+
+    FORMAT TEMPLATE:
+    🏆 Sport: [Sport Name]
+    ⚔️ Match: [Home Team] vs [Away Team]
+    📊 Odds Logic: [1 sentence explaining what the bookmaker odds imply]
+    🎯 AI Prediction: [Your logical pick based on the odds]
+    🔥 Risk Level: [Low/Medium/High]
+    
+    DATA TO ANALYZE:
+    """
+
+    print("Sending structured prompt to Gemini for analysis...")
+    
+    # Using the fast and free gemini-1.5-flash model
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(prompt_instructions + prompt_data)
+    
+    return response.text
 
 if __name__ == "__main__":
-    matches = get_todays_odds()
-    print(f"Found {len(matches)} important matches today:\n")
-    print(json.dumps(matches, indent=4))
+    events = get_upcoming_events()
+    ai_prediction_post = analyze_with_gemini(events)
+    
+    print("\n" + "="*40)
+    print("🚀 AI GENERATED TELEGRAM POST:")
+    print("="*40 + "\n")
+    print(ai_prediction_post)
