@@ -1,6 +1,5 @@
 import os
 import requests
-from google import genai
 
 # Load API Keys from GitHub Secrets
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
@@ -69,17 +68,26 @@ def analyze_with_gemini(events):
     DATA TO ANALYZE:
     """
 
-    print("Sending structured prompt to Gemini for analysis...")
+    print("Sending direct REST API request to Gemini 1.5 Flash...")
     
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    # Direct REST API call bypassing the Google SDK
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt_instructions + prompt_data}]
+        }]
+    }
     
-    # FIXED: Updated model name to resolve the 404 error
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=prompt_instructions + prompt_data,
-    )
+    response = requests.post(url, json=payload)
     
-    return response.text
+    if response.status_code == 200:
+        try:
+            return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except (KeyError, IndexError):
+            return "Error: Unexpected response structure from Gemini API."
+    else:
+        print(f"Gemini API Error: {response.text}")
+        return f"Failed to get AI prediction. Status Code: {response.status_code}"
 
 def send_to_telegram(message_text):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
@@ -109,4 +117,5 @@ if __name__ == "__main__":
     print(ai_prediction_post)
     
     # Trigger Telegram broadcast
-    send_to_telegram(ai_prediction_post)
+    if not ai_prediction_post.startswith("Failed to get AI prediction") and not ai_prediction_post.startswith("Error:"):
+        send_to_telegram(ai_prediction_post)
