@@ -108,7 +108,7 @@ def analyze_with_groq(events: list) -> list:
     """
 
     logger.info(f"Sending {len(events)} matches to Llama 3.3 70B...")
-    url = "[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)"
+    url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     payload = {
         "model": "llama-3.3-70b-versatile",
