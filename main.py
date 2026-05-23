@@ -3,12 +3,12 @@ import requests
 
 # Load API Keys from GitHub Secrets
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-if not ODDS_API_KEY or not GEMINI_API_KEY:
-    raise ValueError("Error: ODDS and GEMINI API Keys are missing in GitHub Secrets!")
+if not ODDS_API_KEY or not GROQ_API_KEY:
+    raise ValueError("Error: ODDS and GROQ API Keys are missing in GitHub Secrets!")
 
 def get_upcoming_events():
     print("Fetching top upcoming events across all sports...")
@@ -28,7 +28,7 @@ def get_upcoming_events():
         print(f"Odds API Error: {response.status_code}")
         return []
 
-def analyze_with_gemini(events):
+def analyze_with_groq(events):
     if not events:
         return "No upcoming events found to analyze."
 
@@ -64,29 +64,30 @@ def analyze_with_gemini(events):
     📊 Odds Logic: [1 sentence explaining what the bookmaker odds imply]
     🎯 AI Prediction: [Your logical pick based on the odds]
     🔥 Risk Level: [Low/Medium/High]
-    
-    DATA TO ANALYZE:
     """
 
-    print("Sending direct REST API request to Gemini 2.0 Flash...")
+    print("Sending request to Groq API (Llama 3 70B)...")
     
-    # Updated to gemini-2.0-flash to fix the 404 error
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "contents": [{
-            "parts": [{"text": prompt_instructions + prompt_data}]
-        }]
+        "model": "llama3-70b-8192",
+        "messages": [
+            {"role": "system", "content": prompt_instructions},
+            {"role": "user", "content": prompt_data}
+        ],
+        "temperature": 0.3 # Low temperature for more logical/analytical output
     }
     
-    response = requests.post(url, json=payload)
+    response = requests.post(url, headers=headers, json=payload)
     
     if response.status_code == 200:
-        try:
-            return response.json()["candidates"][0]["content"]["parts"][0]["text"]
-        except (KeyError, IndexError):
-            return "Error: Unexpected response structure from Gemini API."
+        return response.json()["choices"][0]["message"]["content"]
     else:
-        print(f"Gemini API Error: {response.text}")
+        print(f"Groq API Error: {response.text}")
         return f"Failed to get AI prediction. Status Code: {response.status_code}"
 
 def send_to_telegram(message_text):
@@ -109,13 +110,12 @@ def send_to_telegram(message_text):
 
 if __name__ == "__main__":
     events = get_upcoming_events()
-    ai_prediction_post = analyze_with_gemini(events)
+    ai_prediction_post = analyze_with_groq(events)
     
     print("\n" + "="*40)
     print("🚀 AI GENERATED TELEGRAM POST:")
     print("="*40 + "\n")
     print(ai_prediction_post)
     
-    # Trigger Telegram broadcast
-    if not ai_prediction_post.startswith("Failed to get AI prediction") and not ai_prediction_post.startswith("Error:"):
+    if not ai_prediction_post.startswith("Failed to get AI prediction"):
         send_to_telegram(ai_prediction_post)
