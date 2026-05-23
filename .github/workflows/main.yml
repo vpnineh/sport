@@ -15,14 +15,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' # ارتقا به پایتون 3.11 برای رفع هشدار
+          python-version: '3.11'
           
       - name: Install dependencies
         run: pip install -r requirements.txt
         
       - name: Run script
         env:
-          # مهم: هر دو کلید باید اینجا باشن تا پایتون بتونه بخونتشون
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
