@@ -31,7 +31,7 @@ def get_next_2_hours_events() -> list:
     
     logger.info(f"Scanning for matches between {now_utc.strftime('%H:%M')} and {end_window_utc.strftime('%H:%M')} UTC...")
     
-    url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
+    url = "[https://api.the-odds-api.com/v4/sports/upcoming/odds](https://api.the-odds-api.com/v4/sports/upcoming/odds)"
     params = {
         "apiKey": ODDS_API_KEY,
         "regions": "eu",
@@ -124,8 +124,11 @@ def analyze_with_groq(events: list) -> list:
         response.raise_for_status()
         ai_raw_text = response.json()["choices"][0]["message"]["content"]
         
-        # استخراج هوشمندانه JSON حتی اگر هوش مصنوعی متن اضافه تولید کرده باشد
-        json_match = re.search(r'\[\s*\{.*?\}\s*\]', ai_raw_text, re.DOTALL)
+        # پاکسازی مارک‌داون‌های احتمالی که هوش مصنوعی ممکنه اضافه کنه
+        cleaned_text = ai_raw_text.replace("```json", "").replace("```", "").strip()
+        
+        # استخراج هوشمندانه JSON
+        json_match = re.search(r'\[\s*\{.*?\}\s*\]', cleaned_text, re.DOTALL)
         if json_match:
             predictions = json.loads(json_match.group(0))
             return predictions
@@ -145,7 +148,8 @@ def format_and_send_to_telegram(predictions: list):
         logger.warning("Telegram credentials missing. Skipping broadcast.")
         return
 
-    url = f"[https://api.telegram.org/bot](https://api.telegram.org/bot){TELEGRAM_BOT_TOKEN}/sendMessage"
+    # اصلاح نهایی لینک تلگرام (بدون هیچ کاراکتر اضافه‌ای)
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
     for pick in predictions:
         # کدگذاری خودکار اعداد (ضرایب) برای نمایش متفاوت در تلگرام
