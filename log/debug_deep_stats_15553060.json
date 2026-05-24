@@ -1,0 +1,12 @@
+{
+  "lineups": {
+    "error": {
+      "code": 404,
+      "message": "Not Found"
+    }
+  },
+  "streaks": {
+    "general": [],
+    "head2head": []
+  }
+}
