@@ -63,9 +63,8 @@ def get_next_2_hours_events() -> list:
 # 2.5. HELPER: EXTRACT BEST ODDS
 # ---------------------------------------------------------
 def extract_best_odds(bookmakers: list) -> tuple:
-    """Iterates through all bookmakers to find the highest odds for each outcome."""
-    best_h2h = {}     # e.g., {"Team A": 2.10, "Team B": 1.85, "Draw": 3.40}
-    best_totals = {}  # e.g., {"Over 2.5": 2.05, "Under 2.5": 1.90}
+    best_h2h = {}     
+    best_totals = {}  
     
     for bm in bookmakers:
         for market in bm.get("markets", []):
@@ -84,7 +83,7 @@ def extract_best_odds(bookmakers: list) -> tuple:
     return best_h2h, best_totals
 
 # ---------------------------------------------------------
-# 3. AI ANALYSIS (Groq Llama 3.3 forcing JSON output)
+# 3. AI ANALYSIS (Groq Llama 3.3)
 # ---------------------------------------------------------
 def analyze_with_groq(events: list) -> list:
     if not events: return []
@@ -103,7 +102,6 @@ def analyze_with_groq(events: list) -> list:
         bookmakers = event.get("bookmakers", [])
         if not bookmakers: continue
         
-        # Extract best odds across all bookmakers
         best_h2h, best_totals = extract_best_odds(bookmakers)
         
         h2h_str = " | ".join([f"{k}: {v}" for k, v in best_h2h.items()])
@@ -114,6 +112,7 @@ def analyze_with_groq(events: list) -> list:
             f"Match {i+1}:\n"
             f"Sport: {sport}\n"
             f"Kickoff: {kickoff}\n"
+            f"Commence Time: {commence_time_str}\n"
             f"Home: {home}\n"
             f"Away: {away}\n"
             f"Best H2H Odds: {h2h_str}\n"
@@ -136,18 +135,25 @@ def analyze_with_groq(events: list) -> list:
     6. "Market Depth" indicates how many bookmakers offer this match — higher depth = more efficient odds = harder to find value.
     7. For football/soccer: use "goals_pick" as Over/Under X.X. For basketball: use Over/Under X.XX points. For others: use best alternative line or "N/A".
     8. "winner_odds" and "goals_odds" must be numbers (float), not strings. Use "N/A" only if the market doesn't exist.
+    9. Include an appropriate "sport_emoji" (e.g., ⚽, 🏀, 🎾, 🏒).
+    10. Include "home_flag" and "away_flag" with the exact country flag emoji for each team (e.g., 🏴󠁧󠁢󠁥󠁮󠁧󠁿, 🇪🇸, 🇮🇹). If international or unknown, use 🏳️.
+    11. "logic" must be clean plain text. Do NOT use HTML, markdown, or brackets inside the logic field.
 
     [JSON TEMPLATE]:
     [
       {
         "sport": "Sport Name",
+        "sport_emoji": "⚽",
+        "commence_time": "Exact string from Commence Time in prompt",
         "home_team": "Home Team Name",
+        "home_flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         "away_team": "Away Team Name",
+        "away_flag": "🇪🇸",
         "winner_pick": "Chosen Team Name (or Draw only for soccer/hockey)",
         "winner_odds": 1.85,
         "goals_pick": "Over 2.5",
         "goals_odds": 2.10,
-        "logic": "1 sentence: tactical justification based on historical playstyles. 1 sentence: why this specific odd holds +EV value compared to market efficiency.",
+        "logic": "1 sentence: tactical justification. 1 sentence: +EV value justification.",
         "risk_level": "Low" or "Medium" or "High"
       }
     ]
@@ -172,19 +178,16 @@ def analyze_with_groq(events: list) -> list:
         
         cleaned_text = ai_raw_text.replace("```json", "").replace("```", "").strip()
         
-        # Fixed Regex: Greedy match to capture all objects inside the array
         json_match = re.search(r'\[\s*\{.*\}\s*\]', cleaned_text, re.DOTALL)
         
         if json_match:
             predictions = json.loads(json_match.group(0))
             
-            # Validate and clean AI output
             validated_predictions = []
             for p in predictions:
                 if not p.get("winner_pick") or not p.get("home_team"):
                     continue
                 
-                # Ensure odds are floats
                 try:
                     if p.get("winner_odds") and str(p["winner_odds"]).upper() != "N/A":
                         p["winner_odds"] = float(p["winner_odds"])
@@ -199,7 +202,6 @@ def analyze_with_groq(events: list) -> list:
                     p["winner_odds"] = "N/A"
                     p["goals_odds"] = "N/A"
                 
-                # Normalize risk level
                 risk = str(p.get("risk_level", "Medium")).capitalize()
                 if risk not in ["Low", "Medium", "High"]:
                     risk = "Medium"
@@ -210,7 +212,6 @@ def analyze_with_groq(events: list) -> list:
             return validated_predictions
         else:
             logger.error("AI output did not contain a valid JSON array.")
-            logger.debug(f"AI Raw Output was: {cleaned_text}")
             return []
             
     except Exception as e:
@@ -227,25 +228,61 @@ def format_and_send_to_telegram(predictions: list):
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
+    # Sort predictions by commence time (closest to now comes first)
+    def get_time(p):
+        time_str = p.get('commence_time', '')
+        if time_str:
+            return datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+        return datetime.now(timezone.utc)
+        
+    predictions.sort(key=get_time)
+    
+    now_utc = datetime.now(timezone.utc)
+
     for pick in predictions:
-        # Escape HTML special characters to prevent breaking the message
+        sport_emoji = pick.get('sport_emoji', '🏆')
+        sport = html_lib.escape(str(pick.get('sport', '')))
+        
         home = html_lib.escape(str(pick.get('home_team', '')))
+        home_flag = pick.get('home_flag', '🏳️')
+        
         away = html_lib.escape(str(pick.get('away_team', '')))
+        away_flag = pick.get('away_flag', '🏳️')
+        
         winner = html_lib.escape(str(pick.get('winner_pick', '')))
         goals_pick = html_lib.escape(str(pick.get('goals_pick', 'N/A')))
-        sport = html_lib.escape(str(pick.get('sport', '')))
-        risk = html_lib.escape(str(pick.get('risk_level', 'Medium')))
         
         winner_odds = pick.get('winner_odds', 'N/A')
         goals_odds = pick.get('goals_odds', 'N/A')
         
-        logic_text = html_lib.escape(str(pick.get('logic', '')))
-        # Wrap numbers in <code> tags for styling
-        logic_formatted = re.sub(r'(\d+\.\d+|\d+)', r'<code>\1</code>', logic_text)
+        # Risk Logic Mapping
+        risk_raw = str(pick.get('risk_level', 'Medium')).capitalize()
+        risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(risk_raw, "🟠")
+        risk = f"{risk_icon} {risk_raw}"
+        
+        # Clean and safely format the Logic text (bug-free)
+        raw_logic = str(pick.get('logic', '')).replace('<', '').replace('>', '')
+        logic_escaped = html_lib.escape(raw_logic)
+        logic_formatted = re.sub(r'\b(\d+(?:\.\d+)?)\b', r'<code>\1</code>', logic_escaped)
+        
+        # Calculate time remaining
+        match_time = get_time(pick)
+        delta = match_time - now_utc
+        minutes_left = int(delta.total_seconds() / 60)
+        
+        if minutes_left > 60:
+            hours = minutes_left // 60
+            mins = minutes_left % 60
+            countdown_str = f"⏳ <b>Starts in:</b> {hours}h {mins}m"
+        elif minutes_left > 0:
+            countdown_str = f"⏳ <b>Starts in:</b> {minutes_left}m"
+        else:
+            countdown_str = f"⏳ <b>Starts in:</b> LIVE / Started"
         
         html_message = (
-            f"🏆 <b>Sport:</b> {sport}\n\n"
-            f"⚔️ <b>Match:</b> <b>{home}</b> vs <b>{away}</b>\n\n"
+            f"{sport_emoji} <b>Sport:</b> {sport}\n\n"
+            f"⚔️ <b>Match:</b> <b>{home}</b> {home_flag} vs {away_flag} <b>{away}</b>\n"
+            f"{countdown_str}\n\n"
             f"🎯 <b>Winner Pick:</b> <b>{winner}</b> <code>[{winner_odds}]</code>\n\n"
             f"⚽ <b>Goals Pick:</b> {goals_pick} <code>[{goals_odds}]</code>\n\n"
             f"💡 <b>Logic:</b> {logic_formatted}\n\n"
@@ -281,7 +318,6 @@ def format_and_send_to_telegram(predictions: list):
                 logger.error(f"Network error connecting to Telegram: {e}")
                 time.sleep(2)
                 
-        # Delay between messages to avoid rate limits
         time.sleep(3.5)
 
 # ---------------------------------------------------------
