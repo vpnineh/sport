@@ -14,6 +14,10 @@ from datetime import datetime, timedelta, timezone
 # =========================================================
 CACHE_DIR = "api_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
+
+LOG_DIR = "log"
+os.makedirs(LOG_DIR, exist_ok=True)
+
 LOG_FILE = os.path.join(CACHE_DIR, "execution_logs.log")
 
 logger = logging.getLogger("ZBET90_ENGINE")
@@ -43,10 +47,6 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY]):
 # 2. BULLETPROOF UTILS & DECORATORS
 # =========================================================
 def retry_request(max_retries=3, delay=2, backoff=2):
-    """
-    نسخه ضدتانک: هیچ اروری باعث توقف برنامه نمی‌شود.
-    اگر API قطع باشد یا ۴۰۴ بدهد، مقدار None برمی‌گرداند تا سیستم مسیر جایگزین را طی کند.
-    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -100,10 +100,6 @@ def fetch_odds_api():
 
 @retry_request(max_retries=2)
 def get_match_id_via_search(home, away):
-    """
-    استراتژی جدید و بهینه: به جای دانلود کل بازی‌های روز (که ارور ۴۰۴ میداد)،
-    مستقیما خود بازی را سرچ میکنیم! سریعتر، امن‌تر و بدون ارور.
-    """
     query = f"{home} {away}"
     headers = {"x-rapidapi-key": RAPIDAPI_KEY, "x-rapidapi-host": "sofascore.p.rapidapi.com"}
     res = requests.get("https://sofascore.p.rapidapi.com/search", headers=headers, params={"q": query, "page": "0"}, timeout=10)
@@ -129,6 +125,16 @@ def fetch_deep_stats(match_id):
             if res.status_code == 200: data[key] = res.json()
             time.sleep(0.5)
         except Exception: pass
+        
+    if data:
+        try:
+            debug_filepath = os.path.join(LOG_DIR, f"debug_deep_stats_{match_id}.json")
+            with open(debug_filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            logger.info(f"💾 دیتای خام بازی {match_id} جهت بررسی شما در پوشه 'log' ذخیره شد.")
+        except Exception as e:
+            logger.error(f"❌ خطا در ذخیره فایل دیباگ: {e}")
+            
     return data
 
 # =========================================================
@@ -160,7 +166,7 @@ def calculate_sharp_ev(bookmakers: list):
         
         if best_p > 0:
             ev = (true_prob * best_p) - 1
-            if ev > 0.015: # لبه سود ۱.۵ درصد
+            if ev > 0.015: 
                 opportunities.append({"pick": name, "prob": true_prob, "odds": best_p, "bookmaker": bookie, "ev": ev})
     return opportunities
 
@@ -254,7 +260,6 @@ def main():
             pick, ev_pct, odds, true_prob = opp['pick'], opp['ev'] * 100, opp['odds'], opp['prob'] * 100
             logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Edge: +{ev_pct:.1f}%")
             
-            # پیدا کردن مستقیم آیدی مسابقه با موتور جستجوی سوفاسکور
             match_id = get_match_id_via_search(home, away)
             deep_stats = fetch_deep_stats(match_id) if match_id else {}
             
