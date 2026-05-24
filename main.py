@@ -593,25 +593,26 @@ class EVCalculator:
         for outcome, fair_price in fair_odds.items():
             book_price = bookmaker_odds.get(outcome, 0)
             
-            logger.info(f"     {outcome:30s} | Fair: {fair_price:5.2f} | Best: {book_price:5.2f}", end="")
+            # Build complete status message
+            status = f"     {outcome:30s} | Fair: {fair_price:5.2f} | Best: {book_price:5.2f}"
             
             if book_price <= fair_price:
-                logger.info(f" → ❌ No edge")
+                logger.info(f"{status} → ❌ No edge")
                 continue
             
             ev_pct = EVCalculator.calculate_ev(fair_price, book_price)
             
             if ev_pct < min_ev:
-                logger.info(f" → EV: +{ev_pct:.2f}% (below {min_ev}%)")
+                logger.info(f"{status} → EV: +{ev_pct:.2f}% (below {min_ev}%)")
                 continue
             
             if not (Config.MIN_ODDS <= book_price <= Config.MAX_ODDS):
-                logger.info(f" → ⚠️  Odds {book_price} out of range")
+                logger.info(f"{status} → ⚠️  Odds {book_price:.2f} out of range")
                 continue
             
             kelly = EVCalculator.kelly_criterion(fair_price, book_price)
             
-            logger.info(f" → ✅ +EV: {ev_pct:.2f}% | Kelly: {kelly:.2f}%")
+            logger.info(f"{status} → ✅ +EV: {ev_pct:.2f}% | Kelly: {kelly:.2f}%")
             
             value_bets.append({
                 'outcome': outcome,
