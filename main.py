@@ -136,7 +136,7 @@ def analyze_with_groq(events: list) -> list:
     7. For football/soccer: use "goals_pick" as Over/Under X.X. For basketball: use Over/Under X.XX points. For others: use best alternative line or "N/A".
     8. "winner_odds" and "goals_odds" must be numbers (float), not strings. Use "N/A" only if the market doesn't exist.
     9. Include an appropriate "sport_emoji" (e.g., ⚽, 🏀, 🎾, 🏒).
-    10. Include "home_flag" and "away_flag" with the exact country flag emoji for each team (e.g., 🏴󠁧󠁢󠁥󠁮󠁧󠁿, 🇪🇸, 🇮🇹). If international or unknown, use 🏳️.
+    10. Include "home_flag" and "away_flag" with the exact country flag emoji for each team (e.g., 🇬🇧, 🇪🇸, 🇮🇹). If international, club, or unknown, use ⚽.
     11. "logic" must be clean plain text. Do NOT use HTML, markdown, or brackets inside the logic field.
 
     [JSON TEMPLATE]:
@@ -146,7 +146,7 @@ def analyze_with_groq(events: list) -> list:
         "sport_emoji": "⚽",
         "commence_time": "Exact string from Commence Time in prompt",
         "home_team": "Home Team Name",
-        "home_flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        "home_flag": "🇬🇧",
         "away_team": "Away Team Name",
         "away_flag": "🇪🇸",
         "winner_pick": "Chosen Team Name (or Draw only for soccer/hockey)",
@@ -207,6 +207,12 @@ def analyze_with_groq(events: list) -> list:
                     risk = "Medium"
                 p["risk_level"] = risk
                 
+                # Ensure flags exist to prevent KeyError in Telegram formatter
+                p.setdefault("home_flag", "⚽")
+                p.setdefault("away_flag", "⚽")
+                p.setdefault("sport_emoji", "🏆")
+                p.setdefault("commence_time", "")
+                
                 validated_predictions.append(p)
                 
             return validated_predictions
@@ -228,26 +234,30 @@ def format_and_send_to_telegram(predictions: list):
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
-    # Sort predictions by commence time (closest to now comes first)
+    # Safe time extraction function (Prevents crashes from malformed AI dates)
     def get_time(p):
         time_str = p.get('commence_time', '')
         if time_str:
-            return datetime.fromisoformat(time_str.replace("Z", "+00:00"))
-        return datetime.now(timezone.utc)
+            try:
+                return datetime.fromisoformat(str(time_str).replace("Z", "+00:00"))
+            except (ValueError, TypeError):
+                # If AI sends garbage date, push it to the end of the list
+                return datetime.now(timezone.utc) + timedelta(hours=3)
+        return datetime.now(timezone.utc) + timedelta(hours=3)
         
     predictions.sort(key=get_time)
-    
-    now_utc = datetime.now(timezone.utc)
 
     for pick in predictions:
+        now_utc = datetime.now(timezone.utc) # Updated per loop for accurate countdown
+        
         sport_emoji = pick.get('sport_emoji', '🏆')
         sport = html_lib.escape(str(pick.get('sport', '')))
         
         home = html_lib.escape(str(pick.get('home_team', '')))
-        home_flag = pick.get('home_flag', '🏳️')
+        home_flag = pick.get('home_flag', '⚽')
         
         away = html_lib.escape(str(pick.get('away_team', '')))
-        away_flag = pick.get('away_flag', '🏳️')
+        away_flag = pick.get('away_flag', '⚽')
         
         winner = html_lib.escape(str(pick.get('winner_pick', '')))
         goals_pick = html_lib.escape(str(pick.get('goals_pick', 'N/A')))
@@ -260,7 +270,7 @@ def format_and_send_to_telegram(predictions: list):
         risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(risk_raw, "🟠")
         risk = f"{risk_icon} {risk_raw}"
         
-        # Clean and safely format the Logic text (bug-free)
+        # Clean and safely format the Logic text
         raw_logic = str(pick.get('logic', '')).replace('<', '').replace('>', '')
         logic_escaped = html_lib.escape(raw_logic)
         logic_formatted = re.sub(r'\b(\d+(?:\.\d+)?)\b', r'<code>\1</code>', logic_escaped)
@@ -277,7 +287,7 @@ def format_and_send_to_telegram(predictions: list):
         elif minutes_left > 0:
             countdown_str = f"⏳ <b>Starts in:</b> {minutes_left}m"
         else:
-            countdown_str = f"⏳ <b>Starts in:</b> LIVE / Started"
+            countdown_str = f"⏳ <b>Status:</b> 🟢 LIVE / Started"
         
         html_message = (
             f"{sport_emoji} <b>Sport:</b> {sport}\n\n"
