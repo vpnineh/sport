@@ -9,11 +9,9 @@ from datetime import datetime, timedelta, timezone
 # ---------------------------------------------------------
 # 1. SETUP & CONFIGURATION
 # ---------------------------------------------------------
-# تنظیم سیستم لاگ‌گیری برای رصد دقیق اتفاقات در سرور گیت‌هاب
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# دریافت کلیدها از محیط امن گیت‌هاب
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -49,7 +47,6 @@ def get_next_2_hours_events() -> list:
         
     filtered_events = []
     
-    # فیلتر کردن بازی‌هایی که دقیقاً در ۲ ساعت آینده شروع می‌شوند
     for event in all_events:
         commence_time_str = event.get("commence_time")
         if not commence_time_str: continue
@@ -87,34 +84,30 @@ def analyze_with_groq(events: list) -> list:
         
         prompt_data += f"Match {i+1}:\nSport: {sport}\nTeams: {home} vs {away}\nH2H: {h2h_str}\nTotals: {totals_str}\n---\n"
 
-    # دستورات فوق‌سخت‌گیرانه برای دریافت فقط و فقط JSON
     prompt_instructions = """
-    [SYSTEM ROLE]: Elite Quantitative Sports Analyst & Sharp Syndicate Bettor.
-    [OBJECTIVE]: Identify +EV (Expected Value) and highly profitable betting angles using provided decimal odds and deep historical team DNA.
+    [SYSTEM ROLE]: Elite Quantitative Sports Analyst & Value Bettor.
+    [OBJECTIVE]: Analyze the provided matches and decimal odds. You are blind to today's live news, so you MUST rely on historical team DNA, tactical matchups, and identifying "Value" (+EV) in the odds.
 
-    [ANALYTICAL FRAMEWORK - EXECUTE STRICTLY]:
-    1. THE VEGAS TRAP: Identify "sucker bets" where public perception skews the odds. Look for hidden contrarian value.
-    2. TACTICAL CLASH: Analyze the raw, high-frequency interactions of these two playstyles (e.g., Heavy possession vs. Lethal counter-attack, or Ground-and-pound vs. Aerial assault).
-    3. BRUTAL HONESTY: Zero fluff, zero sports journalism clichés. Provide cold, hard, tactical logic. If the favorite is a trap, expose it.
-
-    [CRITICAL RULE]: You MUST respond with a valid JSON array of objects and NOTHING ELSE. No markdown formatting like ```json, no conversational text.
-
+    [CRITICAL RULE]: You MUST respond with a valid JSON array of objects and NOTHING ELSE. No markdown formatting like ```json.
+    
     [JSON TEMPLATE]:
     [
       {
         "sport": "Sport Name",
         "home_team": "Home Team",
         "away_team": "Away Team",
-        "winner_pick": "Your sharp tactical pick (Expose the trap if necessary)",
-        "goals_pick": "Over/Under X.X based on raw team DNA",
-        "logic": "Write 1 or 2 punchy, highly technical sentences. Focus on stylistic mismatches, contrarian value, or why the bookmaker's odds are mispriced. Use betting terminology (+EV, Sharp money, Public trap).",
-        "risk_level": "Low/Medium/High (Base this on the mathematical variance of the playstyle clash)"
+        "winner_pick": "Chosen Team Name (or Draw)",
+        "winner_odds": "Exact decimal odds for your winner pick (e.g., 1.85)",
+        "goals_pick": "Over/Under X.X",
+        "goals_odds": "Exact decimal odds for your goals pick (e.g., 2.10)",
+        "logic": "Write 1 punchy sentence justifying the pick tactically based on historical playstyles, and 1 sentence explaining why this specific odd holds betting value (+EV).",
+        "risk_level": "Low/Medium/High"
       }
     ]
     """
 
     logger.info(f"Sending {len(events)} matches to Llama 3.3 70B...")
-    url = "https://api.groq.com/openai/v1/chat/completions"
+    url = "[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     payload = {
         "model": "llama-3.3-70b-versatile",
@@ -122,7 +115,7 @@ def analyze_with_groq(events: list) -> list:
             {"role": "system", "content": prompt_instructions},
             {"role": "user", "content": prompt_data}
         ],
-        "temperature": 0.1 # دمای پایین برای جلوگیری از توهم و خروجی دقیق‌تر
+        "temperature": 0.1 
     }
     
     try:
@@ -130,10 +123,8 @@ def analyze_with_groq(events: list) -> list:
         response.raise_for_status()
         ai_raw_text = response.json()["choices"][0]["message"]["content"]
         
-        # پاکسازی مارک‌داون‌های احتمالی که هوش مصنوعی ممکنه اضافه کنه
         cleaned_text = ai_raw_text.replace("```json", "").replace("```", "").strip()
         
-        # استخراج هوشمندانه JSON
         json_match = re.search(r'\[\s*\{.*?\}\s*\]', cleaned_text, re.DOTALL)
         if json_match:
             predictions = json.loads(json_match.group(0))
@@ -154,20 +145,17 @@ def format_and_send_to_telegram(predictions: list):
         logger.warning("Telegram credentials missing. Skipping broadcast.")
         return
 
-    # اصلاح نهایی لینک تلگرام (بدون هیچ کاراکتر اضافه‌ای)
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"[https://api.telegram.org/bot](https://api.telegram.org/bot){TELEGRAM_BOT_TOKEN}/sendMessage"
     
     for pick in predictions:
-        # کدگذاری خودکار اعداد (ضرایب) برای نمایش متفاوت در تلگرام
         logic_text = pick.get('logic', '')
         logic_formatted = re.sub(r'(\d+\.\d+|\d+)', r'<code>\1</code>', logic_text)
         
-        # قالب‌بندی نهایی HTML بسیار شیک و فاصله‌دار
         html_message = (
             f"🏆 <b>Sport:</b> {pick.get('sport')}\n\n"
             f"⚔️ <b>Match:</b> <b>{pick.get('home_team')}</b> vs <b>{pick.get('away_team')}</b>\n\n"
-            f"🎯 <b>Winner Pick:</b> <b>{pick.get('winner_pick')}</b>\n\n"
-            f"⚽ <b>Goals/Points Pick:</b> {pick.get('goals_pick')}\n\n"
+            f"🎯 <b>Winner Pick:</b> <b>{pick.get('winner_pick')}</b> <code>[{pick.get('winner_odds', 'N/A')}]</code>\n\n"
+            f"⚽ <b>Goals Pick:</b> {pick.get('goals_pick')} <code>[{pick.get('goals_odds', 'N/A')}]</code>\n\n"
             f"💡 <b>Logic:</b> {logic_formatted}\n\n"
             f"🔥 <b>Risk Level:</b> {pick.get('risk_level')}"
         )
@@ -178,7 +166,6 @@ def format_and_send_to_telegram(predictions: list):
             "parse_mode": "HTML"
         }
         
-        # سیستم ضدمرگ برای تلگرام (Retry Mechanism)
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -188,7 +175,7 @@ def format_and_send_to_telegram(predictions: list):
                     logger.info(f"✅ Posted: {pick.get('home_team')} vs {pick.get('away_team')}")
                     break
                     
-                elif resp.status_code == 429: # برخورد به اسپم‌گارد تلگرام
+                elif resp.status_code == 429: 
                     error_data = resp.json()
                     retry_after = error_data.get("parameters", {}).get("retry_after", 5)
                     logger.warning(f"⚠️ Telegram Flood Wait! Sleeping for {retry_after} seconds. (Attempt {attempt+1}/{max_retries})")
@@ -202,7 +189,6 @@ def format_and_send_to_telegram(predictions: list):
                 logger.error(f"Network error connecting to Telegram: {e}")
                 time.sleep(2)
                 
-        # استراحت استاندارد بین پیام‌ها
         time.sleep(3.5)
 
 # ---------------------------------------------------------
