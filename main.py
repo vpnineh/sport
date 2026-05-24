@@ -17,7 +17,7 @@ ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
+Telegram_ID = "@zBET90"
 if not ODDS_API_KEY or not GROQ_API_KEY:
     raise ValueError("CRITICAL ERROR: ODDS and GROQ API Keys are missing in GitHub Secrets!")
 
@@ -291,12 +291,13 @@ def format_and_send_to_telegram(predictions: list):
         
         html_message = (
             f"{sport_emoji} <b>Sport:</b> {sport}\n\n"
-            f"⚔️ <b>Match:</b> <b>{home}</b> {home_flag} vs {away_flag} <b>{away}</b>\n"
+            f"⚔️ <b>Match:</b> <b>{home}</b> {home_flag} vs {away_flag} <b>{away}</b>\n\n"
             f"{countdown_str}\n\n"
             f"🎯 <b>Winner Pick:</b> <b>{winner}</b> <code>[{winner_odds}]</code>\n\n"
             f"⚽ <b>Goals Pick:</b> {goals_pick} <code>[{goals_odds}]</code>\n\n"
+            f"🔥 <b>Risk Level:</b> {risk}\n\n"
             f"💡 <b>Logic:</b> {logic_formatted}\n\n"
-            f"🔥 <b>Risk Level:</b> {risk}"
+            f"🆔 <b>Join:</b> {Telegram_ID}\n\n"
         )
         
         payload = {
