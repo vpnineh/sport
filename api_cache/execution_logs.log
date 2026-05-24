@@ -17,3 +17,13 @@
 2026-05-24 21:07:45 | WARNING  | ⚠️ Match ID not found for Universidad Católica (CHI) vs Colo Colo. Proceeding with Math Edge only.
 2026-05-24 21:07:45 | INFO     | 🤖 Analyzing stats via Groq...
 2026-05-24 21:07:46 | INFO     | ✅ Telegram Broadcast Success: Universidad Católica (CHI) vs Colo Colo
+2026-05-24 21:15:20 | INFO     | 🚀 STARTING ZBET90 ENTERPRISE ENGINE
+2026-05-24 21:15:20 | INFO     | 🔍 تعداد 8 مسابقه جهت فیلتر ریاضی بررسی می‌شود...
+2026-05-24 21:15:20 | INFO     | 💎 MATH VERIFIED -> América Mineiro vs Vila Nova | Pick: Vila Nova | Odds: 3.85 | Edge: +2.9%
+2026-05-24 21:15:27 | INFO     | 💾 دیتای خام بازی 15526099 جهت بررسی شما در پوشه 'log' ذخیره شد.
+2026-05-24 21:15:27 | INFO     | 🤖 Analyzing stats & generating UI elements via Groq...
+2026-05-24 21:15:28 | INFO     | ✅ Telegram Broadcast Success: América Mineiro vs Vila Nova
+2026-05-24 21:15:31 | INFO     | 💎 MATH VERIFIED -> Universidad Católica (CHI) vs Colo Colo | Pick: Universidad Católica (CHI) | Odds: 2.48 | Edge: +3.3%
+2026-05-24 21:15:37 | INFO     | 💾 دیتای خام بازی 15353044 جهت بررسی شما در پوشه 'log' ذخیره شد.
+2026-05-24 21:15:37 | INFO     | 🤖 Analyzing stats & generating UI elements via Groq...
+2026-05-24 21:15:38 | INFO     | ✅ Telegram Broadcast Success: Universidad Católica (CHI) vs Colo Colo

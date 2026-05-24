@@ -1,0 +1,1043 @@
+{
+  "lineups": {
+    "confirmed": false,
+    "home": {
+      "players": [
+        {
+          "avgRating": 6.8,
+          "player": {
+            "name": "Vicente Bernedo",
+            "firstName": "",
+            "lastName": "",
+            "slug": "vicente-bernedo",
+            "shortName": "V. Bernedo",
+            "position": "G",
+            "jerseyNumber": "1",
+            "height": 187,
+            "userCount": 209,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1016653,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 980121600,
+            "proposedMarketValueRaw": {
+              "value": 620000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فيشنتي برنيدو"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. برنيدو"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 1,
+          "jerseyNumber": "1",
+          "position": "G",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.98,
+          "player": {
+            "name": "Sebastián Arancibia",
+            "firstName": "Sebastián Arancibia",
+            "slug": "sebastian-arancibia",
+            "shortName": "S. Arancibia",
+            "position": "D",
+            "jerseyNumber": "6",
+            "height": 181,
+            "userCount": 246,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 2058867,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1150416000,
+            "proposedMarketValueRaw": {
+              "value": 550000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "سيباستيان أرانسيفيا"
+              },
+              "shortNameTranslation": {
+                "ar": "س. أرانسيفيا"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 6,
+          "jerseyNumber": "6",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.8,
+          "player": {
+            "name": "Branco Ampuero",
+            "slug": "branco-ampuero",
+            "shortName": "B. Ampuero",
+            "position": "D",
+            "jerseyNumber": "19",
+            "height": 184,
+            "userCount": 181,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 819088,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 743040000,
+            "proposedMarketValueRaw": {
+              "value": 620000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "برانكو أمبويرو"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. أمبويرو"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 19,
+          "jerseyNumber": "19",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.73,
+          "player": {
+            "name": "Daniel González",
+            "slug": "daniel-gonzalez",
+            "shortName": "D. González",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 184,
+            "userCount": 347,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 986496,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1014163200,
+            "proposedMarketValueRaw": {
+              "value": 1700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دانييل جونزاليس",
+                "bn": "ড্যানিয়েল গঞ্জালেজ",
+                "hi": "डैनियल गोंजालेज"
+              },
+              "shortNameTranslation": {
+                "ar": "د. جونزاليس",
+                "bn": "ডি. গনজালেজ",
+                "hi": "डी. गोंजालेज"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.67,
+          "player": {
+            "name": "Eugenio Mena",
+            "firstName": "Eugenio",
+            "lastName": "Mena",
+            "slug": "eugenio-mena",
+            "shortName": "E. Mena",
+            "position": "D",
+            "jerseyNumber": "3",
+            "height": 174,
+            "userCount": 307,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 117430,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 585187200,
+            "proposedMarketValueRaw": {
+              "value": 195000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيوجينيو مينا",
+                "bn": "ইউজেনিও মেনা",
+                "hi": "यूजेनियो मेना"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. مينا",
+                "bn": "ই. মেনা",
+                "hi": "ई. मेना"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 3,
+          "jerseyNumber": "3",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.48,
+          "player": {
+            "name": "Agustín Farías",
+            "firstName": "Agustin",
+            "lastName": "Farias",
+            "slug": "agustin-farias",
+            "shortName": "A. Farías",
+            "position": "M",
+            "jerseyNumber": "5",
+            "height": 177,
+            "userCount": 84,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 581774,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 538531200,
+            "proposedMarketValueRaw": {
+              "value": 52000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أغوستين فاريا"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. فاريا"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 5,
+          "jerseyNumber": "5",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.91,
+          "player": {
+            "name": "Jimmy Martínez",
+            "firstName": "Jimmy",
+            "lastName": "Martínez",
+            "slug": "jimmy-martinez",
+            "shortName": "J. Martínez",
+            "position": "M",
+            "jerseyNumber": "14",
+            "height": 178,
+            "userCount": 127,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 588796,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 854236800,
+            "proposedMarketValueRaw": {
+              "value": 650000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيمي مارتينيز"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. مارتينيز"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 14,
+          "jerseyNumber": "14",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.37,
+          "player": {
+            "name": "Matías Palavecino",
+            "slug": "matias-palavecino",
+            "shortName": "M. Palavecino",
+            "position": "M",
+            "jerseyNumber": "10",
+            "height": 180,
+            "userCount": 491,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 973560,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 895881600,
+            "proposedMarketValueRaw": {
+              "value": 940000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماتياس بالافيسينو"
+              },
+              "shortNameTranslation": {
+                "ar": "م. بالافيسينو"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 10,
+          "jerseyNumber": "10",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.96,
+          "player": {
+            "name": "Fernando Zuqui",
+            "firstName": "Fernando",
+            "lastName": "Zuqui",
+            "slug": "fernando-zuqui",
+            "shortName": "F. Zuqui",
+            "position": "M",
+            "jerseyNumber": "8",
+            "height": 170,
+            "userCount": 306,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 284729,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 691200000,
+            "proposedMarketValueRaw": {
+              "value": 380000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فيرناندو زوكي"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. زوكي"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 8,
+          "jerseyNumber": "8",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.45,
+          "player": {
+            "name": "Martín Gómez",
+            "firstName": "Martín Gómez",
+            "slug": "martin-gomez",
+            "shortName": "M. Gómez",
+            "position": "M",
+            "jerseyNumber": "22",
+            "height": 176,
+            "userCount": 39,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 2121648,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1146441600,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "مارتين غوميز"
+              },
+              "shortNameTranslation": {
+                "ar": "م. غوميز"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 22,
+          "jerseyNumber": "22",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.96,
+          "player": {
+            "name": "Justo Giani",
+            "slug": "justo-giani",
+            "shortName": "J. Giani",
+            "position": "M",
+            "jerseyNumber": "7",
+            "height": 180,
+            "userCount": 561,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 932866,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 923443200,
+            "proposedMarketValueRaw": {
+              "value": 2700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "خوسطو جياني"
+              },
+              "shortNameTranslation": {
+                "ar": "خ. جياني"
+              }
+            }
+          },
+          "teamId": 3151,
+          "shirtNumber": 7,
+          "jerseyNumber": "7",
+          "position": "M",
+          "substitute": false
+        }
+      ],
+      "supportStaff": [],
+      "formation": "4-1-4-1",
+      "playerColor": {
+        "primary": "ffffff",
+        "number": "026edd",
+        "outline": "ffffff",
+        "fancyNumber": "222226"
+      },
+      "goalkeeperColor": {
+        "primary": "030303",
+        "number": "ffffff",
+        "outline": "030303",
+        "fancyNumber": "ffffff"
+      },
+      "missingPlayers": [
+        {
+          "player": {
+            "name": "Juan Ignacio Díaz",
+            "slug": "juan-ignacio-diaz",
+            "shortName": "J. I. Díaz",
+            "position": "D",
+            "jerseyNumber": "26",
+            "height": 182,
+            "userCount": 152,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 896624,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 896140800,
+            "proposedMarketValueRaw": {
+              "value": 415000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "خوان إغناسيو دياث"
+              },
+              "shortNameTranslation": {
+                "ar": "خ. دياث"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Muscle Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-06-20T00:00:00+00:00"
+        }
+      ]
+    },
+    "away": {
+      "players": [
+        {
+          "avgRating": 7.08,
+          "player": {
+            "name": "Gabriel Maureira",
+            "firstName": "Gabriel",
+            "lastName": "Maureira",
+            "slug": "gabriel-maureira",
+            "shortName": "G. Maureira",
+            "position": "G",
+            "jerseyNumber": "25",
+            "height": 193,
+            "userCount": 290,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1980388,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1170547200,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "غابرييل ماورييرا"
+              },
+              "shortNameTranslation": {
+                "ar": "غ. ماورييرا"
+              }
+            }
+          },
+          "teamId": 276585,
+          "shirtNumber": 25,
+          "jerseyNumber": "25",
+          "position": "G",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.04,
+          "player": {
+            "name": "Jonathan Villagra",
+            "firstName": "",
+            "lastName": "",
+            "slug": "jonathan-villagra",
+            "shortName": "J. Villagra",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 183,
+            "userCount": 324,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1014795,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 985737600,
+            "proposedMarketValueRaw": {
+              "value": 860000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جوناثان فيلاغرا"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. فيلاغرا"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.49,
+          "player": {
+            "name": "Arturo Vidal",
+            "slug": "arturo-vidal",
+            "shortName": "Arturo Vidal",
+            "position": "M",
+            "jerseyNumber": "23",
+            "height": 180,
+            "userCount": 13123,
+            "gender": "M",
+            "sofascoreId": "kingarturo23",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 18342,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 548640000,
+            "proposedMarketValueRaw": {
+              "value": 170000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أرتورو فيدال",
+                "bn": "আর্তুরো ভিদাল",
+                "hi": "आर्टुरो विडाल"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. فيدال",
+                "bn": "আর্তুরো ভিদাল",
+                "hi": "आर्टुरो विडाल"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 23,
+          "jerseyNumber": "23",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.03,
+          "player": {
+            "name": "Joaquín Sosa",
+            "firstName": "",
+            "lastName": "",
+            "slug": "joaquin-sosa",
+            "shortName": "J. Sosa",
+            "position": "D",
+            "jerseyNumber": "4",
+            "height": 189,
+            "userCount": 613,
+            "gender": "M",
+            "country": {
+              "alpha2": "UY",
+              "alpha3": "URY",
+              "name": "Uruguay",
+              "slug": "uruguay"
+            },
+            "id": 1015274,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1010620800,
+            "proposedMarketValueRaw": {
+              "value": 535000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جواكين سوسا",
+                "bn": "জোয়াকুইন সোসা",
+                "hi": "जोआक्विन सोसा"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. سوسا",
+                "bn": "জে. সোসা",
+                "hi": "जे. सोसा"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 4,
+          "jerseyNumber": "4",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.64,
+          "player": {
+            "name": "Francisco Marchant",
+            "firstName": "",
+            "slug": "francisco-marchant",
+            "shortName": "F. Marchant",
+            "position": "M",
+            "jerseyNumber": "7",
+            "height": 170,
+            "userCount": 799,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1482420,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1154044800,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فرانسيسكو مارشانت"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. مارشانت"
+              }
+            }
+          },
+          "teamId": 276585,
+          "shirtNumber": 7,
+          "jerseyNumber": "7",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.01,
+          "player": {
+            "name": "Tomás Alarcón",
+            "slug": "tomas-alarcon",
+            "shortName": "T. Alarcón",
+            "position": "M",
+            "jerseyNumber": "6",
+            "height": 176,
+            "userCount": 616,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 844224,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 916704000,
+            "proposedMarketValueRaw": {
+              "value": 485000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "توماس ألاركون",
+                "bn": "টমাস অ্যালার্কন",
+                "hi": "टॉमस अलारकोन"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. ألاركون",
+                "bn": "টি. অ্যালার্কন",
+                "hi": "टी. अलारकोन"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 6,
+          "jerseyNumber": "6",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.18,
+          "player": {
+            "name": "Víctor Felipe Méndez",
+            "slug": "victor-felipe-mendez",
+            "shortName": "V. F. Méndez",
+            "position": "M",
+            "jerseyNumber": "5",
+            "height": 170,
+            "userCount": 699,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 870020,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 938044800,
+            "proposedMarketValueRaw": {
+              "value": 1100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فيكتور فيليبي مينديز",
+                "bn": "ভিক্টর ফেলিপ মেন্ডেজ",
+                "hi": "विक्टर फ़ेलिप मेंडेज़"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. مينديز",
+                "bn": "ভি. এফ. মেন্ডেজ",
+                "hi": "वी.एफ. मेंडेज़"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 5,
+          "jerseyNumber": "5",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.87,
+          "player": {
+            "name": "Álvaro Madrid",
+            "slug": "alvaro-madrid",
+            "shortName": "Á. Madrid",
+            "position": "M",
+            "jerseyNumber": "8",
+            "height": 179,
+            "userCount": 372,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 889502,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 797040000,
+            "proposedMarketValueRaw": {
+              "value": 485000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألفارو مدريد"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. مدريد"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 8,
+          "jerseyNumber": "8",
+          "position": "M",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.84,
+          "player": {
+            "name": "Jeyson Rojas",
+            "firstName": "",
+            "lastName": "",
+            "slug": "jeyson-rojas",
+            "shortName": "J. Rojas",
+            "position": "D",
+            "jerseyNumber": "28",
+            "height": 185,
+            "userCount": 212,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1022259,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1011744000,
+            "proposedMarketValueRaw": {
+              "value": 515000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيسون روخاس",
+                "bn": "জেসন রোজাস",
+                "hi": "जेसन रोजास"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. روخاس",
+                "bn": "জে. রোজাস",
+                "hi": "जे. रोजास"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 28,
+          "jerseyNumber": "28",
+          "position": "D",
+          "substitute": false
+        },
+        {
+          "avgRating": 6.74,
+          "player": {
+            "name": "Leandro Hernández",
+            "firstName": "Leandro Hernández",
+            "slug": "leandro-hernandez",
+            "shortName": "L. Hernández",
+            "position": "F",
+            "jerseyNumber": "24",
+            "height": 167,
+            "userCount": 518,
+            "gender": "M",
+            "country": {
+              "alpha2": "CL",
+              "alpha3": "CHL",
+              "name": "Chile",
+              "slug": "chile"
+            },
+            "id": 1601711,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1118534400,
+            "proposedMarketValueRaw": {
+              "value": 375000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لياندرو هيرنانديز"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. هيرنانديز"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 24,
+          "jerseyNumber": "24",
+          "position": "F",
+          "substitute": false
+        },
+        {
+          "avgRating": 7.07,
+          "player": {
+            "name": "Javier Correa",
+            "firstName": "Javier",
+            "lastName": "Correa",
+            "slug": "javier-correa",
+            "shortName": "J. Correa",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 184,
+            "userCount": 1258,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 581780,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 719798400,
+            "proposedMarketValueRaw": {
+              "value": 775000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "خافيير كوريا"
+              },
+              "shortNameTranslation": {
+                "ar": "خ. كوريا"
+              }
+            }
+          },
+          "teamId": 3155,
+          "shirtNumber": 9,
+          "jerseyNumber": "9",
+          "position": "F",
+          "substitute": false
+        }
+      ],
+      "supportStaff": [],
+      "formation": "3-4-3",
+      "playerColor": {
+        "primary": "000000",
+        "number": "ffffff",
+        "outline": "000000",
+        "fancyNumber": "ffffff"
+      },
+      "goalkeeperColor": {
+        "primary": "eae663",
+        "number": "080808",
+        "outline": "eae663",
+        "fancyNumber": "222226"
+      },
+      "missingPlayers": []
+    },
+    "statisticalVersion": 3
+  },
+  "streaks": {
+    "general": [
+      {
+        "name": "No losses",
+        "value": "6",
+        "team": "home"
+      },
+      {
+        "name": "Without clean sheet",
+        "value": "6",
+        "team": "away"
+      },
+      {
+        "name": "More than 2.5 goals",
+        "value": "4/5",
+        "team": "away"
+      },
+      {
+        "name": "Less than 2.5 goals",
+        "value": "4/5",
+        "team": "home"
+      },
+      {
+        "name": "Both teams scoring",
+        "value": "4/5",
+        "team": "away"
+      },
+      {
+        "name": "More than 4.5 cards",
+        "value": "8/10",
+        "team": "home"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "9/10",
+        "team": "home"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "4/5",
+        "team": "away"
+      }
+    ],
+    "head2head": [
+      {
+        "name": "Less than 2.5 goals",
+        "value": "8/10",
+        "team": "both"
+      },
+      {
+        "name": "More than 4.5 cards",
+        "value": "5/7",
+        "team": "both"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "5/7",
+        "team": "both"
+      }
+    ]
+  }
+}
