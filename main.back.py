@@ -108,14 +108,6 @@ def create_http_session(
 ) -> requests.Session:
     """
     Create a requests session with automatic retry and exponential backoff.
-
-    Args:
-        retries: Maximum number of retries.
-        backoff_factor: Multiplier for backoff between retries.
-        status_forcelist: HTTP status codes that trigger a retry.
-
-    Returns:
-        Configured requests.Session.
     """
     session = requests.Session()
     retry_strategy = Retry(
@@ -199,9 +191,6 @@ class SentCache:
 def get_next_events() -> list[dict[str, Any]]:
     """
     Fetch upcoming sports events starting within the configured scan window.
-
-    Returns:
-        List of event dicts from The Odds API, filtered by time window.
     """
     now = datetime.now(timezone.utc)
     window_end = now + timedelta(hours=Config.SCAN_WINDOW_HOURS)
@@ -269,12 +258,6 @@ def extract_best_odds(
 ) -> dict[str, dict[str, float]]:
     """
     Extract the best available odds across all bookmakers for H2H and Totals.
-
-    Args:
-        bookmakers: List of bookmaker dicts from the Odds API.
-
-    Returns:
-        Dict with 'h2h' and 'totals' keys, each containing outcome->best_odds mapping.
     """
     best: dict[str, dict[str, float]] = {"h2h": {}, "totals": {}}
 
@@ -332,12 +315,6 @@ STRICT RULES:
 def build_analysis_prompt(events: list[dict[str, Any]]) -> str:
     """
     Build the user prompt containing event data for AI analysis.
-
-    Args:
-        events: List of event dicts from the Odds API.
-
-    Returns:
-        Formatted prompt string.
     """
     lines: list[str] = [
         f"Analyze these {len(events)} upcoming events for +EV opportunities:\n"
@@ -370,22 +347,14 @@ def build_analysis_prompt(events: list[dict[str, Any]]) -> str:
 def parse_ai_response(raw_text: str) -> list[dict[str, Any]]:
     """
     Parse and validate the AI response into a list of predictions.
-
-    Attempts direct JSON parsing first, then falls back to regex extraction.
-
-    Args:
-        raw_text: Raw text response from the AI.
-
-    Returns:
-        List of validated prediction dicts.
     """
-    cleaned = raw_text.strip()
+    cleaned = str(raw_text).strip()
 
-    # Safely remove markdown code block wrappers without using literal backticks in code
-    t_ticks = "`" * 3
-    if cleaned.startswith(t_ticks):
-        cleaned = re.sub(r"^" + t_ticks + r"(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*" + t_ticks + r"$", "", cleaned)
+    # Bulletproof string replacement (No Regex, No Backticks in code)
+    md_marker = chr(96) + chr(96) + chr(96)  # Creates ``` safely
+    cleaned = cleaned.replace(md_marker + "json", "")
+    cleaned = cleaned.replace(md_marker, "")
+    cleaned = cleaned.strip()
 
     # Attempt 1: Direct parse
     predictions: Optional[list[Any]] = None
@@ -420,7 +389,6 @@ def parse_ai_response(raw_text: str) -> list[dict[str, Any]]:
         # Ensure required fields exist
         required = {"pick", "home_team", "away_team", "commence_time"}
         if not required.issubset(pred.keys()):
-            logger.warning(f"Skipping prediction missing required fields: {pred.get('home_team', '?')}")
             continue
 
         # Normalize odds
@@ -458,12 +426,6 @@ def parse_ai_response(raw_text: str) -> list[dict[str, Any]]:
 def analyze_with_groq(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Send events to Groq AI for +EV analysis.
-
-    Args:
-        events: List of event dicts from the Odds API.
-
-    Returns:
-        List of validated prediction dicts.
     """
     if not events:
         return []
@@ -543,12 +505,6 @@ RISK_EMOJI: dict[str, str] = {
 def format_countdown(commence_time: str) -> str:
     """
     Format a human-readable countdown or status for an event.
-
-    Args:
-        commence_time: ISO format datetime string.
-
-    Returns:
-        Countdown string like "⏱ Starts in 1h 23m" or "🔴 LIVE".
     """
     try:
         event_dt = datetime.fromisoformat(
@@ -573,12 +529,6 @@ def format_countdown(commence_time: str) -> str:
 def format_logic_numbers(logic: str) -> str:
     """
     Wrap numbers in the logic text with <code> tags for Telegram formatting.
-
-    Args:
-        logic: Raw logic string from AI.
-
-    Returns:
-        Formatted string with numbers highlighted.
     """
     # Match decimals like 1.85, percentages like 55%, and plain numbers
     return re.sub(
@@ -591,12 +541,6 @@ def format_logic_numbers(logic: str) -> str:
 def format_prediction_message(pred: dict[str, Any]) -> str:
     """
     Format a single prediction into an HTML message for Telegram.
-
-    Args:
-        pred: Validated prediction dict.
-
-    Returns:
-        HTML-formatted message string.
     """
     sport_emoji = pred.get("sport_emoji", "⚽")
     sport = html.escape(pred.get("sport", "Unknown"))
@@ -644,14 +588,8 @@ def format_prediction_message(pred: dict[str, Any]) -> str:
 def send_telegram_message(text: str) -> bool:
     """
     Send a single message to Telegram with retry logic.
-
-    Args:
-        text: HTML-formatted message text.
-
-    Returns:
-        True if sent successfully, False otherwise.
     """
-    url = f"https://api.telegram.org/bot{Config.TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"[https://api.telegram.org/bot](https://api.telegram.org/bot){Config.TELEGRAM_BOT_TOKEN}/sendMessage"
     payload: dict[str, Any] = {
         "chat_id": Config.TELEGRAM_CHAT_ID,
         "text": text,
@@ -701,18 +639,9 @@ def format_and_send_to_telegram(
 ) -> int:
     """
     Format predictions and send them to Telegram, skipping duplicates.
-
-    Args:
-        predictions: List of validated prediction dicts.
-        cache: SentCache instance for deduplication.
-
-    Returns:
-        Number of messages successfully sent.
     """
     if not Config.TELEGRAM_BOT_TOKEN or not Config.TELEGRAM_CHAT_ID:
         logger.warning("Telegram credentials not set. Skipping broadcast.")
-        for pred in predictions:
-            logger.info(f"[DRY RUN] {pred.get('home_team')} vs {pred.get('away_team')} → {pred.get('pick')}")
         return 0
 
     sent_count = 0
