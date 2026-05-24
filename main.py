@@ -738,7 +738,6 @@ class SofaScoreAPI:
     
     async def search_team_with_variants(
         self, 
-        session: ClientSession, 
         team_name: str
     ) -> Optional[Tuple[int, str]]:
         """
@@ -758,11 +757,12 @@ class SofaScoreAPI:
             params = {'name': variant}
             
             data = await api_client.get_with_retry(
-                session, url,
+                url,
                 headers=self._get_headers(),
                 params=params,
                 rate_limit_key='sofascore'
             )
+            await asyncio.sleep(0.5) # جلوگیری از بن شدن به دلیل ریکوئست‌های متوالی به RapidAPI
             
             if not data or 'data' not in data or not data['data']:
                 continue
@@ -800,7 +800,7 @@ class SofaScoreAPI:
         logger.warning(f"❌ No good match for '{team_name}' (best: {best_score})")
         return None
     
-    async def get_team_id(self, session: ClientSession, team_name: str) -> Optional[int]:
+    async def get_team_id(self, team_name: str) -> Optional[int]:
         """Search team ID with caching and variant matching."""
         # Check cache
         cached_id = db.get_cached_team_id(team_name)
@@ -809,7 +809,7 @@ class SofaScoreAPI:
             return cached_id
         
         # Search with variants
-        result = await self.search_team_with_variants(session, team_name)
+        result = await self.search_team_with_variants(team_name)
         
         if result:
             team_id, matched_name = result
@@ -821,9 +821,9 @@ class SofaScoreAPI:
         
         return None
     
-    async def get_team_stats(self, session: ClientSession, team_name: str) -> Optional[TeamStats]:
+    async def get_team_stats(self, team_name: str) -> Optional[TeamStats]:
         """Fetch team stats with intelligent name matching."""
-        team_id = await self.get_team_id(session, team_name)
+        team_id = await self.get_team_id(team_name)
         if not team_id:
             return None
         
@@ -831,7 +831,7 @@ class SofaScoreAPI:
         params = {'teamId': str(team_id)}
         
         data = await api_client.get_with_retry(
-            session, url,
+            url,
             headers=self._get_headers(),
             params=params,
             rate_limit_key='sofascore'
@@ -898,7 +898,7 @@ sofascore = SofaScoreAPI()
 class OddsAggregator:
     """Multi-source odds aggregation with proper bookmaker comparison."""
     
-    async def fetch_the_odds_api(self, session: ClientSession) -> List[BettingEvent]:
+    async def fetch_the_odds_api(self) -> List[BettingEvent]:
         """Primary: The Odds API."""
         url = f"{Config.ODDS_API_BASE}/sports/upcoming/odds"
         params = {
@@ -909,7 +909,7 @@ class OddsAggregator:
         }
         
         data = await api_client.get_with_retry(
-            session, url,
+            url,
             params=params,
             rate_limit_key='odds',
             max_retries=3
@@ -1006,9 +1006,8 @@ class OddsAggregator:
     
     async def fetch_all_events(self) -> List[BettingEvent]:
         """Fetch all events."""
-        async with api_client.session() as session:
-            events = await self.fetch_the_odds_api(session)
-            return events
+        events = await self.fetch_the_odds_api()
+        return events
 
 
 odds_aggregator = OddsAggregator()
@@ -1049,42 +1048,46 @@ REQUIRED JSON:
 class GroqAnalyzer:
     """AI qualitative analysis."""
     
-    async def analyze_value_bets(self, events_with_value: List[Dict[str, Any]]) -> List[ValueBet]:
+    async def analyze_value_bets(self, events_with_value: List[Dict[str, Any]], chunk_size: int = 5) -> List[ValueBet]:
         """Analyze with AI."""
         if not events_with_value:
             return []
         
-        user_prompt = self._build_prompt(events_with_value)
+        all_validated_bets = []
         
-        payload = {
-            'model': Config.GROQ_MODEL,
-            'messages': [
-                {'role': 'system', 'content': SYSTEM_PROMPT},
-                {'role': 'user', 'content': user_prompt}
-            ],
-            'temperature': Config.GROQ_TEMPERATURE,
-            'max_tokens': Config.GROQ_MAX_TOKENS
-        }
-        
-        headers = {
-            'Authorization': f'Bearer {Config.GROQ_API_KEY}',
-            'Content-Type': 'application/json'
-        }
-        
-        async with api_client.session() as session:
+        for i in range(0, len(events_with_value), chunk_size):
+            chunk = events_with_value[i:i + chunk_size]
+            user_prompt = self._build_prompt(chunk)
+            
+            payload = {
+                'model': Config.GROQ_MODEL,
+                'messages': [
+                    {'role': 'system', 'content': SYSTEM_PROMPT},
+                    {'role': 'user', 'content': user_prompt}
+                ],
+                'temperature': Config.GROQ_TEMPERATURE,
+                'max_tokens': Config.GROQ_MAX_TOKENS
+            }
+            
+            headers = {
+                'Authorization': f'Bearer {Config.GROQ_API_KEY}',
+                'Content-Type': 'application/json'
+            }
+            
             response = await api_client.post_with_retry(
-                session,
                 Config.GROQ_API_BASE,
                 headers=headers,
                 json_data=payload,
                 rate_limit_key='groq'
             )
-        
-        if not response:
-            return []
-        
-        raw_content = response.get('choices', [{}])[0].get('message', {}).get('content', '')
-        return self._parse_response(raw_content)
+            
+            if response:
+                raw_content = response.get('choices', [{}])[0].get('message', {}).get('content', '')
+                all_validated_bets.extend(self._parse_response(raw_content))
+                
+            await asyncio.sleep(1) # وقفه بین درخواست‌ها برای مدیریت Rate Limit
+            
+        return all_validated_bets
     
     def _build_prompt(self, events: List[Dict[str, Any]]) -> str:
         """Build prompt."""
@@ -1283,23 +1286,14 @@ class TelegramBot:
             'disable_web_page_preview': True
         }
         
-        for attempt in range(retries):
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, json=payload) as response:
-                        if response.status == 200:
-                            return True
-                        elif response.status == 429:
-                            data = await response.json()
-                            retry_after = data.get('parameters', {}).get('retry_after', 5)
-                            await asyncio.sleep(retry_after)
-                        else:
-                            await asyncio.sleep(2 ** attempt)
-            except Exception as e:
-                logger.error(f"Telegram error: {e}")
-                await asyncio.sleep(2 ** attempt)
+        response = await api_client.post_with_retry(
+            url,
+            json_data=payload,
+            rate_limit_key='default',
+            max_retries=retries
+        )
         
-        return False
+        return True if response and response.get('ok') else False
     
     async def broadcast_bets(self, bets: List[ValueBet]) -> int:
         """Broadcast all bets."""
@@ -1345,9 +1339,8 @@ class Pipeline:
         
         events_with_value = []
         
-        async with api_client.session() as session:
-            for event in events:
-                try:
+        for event in events:
+            try:
                     # Get ALL bookmaker odds
                     all_bookmaker_odds = await odds_aggregator.get_all_bookmaker_odds(event.bookmakers)
                     
@@ -1375,8 +1368,8 @@ class Pipeline:
                         continue
                     
                     # Fetch team stats
-                    home_stats_task = sofascore.get_team_stats(session, event.home_team)
-                    away_stats_task = sofascore.get_team_stats(session, event.away_team)
+                    home_stats_task = sofascore.get_team_stats(event.home_team)
+                    away_stats_task = sofascore.get_team_stats(event.away_team)
                     
                     home_stats, away_stats = await asyncio.gather(
                         home_stats_task, away_stats_task, return_exceptions=True
