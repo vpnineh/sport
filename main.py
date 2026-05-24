@@ -40,9 +40,13 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY]):
     sys.exit(1)
 
 # =========================================================
-# 2. ROBUST UTILS & DECORATORS
+# 2. BULLETPROOF UTILS & DECORATORS
 # =========================================================
 def retry_request(max_retries=3, delay=2, backoff=2):
+    """
+    نسخه ضدتانک: هیچ اروری باعث توقف برنامه نمی‌شود.
+    اگر API قطع باشد، مقدار None برمی‌گرداند تا سیستم مسیر جایگزین را طی کند.
+    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -57,10 +61,10 @@ def retry_request(max_retries=3, delay=2, backoff=2):
                         time.sleep(wait_time)
                     else:
                         logger.error(f"⚠️ HTTP Error in {func.__name__}: {e}")
-                        if attempt == max_retries - 1: raise
+                        if attempt == max_retries - 1: return None # عدم توقف برنامه
                 except requests.exceptions.RequestException as e:
                     logger.error(f"⚠️ Connection Error in {func.__name__}: {e}. Retrying {attempt+1}/{max_retries}")
-                    if attempt == max_retries - 1: raise
+                    if attempt == max_retries - 1: return None # عدم توقف برنامه
                 time.sleep(current_delay)
                 current_delay *= backoff
             return None
@@ -100,9 +104,8 @@ def save_to_cache(filename, data):
 @retry_request(max_retries=3)
 def fetch_odds_api():
     now_utc = datetime.now(timezone.utc)
-    end_window = now_utc + timedelta(hours=2) # جستجوی دقیق برای ۲ ساعت آینده
+    end_window = now_utc + timedelta(hours=2)
     url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
-    # مناطق گسترش یافته تا در هر ساعتی از روز لیگ‌های فعال دنیا بررسی شوند
     params = {"apiKey": ODDS_API_KEY, "regions": "eu,us,uk,au", "markets": "h2h", "oddsFormat": "decimal"}
     
     res = requests.get(url, params=params, timeout=15)
@@ -186,7 +189,7 @@ def calculate_sharp_ev(bookmakers: list):
         
         if best_p > 0:
             ev = (true_prob * best_p) - 1
-            if ev > 0.015: # لبه سود ۱.۵ درصد (کاهش یافته برای ارائه خروجی بیشتر در دنیای واقعی)
+            if ev > 0.015: # لبه سود 1.5 درصد
                 opportunities.append({"pick": name, "prob": true_prob, "odds": best_p, "bookmaker": bookie, "ev": ev})
     return opportunities
 
@@ -195,24 +198,26 @@ def calculate_sharp_ev(bookmakers: list):
 # =========================================================
 @retry_request(max_retries=3)
 def generate_ai_logic(home, away, pick, ev_edge, deep_stats):
-    compressed_stats = json.dumps(deep_stats, separators=(',', ':'))[:3500]
+    # اگر آمار جانبی ارور داد، سیستم جایگزین متنی می‌گذارد
+    if not deep_stats:
+        compressed_stats = "NO EXTERNAL DATA AVAILABLE. Rely solely on the mathematical edge and general team knowledge."
+    else:
+        compressed_stats = json.dumps(deep_stats, separators=(',', ':'))[:3500]
     
-    # پرامپت سیستم: تعریف دقیق نقش، وظیفه و فرمت خروجی
     system_prompt = """You are an Elite Quantitative Sports Analyst and AI Betting Assistant.
 Your core expertise lies in translating deep statistical data into crisp, authoritative tactical narratives.
 
 [YOUR OBJECTIVE]
 Our mathematical Sharp-Market Engine has already identified a highly profitable betting opportunity (+EV) for the provided Pick. 
-Your ONLY task is to write a compelling, data-driven justification for WHY this team might win or perform well, based strictly on the provided 'Deep Stats'.
+Your ONLY task is to write a compelling, data-driven justification for WHY this team might win or perform well.
 
 [CRITICAL RULES]
 1. ZERO MATH: Do not mention Expected Value (EV), odds, or the betting market. Focus ONLY on the sport/tactics.
-2. DATA-DRIVEN: Base your analysis purely on the provided JSON stats (look for injury advantages, H2H dominance, or winning streaks).
+2. DATA-DRIVEN: Base your analysis purely on the provided JSON stats. If no stats are provided, write a generic tactical reason based on the teams.
 3. LENGTH: Write exactly 2 to 3 concise sentences.
-4. TONE: Professional, authoritative, and analytical. No fluff, no robotic greetings.
+4. TONE: Professional, authoritative, and analytical. No fluff.
 5. FORMAT: You MUST output ONLY a valid JSON object matching this exact schema: {"logic": "your plain text analysis here"}."""
 
-    # پرامپت کاربر: تزریق ایزوله و تمیز داده‌ها
     user_prompt = f"""[MATCH CONTEXT]
 Home Team: {home}
 Away Team: {away}
@@ -229,7 +234,7 @@ Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ],
-        "temperature": 0.15, # کاهش دما برای افزایش منطق و کاهش خلاقیت‌های بی‌مورد
+        "temperature": 0.15,
         "response_format": {"type": "json_object"}
     }
     
@@ -241,7 +246,7 @@ Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
     
     if parsed_json and "logic" in parsed_json:
         return str(parsed_json["logic"]).strip()
-    return "High mathematical value detected by our sharp algorithm based on strong underlying metrics."
+    return "This selection has been verified by our proprietary mathematical model, identifying significant market value."
 
 # =========================================================
 # 7. TELEGRAM BROADCAST
@@ -259,10 +264,12 @@ def send_telegram(message_html):
 # =========================================================
 def main():
     logger.info("🚀 STARTING ZBET90 ENTERPRISE ENGINE")
-    events = fetch_odds_api()
+    
+    # اگر API قطع باشد، یک لیست خالی برمی‌گرداند تا کِرَش نکند
+    events = fetch_odds_api() or []
     
     if not events:
-        logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد.")
+        logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد یا API پاسخ نداد.")
         return
 
     today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
@@ -279,20 +286,26 @@ def main():
             pick, ev_pct, odds, true_prob = opp['pick'], opp['ev'] * 100, opp['odds'], opp['prob'] * 100
             logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Edge: +{ev_pct:.1f}%")
             
-            # Contextual Data Fetching
-            hid, aid = get_sofascore_team_id(home), get_sofascore_team_id(away)
+            # Contextual Data Fetching (با مدیریت قطعی)
+            hid = get_sofascore_team_id(home)
+            aid = get_sofascore_team_id(away)
             deep_stats = {}
+            
             if hid and aid:
-                for match in fetch_sofascore_schedule(today_str):
+                # اگر schedule ارور داد، یک لیست خالی می‌گذارد به جای کِرَش
+                schedule = fetch_sofascore_schedule(today_str) or []
+                for match in schedule:
                     if match.get("homeTeam", {}).get("id") == hid and match.get("awayTeam", {}).get("id") == aid:
-                        deep_stats = fetch_deep_stats(match.get("id"))
+                        deep_stats = fetch_deep_stats(match.get("id")) or {}
                         break
+            else:
+                logger.warning(f"⚠️ Team IDs not found for {home} vs {away}. Proceeding with Math Edge only.")
 
-            # AI Logic Generation (Safe JSON Mode)
-            logger.info("🤖 Analyzing deep stats via Groq...")
+            # AI Logic Generation
+            logger.info("🤖 Analyzing stats via Groq...")
             logic = generate_ai_logic(home, away, pick, opp['ev'], deep_stats)
             
-            # Safe HTML Escaping for Telegram
+            # HTML Escaping & Broadcasting
             html_msg = (
                 f"🏆 <b>Sport:</b> {html_lib.escape(str(sport))}\n\n"
                 f"⚔️ <b>Match:</b> <b>{html_lib.escape(home)}</b> vs <b>{html_lib.escape(away)}</b>\n\n"
@@ -300,7 +313,7 @@ def main():
                 f"⚖️ <b>Fair Probability:</b> {true_prob:.1f}%\n"
                 f"📈 <b>Best Market Odds:</b> <code>{odds}</code> <i>({html_lib.escape(opp['bookmaker'])})</i>\n"
                 f"📊 <b>Calculated +EV:</b> <b>+{ev_pct:.1f}% Edge</b> 🟢\n\n"
-                f"💡 <b>Deep Data Analysis:</b>\n"
+                f"💡 <b>Analysis:</b>\n"
                 f"<blockquote expandable>{html_lib.escape(logic)}</blockquote>\n\n"
                 f"🆔 <b>Join:</b> {TELEGRAM_ID}\n"
             )
