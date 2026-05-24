@@ -199,6 +199,14 @@ except ValueError:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class TeamStats(BaseModel):
+    class MatchContext(BaseModel):
+    """Deep match context from SofaScore for AI Analysis."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    match_id: Optional[int] = None
+    ai_insights: List[str] = Field(default_factory=list)
+    missing_players: List[str] = Field(default_factory=list)
+    
     """Team statistical profile."""
     model_config = ConfigDict(arbitrary_types_allowed=True)
     
@@ -242,6 +250,7 @@ class ValueBet(BaseModel):
     logic: str
     home_stats: Optional[TeamStats] = None
     away_stats: Optional[TeamStats] = None
+    match_context: Optional[MatchContext] = None
     
     @field_validator('bookmaker_odds', 'fair_odds')
     @classmethod
@@ -823,7 +832,81 @@ class SofaScoreAPI:
             return team_id
         
         return None
-    
+    async def get_match_id(self, home_team: str, away_team: str, commence_time: datetime) -> Optional[int]:
+        """Find specific match ID using search."""
+        # برای صرفه جویی، ابتدا تیم میزبان را سرچ میکنیم و آیدی آن را میگیریم
+        team_id = await self.get_team_id(home_team)
+        if not team_id:
+            return None
+            
+        # سپس بازی های بعدی این تیم را میگیریم تا مسابقه مد نظر را پیدا کنیم
+        url = f"{Config.SOFASCORE_BASE}/teams/get-next-matches"
+        params = {'teamId': str(team_id)}
+        
+        data = await api_client.get_with_retry(
+            url, headers=self._get_headers(), params=params, rate_limit_key='sofascore'
+        )
+        await asyncio.sleep(0.5)
+        
+        if not data or 'data' not in data:
+            return None
+            
+        events = data['data'].get('events', [])
+        
+        # پیدا کردن مسابقه با تطبیق تیم روبرو یا تاریخ
+        for event in events:
+            api_away = event.get('awayTeam', {}).get('name', '')
+            api_home = event.get('homeTeam', {}).get('name', '')
+            
+            # اگر تیم مهمان همخوانی داشت یا تاریخ نزدیک بود
+            score_away = fuzz.ratio(away_team.lower(), api_away.lower())
+            if score_away > 70 or fuzz.ratio(away_team.lower(), api_home.lower()) > 70:
+                match_id = event.get('id')
+                logger.info(f"🎯 Found Match ID: {match_id} for {home_team} vs {away_team}")
+                return match_id
+                
+        return None
+
+    async def get_match_context(self, home_team: str, away_team: str, commence_time: datetime) -> MatchContext:
+        """Fetch deep match context (Insights & Lineups) saving API calls."""
+        context = MatchContext()
+        
+        match_id = await self.get_match_id(home_team, away_team, commence_time)
+        if not match_id:
+            return context
+            
+        context.match_id = match_id
+        
+        # 1. گرفتن هوش مصنوعی سوفاسکور (Insights)
+        insights_url = f"{Config.SOFASCORE_BASE}/matches/get-ai-insights"
+        insights_data = await api_client.get_with_retry(
+            insights_url, headers=self._get_headers(), params={'matchId': str(match_id)}, rate_limit_key='sofascore'
+        )
+        await asyncio.sleep(0.5)
+        
+        if insights_data and 'data' in insights_data:
+            for item in insights_data['data']:
+                text = item.get('text')
+                if text:
+                    context.ai_insights.append(text)
+                    
+        # 2. گرفتن مصدومان و غایبین از ترکیب (Lineups)
+        lineups_url = f"{Config.SOFASCORE_BASE}/matches/get-lineups"
+        lineups_data = await api_client.get_with_retry(
+            lineups_url, headers=self._get_headers(), params={'matchId': str(match_id)}, rate_limit_key='sofascore'
+        )
+        await asyncio.sleep(0.5)
+        
+        if lineups_data and 'data' in lineups_data:
+            missing = lineups_data['data'].get('missingPlayers', [])
+            for player in missing:
+                name = player.get('player', {}).get('name', 'Unknown')
+                reason = player.get('reason', 'Missing')
+                team_type = player.get('type', '') # 'home' or 'away'
+                context.missing_players.append(f"{name} ({reason}) - {team_type} team")
+                
+        return context
+        
     async def get_team_stats(self, team_name: str) -> Optional[TeamStats]:
         """Fetch team stats with intelligent name matching."""
         team_id = await self.get_team_id(team_name)
@@ -1095,7 +1178,7 @@ class GroqAnalyzer:
         return all_validated_bets
     
     def _build_prompt(self, events: List[Dict[str, Any]]) -> str:
-        """Build prompt."""
+        """Build prompt with deep context."""
         lines = ["# Value Bets - Qualitative Analysis Required\n"]
         
         for i, event_data in enumerate(events, 1):
@@ -1103,35 +1186,36 @@ class GroqAnalyzer:
             value_bet = event_data['value_bet']
             home_stats = event_data.get('home_stats')
             away_stats = event_data.get('away_stats')
+            match_context = event_data.get('match_context')
             
             lines.append(f"## Event {i}")
-            lines.append(f"**ID:** {event.id}")
             lines.append(f"**Sport:** {event.sport_title}")
             lines.append(f"**Match:** {event.home_team} vs {event.away_team}")
-            lines.append(f"**Kickoff:** {event.commence_time}")
-            lines.append("")
             lines.append("### Math (Python Calculated):")
             lines.append(f"- **Pick:** {value_bet['outcome']}")
-            lines.append(f"- **Bookmaker Odds:** {value_bet['bookmaker_odds']}")
-            lines.append(f"- **Fair Odds:** {value_bet['fair_odds']}")
             lines.append(f"- **EV%:** {value_bet['ev_percentage']}%")
-            lines.append(f"- **Kelly:** {value_bet['kelly_stake']}%")
             lines.append("")
             
+            # تزریق اطلاعات طلایی کانتکست مسابقه
+            if match_context:
+                if match_context.ai_insights:
+                    lines.append("### SofaScore AI Match Insights (Crucial):")
+                    for insight in match_context.ai_insights:
+                        lines.append(f"- {insight}")
+                    lines.append("")
+                    
+                if match_context.missing_players:
+                    lines.append("### Missing/Injured Players (Crucial):")
+                    for mp in match_context.missing_players:
+                        lines.append(f"- {mp}")
+                    lines.append("")
+            
+            # اطلاعات فرم تیم‌ها
             if home_stats:
-                lines.append(f"### {event.home_team}:")
-                lines.append(f"- Form: {' '.join(home_stats.recent_form)}")
-                lines.append(f"- Goals: {home_stats.goals_scored_avg}/game")
-                lines.append(f"- Win Rate: {home_stats.win_rate}%")
-                lines.append("")
-            
+                lines.append(f"### {event.home_team} Recent Form: {' '.join(home_stats.recent_form)}")
             if away_stats:
-                lines.append(f"### {event.away_team}:")
-                lines.append(f"- Form: {' '.join(away_stats.recent_form)}")
-                lines.append(f"- Goals: {away_stats.goals_scored_avg}/game")
-                lines.append(f"- Win Rate: {away_stats.win_rate}%")
-                lines.append("")
-            
+                lines.append(f"### {event.away_team} Recent Form: {' '.join(away_stats.recent_form)}")
+                
             lines.append("---\n")
         
         return "\n".join(lines)
@@ -1372,25 +1456,26 @@ class Pipeline:
                 if not value_bets:
                     continue
                 
-                # Fetch team stats
+                # Fetch team stats AND match context
                 home_stats_task = sofascore.get_team_stats(event.home_team)
                 away_stats_task = sofascore.get_team_stats(event.away_team)
+                match_context_task = sofascore.get_match_context(event.home_team, event.away_team, event.commence_time)
                 
-                home_stats, away_stats = await asyncio.gather(
-                    home_stats_task, away_stats_task, return_exceptions=True
+                home_stats, away_stats, match_context = await asyncio.gather(
+                    home_stats_task, away_stats_task, match_context_task, return_exceptions=True
                 )
                 
-                if isinstance(home_stats, Exception):
-                    home_stats = None
-                if isinstance(away_stats, Exception):
-                    away_stats = None
+                if isinstance(home_stats, Exception): home_stats = None
+                if isinstance(away_stats, Exception): away_stats = None
+                if isinstance(match_context, Exception): match_context = None
                 
                 for vb in value_bets:
                     events_with_value.append({
                         'event': event,
                         'value_bet': vb,
                         'home_stats': home_stats,
-                        'away_stats': away_stats
+                        'away_stats': away_stats,
+                        'match_context': match_context
                     })
             
             except Exception as e:
