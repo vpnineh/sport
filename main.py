@@ -142,7 +142,7 @@ class Config:
     SCAN_WINDOW_HOURS: int = int(os.getenv("SCAN_WINDOW_HOURS", "3"))
     
     # ═══ Mathematical Thresholds ═══
-    MIN_EV_PERCENTAGE: float = float(os.getenv("MIN_EV_PERCENTAGE", "3.0"))
+    MIN_EV_PERCENTAGE: float = float(os.getenv("MIN_EV_PERCENTAGE", "2.0"))
     MAX_BOOKMAKER_MARGIN: float = float(os.getenv("MAX_BOOKMAKER_MARGIN", "8.0"))
     KELLY_FRACTION: float = float(os.getenv("KELLY_FRACTION", "0.25"))
     MIN_ODDS: float = float(os.getenv("MIN_ODDS", "1.5"))
