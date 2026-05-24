@@ -43,7 +43,6 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY]):
 # 2. ROBUST UTILS & DECORATORS
 # =========================================================
 def retry_request(max_retries=3, delay=2, backoff=2):
-    """دکوراتور حرفه‌ای برای مدیریت قطعی اینترنت یا ارورهای 429 و 500"""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -62,7 +61,6 @@ def retry_request(max_retries=3, delay=2, backoff=2):
                 except requests.exceptions.RequestException as e:
                     logger.error(f"⚠️ Connection Error in {func.__name__}: {e}. Retrying {attempt+1}/{max_retries}")
                     if attempt == max_retries - 1: raise
-                
                 time.sleep(current_delay)
                 current_delay *= backoff
             return None
@@ -70,18 +68,15 @@ def retry_request(max_retries=3, delay=2, backoff=2):
     return decorator
 
 def robust_json_extractor(raw_text):
-    """پردازشگر ضدگلوله برای استخراج JSON از هر نوع متنی که هوش مصنوعی تولید کند"""
     try:
-        # ۱. تلاش برای پارس مستقیم
         return json.loads(raw_text)
     except json.JSONDecodeError:
         try:
-            # ۲. تلاش برای پیدا کردن بلاک JSON در میان متن
             json_match = re.search(r'\{[\s\S]*\}', raw_text)
             if json_match:
                 return json.loads(json_match.group(0))
         except Exception as e:
-            logger.error(f"❌ JSON Extraction Failed. Raw Output: {raw_text[:100]}... Error: {e}")
+            logger.error(f"❌ JSON Extraction Failed. Error: {e}")
     return None
 
 # =========================================================
@@ -105,9 +100,10 @@ def save_to_cache(filename, data):
 @retry_request(max_retries=3)
 def fetch_odds_api():
     now_utc = datetime.now(timezone.utc)
-    end_window = now_utc + timedelta(hours=2)
+    end_window = now_utc + timedelta(hours=2) # جستجوی دقیق برای ۲ ساعت آینده
     url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
-    params = {"apiKey": ODDS_API_KEY, "regions": "eu,us", "markets": "h2h", "oddsFormat": "decimal"}
+    # مناطق گسترش یافته تا در هر ساعتی از روز لیگ‌های فعال دنیا بررسی شوند
+    params = {"apiKey": ODDS_API_KEY, "regions": "eu,us,uk,au", "markets": "h2h", "oddsFormat": "decimal"}
     
     res = requests.get(url, params=params, timeout=15)
     res.raise_for_status()
@@ -190,30 +186,51 @@ def calculate_sharp_ev(bookmakers: list):
         
         if best_p > 0:
             ev = (true_prob * best_p) - 1
-            if ev > 0.04: # +4% Edge Standard
+            if ev > 0.015: # لبه سود ۱.۵ درصد (کاهش یافته برای ارائه خروجی بیشتر در دنیای واقعی)
                 opportunities.append({"pick": name, "prob": true_prob, "odds": best_p, "bookmaker": bookie, "ev": ev})
     return opportunities
 
 # =========================================================
-# 6. AI ANALYSIS (JSON STRICT MODE)
+# 6. AI ANALYSIS (ENTERPRISE PROMPT ENGINEERING)
 # =========================================================
 @retry_request(max_retries=3)
 def generate_ai_logic(home, away, pick, ev_edge, deep_stats):
     compressed_stats = json.dumps(deep_stats, separators=(',', ':'))[:3500]
-    prompt = (
-        f"Match: {home} vs {away}\nPick: {pick}\nEdge: +{ev_edge*100:.1f}%\n"
-        f"Deep Stats: {compressed_stats}\n\n"
-        "Provide exactly 2 sentences of tactical justification based on missing players, H2H, or streaks."
-    )
+    
+    # پرامپت سیستم: تعریف دقیق نقش، وظیفه و فرمت خروجی
+    system_prompt = """You are an Elite Quantitative Sports Analyst and AI Betting Assistant.
+Your core expertise lies in translating deep statistical data into crisp, authoritative tactical narratives.
+
+[YOUR OBJECTIVE]
+Our mathematical Sharp-Market Engine has already identified a highly profitable betting opportunity (+EV) for the provided Pick. 
+Your ONLY task is to write a compelling, data-driven justification for WHY this team might win or perform well, based strictly on the provided 'Deep Stats'.
+
+[CRITICAL RULES]
+1. ZERO MATH: Do not mention Expected Value (EV), odds, or the betting market. Focus ONLY on the sport/tactics.
+2. DATA-DRIVEN: Base your analysis purely on the provided JSON stats (look for injury advantages, H2H dominance, or winning streaks).
+3. LENGTH: Write exactly 2 to 3 concise sentences.
+4. TONE: Professional, authoritative, and analytical. No fluff, no robotic greetings.
+5. FORMAT: You MUST output ONLY a valid JSON object matching this exact schema: {"logic": "your plain text analysis here"}."""
+
+    # پرامپت کاربر: تزریق ایزوله و تمیز داده‌ها
+    user_prompt = f"""[MATCH CONTEXT]
+Home Team: {home}
+Away Team: {away}
+The Winning Pick: {pick}
+
+[DEEP STATS (JSON)]
+{compressed_stats}
+
+Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
     
     payload = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "You are a quantitative sports analyst. Output ONLY a valid JSON object with a single key 'logic' containing your plain text analysis."},
-            {"role": "user", "content": prompt}
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
         ],
-        "temperature": 0.2,
-        "response_format": {"type": "json_object"} # <--- ENTERPRISE FEATURE: FORCES JSON
+        "temperature": 0.15, # کاهش دما برای افزایش منطق و کاهش خلاقیت‌های بی‌مورد
+        "response_format": {"type": "json_object"}
     }
     
     res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers={"Authorization": f"Bearer {GROQ_API_KEY}"}, json=payload, timeout=20)
@@ -224,7 +241,7 @@ def generate_ai_logic(home, away, pick, ev_edge, deep_stats):
     
     if parsed_json and "logic" in parsed_json:
         return str(parsed_json["logic"]).strip()
-    return "High mathematical value detected by our sharp algorithm based on current market line discrepancies."
+    return "High mathematical value detected by our sharp algorithm based on strong underlying metrics."
 
 # =========================================================
 # 7. TELEGRAM BROADCAST
@@ -243,11 +260,14 @@ def send_telegram(message_html):
 def main():
     logger.info("🚀 STARTING ZBET90 ENTERPRISE ENGINE")
     events = fetch_odds_api()
+    
     if not events:
-        logger.info("🛑 No matches in the specified window.")
+        logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد.")
         return
 
     today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    total_ev_found = 0
+    logger.info(f"🔍 تعداد {len(events)} مسابقه جهت فیلتر ریاضی بررسی می‌شود...")
     
     for event in events:
         home, away, sport = event.get("home_team"), event.get("away_team"), event.get("sport_title")
@@ -255,6 +275,7 @@ def main():
         
         opportunities = calculate_sharp_ev(bookmakers)
         for opp in opportunities:
+            total_ev_found += 1
             pick, ev_pct, odds, true_prob = opp['pick'], opp['ev'] * 100, opp['odds'], opp['prob'] * 100
             logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Edge: +{ev_pct:.1f}%")
             
@@ -287,6 +308,9 @@ def main():
             if send_telegram(html_msg):
                 logger.info(f"✅ Telegram Broadcast Success: {home} vs {away}")
             time.sleep(3)
+
+    if total_ev_found == 0:
+        logger.info("⚖️ بررسی تمام شد. مارکت کاملاً کارا بود و هیچ شرط ارزشمندی (+EV > 1.5%) پیدا نشد.")
 
 if __name__ == "__main__":
     try:
