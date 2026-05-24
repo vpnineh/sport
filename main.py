@@ -45,7 +45,7 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY]):
 def retry_request(max_retries=3, delay=2, backoff=2):
     """
     نسخه ضدتانک: هیچ اروری باعث توقف برنامه نمی‌شود.
-    اگر API قطع باشد، مقدار None برمی‌گرداند تا سیستم مسیر جایگزین را طی کند.
+    اگر API قطع باشد یا ۴۰۴ بدهد، مقدار None برمی‌گرداند تا سیستم مسیر جایگزین را طی کند.
     """
     def decorator(func):
         @wraps(func)
@@ -61,10 +61,10 @@ def retry_request(max_retries=3, delay=2, backoff=2):
                         time.sleep(wait_time)
                     else:
                         logger.error(f"⚠️ HTTP Error in {func.__name__}: {e}")
-                        if attempt == max_retries - 1: return None # عدم توقف برنامه
+                        if attempt == max_retries - 1: return None
                 except requests.exceptions.RequestException as e:
                     logger.error(f"⚠️ Connection Error in {func.__name__}: {e}. Retrying {attempt+1}/{max_retries}")
-                    if attempt == max_retries - 1: return None # عدم توقف برنامه
+                    if attempt == max_retries - 1: return None
                 time.sleep(current_delay)
                 current_delay *= backoff
             return None
@@ -84,22 +84,7 @@ def robust_json_extractor(raw_text):
     return None
 
 # =========================================================
-# 3. DATA CACHING LAYER
-# =========================================================
-def get_cached_data(filename):
-    filepath = os.path.join(CACHE_DIR, filename)
-    if os.path.exists(filepath):
-        with open(filepath, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return None
-
-def save_to_cache(filename, data):
-    filepath = os.path.join(CACHE_DIR, filename)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-# =========================================================
-# 4. EXTERNAL API ADAPTERS
+# 3. EXTERNAL API ADAPTERS
 # =========================================================
 @retry_request(max_retries=3)
 def fetch_odds_api():
@@ -114,34 +99,20 @@ def fetch_odds_api():
     return [e for e in events if e.get("commence_time") and now_utc <= datetime.fromisoformat(e["commence_time"].replace("Z", "+00:00")) <= end_window]
 
 @retry_request(max_retries=2)
-def get_sofascore_team_id(team_name):
-    cache = get_cached_data("team_mapping.json") or {}
-    if team_name in cache: return cache[team_name]
-        
+def get_match_id_via_search(home, away):
+    """
+    استراتژی جدید و بهینه: به جای دانلود کل بازی‌های روز (که ارور ۴۰۴ میداد)،
+    مستقیما خود بازی را سرچ میکنیم! سریعتر، امن‌تر و بدون ارور.
+    """
+    query = f"{home} {away}"
     headers = {"x-rapidapi-key": RAPIDAPI_KEY, "x-rapidapi-host": "sofascore.p.rapidapi.com"}
-    res = requests.get("https://sofascore.p.rapidapi.com/search", headers=headers, params={"q": team_name, "page": "0"}, timeout=10)
+    res = requests.get("https://sofascore.p.rapidapi.com/search", headers=headers, params={"q": query, "page": "0"}, timeout=10)
     res.raise_for_status()
     
     for result in res.json().get("results", []):
-        if result.get("type") == "team":
-            tid = result.get("entity", {}).get("id")
-            cache[team_name] = tid
-            save_to_cache("team_mapping.json", cache)
-            time.sleep(1)
-            return tid
+        if result.get("type") == "event":
+            return result.get("entity", {}).get("id")
     return None
-
-@retry_request(max_retries=2)
-def fetch_sofascore_schedule(date_str):
-    cache_name = f"schedule_{date_str}.json"
-    if cached := get_cached_data(cache_name): return cached
-    
-    headers = {"x-rapidapi-key": RAPIDAPI_KEY, "x-rapidapi-host": "sofascore.p.rapidapi.com"}
-    res = requests.get("https://sofascore.p.rapidapi.com/matches/v2/list-by-date", headers=headers, params={"category": "all", "date": date_str}, timeout=15)
-    res.raise_for_status()
-    data = res.json().get("events", [])
-    save_to_cache(cache_name, data)
-    return data
 
 @retry_request(max_retries=3)
 def fetch_deep_stats(match_id):
@@ -161,7 +132,7 @@ def fetch_deep_stats(match_id):
     return data
 
 # =========================================================
-# 5. CORE MATH ENGINE
+# 4. CORE MATH ENGINE
 # =========================================================
 def calculate_sharp_ev(bookmakers: list):
     sharp_odds, best_market_odds = {}, {}
@@ -189,16 +160,15 @@ def calculate_sharp_ev(bookmakers: list):
         
         if best_p > 0:
             ev = (true_prob * best_p) - 1
-            if ev > 0.015: # لبه سود 1.5 درصد
+            if ev > 0.015: # لبه سود ۱.۵ درصد
                 opportunities.append({"pick": name, "prob": true_prob, "odds": best_p, "bookmaker": bookie, "ev": ev})
     return opportunities
 
 # =========================================================
-# 6. AI ANALYSIS (ENTERPRISE PROMPT ENGINEERING)
+# 5. AI ANALYSIS (ENTERPRISE PROMPT ENGINEERING)
 # =========================================================
 @retry_request(max_retries=3)
 def generate_ai_logic(home, away, pick, ev_edge, deep_stats):
-    # اگر آمار جانبی ارور داد، سیستم جایگزین متنی می‌گذارد
     if not deep_stats:
         compressed_stats = "NO EXTERNAL DATA AVAILABLE. Rely solely on the mathematical edge and general team knowledge."
     else:
@@ -249,7 +219,7 @@ Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
     return "This selection has been verified by our proprietary mathematical model, identifying significant market value."
 
 # =========================================================
-# 7. TELEGRAM BROADCAST
+# 6. TELEGRAM BROADCAST
 # =========================================================
 @retry_request(max_retries=3)
 def send_telegram(message_html):
@@ -260,19 +230,17 @@ def send_telegram(message_html):
     return True
 
 # =========================================================
-# 8. MASTER PIPELINE
+# 7. MASTER PIPELINE
 # =========================================================
 def main():
     logger.info("🚀 STARTING ZBET90 ENTERPRISE ENGINE")
     
-    # اگر API قطع باشد، یک لیست خالی برمی‌گرداند تا کِرَش نکند
     events = fetch_odds_api() or []
     
     if not events:
         logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد یا API پاسخ نداد.")
         return
 
-    today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     total_ev_found = 0
     logger.info(f"🔍 تعداد {len(events)} مسابقه جهت فیلتر ریاضی بررسی می‌شود...")
     
@@ -286,26 +254,16 @@ def main():
             pick, ev_pct, odds, true_prob = opp['pick'], opp['ev'] * 100, opp['odds'], opp['prob'] * 100
             logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Edge: +{ev_pct:.1f}%")
             
-            # Contextual Data Fetching (با مدیریت قطعی)
-            hid = get_sofascore_team_id(home)
-            aid = get_sofascore_team_id(away)
-            deep_stats = {}
+            # پیدا کردن مستقیم آیدی مسابقه با موتور جستجوی سوفاسکور
+            match_id = get_match_id_via_search(home, away)
+            deep_stats = fetch_deep_stats(match_id) if match_id else {}
             
-            if hid and aid:
-                # اگر schedule ارور داد، یک لیست خالی می‌گذارد به جای کِرَش
-                schedule = fetch_sofascore_schedule(today_str) or []
-                for match in schedule:
-                    if match.get("homeTeam", {}).get("id") == hid and match.get("awayTeam", {}).get("id") == aid:
-                        deep_stats = fetch_deep_stats(match.get("id")) or {}
-                        break
-            else:
-                logger.warning(f"⚠️ Team IDs not found for {home} vs {away}. Proceeding with Math Edge only.")
+            if not match_id:
+                logger.warning(f"⚠️ Match ID not found for {home} vs {away}. Proceeding with Math Edge only.")
 
-            # AI Logic Generation
             logger.info("🤖 Analyzing stats via Groq...")
             logic = generate_ai_logic(home, away, pick, opp['ev'], deep_stats)
             
-            # HTML Escaping & Broadcasting
             html_msg = (
                 f"🏆 <b>Sport:</b> {html_lib.escape(str(sport))}\n\n"
                 f"⚔️ <b>Match:</b> <b>{html_lib.escape(home)}</b> vs <b>{html_lib.escape(away)}</b>\n\n"
