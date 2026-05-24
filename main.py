@@ -44,7 +44,7 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY]):
     sys.exit(1)
 
 # =========================================================
-# 2. BULLETPROOF UTILS & DECORATORS
+# 2. BULLETPROOF UTILS & CLEANERS
 # =========================================================
 def retry_request(max_retries=3, delay=2, backoff=2):
     def decorator(func):
@@ -83,6 +83,10 @@ def robust_json_extractor(raw_text):
             logger.error(f"❌ JSON Extraction Failed. Error: {e}")
     return None
 
+def clean_team_name(name):
+    """پاک‌سازی اسامی تیم‌ها از پرانتزها برای سرچ دقیق در سوفاسکور"""
+    return re.sub(r'\s*\([^)]*\)', '', str(name)).strip()
+
 # =========================================================
 # 3. EXTERNAL API ADAPTERS
 # =========================================================
@@ -100,7 +104,10 @@ def fetch_odds_api():
 
 @retry_request(max_retries=2)
 def get_match_id_via_search(home, away):
-    query = f"{home} {away}"
+    clean_home = clean_team_name(home)
+    clean_away = clean_team_name(away)
+    query = f"{clean_home} {clean_away}"
+    
     headers = {"x-rapidapi-key": RAPIDAPI_KEY, "x-rapidapi-host": "sofascore.p.rapidapi.com"}
     res = requests.get("https://sofascore.p.rapidapi.com/search", headers=headers, params={"q": query, "page": "0"}, timeout=10)
     res.raise_for_status()
@@ -138,7 +145,7 @@ def fetch_deep_stats(match_id):
     return data
 
 # =========================================================
-# 4. CORE MATH ENGINE
+# 4. CORE MATH ENGINE (WITH ODDS FILTER)
 # =========================================================
 def calculate_sharp_ev(bookmakers: list):
     sharp_odds, best_market_odds = {}, {}
@@ -166,43 +173,48 @@ def calculate_sharp_ev(bookmakers: list):
         
         if best_p > 0:
             ev = (true_prob * best_p) - 1
-            if ev > 0.015: 
+            # شرط دوگانه: ضریب بزرگتر مساوی 1.50 و حداقل لبه سود 1.5%
+            if best_p >= 1.50 and ev > 0.015: 
                 opportunities.append({"pick": name, "prob": true_prob, "odds": best_p, "bookmaker": bookie, "ev": ev})
     return opportunities
 
 # =========================================================
-# 5. AI ANALYSIS (ENTERPRISE PROMPT ENGINEERING)
+# 5. AI ANALYSIS (UI META-DATA + LOGIC)
 # =========================================================
 @retry_request(max_retries=3)
-def generate_ai_logic(home, away, pick, ev_edge, deep_stats):
+def generate_ai_analysis(home, away, sport, pick, ev_edge, deep_stats):
     if not deep_stats:
         compressed_stats = "NO EXTERNAL DATA AVAILABLE. Rely solely on the mathematical edge and general team knowledge."
     else:
         compressed_stats = json.dumps(deep_stats, separators=(',', ':'))[:3500]
     
-    system_prompt = """You are an Elite Quantitative Sports Analyst and AI Betting Assistant.
-Your core expertise lies in translating deep statistical data into crisp, authoritative tactical narratives.
+    system_prompt = """You are an Elite Quantitative Sports Analyst.
+A mathematical Sharp-Market Engine has identified a profitable +EV bet.
 
 [YOUR OBJECTIVE]
-Our mathematical Sharp-Market Engine has already identified a highly profitable betting opportunity (+EV) for the provided Pick. 
-Your ONLY task is to write a compelling, data-driven justification for WHY this team might win or perform well.
+1. Write exactly 2 sentences of tactical logic based strictly on the provided 'Deep Stats' justifying the Pick. No math or odds talk.
+2. Determine an appropriate sport emoji.
+3. Determine the correct country flag emojis for the home and away teams. Use ⚽ if unknown or international club.
+4. Assign a Risk Level (Low, Medium, or High).
 
-[CRITICAL RULES]
-1. ZERO MATH: Do not mention Expected Value (EV), odds, or the betting market. Focus ONLY on the sport/tactics.
-2. DATA-DRIVEN: Base your analysis purely on the provided JSON stats. If no stats are provided, write a generic tactical reason based on the teams.
-3. LENGTH: Write exactly 2 to 3 concise sentences.
-4. TONE: Professional, authoritative, and analytical. No fluff.
-5. FORMAT: You MUST output ONLY a valid JSON object matching this exact schema: {"logic": "your plain text analysis here"}."""
+[FORMAT]
+Output ONLY a JSON object matching this exact schema:
+{
+  "sport_emoji": "🏀",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "risk_level": "Medium",
+  "logic": "Your 2 sentence logic here."
+}"""
 
     user_prompt = f"""[MATCH CONTEXT]
+Sport: {sport}
 Home Team: {home}
 Away Team: {away}
-The Winning Pick: {pick}
+The Pick: {pick}
 
-[DEEP STATS (JSON)]
-{compressed_stats}
-
-Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
+[DEEP STATS]
+{compressed_stats}"""
     
     payload = {
         "model": "llama-3.3-70b-versatile",
@@ -220,9 +232,18 @@ Based on the [DEEP STATS] above, write the tactical logic for '{pick}'."""
     raw_content = res.json()["choices"][0]["message"]["content"]
     parsed_json = robust_json_extractor(raw_content)
     
-    if parsed_json and "logic" in parsed_json:
-        return str(parsed_json["logic"]).strip()
-    return "This selection has been verified by our proprietary mathematical model, identifying significant market value."
+    # مقادیر پیش‌فرض در صورت خرابی خروجی هوش مصنوعی
+    default_resp = {
+        "sport_emoji": "🏆",
+        "home_flag": "🏳️",
+        "away_flag": "🏳️",
+        "risk_level": "Medium",
+        "logic": "This selection has been verified by our proprietary mathematical model."
+    }
+    
+    if parsed_json:
+        return {**default_resp, **parsed_json}
+    return default_resp
 
 # =========================================================
 # 6. TELEGRAM BROADCAST
@@ -244,9 +265,10 @@ def main():
     events = fetch_odds_api() or []
     
     if not events:
-        logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد یا API پاسخ نداد.")
+        logger.info("🛑 هیچ مسابقه‌ای در پنجره زمانی ۲ ساعت آینده پیدا نشد.")
         return
 
+    now_utc = datetime.now(timezone.utc)
     total_ev_found = 0
     logger.info(f"🔍 تعداد {len(events)} مسابقه جهت فیلتر ریاضی بررسی می‌شود...")
     
@@ -254,11 +276,25 @@ def main():
         home, away, sport = event.get("home_team"), event.get("away_team"), event.get("sport_title")
         bookmakers = event.get("bookmakers", [])
         
+        # محاسبه زمان باقی مانده (Countdown)
+        try:
+            match_time = datetime.fromisoformat(event["commence_time"].replace("Z", "+00:00"))
+            delta = match_time - now_utc
+            minutes_left = int(delta.total_seconds() / 60)
+            if minutes_left > 60:
+                countdown_str = f"{minutes_left // 60}h {minutes_left % 60}m"
+            elif minutes_left > 0:
+                countdown_str = f"{minutes_left}m"
+            else:
+                countdown_str = "🟢 LIVE"
+        except Exception:
+            countdown_str = "N/A"
+
         opportunities = calculate_sharp_ev(bookmakers)
         for opp in opportunities:
             total_ev_found += 1
-            pick, ev_pct, odds, true_prob = opp['pick'], opp['ev'] * 100, opp['odds'], opp['prob'] * 100
-            logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Edge: +{ev_pct:.1f}%")
+            pick, ev_pct, odds = opp['pick'], opp['ev'] * 100, opp['odds']
+            logger.info(f"💎 MATH VERIFIED -> {home} vs {away} | Pick: {pick} | Odds: {odds} | Edge: +{ev_pct:.1f}%")
             
             match_id = get_match_id_via_search(home, away)
             deep_stats = fetch_deep_stats(match_id) if match_id else {}
@@ -266,18 +302,24 @@ def main():
             if not match_id:
                 logger.warning(f"⚠️ Match ID not found for {home} vs {away}. Proceeding with Math Edge only.")
 
-            logger.info("🤖 Analyzing stats via Groq...")
-            logic = generate_ai_logic(home, away, pick, opp['ev'], deep_stats)
+            logger.info("🤖 Analyzing stats & generating UI elements via Groq...")
+            ai_data = generate_ai_analysis(home, away, sport, pick, opp['ev'], deep_stats)
+            
+            # مپ کردن رنگ ریسک
+            risk_raw = str(ai_data.get('risk_level', 'Medium')).capitalize()
+            risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(risk_raw, "🟠")
+            
+            # فرمت‌بندی ایمن متن لاجیک برای تلگرام (Highlight کردن اعداد)
+            raw_logic = str(ai_data.get('logic', '')).replace('<', '').replace('>', '')
+            logic_escaped = html_lib.escape(raw_logic)
             
             html_msg = (
-                f"🏆 <b>Sport:</b> {html_lib.escape(str(sport))}\n\n"
-                f"⚔️ <b>Match:</b> <b>{html_lib.escape(home)}</b> vs <b>{html_lib.escape(away)}</b>\n\n"
-                f"🎯 <b>VIP Pick:</b> <b>{html_lib.escape(pick)}</b>\n"
-                f"⚖️ <b>Fair Probability:</b> {true_prob:.1f}%\n"
-                f"📈 <b>Best Market Odds:</b> <code>{odds}</code> <i>({html_lib.escape(opp['bookmaker'])})</i>\n"
-                f"📊 <b>Calculated +EV:</b> <b>+{ev_pct:.1f}% Edge</b> 🟢\n\n"
-                f"💡 <b>Analysis:</b>\n"
-                f"<blockquote expandable>{html_lib.escape(logic)}</blockquote>\n\n"
+                f"{ai_data.get('sport_emoji', '🏆')} <b>Sport:</b> {html_lib.escape(str(sport))}\n\n"
+                f"⚔️ <b>Match:</b> <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag', '🏳️')} vs {ai_data.get('away_flag', '🏳️')} <b>{html_lib.escape(away)}</b>\n\n"
+                f"⏳ <b>Starts in:</b> {countdown_str}\n\n"
+                f"🎯 <b>Winner Pick:</b> <b>{html_lib.escape(pick)}</b> <code>[{odds}]</code>\n\n"
+                f"🔥 <b>Risk Level:</b> {risk_icon} {risk_raw}\n\n"
+                f"💡 <b>Logic:</b> {logic_escaped}\n\n"
                 f"🆔 <b>Join:</b> {TELEGRAM_ID}\n"
             )
             
@@ -286,7 +328,7 @@ def main():
             time.sleep(3)
 
     if total_ev_found == 0:
-        logger.info("⚖️ بررسی تمام شد. مارکت کاملاً کارا بود و هیچ شرط ارزشمندی (+EV > 1.5%) پیدا نشد.")
+        logger.info("⚖️ بررسی تمام شد. هیچ شرطی با ضریب بالای 1.50 و حاشیه سود (+EV > 1.5%) پیدا نشد.")
 
 if __name__ == "__main__":
     try:
