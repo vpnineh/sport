@@ -1,0 +1,2414 @@
+{
+  "lineups": {
+    "confirmed": true,
+    "home": {
+      "players": [
+        {
+          "avgRating": 6.76,
+          "player": {
+            "name": "Gustavo",
+            "slug": "gustavo",
+            "shortName": "Gustavo",
+            "position": "G",
+            "jerseyNumber": "1",
+            "height": 186,
+            "userCount": 200,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 124766,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 731721600,
+            "proposedMarketValueRaw": {
+              "value": 275000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "غوستافو"
+              },
+              "shortNameTranslation": {
+                "ar": "غوستافو"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 1,
+          "jerseyNumber": "1",
+          "position": "G",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.24,
+          "player": {
+            "name": "Léo Alaba",
+            "firstName": "",
+            "lastName": "",
+            "slug": "leo-alaba",
+            "shortName": "L. Alaba",
+            "position": "D",
+            "jerseyNumber": "22",
+            "height": 179,
+            "userCount": 49,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1105945,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 930787200,
+            "proposedMarketValueRaw": {
+              "value": 410000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ليو ألابا"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. ألابا"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 22,
+          "jerseyNumber": "22",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.78,
+          "player": {
+            "name": "Nathan Cardoso",
+            "slug": "nathan-cardoso",
+            "shortName": "N. Cardoso",
+            "position": "D",
+            "jerseyNumber": "3",
+            "height": 188,
+            "userCount": 90,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1126701,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 800323200,
+            "proposedMarketValueRaw": {
+              "value": 825000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ناثان كاردوسو"
+              },
+              "shortNameTranslation": {
+                "ar": "ن. كاردوسو"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 3,
+          "jerseyNumber": "3",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Rafael Barcelos",
+            "firstName": "Rafael Barcelos",
+            "lastName": "",
+            "slug": "rafael-barcelos",
+            "shortName": "R. Barcelos",
+            "position": "D",
+            "jerseyNumber": "4",
+            "height": 183,
+            "userCount": 51,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1485499,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1106611200,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "رافائيل بارسيلوس"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. بارسيلوس"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 4,
+          "jerseyNumber": "4",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.67,
+          "player": {
+            "name": "Artur",
+            "firstName": "",
+            "lastName": "",
+            "slug": "artur",
+            "shortName": "Artur",
+            "position": "D",
+            "jerseyNumber": "96",
+            "height": 177,
+            "userCount": 53,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 360160,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 776044800,
+            "proposedMarketValueRaw": {
+              "value": 460000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أرتور",
+                "bn": "আর্তুর",
+                "hi": "अर्तुर"
+              },
+              "shortNameTranslation": {
+                "ar": "أرتور",
+                "bn": "আর্তুর",
+                "hi": "अर्तुर"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 96,
+          "jerseyNumber": "96",
+          "position": "D",
+          "substitute": false,
+          "captain": true,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.84,
+          "player": {
+            "name": "Felipe Amaral",
+            "firstName": "Felipe Amaral",
+            "lastName": "",
+            "slug": "felipe-amaral",
+            "shortName": "F. Amaral",
+            "position": "M",
+            "jerseyNumber": "8",
+            "height": 172,
+            "userCount": 121,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1201949,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1057622400,
+            "proposedMarketValueRaw": {
+              "value": 375000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ل. أندرسون / ه. بورجيسون"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. بورجيسون"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 8,
+          "jerseyNumber": "8",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.75,
+          "player": {
+            "name": "Matías Segovia",
+            "slug": "matias-segovia",
+            "shortName": "Matías Segovia",
+            "position": "M",
+            "jerseyNumber": "77",
+            "height": 165,
+            "userCount": 1721,
+            "gender": "M",
+            "country": {
+              "alpha2": "PY",
+              "alpha3": "PRY",
+              "name": "Paraguay",
+              "slug": "paraguay"
+            },
+            "id": 988622,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1041638400,
+            "proposedMarketValueRaw": {
+              "value": 930000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماتياس سيغوڤيا",
+                "bn": "মাতিয়াস সেগোভিয়া",
+                "hi": "मटियास सेगोविया"
+              },
+              "shortNameTranslation": {
+                "ar": "ماتياس سيغوڤيا",
+                "bn": "মাতিয়াস সেগোভিয়া",
+                "hi": "मटियास सेगोविया"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 77,
+          "jerseyNumber": "77",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Alê",
+            "firstName": "",
+            "lastName": "",
+            "slug": "ale",
+            "shortName": "Alê",
+            "position": "M",
+            "jerseyNumber": "16",
+            "height": 184,
+            "userCount": 99,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 869564,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 644630400,
+            "proposedMarketValueRaw": {
+              "value": 135000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أليه"
+              },
+              "shortNameTranslation": {
+                "ar": "أليه"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 16,
+          "jerseyNumber": "16",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 7,
+          "player": {
+            "name": "Fernando Elizari",
+            "firstName": "",
+            "lastName": "",
+            "slug": "fernando-elizari",
+            "shortName": "F. Elizari",
+            "position": "M",
+            "jerseyNumber": "5",
+            "height": 172,
+            "userCount": 55,
+            "gender": "M",
+            "country": {
+              "alpha2": "AR",
+              "alpha3": "ARG",
+              "name": "Argentina",
+              "slug": "argentina"
+            },
+            "id": 249911,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 670809600,
+            "proposedMarketValueRaw": {
+              "value": 310000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فرناندو إليزاري"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. إليزاري"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 5,
+          "jerseyNumber": "5",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.53,
+          "player": {
+            "name": "Everton",
+            "firstName": "Everton",
+            "lastName": "",
+            "slug": "everton",
+            "shortName": "Everton",
+            "position": "M",
+            "jerseyNumber": "23",
+            "height": 170,
+            "userCount": 33,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1093892,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 795657600,
+            "proposedMarketValueRaw": {
+              "value": 220000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيفرتون"
+              },
+              "shortNameTranslation": {
+                "ar": "إيفرتون"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 23,
+          "jerseyNumber": "23",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 7.04,
+          "player": {
+            "name": "Gonzalo Mastriani",
+            "firstName": "Gonzalo",
+            "lastName": "Mastriani",
+            "slug": "gonzalo-mastriani",
+            "shortName": "G. Mastriani",
+            "position": "F",
+            "jerseyNumber": "17",
+            "height": 180,
+            "userCount": 1672,
+            "gender": "M",
+            "country": {
+              "alpha2": "UY",
+              "alpha3": "URY",
+              "name": "Uruguay",
+              "slug": "uruguay"
+            },
+            "id": 345847,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 735955200,
+            "proposedMarketValueRaw": {
+              "value": 1100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "غونزالو ماسترياني",
+                "bn": "গঞ্জালো মাস্ট্রিয়ানি",
+                "hi": "गोंजालो मास्ट्रियानी"
+              },
+              "shortNameTranslation": {
+                "ar": "غ. ماسترياني",
+                "bn": "জি. মাস্ত্রিয়ানি",
+                "hi": "जी. मास्ट्रियानी"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 17,
+          "jerseyNumber": "17",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "William",
+            "firstName": "",
+            "lastName": "",
+            "slug": "william",
+            "shortName": "William",
+            "position": "G",
+            "jerseyNumber": "19",
+            "height": 193,
+            "userCount": 21,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 975363,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 885340800,
+            "proposedMarketValueRaw": {
+              "value": 105000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ويليام"
+              },
+              "shortNameTranslation": {
+                "ar": "ويليام"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 19,
+          "jerseyNumber": "19",
+          "position": "G",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.1,
+          "player": {
+            "name": "Jhonny",
+            "firstName": "Jhonny",
+            "lastName": "",
+            "slug": "jhonny",
+            "shortName": "Jhonny",
+            "position": "D",
+            "jerseyNumber": "42",
+            "height": 179,
+            "userCount": 139,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1185449,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1018915200,
+            "proposedMarketValueRaw": {
+              "value": 330000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إ. غيميت بيغاس / ن. مولينيلا بانياغوا"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. بانياغوا"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 42,
+          "jerseyNumber": "42",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Emerson Santos",
+            "firstName": "",
+            "lastName": "",
+            "slug": "emerson-santos",
+            "shortName": "E. Santos",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 184,
+            "userCount": 80,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 844015,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 797040000,
+            "proposedMarketValueRaw": {
+              "value": 49000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيمرسون سانتوس"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. سانتوس"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.66,
+          "player": {
+            "name": "Dalbert",
+            "slug": "dalbert",
+            "shortName": "Dalbert",
+            "position": "D",
+            "jerseyNumber": "29",
+            "height": 181,
+            "userCount": 324,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 385386,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 747446400,
+            "proposedMarketValueRaw": {
+              "value": 545000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دالبيرت",
+                "bn": "ডালবার্ট",
+                "hi": "डाल्बर्ट"
+              },
+              "shortNameTranslation": {
+                "ar": "دالبيرت",
+                "bn": "ডালবার্ট",
+                "hi": "डाल्बर्ट"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 29,
+          "jerseyNumber": "29",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.52,
+          "player": {
+            "name": "Yago Souza",
+            "firstName": "Yago Souza",
+            "slug": "yago-souza",
+            "shortName": "Y. Souza",
+            "position": "M",
+            "jerseyNumber": "10",
+            "height": 173,
+            "userCount": 58,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1485488,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1139616000,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ياغو سوزا"
+              },
+              "shortNameTranslation": {
+                "ar": "ي. سوزا"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 10,
+          "jerseyNumber": "10",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Gabriel Barros",
+            "firstName": "",
+            "lastName": "",
+            "slug": "barros-gabriel",
+            "shortName": "G. Barros",
+            "position": "M",
+            "jerseyNumber": "7",
+            "height": 182,
+            "userCount": 175,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1020259,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1003968000,
+            "proposedMarketValueRaw": {
+              "value": 195000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "باروس، غابرييل"
+              },
+              "shortNameTranslation": {
+                "ar": "غ. باروس"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 7,
+          "jerseyNumber": "7",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.75,
+          "player": {
+            "name": "Thauan Willians",
+            "firstName": "Thauan Willians",
+            "lastName": "Jesus Silva",
+            "slug": "thauan-willians-jesus-silva",
+            "shortName": "Thauan",
+            "position": "M",
+            "jerseyNumber": "11",
+            "height": 182,
+            "userCount": 59,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1589390,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1082160000,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ثوان ويلينس"
+              },
+              "shortNameTranslation": {
+                "ar": "ث. ويلينس"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 11,
+          "jerseyNumber": "11",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.55,
+          "player": {
+            "name": "Otávio Gonçalves",
+            "firstName": "Otávio Gonçalves",
+            "slug": "otavio-goncalves",
+            "shortName": "O. Gonçalves",
+            "position": "M",
+            "jerseyNumber": "55",
+            "height": 175,
+            "userCount": 12,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 2026354,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1142985600,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أوتافيو غونسالڤيس"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. غونسالڤيس"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 55,
+          "jerseyNumber": "55",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 7.2,
+          "player": {
+            "name": "Val Soares",
+            "slug": "val-soares",
+            "shortName": "V. Soares",
+            "position": "M",
+            "jerseyNumber": "97",
+            "height": 176,
+            "userCount": 128,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 871681,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 858124800,
+            "proposedMarketValueRaw": {
+              "value": 215000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فال سواريز"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. سواريز"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 97,
+          "jerseyNumber": "97",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Yarlen",
+            "slug": "yarlen",
+            "shortName": "Yarlen",
+            "position": "F",
+            "jerseyNumber": "67",
+            "height": 178,
+            "userCount": 677,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1807776,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1140393600,
+            "proposedMarketValueRaw": {
+              "value": 940000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "يارلين"
+              },
+              "shortNameTranslation": {
+                "ar": "يارلين"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 67,
+          "jerseyNumber": "67",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.5,
+          "player": {
+            "name": "Willian Bigode",
+            "firstName": "",
+            "lastName": "",
+            "slug": "willian",
+            "shortName": "W. Bigode",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 171,
+            "userCount": 768,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 146308,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 532742400,
+            "proposedMarketValueRaw": {
+              "value": 145000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ويليان"
+              },
+              "shortNameTranslation": {
+                "ar": "ويليان"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 9,
+          "jerseyNumber": "9",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.73,
+          "player": {
+            "name": "Jhonatan Junio Jesus de Lima",
+            "slug": "jesus-de-lima-jhonatan-junio",
+            "shortName": "J. J. J. d. Lima",
+            "position": "F",
+            "jerseyNumber": "88",
+            "height": 184,
+            "userCount": 24,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 2488155,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1117756800,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "خيسوس دي ليما، جوناثان خونيور"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. خيسوس دي ليما"
+              }
+            }
+          },
+          "teamId": 1973,
+          "shirtNumber": 88,
+          "jerseyNumber": "88",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        }
+      ],
+      "supportStaff": [],
+      "formation": "4-1-4-1",
+      "playerColor": {
+        "primary": "5ab438",
+        "number": "ffffff",
+        "outline": "5ab438",
+        "fancyNumber": "222226"
+      },
+      "goalkeeperColor": {
+        "primary": "6b4263",
+        "number": "171f17",
+        "outline": "6b4263",
+        "fancyNumber": "ffffff"
+      },
+      "missingPlayers": [
+        {
+          "player": {
+            "name": "Yago Santos",
+            "firstName": "Yago Santos",
+            "lastName": "",
+            "slug": "yago-santos",
+            "shortName": "Y. Santos",
+            "position": "M",
+            "jerseyNumber": "33",
+            "height": 182,
+            "userCount": 56,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1125086,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1049328000,
+            "proposedMarketValueRaw": {
+              "value": 375000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ياغو سانتوس"
+              },
+              "shortNameTranslation": {
+                "ar": "ي. سانتوس"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Thigh Injury",
+          "externalType": 72
+        },
+        {
+          "player": {
+            "name": "Eduardo Person",
+            "slug": "eduardo-person",
+            "shortName": "E. Person",
+            "position": "M",
+            "jerseyNumber": "21",
+            "height": 175,
+            "userCount": 59,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 938482,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 854064000,
+            "proposedMarketValueRaw": {
+              "value": 195000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إدواردو بيرسون"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. بيرسون"
+              }
+            }
+          },
+          "type": "doubtful",
+          "reason": 1,
+          "description": "Thigh Injury",
+          "externalType": 72
+        }
+      ]
+    },
+    "away": {
+      "players": [
+        {
+          "avgRating": 7.01,
+          "player": {
+            "name": "Helton Leite",
+            "firstName": "",
+            "lastName": "",
+            "slug": "helton-leite",
+            "shortName": "H. Leite",
+            "position": "G",
+            "jerseyNumber": "1",
+            "height": 196,
+            "userCount": 379,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 329081,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 657504000,
+            "proposedMarketValueRaw": {
+              "value": 260000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "هيلتون ليتي",
+                "bn": "হেলটন লিটে",
+                "hi": "हेल्टन लेटे"
+              },
+              "shortNameTranslation": {
+                "ar": "ه. ليتي",
+                "bn": "এইচ. লেইট",
+                "hi": "एच. लेटे"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 1,
+          "jerseyNumber": "1",
+          "position": "G",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 7,
+          "player": {
+            "name": "Dudu Dos Santos",
+            "slug": "dudu-dos-santos",
+            "shortName": "D. D. Santos",
+            "position": "M",
+            "jerseyNumber": "15",
+            "height": 180,
+            "userCount": 30,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1135930,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1007337600,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دودو دوس سانتوس"
+              },
+              "shortNameTranslation": {
+                "ar": "د. دوس سانتوس"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 15,
+          "jerseyNumber": "15",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.87,
+          "player": {
+            "name": "Tiago Pagnussat",
+            "slug": "thiago-pagnussat",
+            "shortName": "T. Pagnussat",
+            "position": "D",
+            "jerseyNumber": "3",
+            "height": 191,
+            "userCount": 144,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1650429,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 645580800,
+            "proposedMarketValueRaw": {
+              "value": 165000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "تياغو باغنوسات"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. باغنوسات"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 3,
+          "jerseyNumber": "3",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.63,
+          "player": {
+            "name": "Anderson",
+            "firstName": "",
+            "lastName": "",
+            "slug": "anderson",
+            "shortName": "Anderson",
+            "position": "D",
+            "jerseyNumber": "14",
+            "height": 185,
+            "userCount": 67,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 922629,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 794102400,
+            "proposedMarketValueRaw": {
+              "value": 275000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أندرسون"
+              },
+              "shortNameTranslation": {
+                "ar": "أندرسون"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 14,
+          "jerseyNumber": "14",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.79,
+          "player": {
+            "name": "Higor",
+            "firstName": "Higor",
+            "slug": "higor",
+            "shortName": "Higor",
+            "position": "D",
+            "jerseyNumber": "6",
+            "height": 178,
+            "userCount": 38,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1991456,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1104105600,
+            "proposedMarketValueRaw": {
+              "value": 135000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "هيغور"
+              },
+              "shortNameTranslation": {
+                "ar": "هيغور"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 6,
+          "jerseyNumber": "6",
+          "position": "D",
+          "substitute": false,
+          "captain": true,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.57,
+          "player": {
+            "name": "Willian Maranhão",
+            "firstName": "",
+            "lastName": "",
+            "slug": "willian-maranhao",
+            "shortName": "Willian Maranhão",
+            "position": "M",
+            "jerseyNumber": "8",
+            "height": 179,
+            "userCount": 136,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 868120,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 818899200,
+            "proposedMarketValueRaw": {
+              "value": 800000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ويليان مارانهاو"
+              },
+              "shortNameTranslation": {
+                "ar": "و. مارانهاو"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 8,
+          "jerseyNumber": "8",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.9,
+          "player": {
+            "name": "João Vieira",
+            "slug": "joao-pedro",
+            "shortName": "J. Vieira",
+            "position": "M",
+            "jerseyNumber": "5",
+            "height": 175,
+            "userCount": 165,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1046490,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 871257600,
+            "proposedMarketValueRaw": {
+              "value": 290000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جواو فييرا"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. فييرا"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 5,
+          "jerseyNumber": "5",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Janderson",
+            "slug": "janderson",
+            "shortName": "Janderson",
+            "position": "M",
+            "jerseyNumber": "99",
+            "height": 161,
+            "userCount": 288,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 870898,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 919987200,
+            "proposedMarketValueRaw": {
+              "value": 1100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جاندرسون"
+              },
+              "shortNameTranslation": {
+                "ar": "جاندرسون"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 99,
+          "jerseyNumber": "99",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 7.01,
+          "player": {
+            "name": "Marquinhos Gabriel",
+            "firstName": "",
+            "lastName": "",
+            "slug": "marquinhos-gabriel",
+            "shortName": "Marquinhos Gabriel",
+            "position": "M",
+            "jerseyNumber": "10",
+            "height": 174,
+            "userCount": 326,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 90812,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 648518400,
+            "proposedMarketValueRaw": {
+              "value": 195000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماركينيوس غابرييل"
+              },
+              "shortNameTranslation": {
+                "ar": "م. غابرييل"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 10,
+          "jerseyNumber": "10",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.87,
+          "player": {
+            "name": "Ryan Lima",
+            "slug": "ryan-lima",
+            "shortName": "R. Lima",
+            "position": "F",
+            "jerseyNumber": "11",
+            "height": 170,
+            "userCount": 56,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1634692,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 992822400,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ريان ليما"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. ليما"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 11,
+          "jerseyNumber": "11",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.83,
+          "player": {
+            "name": "Gustavo Puskas",
+            "firstName": "Gustavo Puskas",
+            "slug": "gustavo-puskas-pinheiro-lemos",
+            "shortName": "G. P. P. Lemos",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 185,
+            "userCount": 31,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 2034257,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1203984000,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "غوستافو بوشكاس بينهيرو ليموس"
+              },
+              "shortNameTranslation": {
+                "ar": "غ. ليموس"
+              }
+            }
+          },
+          "teamId": 250762,
+          "shirtNumber": 9,
+          "jerseyNumber": "9",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "minutesPlayed": 0,
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Dalberson",
+            "slug": "dalberson",
+            "shortName": "Dalberson",
+            "position": "G",
+            "jerseyNumber": "29",
+            "height": 191,
+            "userCount": 32,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 870638,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 853113600,
+            "proposedMarketValueRaw": {
+              "value": 280000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دالبيرسون"
+              },
+              "shortNameTranslation": {
+                "ar": "دالبيرسون"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 29,
+          "jerseyNumber": "29",
+          "position": "G",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.65,
+          "player": {
+            "name": "Hayner",
+            "firstName": "Hayner Willian",
+            "lastName": "Hayner",
+            "slug": "hayner",
+            "shortName": "Hayner",
+            "position": "D",
+            "jerseyNumber": "22",
+            "height": 178,
+            "userCount": 274,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 807767,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 812592000,
+            "proposedMarketValueRaw": {
+              "value": 360000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "هاينر"
+              },
+              "shortNameTranslation": {
+                "ar": "هاينر"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 22,
+          "jerseyNumber": "22",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.82,
+          "player": {
+            "name": "Caio Marcelo",
+            "slug": "caio-marcelo",
+            "shortName": "C. Marcelo",
+            "position": "D",
+            "jerseyNumber": "38",
+            "height": 191,
+            "userCount": 81,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 953718,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 889833600,
+            "proposedMarketValueRaw": {
+              "value": 340000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "كايو مارسيلو"
+              },
+              "shortNameTranslation": {
+                "ar": "ك. مارسيلو"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 38,
+          "jerseyNumber": "38",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.45,
+          "player": {
+            "name": "Willian Formiga",
+            "slug": "willian-formiga",
+            "shortName": "W. Formiga",
+            "position": "D",
+            "jerseyNumber": "13",
+            "height": 185,
+            "userCount": 57,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 929687,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 790732800,
+            "proposedMarketValueRaw": {
+              "value": 185000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ويليان فورميغا"
+              },
+              "shortNameTranslation": {
+                "ar": "و. فورميغا"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 13,
+          "jerseyNumber": "13",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.44,
+          "player": {
+            "name": "Elias",
+            "firstName": "",
+            "lastName": "",
+            "slug": "elias",
+            "shortName": "Elias",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 175,
+            "userCount": 45,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 981812,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 932083200,
+            "proposedMarketValueRaw": {
+              "value": 600000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيلياس"
+              },
+              "shortNameTranslation": {
+                "ar": "إيلياس"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Samuel Lucas",
+            "firstName": "Samuel Lucas",
+            "slug": "samuel-lucas-de-oliveira-souza",
+            "shortName": "S. Lucas",
+            "position": "D",
+            "jerseyNumber": "4",
+            "userCount": 25,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 2128181,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1186963200,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "صموئيل لوكاس دي أوليفيرا سوزا"
+              },
+              "shortNameTranslation": {
+                "ar": "ص. سوزا"
+              }
+            }
+          },
+          "teamId": 250762,
+          "shirtNumber": 4,
+          "jerseyNumber": "4",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.45,
+          "player": {
+            "name": "Dodô",
+            "slug": "dodo",
+            "shortName": "Dodô",
+            "position": "M",
+            "jerseyNumber": "31",
+            "height": 171,
+            "userCount": 136,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 338839,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 778723200,
+            "proposedMarketValueRaw": {
+              "value": 82000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دودو"
+              },
+              "shortNameTranslation": {
+                "ar": "دودو"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 31,
+          "jerseyNumber": "31",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.7,
+          "player": {
+            "name": "Bruno Xavier",
+            "slug": "bruno-xavier",
+            "shortName": "B. Xavier",
+            "position": "M",
+            "jerseyNumber": "33",
+            "height": 178,
+            "userCount": 132,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 901455,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 849052800,
+            "proposedMarketValueRaw": {
+              "value": 260000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "برونو زافيير"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. زافيير"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 33,
+          "jerseyNumber": "33",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.6,
+          "player": {
+            "name": "Nathan Camargo",
+            "slug": "nathan-camargo",
+            "shortName": "Nathan Camargo",
+            "position": "M",
+            "jerseyNumber": "20",
+            "height": 177,
+            "userCount": 108,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1199453,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1122249600,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "dos Santos, Nathan Camargo"
+              },
+              "shortNameTranslation": {
+                "ar": "N. C. d. Santos"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 20,
+          "jerseyNumber": "20",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.55,
+          "player": {
+            "name": "Enzo",
+            "firstName": "Enzo",
+            "slug": "enzo",
+            "shortName": "Enzo",
+            "position": "M",
+            "jerseyNumber": "18",
+            "height": 186,
+            "userCount": 84,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1802523,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1051660800,
+            "proposedMarketValueRaw": {
+              "value": 47000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إنزو"
+              },
+              "shortNameTranslation": {
+                "ar": "إنزو"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 18,
+          "jerseyNumber": "18",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "avgRating": 6.55,
+          "player": {
+            "name": "André Luís",
+            "firstName": "",
+            "lastName": "",
+            "slug": "andre-luis",
+            "shortName": "A. Luís",
+            "position": "F",
+            "jerseyNumber": "7",
+            "height": 179,
+            "userCount": 184,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 876286,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 861580800,
+            "proposedMarketValueRaw": {
+              "value": 730000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أندريه لويس"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. لويس"
+              }
+            }
+          },
+          "teamId": 2021,
+          "shirtNumber": 7,
+          "jerseyNumber": "7",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        }
+      ],
+      "supportStaff": [],
+      "formation": "4-2-3-1",
+      "playerColor": {
+        "primary": "ff0000",
+        "number": "ffffff",
+        "outline": "ff0000",
+        "fancyNumber": "ffffff"
+      },
+      "goalkeeperColor": {
+        "primary": "7a47bb",
+        "number": "ffffff",
+        "outline": "7a47bb",
+        "fancyNumber": "ffffff"
+      },
+      "missingPlayers": [
+        {
+          "player": {
+            "name": "Pedro Romano",
+            "firstName": "Pedro Romano",
+            "slug": "pedro-romano",
+            "shortName": "P. Romano",
+            "position": "D",
+            "jerseyNumber": "4",
+            "height": 189,
+            "userCount": 65,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1417920,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 975196800,
+            "proposedMarketValueRaw": {
+              "value": 160000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "بيدرو رومانو"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. رومانو"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 11,
+          "description": "Yellow card accumulation suspension",
+          "externalType": 72,
+          "expectedEndDate": "2026-05-25T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Emerson Urso",
+            "slug": "emerson-urso",
+            "shortName": "Emerson Urso",
+            "position": "M",
+            "jerseyNumber": "70",
+            "height": 164,
+            "userCount": 110,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 1105974,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 989712000,
+            "proposedMarketValueRaw": {
+              "value": 430000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيمرسون أورسو"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. أورسو"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Ankle/Foot Injury",
+          "externalType": 72,
+          "expectedEndDate": "2026-06-15T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Rafael Silva",
+            "slug": "rafael-silva",
+            "shortName": "R. Silva",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 179,
+            "userCount": 2460,
+            "gender": "M",
+            "country": {
+              "alpha2": "BR",
+              "alpha3": "BRA",
+              "name": "Brazil",
+              "slug": "brazil"
+            },
+            "id": 243963,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 702345600,
+            "proposedMarketValueRaw": {
+              "value": 240000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "رافائيل سيلفا"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. سيلفا"
+              }
+            }
+          },
+          "type": "doubtful",
+          "reason": 1,
+          "description": "Knee Injury",
+          "externalType": 72
+        }
+      ]
+    },
+    "statisticalVersion": 3
+  },
+  "streaks": {
+    "general": [
+      {
+        "name": "Without clean sheet",
+        "value": "6",
+        "team": "home"
+      },
+      {
+        "name": "More than 2.5 goals",
+        "value": "4/5",
+        "team": "home"
+      },
+      {
+        "name": "Less than 2.5 goals",
+        "value": "4/5",
+        "team": "away"
+      },
+      {
+        "name": "Both teams scoring",
+        "value": "4/5",
+        "team": "home"
+      },
+      {
+        "name": "Both teams scoring",
+        "value": "5/7",
+        "team": "away"
+      },
+      {
+        "name": "More than 4.5 cards",
+        "value": "7/7",
+        "team": "home"
+      },
+      {
+        "name": "More than 4.5 cards",
+        "value": "6/7",
+        "team": "away"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "4/5",
+        "team": "home"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "8/8",
+        "team": "away"
+      }
+    ],
+    "head2head": [
+      {
+        "name": "Less than 2.5 goals",
+        "value": "8/10",
+        "team": "both"
+      },
+      {
+        "name": "Less than 10.5 corners",
+        "value": "6/7",
+        "team": "both"
+      }
+    ]
+  }
+}
