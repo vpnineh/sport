@@ -504,12 +504,13 @@ api_client = APIClient()
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class EVCalculator:
-    """Expected Value calculations."""
+    """Expected Value calculations with detailed logging."""
     
     @staticmethod
     def remove_vig(odds_dict: Dict[str, float]) -> Tuple[float, Dict[str, float]]:
         """Remove bookmaker margin."""
         if len(odds_dict) < 2:
+            logger.debug(f"Not enough odds for vig removal: {odds_dict}")
             return 0.0, odds_dict
         
         implied_probs = {outcome: 1 / odd for outcome, odd in odds_dict.items()}
@@ -517,7 +518,15 @@ class EVCalculator:
         
         margin_pct = (total_prob - 1) * 100
         
-        if total_prob <= 1.0 or margin_pct > Config.MAX_BOOKMAKER_MARGIN:
+        logger.debug(f"Odds: {odds_dict}")
+        logger.debug(f"Total implied probability: {total_prob:.4f} (Margin: {margin_pct:.2f}%)")
+        
+        if total_prob <= 1.0:
+            logger.warning(f"No overround detected (total_prob={total_prob})")
+            return margin_pct, odds_dict
+            
+        if margin_pct > Config.MAX_BOOKMAKER_MARGIN:
+            logger.info(f"⚠️  Margin too high: {margin_pct:.2f}% > {Config.MAX_BOOKMAKER_MARGIN}% - Skipping")
             return margin_pct, odds_dict
         
         fair_odds = {}
@@ -525,6 +534,7 @@ class EVCalculator:
             fair_prob = implied_prob / total_prob
             fair_odds[outcome] = round(1 / fair_prob, 2)
         
+        logger.info(f"✅ Fair odds calculated: {fair_odds} (Margin: {margin_pct:.2f}%)")
         return margin_pct, fair_odds
     
     @staticmethod
@@ -538,7 +548,11 @@ class EVCalculator:
         loss_if_lose = 1.0
         
         ev = (fair_prob * profit_if_win) - ((1 - fair_prob) * loss_if_lose)
-        return round(ev * 100, 2)
+        ev_pct = ev * 100
+        
+        logger.debug(f"EV calc: fair={fair_odds:.2f}, book={bookmaker_odds:.2f} → EV={ev_pct:.2f}%")
+        
+        return round(ev_pct, 2)
     
     @staticmethod
     def kelly_criterion(fair_odds: float, bookmaker_odds: float) -> float:
@@ -564,27 +578,42 @@ class EVCalculator:
         bookmaker_odds: Dict[str, float],
         min_ev: float = None
     ) -> List[Dict[str, Any]]:
-        """Find value bets."""
+        """Find value bets with detailed logging."""
         if min_ev is None:
             min_ev = Config.MIN_EV_PERCENTAGE
             
         value_bets = []
         
+        logger.info(f"\n🔍 Analyzing {len(fair_odds)} outcomes:")
+        logger.info(f"   Fair Odds: {fair_odds}")
+        logger.info(f"   Book Odds: {bookmaker_odds}")
+        
         for outcome, fair_price in fair_odds.items():
             book_price = bookmaker_odds.get(outcome, 0)
             
+            logger.debug(f"\n  Checking: {outcome}")
+            logger.debug(f"    Fair: {fair_price:.2f} | Book: {book_price:.2f}")
+            
             if book_price <= fair_price:
+                logger.debug(f"    ❌ No value (book ≤ fair)")
                 continue
             
             ev_pct = EVCalculator.calculate_ev(fair_price, book_price)
             
+            logger.debug(f"    EV: {ev_pct:.2f}%")
+            
             if ev_pct < min_ev:
+                logger.info(f"    ⚠️  Low EV: {ev_pct:.2f}% < {min_ev}%")
                 continue
             
             if not (Config.MIN_ODDS <= book_price <= Config.MAX_ODDS):
+                logger.info(f"    ⚠️  Odds out of range: {book_price:.2f} not in [{Config.MIN_ODDS}, {Config.MAX_ODDS}]")
                 continue
             
             kelly = EVCalculator.kelly_criterion(fair_price, book_price)
+            
+            logger.info(f"    ✅ VALUE FOUND: {outcome}")
+            logger.info(f"       EV: +{ev_pct}% | Kelly: {kelly}%")
             
             value_bets.append({
                 'outcome': outcome,
@@ -594,6 +623,11 @@ class EVCalculator:
                 'kelly_stake': kelly,
                 'value_ratio': book_price / fair_price
             })
+        
+        if not value_bets:
+            logger.warning(f"   ❌ No value bets found in this market")
+        else:
+            logger.info(f"   💎 Found {len(value_bets)} value bet(s)")
         
         value_bets.sort(key=lambda x: x['ev_percentage'], reverse=True)
         return value_bets
