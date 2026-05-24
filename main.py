@@ -1040,7 +1040,9 @@ REQUIRED JSON:
     "pick": "string",
     "market_type": "h2h|totals",
     "bookmaker_odds": number,
+    "fair_odds": number,
     "ev_percentage": number,
+    "kelly_stake": number,
     "confidence_score": number (0-100),
     "risk_level": "Low"|"Medium"|"High",
     "logic": "string"
