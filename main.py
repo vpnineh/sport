@@ -3,13 +3,15 @@
 zBET90 v4.0 — Professional +EV Sports Betting Intelligence System
 ================================================================================
 ✅ Correct +EV calculations with Kelly Criterion
-✅ Multi-source data aggregation (The Odds API + SofaScore + Backups)
+✅ Multi-source data aggregation (The Odds API + SofaScore)
+✅ Intelligent team name matching with fuzzy search
+✅ Multi-bookmaker comparison for true value detection
 ✅ Async operations for performance
 ✅ Production-grade error handling
 ✅ Pydantic V2 compatible
-✅ SQLite persistence with migration support
-✅ Smart rate limiting and caching
-✅ Telegram with rich formatting
+✅ SQLite persistence with caching
+✅ Smart rate limiting
+✅ Telegram broadcasting
 
 Author: @zBET90
 License: MIT
@@ -43,9 +45,10 @@ try:
     from aiohttp import ClientSession, ClientTimeout
     from pydantic import BaseModel, Field, field_validator, ConfigDict, ValidationError
     import numpy as np
+    from rapidfuzz import fuzz, process
 except ImportError as e:
     print(f"❌ Missing dependency: {e}")
-    print("Install: pip install aiohttp pydantic numpy")
+    print("Install: pip install aiohttp pydantic numpy rapidfuzz")
     sys.exit(1)
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -120,11 +123,11 @@ class Config:
     """Centralized configuration loaded directly from environment variables."""
     
     # ═══ Core API Keys (Required) ═══
-    ODDS_API_KEY: str = os.getenv("ODDS_API_KEY")
-    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY")
-    RAPIDAPI_KEY: str = os.getenv("RAPIDAPI_KEY")
-    TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN")
-    TELEGRAM_CHAT_ID: str = os.getenv("TELEGRAM_CHAT_ID")
+    ODDS_API_KEY: str = os.getenv("ODDS_API_KEY", "")
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    RAPIDAPI_KEY: str = os.getenv("RAPIDAPI_KEY", "")
+    TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    TELEGRAM_CHAT_ID: str = os.getenv("TELEGRAM_CHAT_ID", "")
     
     # ═══ Odds API Settings ═══
     ODDS_API_BASE: str = "https://api.the-odds-api.com/v4"
@@ -318,6 +321,7 @@ class Database:
                 CREATE TABLE IF NOT EXISTS team_cache (
                     team_name TEXT PRIMARY KEY,
                     team_id INTEGER NOT NULL,
+                    matched_name TEXT,
                     cached_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     stats_json TEXT
                 );
@@ -375,13 +379,13 @@ class Database:
             row = cursor.fetchone()
             return row['team_id'] if row else None
     
-    def cache_team_id(self, team_name: str, team_id: int, stats: Optional[dict] = None):
-        """Cache team ID."""
+    def cache_team_id(self, team_name: str, team_id: int, matched_name: Optional[str] = None, stats: Optional[dict] = None):
+        """Cache team ID with matched name."""
         with self.get_connection() as conn:
             conn.execute("""
-                INSERT OR REPLACE INTO team_cache (team_name, team_id, stats_json, cached_at)
-                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-            """, (team_name, team_id, json.dumps(stats) if stats else None))
+                INSERT OR REPLACE INTO team_cache (team_name, team_id, matched_name, stats_json, cached_at)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            """, (team_name, team_id, matched_name, json.dumps(stats) if stats else None))
     
     @staticmethod
     def _make_hash(bet: ValueBet) -> str:
@@ -522,11 +526,11 @@ class EVCalculator:
         logger.debug(f"Total implied probability: {total_prob:.4f} (Margin: {margin_pct:.2f}%)")
         
         if total_prob <= 1.0:
-            logger.warning(f"No overround detected (total_prob={total_prob})")
+            logger.debug(f"No overround detected (total_prob={total_prob})")
             return margin_pct, odds_dict
             
         if margin_pct > Config.MAX_BOOKMAKER_MARGIN:
-            logger.info(f"⚠️  Margin too high: {margin_pct:.2f}% > {Config.MAX_BOOKMAKER_MARGIN}% - Skipping")
+            logger.debug(f"Margin too high: {margin_pct:.2f}% > {Config.MAX_BOOKMAKER_MARGIN}%")
             return margin_pct, odds_dict
         
         fair_odds = {}
@@ -534,7 +538,7 @@ class EVCalculator:
             fair_prob = implied_prob / total_prob
             fair_odds[outcome] = round(1 / fair_prob, 2)
         
-        logger.info(f"✅ Fair odds calculated: {fair_odds} (Margin: {margin_pct:.2f}%)")
+        logger.debug(f"Fair odds calculated: {fair_odds} (Margin: {margin_pct:.2f}%)")
         return margin_pct, fair_odds
     
     @staticmethod
@@ -584,36 +588,30 @@ class EVCalculator:
             
         value_bets = []
         
-        logger.info(f"\n🔍 Analyzing {len(fair_odds)} outcomes:")
-        logger.info(f"   Fair Odds: {fair_odds}")
-        logger.info(f"   Book Odds: {bookmaker_odds}")
+        logger.info(f"\n  🔍 Checking {len(fair_odds)} outcomes for value:")
         
         for outcome, fair_price in fair_odds.items():
             book_price = bookmaker_odds.get(outcome, 0)
             
-            logger.debug(f"\n  Checking: {outcome}")
-            logger.debug(f"    Fair: {fair_price:.2f} | Book: {book_price:.2f}")
+            logger.info(f"     {outcome:30s} | Fair: {fair_price:5.2f} | Best: {book_price:5.2f}", end="")
             
             if book_price <= fair_price:
-                logger.debug(f"    ❌ No value (book ≤ fair)")
+                logger.info(f" → ❌ No edge")
                 continue
             
             ev_pct = EVCalculator.calculate_ev(fair_price, book_price)
             
-            logger.debug(f"    EV: {ev_pct:.2f}%")
-            
             if ev_pct < min_ev:
-                logger.info(f"    ⚠️  Low EV: {ev_pct:.2f}% < {min_ev}%")
+                logger.info(f" → EV: +{ev_pct:.2f}% (below {min_ev}%)")
                 continue
             
             if not (Config.MIN_ODDS <= book_price <= Config.MAX_ODDS):
-                logger.info(f"    ⚠️  Odds out of range: {book_price:.2f} not in [{Config.MIN_ODDS}, {Config.MAX_ODDS}]")
+                logger.info(f" → ⚠️  Odds {book_price} out of range")
                 continue
             
             kelly = EVCalculator.kelly_criterion(fair_price, book_price)
             
-            logger.info(f"    ✅ VALUE FOUND: {outcome}")
-            logger.info(f"       EV: +{ev_pct}% | Kelly: {kelly}%")
+            logger.info(f" → ✅ +EV: {ev_pct:.2f}% | Kelly: {kelly:.2f}%")
             
             value_bets.append({
                 'outcome': outcome,
@@ -624,20 +622,111 @@ class EVCalculator:
                 'value_ratio': book_price / fair_price
             })
         
-        if not value_bets:
-            logger.warning(f"   ❌ No value bets found in this market")
-        else:
-            logger.info(f"   💎 Found {len(value_bets)} value bet(s)")
-        
         value_bets.sort(key=lambda x: x['ev_percentage'], reverse=True)
         return value_bets
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# SECTION 9: SOFASCORE INTEGRATION
+# SECTION 9: TEAM NAME NORMALIZATION & SOFASCORE
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+class TeamNameNormalizer:
+    """Normalize and match team names across different APIs."""
+    
+    # Common name variations mapping
+    TEAM_ALIASES = {
+        # Premier League
+        "Manchester United": ["Man United", "Man Utd", "Manchester Utd"],
+        "Manchester City": ["Man City"],
+        "Tottenham Hotspur": ["Tottenham", "Spurs"],
+        "Newcastle United": ["Newcastle"],
+        "Brighton and Hove Albion": ["Brighton", "Brighton & Hove Albion"],
+        "Wolverhampton Wanderers": ["Wolves", "Wolverhampton"],
+        "West Ham United": ["West Ham"],
+        "Leicester City": ["Leicester"],
+        "Nottingham Forest": ["Nott'm Forest", "Nottingham"],
+        "Sheffield United": ["Sheffield Utd"],
+        
+        # La Liga
+        "Athletic Club": ["Athletic Bilbao"],
+        "Atletico Madrid": ["Atlético Madrid", "Atlético de Madrid"],
+        
+        # Serie A
+        "Inter Milan": ["Inter", "Internazionale"],
+        "AC Milan": ["Milan"],
+        
+        # Bundesliga
+        "Bayern Munich": ["Bayern München", "FC Bayern"],
+        "Borussia Dortmund": ["Dortmund", "BVB"],
+        "Borussia Monchengladbach": ["Borussia M'gladbach", "Gladbach"],
+        
+        # Ligue 1
+        "Paris Saint Germain": ["PSG", "Paris SG", "Paris Saint-Germain"],
+        
+        # Add more as needed
+    }
+    
+    _REVERSE_MAP = {}
+    
+    @classmethod
+    def _build_reverse_map(cls):
+        """Build reverse lookup map."""
+        if cls._REVERSE_MAP:
+            return
+        
+        for canonical, aliases in cls.TEAM_ALIASES.items():
+            cls._REVERSE_MAP[canonical.lower()] = canonical
+            for alias in aliases:
+                cls._REVERSE_MAP[alias.lower()] = canonical
+    
+    @classmethod
+    def normalize(cls, team_name: str) -> str:
+        """Normalize team name to canonical form."""
+        cls._build_reverse_map()
+        cleaned = team_name.strip()
+        canonical = cls._REVERSE_MAP.get(cleaned.lower())
+        if canonical:
+            return canonical
+        return cleaned
+    
+    @classmethod
+    def get_search_variants(cls, team_name: str) -> List[str]:
+        """Get all possible variants of a team name for searching."""
+        variants = [team_name]
+        
+        # Add normalized version
+        normalized = cls.normalize(team_name)
+        if normalized != team_name:
+            variants.append(normalized)
+        
+        # Add all aliases
+        for canonical, aliases in cls.TEAM_ALIASES.items():
+            if team_name.lower() == canonical.lower():
+                variants.extend(aliases)
+                break
+            if team_name.lower() in [a.lower() for a in aliases]:
+                variants.append(canonical)
+                variants.extend(aliases)
+                break
+        
+        # Add short version
+        words = team_name.split()
+        if len(words) > 1:
+            variants.append(words[0])
+        
+        # Remove duplicates
+        seen = set()
+        unique_variants = []
+        for v in variants:
+            v_lower = v.lower()
+            if v_lower not in seen:
+                seen.add(v_lower)
+                unique_variants.append(v)
+        
+        return unique_variants
+
+
 class SofaScoreAPI:
-    """SofaScore data enrichment."""
+    """SofaScore data enrichment with intelligent team matching."""
     
     @staticmethod
     def _get_headers() -> Dict[str, str]:
@@ -646,32 +735,93 @@ class SofaScoreAPI:
             'x-rapidapi-host': Config.RAPIDAPI_HOST
         }
     
-    async def get_team_id(self, session: ClientSession, team_name: str) -> Optional[int]:
-        """Search team ID."""
-        cached_id = db.get_cached_team_id(team_name)
-        if cached_id:
-            return cached_id
+    async def search_team_with_variants(
+        self, 
+        session: ClientSession, 
+        team_name: str
+    ) -> Optional[Tuple[int, str]]:
+        """
+        Search for team using multiple name variants.
+        Returns: (team_id, matched_name) or None
+        """
+        variants = TeamNameNormalizer.get_search_variants(team_name)
+        
+        logger.debug(f"Searching for '{team_name}' with variants: {variants[:3]}...")
         
         url = f"{Config.SOFASCORE_BASE}/teams/search"
-        params = {'name': team_name}
         
-        data = await api_client.get_with_retry(
-            session, url,
-            headers=self._get_headers(),
-            params=params,
-            rate_limit_key='sofascore'
-        )
+        best_match = None
+        best_score = 0
         
-        if data and 'data' in data and data['data']:
-            team_id = data['data'][0].get('id')
-            if team_id:
-                db.cache_team_id(team_name, team_id)
-                return team_id
+        for variant in variants:
+            params = {'name': variant}
+            
+            data = await api_client.get_with_retry(
+                session, url,
+                headers=self._get_headers(),
+                params=params,
+                rate_limit_key='sofascore'
+            )
+            
+            if not data or 'data' not in data or not data['data']:
+                continue
+            
+            # Check top results for best match
+            for team in data['data'][:3]:
+                team_id = team.get('id')
+                api_name = team.get('name', '')
+                
+                if not team_id or not api_name:
+                    continue
+                
+                # Calculate similarity
+                score = fuzz.ratio(team_name.lower(), api_name.lower())
+                variant_score = fuzz.ratio(variant.lower(), api_name.lower())
+                score = max(score, variant_score)
+                
+                logger.debug(f"  Match candidate: '{api_name}' (ID: {team_id}, Score: {score})")
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = (team_id, api_name)
+                
+                if score >= 95:
+                    break
+            
+            if best_score >= 95:
+                break
+        
+        if best_match and best_score >= 70:
+            team_id, matched_name = best_match
+            logger.info(f"✅ Matched '{team_name}' → '{matched_name}' (Score: {best_score})")
+            return team_id, matched_name
+        
+        logger.warning(f"❌ No good match for '{team_name}' (best: {best_score})")
+        return None
+    
+    async def get_team_id(self, session: ClientSession, team_name: str) -> Optional[int]:
+        """Search team ID with caching and variant matching."""
+        # Check cache
+        cached_id = db.get_cached_team_id(team_name)
+        if cached_id:
+            logger.debug(f"Cache hit for '{team_name}': {cached_id}")
+            return cached_id
+        
+        # Search with variants
+        result = await self.search_team_with_variants(session, team_name)
+        
+        if result:
+            team_id, matched_name = result
+            # Cache both names
+            db.cache_team_id(team_name, team_id, matched_name)
+            if matched_name != team_name:
+                db.cache_team_id(matched_name, team_id, matched_name)
+            return team_id
         
         return None
     
     async def get_team_stats(self, session: ClientSession, team_name: str) -> Optional[TeamStats]:
-        """Fetch team stats."""
+        """Fetch team stats with intelligent name matching."""
         team_id = await self.get_team_id(session, team_name)
         if not team_id:
             return None
@@ -690,6 +840,9 @@ class SofaScoreAPI:
             return None
         
         events = data['data'].get('events', [])[:10]
+        
+        if not events:
+            return None
         
         recent_form = []
         goals_scored = []
@@ -742,7 +895,7 @@ sofascore = SofaScoreAPI()
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class OddsAggregator:
-    """Multi-source odds aggregation."""
+    """Multi-source odds aggregation with proper bookmaker comparison."""
     
     async def fetch_the_odds_api(self, session: ClientSession) -> List[BettingEvent]:
         """Primary: The Odds API."""
@@ -782,15 +935,20 @@ class OddsAggregator:
         logger.info(f"✅ Fetched {len(events)} events from Odds API")
         return events
     
-    async def get_best_odds(self, bookmakers: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
-        """Extract best odds."""
-        best_odds = {'h2h': {}, 'totals': {}}
+    async def get_all_bookmaker_odds(self, bookmakers: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Extract ALL odds from ALL bookmakers for comparison.
+        Returns: {market_type: [{bookmaker, outcome, price}, ...]}
+        """
+        all_odds = {'h2h': [], 'totals': []}
         
         for bookmaker in bookmakers:
+            bookie_name = bookmaker.get('key', 'unknown')
+            
             for market in bookmaker.get('markets', []):
                 market_key = market.get('key')
                 
-                if market_key not in best_odds:
+                if market_key not in all_odds:
                     continue
                 
                 for outcome in market.get('outcomes', []):
@@ -800,10 +958,50 @@ class OddsAggregator:
                     if market_key == 'totals' and 'point' in outcome:
                         name = f"{name} {outcome['point']}"
                     
-                    if price > best_odds[market_key].get(name, 0.0):
-                        best_odds[market_key][name] = price
+                    all_odds[market_key].append({
+                        'bookmaker': bookie_name,
+                        'outcome': name,
+                        'price': price
+                    })
         
-        return best_odds
+        return all_odds
+    
+    def calculate_fair_and_best_odds(
+        self, 
+        all_odds: List[Dict[str, Any]]
+    ) -> Tuple[Dict[str, float], Dict[str, float], int]:
+        """
+        Calculate fair odds and best available odds.
+        Returns: (fair_odds, best_odds, num_bookmakers)
+        """
+        if not all_odds:
+            return {}, {}, 0
+        
+        # Group by outcome
+        outcome_prices = defaultdict(list)
+        outcome_bookmakers = defaultdict(set)
+        
+        for odd in all_odds:
+            outcome = odd['outcome']
+            outcome_prices[outcome].append(odd['price'])
+            outcome_bookmakers[outcome].add(odd['bookmaker'])
+        
+        num_bookmakers = len(set(odd['bookmaker'] for odd in all_odds))
+        
+        # Calculate average odds (for fair odds calculation)
+        avg_odds = {}
+        for outcome, prices in outcome_prices.items():
+            avg_odds[outcome] = round(sum(prices) / len(prices), 2)
+        
+        # Calculate best odds
+        best_odds = {}
+        for outcome, prices in outcome_prices.items():
+            best_odds[outcome] = max(prices)
+        
+        # Remove vig from average to get fair odds
+        margin, fair_odds = EVCalculator.remove_vig(avg_odds)
+        
+        return fair_odds, best_odds, num_bookmakers
     
     async def fetch_all_events(self) -> List[BettingEvent]:
         """Fetch all events."""
@@ -1131,7 +1329,7 @@ telegram = TelegramBot()
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class Pipeline:
-    """Main execution pipeline."""
+    """Main execution pipeline with multi-bookmaker comparison."""
     
     async def process_events(self) -> List[ValueBet]:
         """Process all events."""
@@ -1149,21 +1347,33 @@ class Pipeline:
         async with api_client.session() as session:
             for event in events:
                 try:
-                    best_odds = await odds_aggregator.get_best_odds(event.bookmakers)
+                    # Get ALL bookmaker odds
+                    all_bookmaker_odds = await odds_aggregator.get_all_bookmaker_odds(event.bookmakers)
                     
-                    if not best_odds['h2h']:
+                    if not all_bookmaker_odds['h2h']:
                         continue
                     
-                    margin, fair_odds = EVCalculator.remove_vig(best_odds['h2h'])
+                    # Calculate fair vs best odds
+                    fair_odds, best_odds, num_bookies = odds_aggregator.calculate_fair_and_best_odds(
+                        all_bookmaker_odds['h2h']
+                    )
                     
-                    if margin > Config.MAX_BOOKMAKER_MARGIN:
+                    if not fair_odds or not best_odds:
                         continue
                     
-                    value_bets = EVCalculator.find_value_bets(fair_odds, best_odds['h2h'])
+                    logger.info(f"\n{'='*70}")
+                    logger.info(f"🏟️  {event.sport_title}: {event.home_team} vs {event.away_team}")
+                    logger.info(f"📅 {event.commence_time}")
+                    logger.info(f"📚 Bookmakers: {num_bookies}")
+                    logger.info(f"{'='*70}")
+                    
+                    # Find value bets
+                    value_bets = EVCalculator.find_value_bets(fair_odds, best_odds)
                     
                     if not value_bets:
                         continue
                     
+                    # Fetch team stats
                     home_stats_task = sofascore.get_team_stats(session, event.home_team)
                     away_stats_task = sofascore.get_team_stats(session, event.away_team)
                     
@@ -1185,17 +1395,19 @@ class Pipeline:
                         })
                 
                 except Exception as e:
-                    logger.error(f"Error: {e}")
+                    logger.error(f"Error processing {event.id}: {e}")
                     continue
         
         if not events_with_value:
-            logger.info("No value bets found")
+            logger.info("\n" + "="*70)
+            logger.info("📊 SUMMARY: No value bets found")
+            logger.info("="*70)
             return []
         
-        logger.info(f"💎 Found {len(events_with_value)} value bets")
+        logger.info(f"\n💎 Found {len(events_with_value)} value opportunities")
         
         validated = await groq.analyze_value_bets(events_with_value)
-        logger.info(f"✅ Validated {len(validated)} bets")
+        logger.info(f"✅ AI validated {len(validated)} bets")
         
         return validated
     
@@ -1211,7 +1423,7 @@ class Pipeline:
                 return
             
             sent = await telegram.broadcast_bets(value_bets)
-            logger.info(f"📢 Sent {sent} bets")
+            logger.info(f"📢 Broadcast complete: {sent} bets sent")
             
         except Exception as e:
             logger.critical(f"Pipeline error: {e}", exc_info=True)
