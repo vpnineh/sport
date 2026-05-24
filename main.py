@@ -197,13 +197,6 @@ except ValueError:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # SECTION 4: PYDANTIC MODELS (V2 Compatible)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-class MatchContext(BaseModel):
-    """Deep match context from SofaScore for AI Analysis."""
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
-    match_id: Optional[int] = None
-    ai_insights: List[str] = Field(default_factory=list)
-    missing_players: List[str] = Field(default_factory=list)
     
 class TeamStats(BaseModel):
     
@@ -225,7 +218,14 @@ class TeamStats(BaseModel):
         """Ensure values are non-negative."""
         return max(0.0, v)
 
-
+class MatchContext(BaseModel):
+    """Deep match context from SofaScore for AI Analysis."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    match_id: Optional[int] = None
+    ai_insights: List[str] = Field(default_factory=list)
+    missing_players: List[str] = Field(default_factory=list)
+    
 class ValueBet(BaseModel):
     """Validated value bet opportunity."""
     model_config = ConfigDict(arbitrary_types_allowed=True)
