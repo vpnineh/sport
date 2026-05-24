@@ -9,7 +9,7 @@ zBET90 v4.0 — Professional +EV Sports Betting Intelligence System
 ✅ Async operations for performance
 ✅ Production-grade error handling
 ✅ Pydantic V2 compatible
-✅ SQLite persistence with caching
+✅ Async SQLite persistence with caching (aiosqlite)
 ✅ Smart rate limiting
 ✅ Telegram broadcasting
 
@@ -29,13 +29,11 @@ import re
 import logging
 import hashlib
 import asyncio
-import sqlite3
 from pathlib import Path
 from typing import Any, Optional, Dict, List, Tuple
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
 from enum import Enum
-from contextlib import asynccontextmanager, contextmanager
 from collections import defaultdict
 import math
 
@@ -46,9 +44,10 @@ try:
     from pydantic import BaseModel, Field, field_validator, ConfigDict, ValidationError
     import numpy as np
     from rapidfuzz import fuzz, process
+    import aiosqlite
 except ImportError as e:
     print(f"❌ Missing dependency: {e}")
-    print("Install: pip install aiohttp pydantic numpy rapidfuzz")
+    print("Install: pip install aiohttp pydantic numpy rapidfuzz aiosqlite")
     sys.exit(1)
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -274,34 +273,19 @@ class BettingEvent(BaseModel):
     bookmakers: List[Dict[str, Any]]
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# SECTION 5: DATABASE LAYER
+# SECTION 5: DATABASE LAYER (aiosqlite)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class Database:
-    """SQLite database manager."""
+    """Async SQLite database manager."""
     
     def __init__(self, db_path: Path):
         self.db_path = db_path
-        self._init_db()
     
-    @contextmanager
-    def get_connection(self):
-        """Context manager for database connections."""
-        conn = sqlite3.connect(self.db_path, timeout=10.0)
-        conn.row_factory = sqlite3.Row
-        try:
-            yield conn
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
-        finally:
-            conn.close()
-    
-    def _init_db(self):
-        """Initialize database schema."""
-        with self.get_connection() as conn:
-            conn.executescript("""
+    async def init_db(self):
+        """Initialize database schema asynchronously."""
+        async with aiosqlite.connect(self.db_path) as conn:
+            await conn.executescript("""
                 CREATE TABLE IF NOT EXISTS sent_bets (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     event_hash TEXT UNIQUE NOT NULL,
@@ -328,22 +312,23 @@ class Database:
                 
                 CREATE INDEX IF NOT EXISTS idx_cached_at ON team_cache(cached_at);
             """)
+            await conn.commit()
         logger.info(f"✅ Database initialized: {self.db_path}")
     
-    def is_bet_sent(self, event_hash: str) -> bool:
+    async def is_bet_sent(self, event_hash: str) -> bool:
         """Check if bet was already sent."""
-        with self.get_connection() as conn:
-            cursor = conn.execute(
+        async with aiosqlite.connect(self.db_path) as conn:
+            async with conn.execute(
                 "SELECT 1 FROM sent_bets WHERE event_hash = ? LIMIT 1",
                 (event_hash,)
-            )
-            return cursor.fetchone() is not None
+            ) as cursor:
+                return await cursor.fetchone() is not None
     
-    def mark_bet_sent(self, bet: ValueBet):
+    async def mark_bet_sent(self, bet: ValueBet):
         """Mark bet as sent to Telegram."""
         event_hash = self._make_hash(bet)
-        with self.get_connection() as conn:
-            conn.execute("""
+        async with aiosqlite.connect(self.db_path) as conn:
+            await conn.execute("""
                 INSERT OR IGNORE INTO sent_bets 
                 (event_hash, event_id, home_team, away_team, pick, odds, ev_percentage, commence_time)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -357,35 +342,37 @@ class Database:
                 bet.ev_percentage,
                 bet.commence_time
             ))
+            await conn.commit()
     
-    def clean_old_records(self, hours: int = 48):
+    async def clean_old_records(self, hours: int = 48):
         """Delete old records."""
         cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
-        with self.get_connection() as conn:
-            conn.execute("DELETE FROM sent_bets WHERE sent_at < ?", (cutoff,))
-            conn.execute("DELETE FROM team_cache WHERE cached_at < ?", (cutoff,))
-            deleted = conn.total_changes
-        if deleted > 0:
-            logger.info(f"🗑️  Cleaned {deleted} old records")
+        async with aiosqlite.connect(self.db_path) as conn:
+            await conn.execute("DELETE FROM sent_bets WHERE sent_at < ?", (cutoff,))
+            await conn.execute("DELETE FROM team_cache WHERE cached_at < ?", (cutoff,))
+            await conn.commit()
+            logger.info("🗑️  Cleaned old records from database")
     
-    def get_cached_team_id(self, team_name: str) -> Optional[int]:
+    async def get_cached_team_id(self, team_name: str) -> Optional[int]:
         """Get cached team ID."""
         cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
-        with self.get_connection() as conn:
-            cursor = conn.execute(
+        async with aiosqlite.connect(self.db_path) as conn:
+            conn.row_factory = aiosqlite.Row
+            async with conn.execute(
                 "SELECT team_id FROM team_cache WHERE team_name = ? AND cached_at > ?",
                 (team_name, cutoff)
-            )
-            row = cursor.fetchone()
-            return row['team_id'] if row else None
+            ) as cursor:
+                row = await cursor.fetchone()
+                return row['team_id'] if row else None
     
-    def cache_team_id(self, team_name: str, team_id: int, matched_name: Optional[str] = None, stats: Optional[dict] = None):
+    async def cache_team_id(self, team_name: str, team_id: int, matched_name: Optional[str] = None, stats: Optional[dict] = None):
         """Cache team ID with matched name."""
-        with self.get_connection() as conn:
-            conn.execute("""
+        async with aiosqlite.connect(self.db_path) as conn:
+            await conn.execute("""
                 INSERT OR REPLACE INTO team_cache (team_name, team_id, matched_name, stats_json, cached_at)
                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
             """, (team_name, team_id, matched_name, json.dumps(stats) if stats else None))
+            await conn.commit()
     
     @staticmethod
     def _make_hash(bet: ValueBet) -> str:
@@ -420,11 +407,11 @@ class RateLimiter:
         self.last_call[key] = time.time()
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# SECTION 7: ASYNC HTTP CLIENT
+# SECTION 7: ASYNC HTTP CLIENT (Global Session)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class APIClient:
-    """Async HTTP client with retry."""
+    """Async HTTP client with connection pooling and retry."""
     
     def __init__(self):
         self.timeout = ClientTimeout(total=30)
@@ -433,16 +420,21 @@ class APIClient:
             'sofascore': RateLimiter(20),
             'groq': RateLimiter(30),
         }
+        self.session: Optional[ClientSession] = None
     
-    @asynccontextmanager
-    async def session(self):
-        """Create async session."""
-        async with ClientSession(timeout=self.timeout) as session:
-            yield session
+    async def get_session(self) -> ClientSession:
+        """Get or create the global async session."""
+        if self.session is None or self.session.closed:
+            self.session = ClientSession(timeout=self.timeout)
+        return self.session
+
+    async def close(self):
+        """Close the global async session cleanly."""
+        if self.session and not self.session.closed:
+            await self.session.close()
     
     async def get_with_retry(
         self,
-        session: ClientSession,
         url: str,
         headers: Optional[Dict] = None,
         params: Optional[Dict] = None,
@@ -451,6 +443,7 @@ class APIClient:
     ) -> Optional[Dict]:
         """GET with retry."""
         await self.rate_limiters.get(rate_limit_key, RateLimiter(10)).acquire()
+        session = await self.get_session()
         
         for attempt in range(max_retries):
             try:
@@ -477,7 +470,6 @@ class APIClient:
     
     async def post_with_retry(
         self,
-        session: ClientSession,
         url: str,
         headers: Optional[Dict] = None,
         json_data: Optional[Dict] = None,
@@ -486,14 +478,25 @@ class APIClient:
     ) -> Optional[Dict]:
         """POST with retry."""
         await self.rate_limiters.get(rate_limit_key, RateLimiter(10)).acquire()
+        session = await self.get_session()
         
         for attempt in range(max_retries):
             try:
                 async with session.post(url, headers=headers, json=json_data) as response:
                     if response.status == 200:
                         return await response.json()
-                    else:
+                    elif response.status == 429:
+                        retry_after = int(response.headers.get('Retry-After', 5))
+                        logger.warning(f"Rate limited, waiting {retry_after}s")
+                        await asyncio.sleep(retry_after)
+                    elif response.status >= 500:
                         await asyncio.sleep(2 ** attempt)
+                    else:
+                        logger.error(f"HTTP {response.status}: {url}")
+                        return None
+            except asyncio.TimeoutError:
+                logger.warning(f"Timeout on attempt {attempt + 1}")
+                await asyncio.sleep(2 ** attempt)
             except Exception as e:
                 logger.error(f"POST error: {e}")
                 await asyncio.sleep(2 ** attempt)
@@ -803,7 +806,7 @@ class SofaScoreAPI:
     async def get_team_id(self, team_name: str) -> Optional[int]:
         """Search team ID with caching and variant matching."""
         # Check cache
-        cached_id = db.get_cached_team_id(team_name)
+        cached_id = await db.get_cached_team_id(team_name)
         if cached_id:
             logger.debug(f"Cache hit for '{team_name}': {cached_id}")
             return cached_id
@@ -814,9 +817,9 @@ class SofaScoreAPI:
         if result:
             team_id, matched_name = result
             # Cache both names
-            db.cache_team_id(team_name, team_id, matched_name)
+            await db.cache_team_id(team_name, team_id, matched_name)
             if matched_name != team_name:
-                db.cache_team_id(matched_name, team_id, matched_name)
+                await db.cache_team_id(matched_name, team_id, matched_name)
             return team_id
         
         return None
@@ -1134,7 +1137,6 @@ class GroqAnalyzer:
     def _parse_response(self, raw_text: str) -> List[ValueBet]:
         """Parse AI response."""
         cleaned = raw_text.strip()
-        cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
         cleaned = re.sub(r'\s*```$', '', cleaned)
         
         try:
@@ -1256,7 +1258,7 @@ class TelegramBot:
 📈 <b>Confidence:</b> {bet.confidence_score}/100
 
 💡 <b>ANALYSIS:</b>
-<i>{logic}</i>
+<blockquote expandable><i>{logic}</i></blockquote>
 """
 
         if bet.home_stats and bet.away_stats:
@@ -1301,14 +1303,15 @@ class TelegramBot:
         bets.sort(key=lambda b: b.ev_percentage, reverse=True)
         
         for bet in bets:
-            if db.is_bet_sent(db._make_hash(bet)):
+            # Check async DB
+            if await db.is_bet_sent(db._make_hash(bet)):
                 continue
             
             message = self.format_message(bet)
             success = await self.send_message(message)
             
             if success:
-                db.mark_bet_sent(bet)
+                await db.mark_bet_sent(bet) # Update async DB
                 sent_count += 1
                 logger.info(f"✅ Sent: {bet.pick}")
             
@@ -1341,56 +1344,56 @@ class Pipeline:
         
         for event in events:
             try:
-                    # Get ALL bookmaker odds
-                    all_bookmaker_odds = await odds_aggregator.get_all_bookmaker_odds(event.bookmakers)
-                    
-                    if not all_bookmaker_odds['h2h']:
-                        continue
-                    
-                    # Calculate fair vs best odds
-                    fair_odds, best_odds, num_bookies = odds_aggregator.calculate_fair_and_best_odds(
-                        all_bookmaker_odds['h2h']
-                    )
-                    
-                    if not fair_odds or not best_odds:
-                        continue
-                    
-                    logger.info(f"\n{'='*70}")
-                    logger.info(f"🏟️  {event.sport_title}: {event.home_team} vs {event.away_team}")
-                    logger.info(f"📅 {event.commence_time}")
-                    logger.info(f"📚 Bookmakers: {num_bookies}")
-                    logger.info(f"{'='*70}")
-                    
-                    # Find value bets
-                    value_bets = EVCalculator.find_value_bets(fair_odds, best_odds)
-                    
-                    if not value_bets:
-                        continue
-                    
-                    # Fetch team stats
-                    home_stats_task = sofascore.get_team_stats(event.home_team)
-                    away_stats_task = sofascore.get_team_stats(event.away_team)
-                    
-                    home_stats, away_stats = await asyncio.gather(
-                        home_stats_task, away_stats_task, return_exceptions=True
-                    )
-                    
-                    if isinstance(home_stats, Exception):
-                        home_stats = None
-                    if isinstance(away_stats, Exception):
-                        away_stats = None
-                    
-                    for vb in value_bets:
-                        events_with_value.append({
-                            'event': event,
-                            'value_bet': vb,
-                            'home_stats': home_stats,
-                            'away_stats': away_stats
-                        })
+                # Get ALL bookmaker odds
+                all_bookmaker_odds = await odds_aggregator.get_all_bookmaker_odds(event.bookmakers)
                 
-                except Exception as e:
-                    logger.error(f"Error processing {event.id}: {e}")
+                if not all_bookmaker_odds['h2h']:
                     continue
+                
+                # Calculate fair vs best odds
+                fair_odds, best_odds, num_bookies = odds_aggregator.calculate_fair_and_best_odds(
+                    all_bookmaker_odds['h2h']
+                )
+                
+                if not fair_odds or not best_odds:
+                    continue
+                
+                logger.info(f"\n{'='*70}")
+                logger.info(f"🏟️  {event.sport_title}: {event.home_team} vs {event.away_team}")
+                logger.info(f"📅 {event.commence_time}")
+                logger.info(f"📚 Bookmakers: {num_bookies}")
+                logger.info(f"{'='*70}")
+                
+                # Find value bets
+                value_bets = EVCalculator.find_value_bets(fair_odds, best_odds)
+                
+                if not value_bets:
+                    continue
+                
+                # Fetch team stats
+                home_stats_task = sofascore.get_team_stats(event.home_team)
+                away_stats_task = sofascore.get_team_stats(event.away_team)
+                
+                home_stats, away_stats = await asyncio.gather(
+                    home_stats_task, away_stats_task, return_exceptions=True
+                )
+                
+                if isinstance(home_stats, Exception):
+                    home_stats = None
+                if isinstance(away_stats, Exception):
+                    away_stats = None
+                
+                for vb in value_bets:
+                    events_with_value.append({
+                        'event': event,
+                        'value_bet': vb,
+                        'home_stats': home_stats,
+                        'away_stats': away_stats
+                    })
+            
+            except Exception as e:
+                logger.error(f"Error processing {event.id}: {e}")
+                continue
         
         if not events_with_value:
             logger.info("\n" + "="*70)
@@ -1408,7 +1411,7 @@ class Pipeline:
     async def run(self):
         """Execute pipeline."""
         try:
-            db.clean_old_records(Config.CACHE_EXPIRY_HOURS)
+            await db.clean_old_records(Config.CACHE_EXPIRY_HOURS)
             
             value_bets = await self.process_events()
             
@@ -1433,8 +1436,15 @@ async def main():
     logger.info(" zBET90 v4.0 - Professional +EV System")
     logger.info("=" * 80)
     
-    pipeline = Pipeline()
-    await pipeline.run()
+    # Initialize async database
+    await db.init_db()
+    
+    try:
+        pipeline = Pipeline()
+        await pipeline.run()
+    finally:
+        # Close global session
+        await api_client.close()
     
     logger.info("=" * 80)
     logger.info(" Completed")
