@@ -2,6 +2,7 @@ name: ZBET90 Enterprise AI Bot
 
 on:
   schedule:
+    # اجرا هر ۲ ساعت یکبار
     - cron: '0 */2 * * *'
   workflow_dispatch:
 
@@ -40,5 +41,5 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add api_cache/
+          git add api_cache/ log/
           git diff --quiet && git diff --staged --quiet || (git commit -m "⚙️ System: Update cache & execution logs [skip ci]" && git push)
