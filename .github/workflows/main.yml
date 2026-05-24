@@ -19,6 +19,17 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+
+      # -- 👇 مرحله جدید: بازیابی دیتابیس از کش 👇 --
+      - name: 💾 Restore Database
+        uses: actions/cache/restore@v4
+        id: db-cache
+        with:
+          path: zbet90.db
+          key: zbet90-db-${{ github.run_id }} # کلید یکتا برای هر اجرا
+          restore-keys: |
+            zbet90-db-
+      # ---------------------------------------------
       
       - name: 📦 Install dependencies
         run: |
@@ -27,27 +38,32 @@ jobs:
       
       - name: 🚀 Run zBET90 Scanner
         env:
-          # Required API Keys
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
-          # Optional Configuration
           SCAN_WINDOW_HOURS: ${{ vars.SCAN_WINDOW_HOURS || '3' }}
           MIN_EV_PERCENTAGE: ${{ vars.MIN_EV_PERCENTAGE || '3.0' }}
           MAX_BOOKMAKER_MARGIN: ${{ vars.MAX_BOOKMAKER_MARGIN || '8.0' }}
           KELLY_FRACTION: ${{ vars.KELLY_FRACTION || '0.25' }}
           
-          # AI Settings
           GROQ_MODEL: ${{ vars.GROQ_MODEL || 'llama-3.3-70b-versatile' }}
           GROQ_TEMPERATURE: ${{ vars.GROQ_TEMPERATURE || '0.1' }}
           
-          # Telegram
           TELEGRAM_ID: ${{ vars.TELEGRAM_ID || '@zBET90' }}
           
         run: python main.py
+
+      # -- 👇 مرحله جدید: ذخیره دیتابیس آپدیت شده در کش 👇 --
+      - name: 💾 Save Database
+        uses: actions/cache/save@v4
+        if: always() # همیشه دیتابیس را ذخیره کن حتی اگر کد خطا داد
+        with:
+          path: zbet90.db
+          key: zbet90-db-${{ github.run_id }}
+      # ---------------------------------------------
       
       - name: 📊 Upload logs (on failure)
         if: failure()
