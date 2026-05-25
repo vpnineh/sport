@@ -34,7 +34,7 @@ class Config:
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
     # ── API Limits ──
-    FOOTBALL_DATA_DAILY_LIMIT: int = 80  # پلن رایگان ۱۰۰/day با margin
+    FOOTBALL_DATA_DAILY_LIMIT: int = 80  # پلن رایگان 100/day با margin
     ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals", "btts"])
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
@@ -55,7 +55,7 @@ class Config:
     # ── Sharp Market Validation ──
     # تعداد outcomes مورد انتظار برای هر market
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
-        "h2h": {"min": 2, "max": 3},   # ۲ برای ورزش‌های آمریکایی، ۳ برای فوتبال
+        "h2h": {"min": 2, "max": 3},   # 2 برای ورزش‌های آمریکایی، 3 برای فوتبال
         "totals": {"min": 2, "max": 2},
         "btts": {"min": 2, "max": 2}
     })
@@ -108,7 +108,7 @@ TELEGRAM_CHAT_ID      = os.getenv("TELEGRAM_CHAT_ID")
 FOOTBALL_DATA_API_KEY = os.getenv("FOOTBALL_DATA_API_KEY")
 
 if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
-    logger.critical("❌ FATAL: Missing critical API Keys in GitHub Secrets.")
+    logger.critical("FATAL: Missing critical API Keys in GitHub Secrets.")
     sys.exit(1)
 
 # =========================================================
@@ -122,7 +122,7 @@ class CacheManager:
                 with open(filepath, 'r', encoding='utf-8') as f:
                     return json.load(f)
         except Exception as e:
-            logger.warning(f"⚠️ Cache load error ({filepath.name}): {e}")
+            logger.warning(f"Cache load error ({filepath.name}): {e}")
         return {}
 
     @staticmethod
@@ -132,7 +132,7 @@ class CacheManager:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            logger.warning(f"⚠️ Cache save error ({filepath.name}): {e}")
+            logger.warning(f"Cache save error ({filepath.name}): {e}")
 
     @staticmethod
     def is_valid(cache: dict, key: str, ttl_hours: float) -> bool:
@@ -210,21 +210,21 @@ def retry_request(max_retries=3, delay=2, backoff=2):
                     status = e.response.status_code if e.response is not None else 0
                     if status == 429:
                         wait_time = int(e.response.headers.get("Retry-After", current_delay * 3))
-                        logger.warning(f"⚠️ Rate Limit (429) in {func.__name__}. Sleeping {wait_time}s...")
+                        logger.warning(f"Rate Limit (429) in {func.__name__}. Sleeping {wait_time}s...")
                         time.sleep(wait_time)
                     elif status in [401, 403]:
-                        logger.error(f"❌ Auth Error in {func.__name__}: HTTP {status}")
+                        logger.error(f"Auth Error in {func.__name__}: HTTP {status}")
                         return None
                     else:
-                        logger.error(f"⚠️ HTTP {status} in {func.__name__}: {e}")
+                        logger.error(f"HTTP {status} in {func.__name__}: {e}")
                         if attempt == max_retries - 1:
                             return None
                 except requests.exceptions.Timeout:
-                    logger.warning(f"⚠️ Timeout in {func.__name__}. Attempt {attempt+1}/{max_retries}")
+                    logger.warning(f"Timeout in {func.__name__}. Attempt {attempt+1}/{max_retries}")
                     if attempt == max_retries - 1:
                         return None
                 except requests.exceptions.RequestException as e:
-                    logger.error(f"⚠️ Connection Error in {func.__name__}: {e}")
+                    logger.error(f"Connection Error in {func.__name__}: {e}")
                     if attempt == max_retries - 1:
                         return None
                 time.sleep(current_delay)
@@ -248,7 +248,7 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
             return json.loads(match.group(0))
     except Exception:
         pass
-    logger.error(f"❌ JSON parse failed: {raw_text[:300]}")
+    logger.error(f"JSON parse failed: {raw_text[:300]}")
     return None
 
 def clean_team_name(name: str) -> str:
@@ -274,7 +274,7 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
         elif minutes_left > 0:
             return f"{minutes_left}m"
         else:
-            return "🟢 LIVE"
+            return "LIVE"
     except Exception:
         return "N/A"
 
@@ -284,7 +284,7 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
 def validate_sharp_odds(sharp_odds: dict, market_key: str) -> tuple[bool, str]:
     """
     FIX برای باگ implied_sum:
-    بررسی می‌کنه که داده‌های sharp bookmaker کامل و معتبر هستن
+    بررسی میکنه که داده‌های sharp bookmaker کامل و معتبر هستن
     قبل از محاسبه true probability
     """
     if not sharp_odds:
@@ -327,13 +327,13 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
         sharp_odds = {}
         best_odds = {}
 
-        # ── استخراج sharp odds از bookmaker های معتبر ──
+        # استخراج sharp odds از bookmaker های معتبر
         for entry in market_data_list:
             bk = entry.get("bookmaker_key", "")
             if bk in CFG.SHARP_BOOKMAKERS:
                 for o in entry.get("outcomes", []):
                     name, price = o["name"], float(o["price"])
-                    if price <= 1.0:  # ضریب زیر 1 معنی ندارد
+                    if price <= 1.0:
                         continue
                     if name not in sharp_odds or price > sharp_odds[name]["price"]:
                         sharp_odds[name] = {
@@ -341,7 +341,7 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                             "bookmaker": entry["bookmaker"]
                         }
 
-        # ── best odds از همه bookmaker ها ──
+        # best odds از همه bookmaker ها
         for entry in market_data_list:
             for o in entry.get("outcomes", []):
                 name, price = o["name"], float(o["price"])
@@ -353,19 +353,17 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                         "bookmaker": entry["bookmaker"]
                     }
 
-        # ── اگه sharp odds نبود، از best odds استفاده کن ──
+        # اگه sharp odds نبود، از best odds استفاده کن
         if not sharp_odds and best_odds:
             sharp_odds = {k: v for k, v in best_odds.items()}
 
-        # ──────────────────────────────────────────────
         # FIX: اعتبارسنجی قبل از محاسبه
-        # ──────────────────────────────────────────────
         is_valid, reason = validate_sharp_odds(sharp_odds, market_key)
         if not is_valid:
-            logger.debug(f"⚠️ Skipping {market_key}: {reason}")
+            logger.debug(f"Skipping {market_key}: {reason}")
             continue
 
-        # ── محاسبه true probability با vig removal ──
+        # محاسبه true probability با vig removal
         implied_sum = sum(1.0 / v["price"] for v in sharp_odds.values())
 
         market_opportunities = []
@@ -380,12 +378,12 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
             ev = (true_prob * best_price) - 1.0
 
-            # ── تعیین threshold بر اساس نوع مارکت ──
+            # تعیین threshold بر اساس نوع مارکت
             if market_key == "h2h":
                 min_odds, min_ev = CFG.H2H_MIN_ODDS, CFG.H2H_MIN_EV
             elif market_key == "totals":
                 min_odds, min_ev = CFG.TOTALS_MIN_ODDS, CFG.TOTALS_MIN_EV
-            else:  # btts
+            else:
                 min_odds, min_ev = CFG.BTTS_MIN_ODDS, CFG.BTTS_MIN_EV
 
             if best_price >= min_odds and ev > min_ev:
@@ -409,7 +407,7 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
         opportunities.extend(market_opportunities)
 
-    # مرتب‌سازی بر اساس EV و انتخاب ۲ بهترین
+    # مرتب‌سازی بر اساس EV و انتخاب 2 بهترین
     opportunities.sort(key=lambda x: x["ev"], reverse=True)
     return opportunities[:2]
 
@@ -430,10 +428,10 @@ async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_ut
     try:
         async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=20)) as res:
             if res.status == 429:
-                logger.warning(f"⚠️ Odds API rate limit for market {market}")
+                logger.warning(f"Odds API rate limit for market {market}")
                 return []
             if res.status != 200:
-                logger.error(f"❌ Odds API HTTP {res.status} for market {market}")
+                logger.error(f"Odds API HTTP {res.status} for market {market}")
                 return []
             events = await res.json()
             filtered = []
@@ -445,13 +443,13 @@ async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_ut
                         filtered.append(e)
                 except Exception:
                     continue
-            logger.info(f"✅ Market '{market}': {len(filtered)} events in {CFG.MATCH_WINDOW_HOURS}h window")
+            logger.info(f"Market '{market}': {len(filtered)} events in {CFG.MATCH_WINDOW_HOURS}h window")
             return filtered
     except asyncio.TimeoutError:
-        logger.error(f"❌ Timeout fetching market {market}")
+        logger.error(f"Timeout fetching market {market}")
         return []
     except Exception as e:
-        logger.error(f"❌ Async fetch error for market {market}: {e}")
+        logger.error(f"Async fetch error for market {market}: {e}")
         return []
 
 async def fetch_all_odds_async() -> list:
@@ -469,7 +467,7 @@ async def fetch_all_odds_async() -> list:
 
     for i, market_events in enumerate(results):
         if isinstance(market_events, Exception):
-            logger.error(f"❌ Market fetch exception: {market_events}")
+            logger.error(f"Market fetch exception: {market_events}")
             continue
         market_key = CFG.ODDS_API_MARKETS[i]
         for e in market_events:
@@ -489,7 +487,7 @@ async def fetch_all_odds_async() -> list:
                     })
 
     result = list(all_events.values())
-    logger.info(f"📊 Total unique events in window: {len(result)}")
+    logger.info(f"Total unique events in window: {len(result)}")
     return result
 
 # =========================================================
@@ -511,7 +509,7 @@ async def fetch_sofascore_endpoint_async(
             if res.status == 200:
                 return await res.json()
     except Exception as e:
-        logger.debug(f"⚠️ SofaScore async error {url}: {e}")
+        logger.debug(f"SofaScore async error {url}: {e}")
     return None
 
 async def fetch_sofascore_stats_async(match_id: int) -> dict:
@@ -533,7 +531,7 @@ async def fetch_sofascore_stats_async(match_id: int) -> dict:
     data = {}
     for key, result in zip(tasks.keys(), results):
         if isinstance(result, Exception):
-            logger.debug(f"⚠️ SofaScore {key} exception: {result}")
+            logger.debug(f"SofaScore {key} exception: {result}")
         elif result is not None:
             data[key] = result
     return data
@@ -563,7 +561,7 @@ async def search_sofascore_match_async(home: str, away: str) -> Optional[int]:
                     if result.get("type") == "event":
                         return result.get("entity", {}).get("id")
         except Exception as e:
-            logger.debug(f"⚠️ SofaScore search error: {e}")
+            logger.debug(f"SofaScore search error: {e}")
     return None
 
 # =========================================================
@@ -588,7 +586,7 @@ class FootballDataAdapter:
             last_reset_dt = datetime.fromisoformat(last_reset)
             if datetime.now(timezone.utc).date() > last_reset_dt.date():
                 self.call_count = 0
-                logger.info("🔄 Football-Data call counter reset for new day")
+                logger.info("Football-Data call counter reset for new day")
         except Exception:
             self.call_count = 0
 
@@ -609,7 +607,7 @@ class FootballDataAdapter:
     def _raw_get(self, endpoint: str, params: dict = None) -> dict:
         if not self._can_call():
             logger.warning(
-                f"⚠️ Football-Data daily limit ({self.call_count}/{CFG.FOOTBALL_DATA_DAILY_LIMIT})"
+                f"Football-Data daily limit ({self.call_count}/{CFG.FOOTBALL_DATA_DAILY_LIMIT})"
             )
             return {}
         res = requests.get(
@@ -620,7 +618,7 @@ class FootballDataAdapter:
         )
         res.raise_for_status()
         self._increment_call()
-        logger.debug(f"📡 Football-Data call #{self.call_count}: {endpoint}")
+        logger.debug(f"Football-Data call #{self.call_count}: {endpoint}")
         return res.json()
 
     def find_team_id(self, team_name: str) -> Optional[int]:
@@ -630,12 +628,12 @@ class FootballDataAdapter:
             return team_id_cache[key]
         if not self._can_call():
             return None
-        logger.info(f"🌐 Searching team ID: '{team_name}'")
+        logger.info(f"Searching team ID: '{team_name}'")
         data = self._raw_get("/teams", {"name": clean_team_name(team_name)})
         team_id = None
         if data and data.get("teams"):
             team_id = data["teams"][0]["id"]
-            logger.info(f"✅ Team found: {team_name} -> ID:{team_id}")
+            logger.info(f"Team found: {team_name} -> ID:{team_id}")
         # همیشه ذخیره کن (حتی None) تا دوباره جستجو نشه
         team_id_cache[key] = team_id
         CacheManager.save(CFG.TEAM_ID_CACHE_FILE, team_id_cache)
@@ -645,7 +643,7 @@ class FootballDataAdapter:
         cache_key = f"form_{team_id}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_TEAM_FORM):
             return CacheManager.get(self.daily_cache, cache_key) or {}
-        logger.info(f"🌐 Fetching form: {team_name} (id:{team_id})")
+        logger.info(f"Fetching form: {team_name} (id:{team_id})")
         data = self._raw_get(f"/teams/{team_id}/matches", {"status": "FINISHED", "limit": 5})
         if not data:
             return {}
@@ -692,7 +690,7 @@ class FootballDataAdapter:
         cache_key = f"h2h_{min(team1_id,team2_id)}_{max(team1_id,team2_id)}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, cache_key) or {}
-        logger.info(f"🌐 Fetching H2H: {team1_id} vs {team2_id}")
+        logger.info(f"Fetching H2H: {team1_id} vs {team2_id}")
         data = self._raw_get(f"/teams/{team1_id}/matches", {"status": "FINISHED", "limit": 20})
         if not data:
             return {}
@@ -779,17 +777,17 @@ async def get_stats_async(
         "data_quality": "none"
     }
 
-    # ── SofaScore match ID (از cache یا جستجو) ──
+    # SofaScore match ID (از cache یا جستجو)
     cached_mid = match_id_cache.get(home, away)
     if cached_mid is not None:
         # None کش شده یعنی قبلاً پیدا نشده
         match_id = cached_mid if cached_mid != 0 else None
     else:
-        logger.info(f"🔍 Searching SofaScore match ID: {home} vs {away}")
+        logger.info(f"Searching SofaScore match ID: {home} vs {away}")
         match_id = await search_sofascore_match_async(home, away)
         match_id_cache.set(home, away, match_id if match_id else 0)
 
-    # ── دریافت موازی: SofaScore + Football-Data ──
+    # دریافت موازی: SofaScore + Football-Data
     tasks = []
 
     if match_id:
@@ -827,7 +825,7 @@ async def get_stats_async(
 
         for name, result in zip(names, results):
             if isinstance(result, Exception):
-                logger.warning(f"⚠️ Stats fetch error ({name}): {result}")
+                logger.warning(f"Stats fetch error ({name}): {result}")
                 continue
             if name == "sofascore" and result:
                 stats["sofascore"] = result
@@ -842,7 +840,7 @@ async def get_stats_async(
     elif has_football or has_sofascore:
         stats["data_quality"] = "medium"
 
-    logger.info(f"✅ Stats quality for {home} vs {away}: {stats['data_quality']}")
+    logger.info(f"Stats quality for {home} vs {away}: {stats['data_quality']}")
     return stats
 
 # =========================================================
@@ -926,7 +924,7 @@ def generate_dual_ai_analysis(
         "key_stat": "Positive EV detected vs sharp lines"
     }
 
-    # ─── مرحله ۱: llama-4-scout - تحلیل آماری ───
+    # مرحله 1: llama-4-scout - تحلیل آماری
     sys1 = (
         "You are an Elite Quantitative Sports Analyst.\n"
         "A mathematical model found a +EV betting opportunity.\n\n"
@@ -961,13 +959,13 @@ def generate_dual_ai_analysis(
             temperature=0.1
         )
         analysis_1 = robust_json_extractor(raw1)
-        logger.info("✅ Model 1 (llama-4-scout) complete")
+        logger.info("Model 1 (llama-4-scout) complete")
     except Exception as e:
-        logger.warning(f"⚠️ Model 1 failed: {e}")
+        logger.warning(f"Model 1 failed: {e}")
 
     time.sleep(1.5)
 
-    # ─── مرحله ۲: qwen-qwq-32b - Validation و Confidence ───
+    # مرحله 2: qwen-qwq-32b - Validation و Confidence
     initial_logic = (analysis_1 or {}).get("logic", "No initial analysis")
     initial_risk = (analysis_1 or {}).get("risk_level", "Medium")
 
@@ -983,7 +981,7 @@ def generate_dual_ai_analysis(
         "If initial logic is vague or generic, rewrite it with specific stats.\n\n"
         "OUTPUT: valid JSON object only. No markdown.\n"
         '{"confidence":72,"validated_logic":"Rewritten or approved logic here.",'
-        '"risk_adjustment":"Medium"}\n\n'
+        '"risk_adjustment":"Medium"}\n\n"
         "Respond with JSON only."
     )
     u2 = (
@@ -1003,11 +1001,11 @@ def generate_dual_ai_analysis(
             temperature=0.05
         )
         analysis_2 = robust_json_extractor(raw2)
-        logger.info("✅ Model 2 (qwen-qwq-32b) complete")
+        logger.info("Model 2 (qwen-qwq-32b) complete")
     except Exception as e:
-        logger.warning(f"⚠️ Model 2 failed: {e}")
+        logger.warning(f"Model 2 failed: {e}")
 
-    # ─── ادغام ───
+    # ادغام
     result = {**default_response}
     if analysis_1:
         result.update({k: v for k, v in analysis_1.items() if v})
@@ -1080,7 +1078,7 @@ def format_message(
 # =========================================================
 async def async_main():
     logger.info("=" * 60)
-    logger.info("🚀 ZBET90 ENTERPRISE ENGINE v2.1 STARTING")
+    logger.info("ZBET90 ENTERPRISE ENGINE v2.1 STARTING")
     logger.info("=" * 60)
 
     sent_history = SentHistory()
@@ -1088,19 +1086,19 @@ async def async_main():
     match_id_cache = MatchIDCache()
     now_utc = datetime.now(timezone.utc)
 
-    # ── دریافت موازی همه بازی‌ها ──
-    logger.info("📡 Fetching events (async, all markets simultaneously)...")
+    # دریافت موازی همه بازی‌ها
+    logger.info("Fetching events (async, all markets simultaneously)...")
     events = await fetch_all_odds_async()
 
     if not events:
-        logger.info("🛑 No events found in the 2-hour window.")
+        logger.info("No events found in the 2-hour window.")
         return
 
-    logger.info(f"🔍 Analyzing {len(events)} events for +EV opportunities...")
+    logger.info(f"Analyzing {len(events)} events for +EV opportunities...")
 
     total_sent = 0
 
-    # ── پردازش هر بازی ──
+    # پردازش هر بازی
     for event in events:
         home = event.get("home_team", "")
         away = event.get("away_team", "")
@@ -1120,7 +1118,7 @@ async def async_main():
         if not opportunities:
             continue
 
-        logger.info(f"💎 {len(opportunities)} EV opportunity(ies): {home} vs {away}")
+        logger.info(f"{len(opportunities)} EV opportunity(ies): {home} vs {away}")
 
         # دریافت آمار (یک بار برای همه فرصت‌های یک بازی)
         stats = await get_stats_async(
@@ -1129,11 +1127,11 @@ async def async_main():
 
         for opp in opportunities:
             if sent_history.was_sent(home, away, opp["pick"], opp["market"]):
-                logger.info(f"⏭️ SKIP duplicate: {home} vs {away} | {opp['pick']}")
+                logger.info(f"SKIP duplicate: {home} vs {away} | {opp['pick']}")
                 continue
 
             logger.info(
-                f"🤖 Dual-AI analysis: {home} vs {away} | "
+                f"Dual-AI analysis: {home} vs {away} | "
                 f"{opp['pick']} | EV:+{opp['edge_pct']:.1f}%"
             )
             ai_data = generate_dual_ai_analysis(
@@ -1145,17 +1143,17 @@ async def async_main():
             if send_telegram(msg):
                 sent_history.mark_sent(home, away, opp["pick"], opp["market"])
                 total_sent += 1
-                logger.info(f"✅ Sent: {home} vs {away} | {opp['pick']}")
+                logger.info(f"Sent: {home} vs {away} | {opp['pick']}")
             else:
-                logger.error(f"❌ Telegram failed: {home} vs {away}")
+                logger.error(f"Telegram failed: {home} vs {away}")
 
             await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
     logger.info("=" * 60)
     logger.info(
-        f"🏆 Done! {total_sent} signal(s) sent."
+        f"Done! {total_sent} signal(s) sent."
         if total_sent > 0
-        else "⚖️ No qualifying +EV opportunities found."
+        else "No qualifying +EV opportunities found."
     )
     logger.info("=" * 60)
 
@@ -1169,5 +1167,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        logger.critical(f"❌ SYSTEM FAILURE: {str(e)}", exc_info=True)
+        logger.critical(f"SYSTEM FAILURE: {str(e)}", exc_info=True)
         sys.exit(1)
