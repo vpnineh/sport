@@ -71,9 +71,8 @@ class Config:
 CFG = Config()
 
 # =========================================================
-# 2. LOGGING SETUP
+# 2. LOGGING SETUP (WITH DEEP DEBUG)
 # =========================================================
-# خواندن متغیر دیباگ از محیط (که از yml می‌آید)
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
 
 CFG.CACHE_DIR.mkdir(exist_ok=True)
@@ -82,10 +81,9 @@ CFG.HISTORICAL_DIR.mkdir(exist_ok=True)
 
 logger = logging.getLogger("ZBET90_ENGINE")
 
-# اگر دیباگ فعال بود، لول لاگر را روی DEBUG تنظیم کن
 if DEBUG_MODE:
     logger.setLevel(logging.DEBUG)
-    logger.info("--- DEBUG MODE ENABLED: Detailed logging active ---")
+    logger.info("--- 🚨 DEBUG MODE ENABLED: Deep Tracing Active ---")
 else:
     logger.setLevel(logging.INFO)
 
@@ -164,6 +162,7 @@ NATIONALITY_FLAGS: dict = {
     # US Sports
     "lakers": "US", "celtics": "US", "warriors": "US", "bulls": "US",
     "yankees": "US", "dodgers": "US", "cubs": "US", "red sox": "US",
+    "padres": "US", "phillies": "US", "braves": "US", "astros": "US",
 }
 
 def _code_to_flag(code: str) -> str:
@@ -293,7 +292,6 @@ class HistoricalDataEngine:
     def __init__(self):
         self.atp_matches = None
         self.wta_matches = None
-        # Recent years give the best indication of current form
         self.years_to_fetch = [2024, 2025, 2026] 
 
     def _download_github_csv(self, url: str, filepath: Path) -> bool:
@@ -318,7 +316,6 @@ class HistoricalDataEngine:
         atp_dfs = []
         wta_dfs = []
         
-        # We only need specific columns to keep RAM usage low
         cols_to_use = ["surface", "winner_name", "loser_name"]
         
         for year in self.years_to_fetch:
@@ -344,7 +341,6 @@ class HistoricalDataEngine:
                 except Exception as e:
                     logger.error("Failed to parse WTA CSV %s: %s", wta_path, e)
 
-        # Concatenate dataframes
         if atp_dfs:
             self.atp_matches = pd.concat(atp_dfs, ignore_index=True)
             logger.info("[HISTORICAL] ATP Data loaded: %d matches", len(self.atp_matches))
@@ -360,7 +356,6 @@ class HistoricalDataEngine:
             return {}
 
         def clean_name(n: str) -> str:
-            # Match by last name primarily for robustness against API vs Github name mismatches
             return n.split()[-1].lower() 
 
         pa_clean = clean_name(player_a)
@@ -368,7 +363,6 @@ class HistoricalDataEngine:
 
         stats = {"player_a": {}, "player_b": {}, "h2h": {}}
         
-        # Calculate individual win rates
         for p_clean, orig_name, key in [(pa_clean, player_a, "player_a"), (pb_clean, player_b, "player_b")]:
             wins = df[df['winner_name'].str.lower().str.contains(p_clean, na=False)]
             losses = df[df['loser_name'].str.lower().str.contains(p_clean, na=False)]
@@ -381,7 +375,6 @@ class HistoricalDataEngine:
                     "matches_found": total
                 }
         
-        # Calculate Historical Head-to-Head
         h2h_a_wins = df[(df['winner_name'].str.lower().str.contains(pa_clean, na=False)) & 
                         (df['loser_name'].str.lower().str.contains(pb_clean, na=False))]
                         
@@ -473,7 +466,7 @@ def clean_team_name(name: str) -> str:
 
 def normalize_sport_key(sport_title: str) -> str:
     lower_title = sport_title.lower()
-    if "tennis" in lower_title or "atp" in lower_title or "wta" in lower_title: 
+    if any(k in lower_title for k in ["tennis", "atp", "wta"]): 
         return "tennis"
         
     keywords = ["soccer", "football", "premier league", "la liga", "bundesliga", "serie a", "ligue 1", "champions league"]
@@ -495,6 +488,15 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
         return "LIVE"
     except Exception: 
         return "N/A"
+
+def get_market_label(market_key: str) -> str:
+    """Properly maps API market keys to human-readable VIP labels."""
+    mapping = {
+        "h2h": "Moneyline (Match Winner)",
+        "totals": "Over/Under",
+        "spreads": "Point Spread / Handicap"
+    }
+    return mapping.get(market_key, market_key.replace("_", " ").title())
 
 def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
     """Calculates the mathematical Edge against Sharp Bookmakers."""
@@ -555,7 +557,7 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                 opp = {
                     "pick": outcome_name, 
                     "market": market_key,
-                    "market_label": "Winner" if market_key == "h2h" else "Over/Under",
+                    "market_label": get_market_label(market_key),
                     "prob": round(true_prob, 4), 
                     "odds": round(best_price, 3),
                     "bookmaker": best_odds[outcome_name]["bookmaker"],
@@ -602,7 +604,8 @@ async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_ut
                     continue
             return valid_events
     except Exception as e:
-        logger.error("Async fetch error market %s: %s", market, e)
+        if DEBUG_MODE:
+            logger.debug("Async fetch error market %s: %s", market, e)
         return []
 
 async def fetch_all_odds_async() -> list:
@@ -643,12 +646,13 @@ async def fetch_all_odds_async() -> list:
     return list(all_events.values())
 
 # =========================================================
-# 10. STATS & FOOTBALL DATA ADAPTER
+# 10. STATS & FOOTBALL DATA ADAPTER & SOFASCORE
 # =========================================================
 class FootballDataAdapter:
     def __init__(self):
         self.headers = {"X-Auth-Token": FOOTBALL_DATA_API_KEY} if FOOTBALL_DATA_API_KEY else {}
         self.call_count = 0
+        self.daily_cache = CacheManager.load(CFG.DAILY_STATS_CACHE_FILE)
 
     @retry_request(max_retries=2, delay=3)
     def get_team_id(self, team_name: str) -> Optional[int]:
@@ -667,24 +671,251 @@ class FootballDataAdapter:
             return res.json()["teams"][0]["id"]
         return None
 
+    def get_team_recent_form(self, team_id: int, team_name: str) -> dict:
+        cache_key = f"form_{team_id}"
+        if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_TEAM_FORM):
+            return CacheManager.get(self.daily_cache, cache_key) or {}
+            
+        res = requests.get(
+            f"https://api.football-data.org/v4/teams/{team_id}/matches", 
+            headers=self.headers, 
+            params={"status": "FINISHED", "limit": 5}, 
+            timeout=10
+        )
+        
+        if not res.ok or not res.json():
+            return {}
+            
+        form = self._parse_form(res.json(), team_id)
+        self.daily_cache = CacheManager.set(self.daily_cache, cache_key, form)
+        CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
+        return form
+
+    def _parse_form(self, data: dict, team_id: int) -> dict:
+        results, goals_scored, goals_conceded = [], [], []
+        for m in data.get("matches", [])[-5:]:
+            home_id = m.get("homeTeam", {}).get("id")
+            score = m.get("score", {}).get("fullTime", {})
+            hg = score.get("home", 0) or 0
+            ag = score.get("away", 0) or 0
+            if home_id == team_id:
+                scored, conceded = hg, ag
+                results.append("W" if hg > ag else ("D" if hg == ag else "L"))
+            else:
+                scored, conceded = ag, hg
+                results.append("W" if ag > hg else ("D" if ag == hg else "L"))
+            goals_scored.append(scored)
+            goals_conceded.append(conceded)
+        total = len(results)
+        if total == 0:
+            return {}
+        return {
+            "form_string": "".join(results),
+            "win_rate": round(results.count("W") / total, 2),
+            "draw_rate": round(results.count("D") / total, 2),
+            "avg_goals_scored": round(sum(goals_scored) / total, 2),
+            "avg_goals_conceded": round(sum(goals_conceded) / total, 2),
+            "btts_rate": round(sum(1 for s, c in zip(goals_scored, goals_conceded) if s > 0 and c > 0) / total, 2),
+            "over25_rate": round(sum(1 for s, c in zip(goals_scored, goals_conceded) if s + c > 2.5) / total, 2),
+            "matches_analyzed": total,
+        }
+
+    def get_h2h(self, team1_id: int, team2_id: int) -> dict:
+        cache_key = f"h2h_{min(team1_id, team2_id)}_{max(team1_id, team2_id)}"
+        if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_H2H):
+            return CacheManager.get(self.daily_cache, cache_key) or {}
+            
+        res = requests.get(
+            f"https://api.football-data.org/v4/teams/{team1_id}/matches", 
+            headers=self.headers, 
+            params={"status": "FINISHED", "limit": 20}, 
+            timeout=10
+        )
+        
+        if not res.ok or not res.json():
+            return {}
+            
+        h2h_matches = [
+            m for m in res.json().get("matches", [])
+            if {m.get("homeTeam", {}).get("id"), m.get("awayTeam", {}).get("id")} == {team1_id, team2_id}
+        ]
+        
+        result = self._parse_h2h(h2h_matches, team1_id)
+        self.daily_cache = CacheManager.set(self.daily_cache, cache_key, result)
+        CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
+        return result
+
+    def _parse_h2h(self, matches: list, team1_id: int) -> dict:
+        t1_wins = t2_wins = draws = total_goals = btts = over25 = 0
+        total = len(matches)
+        for m in matches:
+            score = m.get("score", {}).get("fullTime", {})
+            hg = score.get("home", 0) or 0
+            ag = score.get("away", 0) or 0
+            home_id = m.get("homeTeam", {}).get("id")
+            if hg > ag:
+                if home_id == team1_id: t1_wins += 1
+                else: t2_wins += 1
+            elif ag > hg:
+                if home_id != team1_id: t1_wins += 1
+                else: t2_wins += 1
+            else: draws += 1
+            
+            total_goals += hg + ag
+            if hg > 0 and ag > 0: btts += 1
+            if hg + ag > 2.5: over25 += 1
+            
+        if total == 0:
+            return {}
+            
+        return {
+            "total_h2h": total,
+            "team1_wins": t1_wins,
+            "team2_wins": t2_wins,
+            "draws": draws,
+            "avg_goals_per_game": round(total_goals / total, 2),
+            "btts_rate": round(btts / total, 2),
+            "over25_rate": round(over25 / total, 2),
+        }
+
+def _sofa_headers() -> dict:
+    return {
+        "x-rapidapi-key": RAPIDAPI_KEY or "",
+        "x-rapidapi-host": "sofascore.p.rapidapi.com",
+    }
+
+async def fetch_sofascore_endpoint_async(session: aiohttp.ClientSession, url: str, params: dict) -> Optional[dict]:
+    try:
+        async with session.get(url, headers=_sofa_headers(), params=params, timeout=12) as res:
+            if res.status == 200:
+                return await res.json()
+    except Exception as e:
+        if DEBUG_MODE: 
+            logger.debug("SofaScore endpoint error %s: %s", url, e)
+    return None
+
+async def fetch_sofascore_stats_async(match_id: int) -> dict:
+    endpoints = {
+        "h2h": "https://sofascore.p.rapidapi.com/matches/get-h2h-events",
+        "lineups": "https://sofascore.p.rapidapi.com/matches/get-lineups",
+        "streaks": "https://sofascore.p.rapidapi.com/matches/get-team-streaks",
+    }
+    params = {"matchId": str(match_id)}
+    
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=5, ssl=False)) as session:
+        results = await asyncio.gather(
+            *[fetch_sofascore_endpoint_async(session, url, params) for url in endpoints.values()],
+            return_exceptions=True,
+        )
+        
+    data = {}
+    for key, result in zip(endpoints.keys(), results):
+        if not isinstance(result, Exception) and result is not None:
+            data[key] = result
+    return data
+
 async def search_sofascore_match_async(home: str, away: str) -> Optional[int]:
     query = f"{clean_team_name(home)} {clean_team_name(away)}"
-    headers = {
-        "x-rapidapi-key": RAPIDAPI_KEY, 
-        "x-rapidapi-host": "sofascore.p.rapidapi.com"
-    }
-    
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://sofascore.p.rapidapi.com/search", headers=headers, params={"q": query, "page": "0"}, timeout=10) as res:
+            async with session.get("https://sofascore.p.rapidapi.com/search", headers=_sofa_headers(), params={"q": query, "page": "0"}, timeout=10) as res:
                 if res.status == 200:
                     data = await res.json()
                     for item in data.get("results", []):
                         if item.get("type") == "event" and item.get("entity", {}).get("id"): 
                             return item["entity"]["id"]
-    except Exception: 
-        pass
+    except Exception as e:
+        if DEBUG_MODE:
+            logger.debug("SofaScore search error: %s", e)
     return None
+
+class MatchIDCache:
+    def __init__(self):
+        self.cache = CacheManager.load(CFG.MATCH_ID_CACHE_FILE)
+
+    def get(self, home: str, away: str) -> Optional[int]:
+        key = self._key(home, away)
+        if CacheManager.is_valid(self.cache, key, CFG.TTL_MATCH_ID):
+            return CacheManager.get(self.cache, key)
+        return None
+
+    def set(self, home: str, away: str, match_id: Optional[int]) -> None:
+        key = self._key(home, away)
+        self.cache = CacheManager.set(self.cache, key, match_id)
+        CacheManager.save(CFG.MATCH_ID_CACHE_FILE, self.cache)
+
+    @staticmethod
+    def _key(home: str, away: str) -> str:
+        return hashlib.md5(f"{home.lower()}|{away.lower()}".encode()).hexdigest()
+
+async def get_stats_async(home: str, away: str, sport_key: str, football_adapter: FootballDataAdapter, match_id_cache: MatchIDCache) -> dict:
+    """Aggregates live data from Sofascore and Football-Data."""
+    stats = {
+        "home_form": {},
+        "away_form": {},
+        "h2h": {},
+        "sofascore": {},
+        "data_quality": "none",
+    }
+
+    cached_mid = match_id_cache.get(home, away)
+    if cached_mid is not None:
+        match_id = cached_mid if cached_mid != 0 else None
+    else:
+        logger.info("Searching SofaScore: %s vs %s", home, away)
+        match_id = await search_sofascore_match_async(home, away)
+        match_id_cache.set(home, away, match_id if match_id else 0)
+
+    task_names = []
+    coros = []
+
+    if match_id:
+        task_names.append("sofascore")
+        coros.append(fetch_sofascore_stats_async(match_id))
+
+    if sport_key == "football":
+        loop = asyncio.get_running_loop()
+
+        async def get_football_data():
+            home_id = await loop.run_in_executor(None, football_adapter.get_team_id, home)
+            away_id = await loop.run_in_executor(None, football_adapter.get_team_id, away)
+            if not home_id or not away_id:
+                return {}
+            hf, af, h2h = await asyncio.gather(
+                loop.run_in_executor(None, football_adapter.get_team_recent_form, home_id, home),
+                loop.run_in_executor(None, football_adapter.get_team_recent_form, away_id, away),
+                loop.run_in_executor(None, football_adapter.get_h2h, home_id, away_id),
+                return_exceptions=True,
+            )
+            out = {}
+            if not isinstance(hf, Exception) and hf: out["home_form"] = hf
+            if not isinstance(af, Exception) and af: out["away_form"] = af
+            if not isinstance(h2h, Exception) and h2h: out["h2h"] = h2h
+            return out
+
+        task_names.append("football")
+        coros.append(get_football_data())
+
+    if coros:
+        gathered = await asyncio.gather(*coros, return_exceptions=True)
+        for name, result in zip(task_names, gathered):
+            if isinstance(result, Exception):
+                logger.warning("Stats fetch error (%s): %s", name, result)
+                continue
+            if name == "sofascore" and result:
+                stats["sofascore"] = result
+            elif name == "football" and isinstance(result, dict):
+                stats.update(result)
+
+    has_football = bool(stats.get("home_form") or stats.get("h2h"))
+    has_sofascore = bool(stats.get("sofascore"))
+    
+    if has_football and has_sofascore:
+        stats["data_quality"] = "high"
+    elif has_football or has_sofascore:
+        stats["data_quality"] = "medium"
+
+    return stats
 
 # =========================================================
 # 11. ENTERPRISE AI ANALYSIS & SCORING
@@ -737,6 +968,9 @@ def calculate_system_confidence(ev_edge: float, stats: dict, market: str) -> tup
     return score, risk
 
 def call_groq_sdk(model: str, messages: list, temperature: float = 0.1) -> Optional[str]:
+    if DEBUG_MODE:
+        logger.debug("Sending Payload to Groq Model: %s", model)
+        
     kwargs = {
         "model": model, 
         "messages": messages, 
@@ -749,7 +983,10 @@ def call_groq_sdk(model: str, messages: list, temperature: float = 0.1) -> Optio
         
     try:
         res = groq_client.chat.completions.create(**kwargs)
-        return res.choices[0].message.content
+        content = res.choices[0].message.content
+        if DEBUG_MODE:
+            logger.debug("Groq Response RAW: %s", content)
+        return content
     except Exception as e:
         logger.error("Groq SDK error model=%s: %s", model, e)
         return None
@@ -768,33 +1005,43 @@ def generate_dual_ai_analysis(home: str, away: str, sport: str, pick: str, marke
 
     # Format stats for the Prompt
     stats_str = json.dumps(stats, indent=2)[:1500]
+    has_real_stats = "historical_data" in stats or "home_form" in stats or "sofascore" in stats
 
+    if DEBUG_MODE:
+        logger.debug(f"[AI GENERATION] Match: {home} vs {away} | Pick: {pick} | Real Stats Available: {has_real_stats}")
+
+    # Anti-Hallucination VIP Prompt
     sys_analyst = (
-        "You are an elite sports betting analyst for a premium syndicate.\n"
-        "Write EXACTLY two punchy, insightful sentences justifying the given pick.\n"
-        "RULES:\n"
-        "- NEVER mention 'Expected Value', 'EV', 'data quality', 'points', or internal models.\n"
-        "- Use the provided statistics (like historical win rates or H2H) to highlight dominance.\n"
-        "- If stats are sparse, focus on the sharp market movement and value.\n"
+        "You are an elite, high-stakes sports betting analyst for a VIP syndicate.\n"
+        "Write EXACTLY two punchy, professional sentences justifying the given pick.\n"
+        "STRICT RULES:\n"
+        "- NEVER mention 'Expected Value', 'EV', 'data quality', 'points', or models.\n"
         "- Determine the EXACT country flag emoji for home_flag and away_flag.\n"
-        "OUTPUT JSON ONLY: {\"logic\": \"your 2 sentence analysis\", \"sport_emoji\": \"...\", \"home_flag\": \"...\", \"away_flag\": \"...\"}"
     )
     
-    u1 = f"MATCH: {home} vs {away}\nSPORT: {sport}\nPICK: {pick} [{market}]\n\nSTATS:\n{stats_str}\n\nOUTPUT JSON ONLY:"
+    if has_real_stats:
+        sys_analyst += "- Use the provided historical/form statistics to highlight the team/player's dominance.\n"
+    else:
+        sys_analyst += "- IMPORTANT: There are NO statistics provided. DO NOT invent past matches, momentum, or form. You MUST explicitly state that this pick is driven solely by a significant quantitative edge and odds discrepancies in the sharp betting market.\n"
+        
+    sys_analyst += "OUTPUT JSON ONLY: {\"logic\": \"your 2 sentence analysis\", \"sport_emoji\": \"...\", \"home_flag\": \"...\", \"away_flag\": \"...\"}"
+
+    u1 = f"MATCH: {home} vs {away}\nSPORT: {sport}\nPICK: {pick}\nMARKET TYPE: {get_market_label(market)}\n\nSTATS:\n{stats_str}\n\nOUTPUT JSON ONLY:"
 
     analysis_1 = None
     try:
-        raw1 = call_groq_sdk(CFG.AI_MODEL_ANALYST, [{"role": "system", "content": sys_analyst}, {"role": "user", "content": u1}], temperature=0.4)
+        raw1 = call_groq_sdk(CFG.AI_MODEL_ANALYST, [{"role": "system", "content": sys_analyst}, {"role": "user", "content": u1}], temperature=0.3)
         analysis_1 = robust_json_extractor(raw1)
     except Exception as e: 
         logger.warning("Model Analyst failed: %s", e)
 
     initial_logic = (analysis_1 or {}).get("logic", default_response["logic"])
     
+    # Editor Pass for Hallucination Checking
     sys_editor = (
         "You are the Chief Editor for a high-end sports betting platform.\n"
-        "Review the provided analysis. If it sounds robotic, mentions internal models, points, or 'EV', REWRITE it.\n"
-        "It must sound like a professional sports pundit giving a confident tip. Max 3 sentences.\n"
+        "Review the drafted analysis. REWRITE it if it hallucinates form/momentum when none exists, or sounds robotic.\n"
+        "Keep it strictly under 3 sentences. Professional Tipster Tone.\n"
         "OUTPUT JSON ONLY: {\"validated_logic\": \"...\"}"
     )
     
@@ -866,13 +1113,14 @@ def send_telegram(message_html: str) -> bool:
 # =========================================================
 async def async_main():
     logger.info("=" * 60)
-    logger.info("ZBET90 ENTERPRISE ENGINE v3.0 (w/ GitHub Historical) STARTING")
+    logger.info("ZBET90 ENTERPRISE ENGINE v3.2 (VIP + FULL STATS) STARTING")
     logger.info("=" * 60)
 
     sent_history = SentHistory()
+    football_adapter = FootballDataAdapter()
+    match_id_cache = MatchIDCache()
     now_utc = datetime.now(timezone.utc)
     
-    # Init Historical Engine (GitHub Actions Friendly)
     historical_engine = HistoricalDataEngine()
     logger.info("[HISTORICAL] Syncing Github Data...")
     historical_engine.sync_and_load_tennis()
@@ -905,9 +1153,13 @@ async def async_main():
         if sent_history.was_sent(home, away, opp["market"]): 
             continue
 
-        stats = {"data_quality": "medium"} 
+        if DEBUG_MODE: 
+            logger.debug("Found Opportunity: %s vs %s | Pick: %s", home, away, opp['pick'])
+
+        # 1. Fetch Live APIs (SofaScore + Football-Data)
+        stats = await get_stats_async(home, away, sport_key, football_adapter, match_id_cache)
         
-        # Inject Historical Data if Tennis
+        # 2. Inject Historical Data for Tennis
         if sport_key == "tennis":
             is_wta = "wta" in sport.lower()
             hist_stats = historical_engine.get_tennis_edge(home, away, is_wta)
@@ -919,18 +1171,20 @@ async def async_main():
 
         ai_data = generate_dual_ai_analysis(home, away, sport, opp["pick"], opp["market"], opp["ev"], stats)
         
-        # Format Msg
+        # VIP Telegram Format
         conf_icon = "\U0001F525" if ai_data["confidence"] >= 75 else ("\U00002705" if ai_data["confidence"] >= 65 else "\U000026A1")
         risk_icon = {"Low": "\U0001F7E2", "Medium": "\U0001F7E0", "High": "\U0001F534"}.get(ai_data["risk_level"], "\U0001F7E0")
         
         msg = (
             f"{ai_data.get('sport_emoji', '🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
-            f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag', '🏳️')}  <b>vs</b>  {ai_data.get('away_flag', '🏳️')} <b>{html_lib.escape(away)}</b>\n\n"
+            f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag', '🏳️')}  vs  {ai_data.get('away_flag', '🏳️')} <b>{html_lib.escape(away)}</b>\n"
             f"⏳ <b>Starts in:</b> {get_countdown_str(event.get('commence_time', ''), now_utc)}\n\n"
-            f"🎯 <b>Pick [{opp['market_label']}]:</b> <b>{html_lib.escape(opp['pick'])}</b> @ <code>{opp['odds']}</code>\n\n"
+            f"🎯 <b>PICK: {html_lib.escape(opp['pick'])}</b>\n"
+            f"📊 <b>MARKET:</b> {html_lib.escape(opp['market_label'])}\n"
+            f"💰 <b>ODDS:</b> <code>{opp['odds']}</code>\n\n"
             f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  {conf_icon} <b>Confidence: {ai_data['confidence']}%</b>\n\n"
-            f"💡 <b>Analysis:</b>\n<blockquote>{html_lib.escape(ai_data['logic'])}</blockquote>\n\n"
-            f"🆔 <b>Channel:</b> {CFG.TELEGRAM_ID}"
+            f"💡 <b>EXPERT ANALYSIS:</b>\n<blockquote>{html_lib.escape(ai_data['logic'])}</blockquote>\n\n"
+            f"🔍 <i>Curated by {CFG.TELEGRAM_ID}</i>"
         )
 
         if send_telegram(msg):
