@@ -35,7 +35,6 @@ class Config:
 
     # -- API Limits --
     FOOTBALL_DATA_DAILY_LIMIT: int = 80  # Free plan 100/day with margin
-    # Removed "btts" to prevent 422 errors on cross-sport upcoming endpoints
     ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals"])
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
@@ -62,7 +61,6 @@ class Config:
     # -- AI Models --
     AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     AI_MODEL_VALIDATOR: str = "qwen-qwq-32b"
-    # Increased tokens to prevent QwQ reasoning truncation
     AI_MAX_TOKENS: int = 4096
 
     # -- Telegram --
@@ -651,7 +649,7 @@ class FootballDataAdapter:
             "matches_analyzed": total
         }
 
-    def get_h2h(self, team1_id: int, team2_id: int) -> dict:
+    def get_h2h((self, team1_id: int, team2_id: int) -> dict:
         cache_key = f"h2h_{min(team1_id,team2_id)}_{max(team1_id,team2_id)}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, cache_key) or {}
@@ -678,7 +676,6 @@ class FootballDataAdapter:
             ag = score.get("away", 0) or 0
             home_id = m.get("homeTeam", {}).get("id")
             if hg > ag:
-                (t1_wins if home_id == team1_id else t2_wins).__add__(1)
                 if home_id == team1_id: t1_wins += 1
                 else: t2_wins += 1
             elif ag > hg:
@@ -853,7 +850,6 @@ def call_groq(model: str, messages: list, temperature: float = 0.1) -> Optional[
         "max_tokens": CFG.AI_MAX_TOKENS
     }
     
-    # Conditional JSON mode to prevent 400 Bad Request from reasoning models
     if "qwen" not in model.lower():
         payload["response_format"] = {"type": "json_object"}
         
@@ -927,7 +923,7 @@ def generate_dual_ai_analysis(
     initial_logic = (analysis_1 or {}).get("logic", "No initial analysis")
     initial_risk = (analysis_1 or {}).get("risk_level", "Medium")
 
-    sys2 = (
+    sys2_instruction = (
         "You are a Senior Betting Risk Analyst validating a prediction.\n\n"
         "SCORING RUBRIC for confidence (integer 50-95):\n"
         "+ Data quality: high=+15, medium=+8, none=0\n"
@@ -942,7 +938,9 @@ def generate_dual_ai_analysis(
         '"risk_adjustment":"Medium"}\n\n'
         "Respond with JSON only."
     )
+    
     u2 = (
+        f"INSTRUCTIONS:\n{sys2_instruction}\n\n"
         f"MATCH: {home} vs {away} | PICK: {pick} [{market}] | EV: +{ev_edge:.1%}\n"
         f"DATA QUALITY: {data_quality}\n"
         f"STATS: {stats_summary[:2000]}\n"
@@ -953,10 +951,11 @@ def generate_dual_ai_analysis(
 
     analysis_2 = None
     try:
+        # Fixed: Qwen-QwQ requires higher temperature (0.6) and unified context messages
         raw2 = call_groq(
             CFG.AI_MODEL_VALIDATOR,
-            [{"role": "system", "content": sys2}, {"role": "user", "content": u2}],
-            temperature=0.05
+            [{"role": "user", "content": u2}],
+            temperature=0.6
         )
         analysis_2 = robust_json_extractor(raw2)
         logger.info("Model 2 (qwen-qwq-32b) complete")
