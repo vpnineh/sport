@@ -9,6 +9,7 @@ import hashlib
 import asyncio
 import aiohttp
 import requests
+import httpx
 import pandas as pd
 from io import StringIO
 from groq import Groq
@@ -71,7 +72,7 @@ class Config:
 CFG = Config()
 
 # =========================================================
-# 2. LOGGING SETUP (WITH DEEP DEBUG)
+# 2. LOGGING SETUP (WITH DEEP DEBUG & VERIFICATION)
 # =========================================================
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
 
@@ -101,7 +102,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # =========================================================
-# 3. API KEYS VALIDATION
+# 3. API KEYS VALIDATION & ROBUST CLIENTS
 # =========================================================
 ODDS_API_KEY           = os.getenv("ODDS_API_KEY")
 GROQ_API_KEY           = os.getenv("GROQ_API_KEY")
@@ -114,7 +115,9 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY, TELEGRAM_BOT_TOKEN, TELEGR
     logger.critical("FATAL: Missing critical API Keys. Ensure environment variables are set.")
     sys.exit(1)
 
-groq_client = Groq(api_key=GROQ_API_KEY, max_retries=3)
+# حل مشکل قطعی (Hang): تنظیم تایم‌اوت مشخص برای هوش مصنوعی
+timeout_settings = httpx.Timeout(25.0, connect=10.0)
+groq_client = Groq(api_key=GROQ_API_KEY, max_retries=3, timeout=timeout_settings)
 
 # =========================================================
 # 4. NATIONALITY FLAGS & EMOJIS
@@ -202,7 +205,7 @@ class CacheManager:
                 with open(filepath, "r", encoding="utf-8") as f:
                     return json.load(f)
         except Exception as e:
-            logger.warning("Cache load error (%s): %s", filepath.name, e)
+            if DEBUG_MODE: logger.warning("Cache load error (%s): %s", filepath.name, e)
         return {}
 
     @staticmethod
@@ -212,7 +215,7 @@ class CacheManager:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            logger.warning("Cache save error (%s): %s", filepath.name, e)
+            if DEBUG_MODE: logger.warning("Cache save error (%s): %s", filepath.name, e)
 
     @staticmethod
     def is_valid(cache: dict, key: str, ttl_hours: float) -> bool:
@@ -319,10 +322,8 @@ class HistoricalDataEngine:
         cols_to_use = ["surface", "winner_name", "loser_name"]
         
         for year in self.years_to_fetch:
-            # ATP Sync
             atp_url = f"https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_matches_{year}.csv"
             atp_path = CFG.HISTORICAL_DIR / f"atp_{year}.csv"
-            
             if self._download_github_csv(atp_url, atp_path):
                 try:
                     df = pd.read_csv(atp_path, usecols=cols_to_use)
@@ -330,10 +331,8 @@ class HistoricalDataEngine:
                 except Exception as e:
                     logger.error("Failed to parse ATP CSV %s: %s", atp_path, e)
             
-            # WTA Sync
             wta_url = f"https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master/wta_matches_{year}.csv"
             wta_path = CFG.HISTORICAL_DIR / f"wta_{year}.csv"
-            
             if self._download_github_csv(wta_url, wta_path):
                 try:
                     df = pd.read_csv(wta_path, usecols=cols_to_use)
@@ -862,7 +861,7 @@ async def get_stats_async(home: str, away: str, sport_key: str, football_adapter
     if cached_mid is not None:
         match_id = cached_mid if cached_mid != 0 else None
     else:
-        logger.info("Searching SofaScore: %s vs %s", home, away)
+        if DEBUG_MODE: logger.debug("Searching SofaScore: %s vs %s", home, away)
         match_id = await search_sofascore_match_async(home, away)
         match_id_cache.set(home, away, match_id if match_id else 0)
 
@@ -991,7 +990,7 @@ def call_groq_sdk(model: str, messages: list, temperature: float = 0.1) -> Optio
         logger.error("Groq SDK error model=%s: %s", model, e)
         return None
 
-def generate_dual_ai_analysis(home: str, away: str, sport: str, pick: str, market: str, ev_edge: float, stats: dict) -> dict:
+def generate_dual_ai_analysis(home: str, away: str, sport: str, pick: str, market: str, ev_edge: float, stats: dict, has_real_stats: bool) -> dict:
     calc_conf, calc_risk = calculate_system_confidence(ev_edge, stats, market)
     
     default_response = {
@@ -1003,12 +1002,7 @@ def generate_dual_ai_analysis(home: str, away: str, sport: str, pick: str, marke
         "logic": "The sharp market indicates significant value on this selection based on underlying metrics.",
     }
 
-    # Format stats for the Prompt
     stats_str = json.dumps(stats, indent=2)[:1500]
-    has_real_stats = "historical_data" in stats or "home_form" in stats or "sofascore" in stats
-
-    if DEBUG_MODE:
-        logger.debug(f"[AI GENERATION] Match: {home} vs {away} | Pick: {pick} | Real Stats Available: {has_real_stats}")
 
     # Anti-Hallucination VIP Prompt
     sys_analyst = (
@@ -1153,9 +1147,6 @@ async def async_main():
         if sent_history.was_sent(home, away, opp["market"]): 
             continue
 
-        if DEBUG_MODE: 
-            logger.debug("Found Opportunity: %s vs %s | Pick: %s", home, away, opp['pick'])
-
         # 1. Fetch Live APIs (SofaScore + Football-Data)
         stats = await get_stats_async(home, away, sport_key, football_adapter, match_id_cache)
         
@@ -1167,9 +1158,24 @@ async def async_main():
             if hist_stats and (hist_stats.get("player_a") or hist_stats.get("player_b")):
                 stats["historical_data"] = hist_stats
                 stats["data_quality"] = "high"
-                logger.info("[HISTORICAL] Injected Github Data for %s vs %s", home, away)
+        
+        # --- STATS VERIFICATION & LOGGING ---
+        # Strictly check if we have actual data, not just empty structures
+        has_historical = bool(stats.get("historical_data"))
+        has_form = bool(stats.get("home_form"))
+        has_sofascore = bool(stats.get("sofascore") and any(stats["sofascore"].values()))
+        has_real_stats = has_historical or has_form or has_sofascore
+        
+        if has_real_stats:
+            sources = []
+            if has_historical: sources.append("GitHub")
+            if has_form: sources.append("Football-Data")
+            if has_sofascore: sources.append("SofaScore")
+            logger.info("✅ [STATS VERIFIED] Rich data injected from: %s for %s vs %s", ", ".join(sources), home, away)
+        else:
+            logger.info("⚠️ [STATS WARNING] No external stats found. Relying strictly on Sharp EV math for %s vs %s", home, away)
 
-        ai_data = generate_dual_ai_analysis(home, away, sport, opp["pick"], opp["market"], opp["ev"], stats)
+        ai_data = generate_dual_ai_analysis(home, away, sport, opp["pick"], opp["market"], opp["ev"], stats, has_real_stats)
         
         # VIP Telegram Format
         conf_icon = "\U0001F525" if ai_data["confidence"] >= 75 else ("\U00002705" if ai_data["confidence"] >= 65 else "\U000026A1")
@@ -1179,9 +1185,8 @@ async def async_main():
             f"{ai_data.get('sport_emoji', '🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
             f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag', '🏳️')}  vs  {ai_data.get('away_flag', '🏳️')} <b>{html_lib.escape(away)}</b>\n"
             f"⏳ <b>Starts in:</b> {get_countdown_str(event.get('commence_time', ''), now_utc)}\n\n"
-            f"🎯 <b>PICK: {html_lib.escape(opp['pick'])}</b>\n"
+            f"🎯 <b>PICK: {html_lib.escape(opp['pick'])}</b> @ <code>{opp['odds']}</code>\n\n"
             f"📊 <b>MARKET:</b> {html_lib.escape(opp['market_label'])}\n"
-            f"💰 <b>ODDS:</b> <code>{opp['odds']}</code>\n\n"
             f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  {conf_icon} <b>Confidence: {ai_data['confidence']}%</b>\n\n"
             f"💡 <b>EXPERT ANALYSIS:</b>\n<blockquote>{html_lib.escape(ai_data['logic'])}</blockquote>\n\n"
             f"🔍 <i>Curated by {CFG.TELEGRAM_ID}</i>"
