@@ -20,7 +20,7 @@ from typing import Optional
 # =========================================================
 @dataclass
 class Config:
-    # ── Paths ──
+    # -- Paths --
     CACHE_DIR: Path = Path("api_cache")
     LOG_DIR: Path = Path("log")
     HISTORY_FILE: Path = Path("api_cache/sent_history.json")
@@ -29,22 +29,22 @@ class Config:
     DAILY_STATS_CACHE_FILE: Path = Path("api_cache/daily_stats_cache.json")
     LOG_FILE: Path = Path("api_cache/execution_logs.log")
 
-    # ── Timing ──
+    # -- Timing --
     MATCH_WINDOW_HOURS: float = 2.0
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
-    # ── API Limits ──
-    FOOTBALL_DATA_DAILY_LIMIT: int = 80  # پلن رایگان 100/day با margin
+    # -- API Limits --
+    FOOTBALL_DATA_DAILY_LIMIT: int = 80  # Free plan 100/day with margin
     ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals", "btts"])
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
-    # ── Cache TTLs (hours) ──
+    # -- Cache TTLs (hours) --
     TTL_SENT_HISTORY: float = 48.0
     TTL_MATCH_ID: float = 24.0
     TTL_TEAM_FORM: float = 6.0
     TTL_H2H: float = 24.0
 
-    # ── EV Thresholds ──
+    # -- EV Thresholds --
     H2H_MIN_ODDS: float = 1.50
     H2H_MIN_EV: float = 0.015
     TOTALS_MIN_ODDS: float = 1.60
@@ -52,26 +52,24 @@ class Config:
     BTTS_MIN_ODDS: float = 1.60
     BTTS_MIN_EV: float = 0.020
 
-    # ── Sharp Market Validation ──
-    # تعداد outcomes مورد انتظار برای هر market
+    # -- Sharp Market Validation --
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
-        "h2h": {"min": 2, "max": 3},   # 2 برای ورزش‌های آمریکایی، 3 برای فوتبال
+        "h2h": {"min": 2, "max": 3},
         "totals": {"min": 2, "max": 2},
         "btts": {"min": 2, "max": 2}
     })
-    # حداکثر implied_sum معتبر (اگه بالاتر رفت، داده ناقصه)
     MAX_VALID_IMPLIED_SUM: float = 1.20
     MIN_VALID_IMPLIED_SUM: float = 0.80
 
-    # ── AI Models ──
+    # -- AI Models --
     AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     AI_MODEL_VALIDATOR: str = "qwen-qwq-32b"
     AI_MAX_TOKENS: int = 1024
 
-    # ── Telegram ──
+    # -- Telegram --
     TELEGRAM_ID: str = "@zBET90"
 
-    # ── Sharp Bookmakers ──
+    # -- Sharp Bookmakers --
     SHARP_BOOKMAKERS: list = field(default_factory=lambda: [
         "pinnacle", "betfair_ex_eu", "matchbook", "betfair_ex_uk"
     ])
@@ -236,12 +234,10 @@ def retry_request(max_retries=3, delay=2, backoff=2):
 def robust_json_extractor(raw_text: str) -> Optional[dict]:
     if not raw_text:
         return None
-    # تلاش اول: parse مستقیم
     try:
         return json.loads(raw_text)
     except json.JSONDecodeError:
         pass
-    # تلاش دوم: پیدا کردن اولین JSON object
     try:
         match = re.search(r'\{[\s\S]*\}', raw_text)
         if match:
@@ -279,44 +275,31 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
         return "N/A"
 
 # =========================================================
-# 7. CORE MATH ENGINE - FIXED IMPLIED SUM VALIDATION
+# 7. CORE MATH ENGINE
 # =========================================================
 def validate_sharp_odds(sharp_odds: dict, market_key: str) -> tuple[bool, str]:
-    """
-    FIX برای باگ implied_sum:
-    بررسی میکنه که داده‌های sharp bookmaker کامل و معتبر هستن
-    قبل از محاسبه true probability
-    """
     if not sharp_odds:
         return False, "empty sharp_odds"
 
     n_outcomes = len(sharp_odds)
     expected = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2, "max": 3})
 
-    # چک تعداد outcomes
     if n_outcomes < expected["min"]:
         return False, (
             f"Incomplete market: only {n_outcomes} outcomes "
             f"(expected min {expected['min']}) for {market_key}"
         )
 
-    # چک implied sum معتبر
     try:
         implied_sum = sum(1.0 / v["price"] for v in sharp_odds.values())
     except (KeyError, ZeroDivisionError) as e:
         return False, f"Price calculation error: {e}"
 
     if implied_sum < CFG.MIN_VALID_IMPLIED_SUM:
-        return False, (
-            f"implied_sum too low ({implied_sum:.3f}) - "
-            f"market data incomplete (missing outcomes)"
-        )
+        return False, f"implied_sum too low ({implied_sum:.3f})"
 
     if implied_sum > CFG.MAX_VALID_IMPLIED_SUM:
-        return False, (
-            f"implied_sum too high ({implied_sum:.3f}) - "
-            f"suspicious data or duplicate outcomes"
-        )
+        return False, f"implied_sum too high ({implied_sum:.3f})"
 
     return True, "valid"
 
@@ -327,7 +310,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
         sharp_odds = {}
         best_odds = {}
 
-        # استخراج sharp odds از bookmaker های معتبر
         for entry in market_data_list:
             bk = entry.get("bookmaker_key", "")
             if bk in CFG.SHARP_BOOKMAKERS:
@@ -341,7 +323,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                             "bookmaker": entry["bookmaker"]
                         }
 
-        # best odds از همه bookmaker ها
         for entry in market_data_list:
             for o in entry.get("outcomes", []):
                 name, price = o["name"], float(o["price"])
@@ -353,17 +334,14 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                         "bookmaker": entry["bookmaker"]
                     }
 
-        # اگه sharp odds نبود، از best odds استفاده کن
         if not sharp_odds and best_odds:
             sharp_odds = {k: v for k, v in best_odds.items()}
 
-        # FIX: اعتبارسنجی قبل از محاسبه
         is_valid, reason = validate_sharp_odds(sharp_odds, market_key)
         if not is_valid:
             logger.debug(f"Skipping {market_key}: {reason}")
             continue
 
-        # محاسبه true probability با vig removal
         implied_sum = sum(1.0 / v["price"] for v in sharp_odds.values())
 
         market_opportunities = []
@@ -378,7 +356,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
             ev = (true_prob * best_price) - 1.0
 
-            # تعیین threshold بر اساس نوع مارکت
             if market_key == "h2h":
                 min_odds, min_ev = CFG.H2H_MIN_ODDS, CFG.H2H_MIN_EV
             elif market_key == "totals":
@@ -407,7 +384,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
         opportunities.extend(market_opportunities)
 
-    # مرتب‌سازی بر اساس EV و انتخاب 2 بهترین
     opportunities.sort(key=lambda x: x["ev"], reverse=True)
     return opportunities[:2]
 
@@ -415,7 +391,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 # 8. ASYNC ODDS API FETCHER
 # =========================================================
 async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_utc: datetime) -> list:
-    """دریافت async یک market از Odds API"""
     end_window = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
     url = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
     params = {
@@ -443,7 +418,7 @@ async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_ut
                         filtered.append(e)
                 except Exception:
                     continue
-            logger.info(f"Market '{market}': {len(filtered)} events in {CFG.MATCH_WINDOW_HOURS}h window")
+            logger.info(f"Market '{market}': {len(filtered)} events in window")
             return filtered
     except asyncio.TimeoutError:
         logger.error(f"Timeout fetching market {market}")
@@ -453,7 +428,6 @@ async def fetch_market_async(session: aiohttp.ClientSession, market: str, now_ut
         return []
 
 async def fetch_all_odds_async() -> list:
-    """دریافت موازی همه market ها"""
     now_utc = datetime.now(timezone.utc)
     all_events: dict[str, dict] = {}
 
@@ -469,12 +443,10 @@ async def fetch_all_odds_async() -> list:
         if isinstance(market_events, Exception):
             logger.error(f"Market fetch exception: {market_events}")
             continue
-        market_key = CFG.ODDS_API_MARKETS[i]
         for e in market_events:
             eid = e["id"]
             if eid not in all_events:
                 all_events[eid] = {**e, "_markets_data": {}}
-            # ادغام bookmaker markets
             for bm in e.get("bookmakers", []):
                 for m in bm.get("markets", []):
                     mk = m["key"]
@@ -513,7 +485,6 @@ async def fetch_sofascore_endpoint_async(
     return None
 
 async def fetch_sofascore_stats_async(match_id: int) -> dict:
-    """دریافت موازی همه endpoint های SofaScore"""
     endpoints = {
         "h2h":     "https://sofascore.p.rapidapi.com/matches/get-h2h-events",
         "lineups": "https://sofascore.p.rapidapi.com/matches/get-lineups",
@@ -537,7 +508,6 @@ async def fetch_sofascore_stats_async(match_id: int) -> dict:
     return data
 
 async def search_sofascore_match_async(home: str, away: str) -> Optional[int]:
-    """جستجوی async match ID در SofaScore"""
     clean_home = clean_team_name(home)
     clean_away = clean_team_name(away)
     query = f"{clean_home} {clean_away}"
@@ -565,7 +535,7 @@ async def search_sofascore_match_async(home: str, away: str) -> Optional[int]:
     return None
 
 # =========================================================
-# 10. FOOTBALL-DATA.ORG ADAPTER (Sync - با rate limiting)
+# 10. FOOTBALL-DATA.ORG ADAPTER
 # =========================================================
 class FootballDataAdapter:
     BASE_URL = "https://api.football-data.org/v4"
@@ -634,7 +604,6 @@ class FootballDataAdapter:
         if data and data.get("teams"):
             team_id = data["teams"][0]["id"]
             logger.info(f"Team found: {team_name} -> ID:{team_id}")
-        # همیشه ذخیره کن (حتی None) تا دوباره جستجو نشه
         team_id_cache[key] = team_id
         CacheManager.save(CFG.TEAM_ID_CACHE_FILE, team_id_cache)
         return team_id
@@ -737,7 +706,7 @@ class FootballDataAdapter:
         }
 
 # =========================================================
-# 11. MATCH ID CACHE (SOFASCORE) - با persistence
+# 11. MATCH ID CACHE
 # =========================================================
 class MatchIDCache:
     def __init__(self):
@@ -768,7 +737,6 @@ async def get_stats_async(
     football_adapter: FootballDataAdapter,
     match_id_cache: MatchIDCache
 ) -> dict:
-    """دریافت کامل آمار - football-data برای فوتبال، sofascore برای بقیه"""
     stats = {
         "home_form": {},
         "away_form": {},
@@ -777,23 +745,19 @@ async def get_stats_async(
         "data_quality": "none"
     }
 
-    # SofaScore match ID (از cache یا جستجو)
     cached_mid = match_id_cache.get(home, away)
     if cached_mid is not None:
-        # None کش شده یعنی قبلاً پیدا نشده
         match_id = cached_mid if cached_mid != 0 else None
     else:
         logger.info(f"Searching SofaScore match ID: {home} vs {away}")
         match_id = await search_sofascore_match_async(home, away)
         match_id_cache.set(home, away, match_id if match_id else 0)
 
-    # دریافت موازی: SofaScore + Football-Data
     tasks = []
 
     if match_id:
         tasks.append(("sofascore", fetch_sofascore_stats_async(match_id)))
 
-    # Football-Data فقط برای فوتبال (sync در thread pool)
     if sport_key == "football":
         loop = asyncio.get_event_loop()
 
@@ -817,7 +781,6 @@ async def get_stats_async(
 
         tasks.append(("football", get_football_data()))
 
-    # اجرای موازی
     if tasks:
         names = [t[0] for t in tasks]
         coros = [t[1] for t in tasks]
@@ -832,7 +795,6 @@ async def get_stats_async(
             elif name == "football" and result:
                 stats.update(result)
 
-    # تعیین data_quality
     has_football = bool(stats.get("home_form") or stats.get("h2h"))
     has_sofascore = bool(stats.get("sofascore"))
     if has_football and has_sofascore:
@@ -916,15 +878,14 @@ def generate_dual_ai_analysis(
 
     default_response = {
         "sport_emoji": "🏆",
-        "home_flag": "🏳️",
-        "away_flag": "🏳️",
+        "home_flag": "🏁",
+        "away_flag": "🏁",
         "risk_level": "Medium",
         "confidence": 55,
         "logic": "Mathematical edge confirmed by Sharp Market Model.",
         "key_stat": "Positive EV detected vs sharp lines"
     }
 
-    # مرحله 1: llama-4-scout - تحلیل آماری
     sys1 = (
         "You are an Elite Quantitative Sports Analyst.\n"
         "A mathematical model found a +EV betting opportunity.\n\n"
@@ -937,7 +898,7 @@ def generate_dual_ai_analysis(
         "Use club flag if country unknown.\n"
         "5. Assign risk_level: Low (strong data+high EV), Medium (mixed), High (limited data).\n\n"
         "OUTPUT: valid JSON object only. No markdown, no explanation outside JSON.\n"
-        '{"sport_emoji":"⚽","home_flag":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","away_flag":"🇩🇪",'
+        '{"sport_emoji":"⚽","home_flag":"🇬🇧","away_flag":"🇩🇪",'
         '"risk_level":"Medium","logic":"sentence1. sentence2.",'
         '"key_stat":"Specific stat here."}'
     )
@@ -965,7 +926,6 @@ def generate_dual_ai_analysis(
 
     time.sleep(1.5)
 
-    # مرحله 2: qwen-qwq-32b - Validation و Confidence
     initial_logic = (analysis_1 or {}).get("logic", "No initial analysis")
     initial_risk = (analysis_1 or {}).get("risk_level", "Medium")
 
@@ -981,7 +941,7 @@ def generate_dual_ai_analysis(
         "If initial logic is vague or generic, rewrite it with specific stats.\n\n"
         "OUTPUT: valid JSON object only. No markdown.\n"
         '{"confidence":72,"validated_logic":"Rewritten or approved logic here.",'
-        '"risk_adjustment":"Medium"}\n\n"
+        '"risk_adjustment":"Medium"}\n\n'
         "Respond with JSON only."
     )
     u2 = (
@@ -1005,7 +965,6 @@ def generate_dual_ai_analysis(
     except Exception as e:
         logger.warning(f"Model 2 failed: {e}")
 
-    # ادغام
     result = {**default_response}
     if analysis_1:
         result.update({k: v for k, v in analysis_1.items() if v})
@@ -1017,7 +976,6 @@ def generate_dual_ai_analysis(
         if analysis_2.get("risk_adjustment"):
             result["risk_level"] = analysis_2["risk_adjustment"]
 
-    # fallback confidence بر اساس EV
     if result["confidence"] == 55:
         result["confidence"] = min(70, 55 + int(ev_edge * 300))
 
@@ -1056,9 +1014,9 @@ def format_message(
 
     msg = (
         f"{ai_data.get('sport_emoji','🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
-        f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag','🏳️')}"
+        f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag','🏁')}"
         f"  <b>vs</b>  "
-        f"{ai_data.get('away_flag','🏳️')} <b>{html_lib.escape(away)}</b>\n\n"
+        f"{ai_data.get('away_flag','🏁')} <b>{html_lib.escape(away)}</b>\n\n"
         f"⏳ <b>Starts in:</b> {countdown_str}\n\n"
         f"🎯 <b>Pick [{opp['market_label']}]:</b> <b>{html_lib.escape(opp['pick'])}</b>\n"
         f"💰 <b>Best Odds:</b> <code>{opp['odds']}</code>"
@@ -1086,7 +1044,6 @@ async def async_main():
     match_id_cache = MatchIDCache()
     now_utc = datetime.now(timezone.utc)
 
-    # دریافت موازی همه بازی‌ها
     logger.info("Fetching events (async, all markets simultaneously)...")
     events = await fetch_all_odds_async()
 
@@ -1098,7 +1055,6 @@ async def async_main():
 
     total_sent = 0
 
-    # پردازش هر بازی
     for event in events:
         home = event.get("home_team", "")
         away = event.get("away_team", "")
@@ -1113,14 +1069,12 @@ async def async_main():
         if not home or not away:
             continue
 
-        # محاسبه EV
         opportunities = calculate_sharp_ev(markets_data, bookmakers_raw)
         if not opportunities:
             continue
 
         logger.info(f"{len(opportunities)} EV opportunity(ies): {home} vs {away}")
 
-        # دریافت آمار (یک بار برای همه فرصت‌های یک بازی)
         stats = await get_stats_async(
             home, away, sport_key, football_adapter, match_id_cache
         )
