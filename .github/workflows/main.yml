@@ -1,45 +1,73 @@
-name: ZBET90 Enterprise AI Bot
+name: ZBET90 Enterprise Engine
 
 on:
   schedule:
-    # اجرا هر ۲ ساعت یکبار
+    # هر ۲ ساعت یک بار
     - cron: '0 */2 * * *'
   workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: 'Enable debug logging'
+        required: false
+        default: 'false'
 
 jobs:
-  analyze_and_post:
+  run-engine:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+
     permissions:
-      contents: write
+      contents: write  # برای push کردن فایل‌های cache
 
     steps:
-      - name: Checkout Repository
+      - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
 
-      - name: Set up Python 3.10
+      - name: 🐍 Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
+          cache: 'pip'
 
-      - name: Install Dependencies
+      - name: 📦 Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install requests
 
-      - name: Run Enterprise Engine
+      - name: 🔄 Restore Persistent Cache
+        uses: actions/cache@v4
+        with:
+          path: api_cache
+          key: zbet90-cache-${{ github.run_number }}
+          restore-keys: |
+            zbet90-cache-
+
+      - name: 🚀 Run ZBET90 Engine
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
         run: python main.py
 
-      - name: Sync Cache and Logs
+      - name: 💾 Commit Cache Files to Repository
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add api_cache/ log/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "⚙️ System: Update cache & execution logs [skip ci]" && git push)
+          git config --local user.email "zbet90-bot@github.com"
+          git config --local user.name "ZBET90 Bot"
+          git add api_cache/sent_history.json api_cache/team_id_cache.json api_cache/match_id_cache.json api_cache/daily_stats_cache.json || true
+          git diff --staged --quiet || git commit -m "🤖 Auto: Update persistent cache [skip ci]"
+          git push || true
+
+      - name: 📋 Upload Logs as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zbet90-logs-${{ github.run_number }}
+          path: |
+            api_cache/execution_logs.log
+            log/
+          retention-days: 7
