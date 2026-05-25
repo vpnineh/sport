@@ -58,7 +58,8 @@ jobs:
         run: |
           git config --local user.email "zbet90-bot@github.com"
           git config --local user.name "ZBET90 Bot"
-          git add api_cache/sent_history.json api_cache/team_id_cache.json api_cache/match_id_cache.json api_cache/daily_stats_cache.json || true
+          # پیدا کردن و اضافه کردن هوشمندِ فقط فایل‌های جیسون (بدون فایل‌های سنگین CSV)
+          find api_cache/ -maxdepth 1 -name "*.json" -exec git add {} + || true
           git diff --staged --quiet || git commit -m "🤖 Auto: Update persistent cache [skip ci]"
           git push || true
 
