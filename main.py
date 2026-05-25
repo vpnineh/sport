@@ -35,7 +35,8 @@ class Config:
 
     # -- API Limits --
     FOOTBALL_DATA_DAILY_LIMIT: int = 80  # Free plan 100/day with margin
-    ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals", "btts"])
+    # Removed "btts" to prevent 422 errors on cross-sport upcoming endpoints
+    ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals"])
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
     # -- Cache TTLs (hours) --
@@ -49,14 +50,11 @@ class Config:
     H2H_MIN_EV: float = 0.015
     TOTALS_MIN_ODDS: float = 1.60
     TOTALS_MIN_EV: float = 0.020
-    BTTS_MIN_ODDS: float = 1.60
-    BTTS_MIN_EV: float = 0.020
 
     # -- Sharp Market Validation --
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
         "h2h": {"min": 2, "max": 3},
-        "totals": {"min": 2, "max": 2},
-        "btts": {"min": 2, "max": 2}
+        "totals": {"min": 2, "max": 2}
     })
     MAX_VALID_IMPLIED_SUM: float = 1.20
     MIN_VALID_IMPLIED_SUM: float = 0.80
@@ -64,7 +62,8 @@ class Config:
     # -- AI Models --
     AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     AI_MODEL_VALIDATOR: str = "qwen-qwq-32b"
-    AI_MAX_TOKENS: int = 1024
+    # Increased tokens to prevent QwQ reasoning truncation
+    AI_MAX_TOKENS: int = 4096
 
     # -- Telegram --
     TELEGRAM_ID: str = "@zBET90"
@@ -358,16 +357,13 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
             if market_key == "h2h":
                 min_odds, min_ev = CFG.H2H_MIN_ODDS, CFG.H2H_MIN_EV
-            elif market_key == "totals":
-                min_odds, min_ev = CFG.TOTALS_MIN_ODDS, CFG.TOTALS_MIN_EV
             else:
-                min_odds, min_ev = CFG.BTTS_MIN_ODDS, CFG.BTTS_MIN_EV
+                min_odds, min_ev = CFG.TOTALS_MIN_ODDS, CFG.TOTALS_MIN_EV
 
             if best_price >= min_odds and ev > min_ev:
                 market_label = {
                     "h2h": "Winner",
-                    "totals": "Over/Under",
-                    "btts": "BTTS"
+                    "totals": "Over/Under"
                 }.get(market_key, market_key.upper())
 
                 market_opportunities.append({
@@ -854,9 +850,13 @@ def call_groq(model: str, messages: list, temperature: float = 0.1) -> Optional[
         "model": model,
         "messages": messages,
         "temperature": temperature,
-        "response_format": {"type": "json_object"},
         "max_tokens": CFG.AI_MAX_TOKENS
     }
+    
+    # Conditional JSON mode to prevent 400 Bad Request from reasoning models
+    if "qwen" not in model.lower():
+        payload["response_format"] = {"type": "json_object"}
+        
     res = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={
@@ -878,8 +878,8 @@ def generate_dual_ai_analysis(
 
     default_response = {
         "sport_emoji": "🏆",
-        "home_flag": "🏁",
-        "away_flag": "🏁",
+        "home_flag": "🏳️",
+        "away_flag": "🏳️",
         "risk_level": "Medium",
         "confidence": 55,
         "logic": "Mathematical edge confirmed by Sharp Market Model.",
@@ -890,15 +890,13 @@ def generate_dual_ai_analysis(
         "You are an Elite Quantitative Sports Analyst.\n"
         "A mathematical model found a +EV betting opportunity.\n\n"
         "YOUR TASKS:\n"
-        "1. Write EXACTLY 2 sentences justifying the Pick using specific numbers from the stats. "
-        "No generic statements. Reference actual win rates, form strings, H2H records.\n"
+        "1. Write EXACTLY 2 sentences justifying the Pick using specific numbers from the stats. No generic statements.\n"
         "2. Extract the single most impactful statistic supporting this pick (key_stat).\n"
         "3. Choose the correct sport_emoji.\n"
-        "4. Choose correct country flag emojis (home_flag, away_flag). "
-        "Use club flag if country unknown.\n"
-        "5. Assign risk_level: Low (strong data+high EV), Medium (mixed), High (limited data).\n\n"
-        "OUTPUT: valid JSON object only. No markdown, no explanation outside JSON.\n"
-        '{"sport_emoji":"⚽","home_flag":"🇬🇧","away_flag":"🇩🇪",'
+        "4. Determine the nationality of the teams/players and output the correct country flag emojis for home_flag and away_flag (e.g. 🇪🇸, 🇺🇸). Do not use generic flags.\n"
+        "5. Assign risk_level: Low, Medium, High.\n\n"
+        "OUTPUT: valid JSON object only. No markdown.\n"
+        '{"sport_emoji":"⚽","home_flag":"🇪🇸","away_flag":"🇺🇸",'
         '"risk_level":"Medium","logic":"sentence1. sentence2.",'
         '"key_stat":"Specific stat here."}'
     )
@@ -1014,9 +1012,9 @@ def format_message(
 
     msg = (
         f"{ai_data.get('sport_emoji','🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
-        f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag','🏁')}"
+        f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag','🏳️')}"
         f"  <b>vs</b>  "
-        f"{ai_data.get('away_flag','🏁')} <b>{html_lib.escape(away)}</b>\n\n"
+        f"{ai_data.get('away_flag','🏳️')} <b>{html_lib.escape(away)}</b>\n\n"
         f"⏳ <b>Starts in:</b> {countdown_str}\n\n"
         f"🎯 <b>Pick [{opp['market_label']}]:</b> <b>{html_lib.escape(opp['pick'])}</b>\n"
         f"💰 <b>Best Odds:</b> <code>{opp['odds']}</code>"
