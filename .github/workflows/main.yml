@@ -1,9 +1,9 @@
 name: ZBET90 Enterprise Engine
 
 on:
-  schedule:
+  #schedule:
     # هر ۲ ساعت یک بار
-    - cron: '0 */2 * * *'
+    #- cron: '0 */2 * * *'
   workflow_dispatch:
     inputs:
       debug_mode:
