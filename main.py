@@ -104,10 +104,9 @@ if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY,
 groq_client = Groq(api_key=GROQ_API_KEY, max_retries=3)
 
 # =========================================================
-# FIX 1: NATIONALITY FLAGS - جدول کامل‌تر با ISO codes
+# 4. NATIONALITY FLAGS
 # =========================================================
 NATIONALITY_FLAGS: dict = {
-    # Tennis players
     "bautista agut": "ES", "alcaraz": "ES", "nadal": "ES", "munar": "ES",
     "djokovic": "RS", "kecmanovic": "RS", "krajinovic": "RS",
     "sinner": "IT", "berrettini": "IT", "musetti": "IT", "sonego": "IT",
@@ -136,7 +135,6 @@ NATIONALITY_FLAGS: dict = {
     "etcheverry": "AR", "cerundolo": "AR", "schwartzman": "AR",
     "monteiro": "BR", "seyboth wild": "BR",
     "auger": "CA",
-    # Football clubs - England
     "manchester united": "GB", "manchester city": "GB",
     "liverpool": "GB", "chelsea": "GB", "arsenal": "GB",
     "tottenham": "GB", "newcastle": "GB", "west ham": "GB",
@@ -145,51 +143,34 @@ NATIONALITY_FLAGS: dict = {
     "crystal palace": "GB", "fulham": "GB", "bournemouth": "GB",
     "nottingham": "GB", "burnley": "GB", "luton": "GB",
     "celtic": "GB", "rangers": "GB", "hearts": "GB",
-    # Football clubs - Spain
     "real madrid": "ES", "barcelona": "ES", "atletico": "ES",
     "sevilla": "ES", "valencia": "ES", "villarreal": "ES",
     "real sociedad": "ES", "athletic bilbao": "ES", "betis": "ES",
     "osasuna": "ES", "celta": "ES", "getafe": "ES",
-    # Football clubs - Germany
     "bayern": "DE", "dortmund": "DE", "leipzig": "DE",
     "leverkusen": "DE", "frankfurt": "DE", "wolfsburg": "DE",
     "freiburg": "DE", "gladbach": "DE", "hoffenheim": "DE",
-    # Football clubs - Italy
     "juventus": "IT", "milan": "IT", "inter": "IT",
     "napoli": "IT", "roma": "IT", "lazio": "IT",
     "atalanta": "IT", "fiorentina": "IT", "torino": "IT",
-    # Football clubs - France
     "psg": "FR", "marseille": "FR", "lyon": "FR", "monaco": "FR",
     "lille": "FR", "lens": "FR", "nice": "FR", "rennes": "FR",
-    # Football clubs - Netherlands
     "ajax": "NL", "psv": "NL", "feyenoord": "NL",
     "az alkmaar": "NL", "utrecht": "NL",
-    # Football clubs - Portugal
     "porto": "PT", "benfica": "PT", "sporting": "PT", "braga": "PT",
-    # Football clubs - Turkey
     "galatasaray": "TR", "fenerbahce": "TR", "besiktas": "TR",
     "trabzonspor": "TR",
-    # Football clubs - Ukraine
     "shakhtar": "UA", "dynamo kyiv": "UA",
-    # Football clubs - Austria
     "salzburg": "AT", "rapid wien": "AT", "lask": "AT",
-    # Football clubs - Scotland
-    # Football clubs - Belgium
     "anderlecht": "BE", "club brugge": "BE", "gent": "BE",
-    # Football clubs - Russia
     "zenit": "RU", "spartak": "RU", "cska moscow": "RU",
-    # Football clubs - Norway
     "vaalerenga": "NO", "valerenga": "NO", "brann": "NO",
     "rosenborg": "NO", "molde": "NO", "bodo": "NO",
-    # Football clubs - Sweden
     "malmo": "SE", "ifk gothenburg": "SE", "djurgarden": "SE",
-    # Football clubs - Denmark
     "copenhagen": "DK", "midtjylland": "DK", "brondby": "DK",
-    # Basketball NBA
     "lakers": "US", "celtics": "US", "warriors": "US",
     "bulls": "US", "heat": "US", "nets": "US", "knicks": "US",
     "bucks": "US", "suns": "US", "nuggets": "US",
-    # Baseball
     "yankees": "US", "dodgers": "US", "cubs": "US",
     "red sox": "US", "giants": "US", "mets": "US",
 }
@@ -220,7 +201,7 @@ def validate_flag(flag: str, fallback_name: str) -> str:
     return stripped
 
 # =========================================================
-# 4. CACHE MANAGER
+# 5. CACHE MANAGER
 # =========================================================
 class CacheManager:
     @staticmethod
@@ -268,7 +249,7 @@ class CacheManager:
         return cache.get(key, {}).get("data")
 
 # =========================================================
-# 5. SENT HISTORY
+# 6. SENT HISTORY
 # =========================================================
 class SentHistory:
     def __init__(self):
@@ -290,8 +271,6 @@ class SentHistory:
 
     @staticmethod
     def _make_key(home: str, away: str, market: str) -> str:
-        # FIX 2: کلید duplicate فقط بر اساس match + market
-        # نه pick - تا از یه بازی فقط یه سیگنال بره
         raw = f"{home.lower()}|{away.lower()}|{market.lower()}"
         return hashlib.md5(raw.encode()).hexdigest()
 
@@ -309,7 +288,7 @@ class SentHistory:
         CacheManager.save(CFG.HISTORY_FILE, self.history)
 
 # =========================================================
-# 6. UTILS
+# 7. UTILS
 # =========================================================
 def retry_request(max_retries=3, delay=2, backoff=2):
     def decorator(func):
@@ -351,18 +330,14 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
     if not raw_text:
         return None
 
-    # Step 1: حذف تگ‌های think (باز و بسته)
     clean = re.sub(r"<think>[\s\S]*?</think>", "", raw_text, flags=re.IGNORECASE)
-    # Step 2: حذف think بازمانده (اگه بسته نشده)
     clean = re.sub(r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE).strip()
 
-    # Step 3: parse مستقیم
     try:
         return json.loads(clean)
     except json.JSONDecodeError:
         pass
 
-    # Step 4: جستجو از آخر (reasoning models همیشه JSON رو آخر میذارن)
     all_matches = list(re.finditer(r"\{[\s\S]*?\}", clean))
     for match in reversed(all_matches):
         try:
@@ -372,7 +347,6 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
         except json.JSONDecodeError:
             continue
 
-    # Step 5: greedy match
     try:
         m = re.search(r"\{[\s\S]*\}", clean)
         if m:
@@ -380,7 +354,6 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
     except Exception:
         pass
 
-    # Step 6: fallback روی متن اصلی
     try:
         m = re.search(r"\{[\s\S]*\}", raw_text)
         if m:
@@ -419,7 +392,7 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
         return "N/A"
 
 # =========================================================
-# 7. MATH ENGINE
+# 8. MATH ENGINE
 # =========================================================
 def validate_sharp_odds(sharp_odds: dict, market_key: str) -> tuple:
     if not sharp_odds:
@@ -440,8 +413,6 @@ def validate_sharp_odds(sharp_odds: dict, market_key: str) -> tuple:
 
 
 def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
-    # FIX 2: فقط بهترین فرصت رو از هر market برمیگردونه
-    # تا از یه بازی بیشتر از یه سیگنال نره
     best_per_market: dict = {}
 
     for market_key, market_data_list in markets_data.items():
@@ -478,7 +449,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 
         is_valid, reason = validate_sharp_odds(sharp_odds, market_key)
         if not is_valid:
-            logger.debug("Skipping %s: %s", market_key, reason)
             continue
 
         implied_sum = sum(1.0 / v["price"] for v in sharp_odds.values())
@@ -504,9 +474,6 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
             ev = (true_prob * best_price) - 1.0
 
             if ev > CFG.MAX_REALISTIC_EV:
-                logger.warning(
-                    "Rejected unrealistic EV=%.1f%% for %s", ev * 100, outcome_name
-                )
                 continue
 
             if best_price >= min_odds and ev > min_ev:
@@ -527,20 +494,18 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
                     "implied_sum": round(implied_sum, 4),
                     "has_sharp_line": has_real_sharp,
                 }
-                # فقط بهترین EV از هر market رو نگه دار
                 if best_opp is None or opp["ev"] > best_opp["ev"]:
                     best_opp = opp
 
         if best_opp:
             best_per_market[market_key] = best_opp
 
-    # FIX 2: فقط بهترین فرصت از کل بازی رو برمیگردونه (یه سیگنال per match)
     all_opps = list(best_per_market.values())
     all_opps.sort(key=lambda x: x["ev"], reverse=True)
     return all_opps[:1]
 
 # =========================================================
-# 8. ASYNC ODDS API
+# 9. ASYNC ODDS API
 # =========================================================
 async def fetch_market_async(
     session: aiohttp.ClientSession,
@@ -562,13 +527,10 @@ async def fetch_market_async(
             timeout=aiohttp.ClientTimeout(total=20),
         ) as res:
             if res.status == 422:
-                logger.warning("Odds API 422 for market %s - skipping", market)
                 return []
             if res.status == 429:
-                logger.warning("Odds API rate limit for market %s", market)
                 return []
             if res.status != 200:
-                logger.error("Odds API HTTP %d for market %s", res.status, market)
                 return []
             events = await res.json()
             filtered = []
@@ -583,7 +545,6 @@ async def fetch_market_async(
             logger.info("Market '%s': %d events in window", market, len(filtered))
             return filtered
     except asyncio.TimeoutError:
-        logger.error("Timeout fetching market %s", market)
         return []
     except Exception as e:
         logger.error("Async fetch error market %s: %s", market, e)
@@ -603,7 +564,6 @@ async def fetch_all_odds_async() -> list:
 
     for i, market_events in enumerate(results):
         if isinstance(market_events, Exception):
-            logger.error("Market fetch exception [%s]: %s", CFG.ODDS_API_MARKETS[i], market_events)
             continue
         if not isinstance(market_events, list):
             continue
@@ -629,7 +589,7 @@ async def fetch_all_odds_async() -> list:
     return result
 
 # =========================================================
-# 9. SOFASCORE ASYNC
+# 10. SOFASCORE ASYNC
 # =========================================================
 def _sofa_headers() -> dict:
     return {
@@ -653,7 +613,7 @@ async def fetch_sofascore_endpoint_async(
             if res.status == 200:
                 return await res.json()
     except Exception as e:
-        logger.debug("SofaScore async error %s: %s", url, e)
+        pass
     return None
 
 
@@ -696,14 +656,13 @@ async def search_sofascore_match_async(home: str, away: str) -> Optional[int]:
                     if item.get("type") == "event":
                         mid = item.get("entity", {}).get("id")
                         if mid:
-                            logger.info("SofaScore: %s vs %s -> ID:%s", home, away, mid)
                             return mid
         except Exception as e:
-            logger.debug("SofaScore search error: %s", e)
+            pass
     return None
 
 # =========================================================
-# 10. FOOTBALL-DATA ADAPTER
+# 11. FOOTBALL-DATA ADAPTER
 # =========================================================
 class FootballDataAdapter:
     BASE_URL = "https://api.football-data.org/v4"
@@ -743,9 +702,6 @@ class FootballDataAdapter:
     @retry_request(max_retries=2, delay=3)
     def _raw_get(self, endpoint: str, params: dict = None) -> dict:
         if not self._can_call():
-            logger.warning(
-                "Football-Data limit (%d/%d)", self.call_count, CFG.FOOTBALL_DATA_DAILY_LIMIT
-            )
             return {}
         res = requests.get(
             f"{self.BASE_URL}{endpoint}",
@@ -764,12 +720,10 @@ class FootballDataAdapter:
             return cache[key]
         if not self._can_call():
             return None
-        logger.info("Searching team ID: '%s'", team_name)
         data = self._raw_get("/teams", {"name": clean_team_name(team_name)})
         team_id = None
         if data and data.get("teams"):
             team_id = data["teams"][0]["id"]
-            logger.info("Team found: %s -> ID:%d", team_name, team_id)
         cache[key] = team_id
         CacheManager.save(CFG.TEAM_ID_CACHE_FILE, cache)
         return team_id
@@ -778,7 +732,6 @@ class FootballDataAdapter:
         cache_key = f"form_{team_id}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_TEAM_FORM):
             return CacheManager.get(self.daily_cache, cache_key) or {}
-        logger.info("Fetching form: %s (id:%d)", team_name, team_id)
         data = self._raw_get(
             f"/teams/{team_id}/matches",
             {"status": "FINISHED", "limit": 5},
@@ -829,7 +782,6 @@ class FootballDataAdapter:
         cache_key = f"h2h_{min(team1_id, team2_id)}_{max(team1_id, team2_id)}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, cache_key) or {}
-        logger.info("Fetching H2H: %d vs %d", team1_id, team2_id)
         data = self._raw_get(
             f"/teams/{team1_id}/matches",
             {"status": "FINISHED", "limit": 20},
@@ -884,7 +836,7 @@ class FootballDataAdapter:
         }
 
 # =========================================================
-# 11. MATCH ID CACHE
+# 12. MATCH ID CACHE
 # =========================================================
 class MatchIDCache:
     def __init__(self):
@@ -906,7 +858,7 @@ class MatchIDCache:
         return hashlib.md5(f"{home.lower()}|{away.lower()}".encode()).hexdigest()
 
 # =========================================================
-# 12. STATS AGGREGATOR
+# 13. STATS AGGREGATOR
 # =========================================================
 async def get_stats_async(
     home: str,
@@ -927,7 +879,6 @@ async def get_stats_async(
     if cached_mid is not None:
         match_id = cached_mid if cached_mid != 0 else None
     else:
-        logger.info("Searching SofaScore: %s vs %s", home, away)
         match_id = await search_sofascore_match_async(home, away)
         match_id_cache.set(home, away, match_id if match_id else 0)
 
@@ -974,7 +925,6 @@ async def get_stats_async(
         gathered = await asyncio.gather(*coros, return_exceptions=True)
         for name, result in zip(task_names, gathered):
             if isinstance(result, Exception):
-                logger.warning("Stats fetch error (%s): %s", name, result)
                 continue
             if name == "sofascore" and result:
                 stats["sofascore"] = result
@@ -988,11 +938,10 @@ async def get_stats_async(
     elif has_football or has_sofascore:
         stats["data_quality"] = "medium"
 
-    logger.info("Stats quality [%s vs %s]: %s", home, away, stats["data_quality"])
     return stats
 
 # =========================================================
-# 13. DUAL-AI ANALYSIS
+# 14. ENTERPRISE AI ANALYSIS & SCORING
 # =========================================================
 def build_stats_summary(stats: dict, home: str, away: str) -> str:
     parts = []
@@ -1052,6 +1001,34 @@ def call_groq_sdk(model: str, messages: list, temperature: float = 0.1) -> Optio
         return None
 
 
+def calculate_system_confidence(ev_edge: float, stats: dict, market: str) -> tuple[int, str]:
+    score = 50
+    dq = stats.get("data_quality", "none")
+    
+    if dq == "high": score += 15
+    elif dq == "medium": score += 8
+    
+    ev_pct = ev_edge * 100
+    if ev_pct > 5.0: score += 12
+    elif ev_pct > 3.0: score += 8
+    elif ev_pct > 1.5: score += 4
+    
+    hf = stats.get("home_form", {})
+    af = stats.get("away_form", {})
+    if hf and hf.get("win_rate", 0) >= 0.6: score += 4
+    if af and af.get("win_rate", 0) >= 0.6: score += 4
+
+    if market.lower() == "totals": score += 3
+
+    score = max(50, min(93, int(score)))
+
+    if score >= 75: risk = "Low"
+    elif score >= 60: risk = "Medium"
+    else: risk = "High"
+
+    return score, risk
+
+
 def generate_dual_ai_analysis(
     home: str,
     away: str,
@@ -1062,46 +1039,33 @@ def generate_dual_ai_analysis(
     stats: dict,
 ) -> dict:
     stats_summary = build_stats_summary(stats, home, away)
-    data_quality = stats.get("data_quality", "none")
+    calc_conf, calc_risk = calculate_system_confidence(ev_edge, stats, market)
 
     default_response = {
         "sport_emoji": "\U0001F3C6",
         "home_flag": get_flag_from_name(home),
         "away_flag": get_flag_from_name(away),
-        "risk_level": "Medium",
-        "confidence": 55,
-        "logic": "Mathematical edge confirmed by Sharp Market Model.",
+        "risk_level": calc_risk,
+        "confidence": calc_conf,
+        "logic": "The sharp market indicates significant value on this selection based on underlying metrics.",
     }
 
-    # FIX 4: prompt صریح برای risk_level متناسب با confidence
-    sys1 = (
-        "You are an Elite Quantitative Sports Analyst.\n"
-        "A mathematical model found a +EV betting opportunity.\n\n"
-        "TASKS:\n"
-        "1. Write EXACTLY 2 sentences justifying the Pick.\n"
-        "   Use ONLY data from the STATISTICS section. Do NOT invent numbers.\n"
-        "   If stats are sparse, reference the mathematical edge and market value.\n"
-        "2. Choose the correct sport_emoji.\n"
-        "3. Determine the EXACT country flag emoji for home_flag and away_flag.\n"
-        "   Club teams: flag of the country the club belongs to.\n"
-        "   Individual players: flag of their nationality.\n"
-        "   Never use generic or placeholder flags.\n"
-        "4. Assign risk_level AND confidence together consistently:\n"
-        "   - Low risk = confidence 75-93\n"
-        "   - Medium risk = confidence 60-74\n"
-        "   - High risk = confidence 50-59\n"
-        "   Base this on: data quality, EV size, form consistency, H2H.\n\n"
-        "OUTPUT: valid JSON only. No markdown. No text outside JSON.\n"
-        '{"sport_emoji":"...","home_flag":"...","away_flag":"...",'
-        '"risk_level":"Medium","confidence":65,"logic":"sentence1. sentence2."}'
+    sys_analyst = (
+        "You are an elite, professional sports betting analyst for a premium syndicate.\n"
+        "Your task is to write EXACTLY two punchy, insightful sentences justifying the given pick.\n"
+        "CRITICAL RULES:\n"
+        "- NEVER mention 'Expected Value', 'EV', 'data quality', 'points', or internal model metrics.\n"
+        "- DO NOT say 'The model indicates'. Sound like a human expert.\n"
+        "- Use the provided statistics to highlight form, scoring trends, or historical dominance.\n"
+        "- If stats are sparse, focus purely on the mismatch in the odds and sharp market movement.\n"
+        "- Determine the EXACT country flag emoji for home_flag and away_flag.\n\n"
+        "OUTPUT JSON ONLY: {\"logic\": \"your 2 sentence analysis\", \"sport_emoji\": \"...\", \"home_flag\": \"...\", \"away_flag\": \"...\"}"
     )
     u1 = (
         f"MATCH: {home} vs {away}\n"
         f"SPORT: {sport}\n"
-        f"PICK: {pick} [{market}]\n"
-        f"EV EDGE: +{ev_edge:.1%}\n"
-        f"DATA QUALITY: {data_quality}\n\n"
-        f"STATISTICS:\n{stats_summary}\n\n"
+        f"PICK: {pick} [{market}]\n\n"
+        f"STATISTICS:\n{stats_summary[:1500]}\n\n"
         "OUTPUT JSON ONLY:"
     )
 
@@ -1109,119 +1073,89 @@ def generate_dual_ai_analysis(
     try:
         raw1 = call_groq_sdk(
             CFG.AI_MODEL_ANALYST,
-            [{"role": "system", "content": sys1}, {"role": "user", "content": u1}],
-            temperature=0.1,
+            [{"role": "system", "content": sys_analyst}, {"role": "user", "content": u1}],
+            temperature=0.4,
         )
         analysis_1 = robust_json_extractor(raw1)
-        logger.info("Model 1 (llama-4-scout) %s", "OK" if analysis_1 else "bad JSON")
     except Exception as e:
-        logger.warning("Model 1 failed: %s", e)
+        logger.warning("Model Analyst failed: %s", e)
 
-    time.sleep(1.5)
-
-    initial_logic = (analysis_1 or {}).get("logic", "No initial analysis")
-    initial_risk = (analysis_1 or {}).get("risk_level", "Medium")
-    initial_conf = (analysis_1 or {}).get("confidence", 55)
-
-    # FIX 4: validator هم risk و confidence رو با هم validate میکنه
-    sys2 = (
-        "You are a Senior Betting Risk Analyst validating a prediction.\n\n"
-        "SCORING RUBRIC:\n"
-        "  Base confidence: 50\n"
-        "  + Data quality: high=+15, medium=+8, none=0\n"
-        "  + EV edge: >5%=+10, 3-5%=+7, 1.5-3%=+4\n"
-        "  + Form consistency (3+ same results): +8\n"
-        "  + H2H supports pick: +7, neutral: +2, against: -5\n"
-        "  + Market bonus: totals=+3, h2h=0\n"
-        "  Cap at 93.\n\n"
-        "RISK RULES (must be consistent with confidence):\n"
-        "  confidence 75-93 -> risk_level: Low\n"
-        "  confidence 60-74 -> risk_level: Medium\n"
-        "  confidence 50-59 -> risk_level: High\n\n"
-        "If initial logic uses generic statements or invents numbers, rewrite it.\n\n"
-        "OUTPUT: valid JSON only. No markdown. No text outside JSON.\n"
-        '{"confidence":72,"validated_logic":"Logic here.","risk_level":"Medium"}'
+    initial_logic = (analysis_1 or {}).get("logic", default_response["logic"])
+    
+    sys_editor = (
+        "You are the Chief Editor for a high-end sports betting platform.\n"
+        "Review the provided analysis. If it sounds robotic, mentions internal models, points, or 'EV', REWRITE it.\n"
+        "It must sound like a professional sports pundit giving a confident tip.\n"
+        "Keep it strictly under 3 sentences.\n"
+        "OUTPUT JSON ONLY: {\"validated_logic\": \"...\"}"
     )
-    u2 = (
-        f"MATCH: {home} vs {away}\n"
-        f"PICK: {pick} [{market}] | EV: +{ev_edge:.1%}\n"
-        f"DATA QUALITY: {data_quality}\n"
-        f"STATS:\n{stats_summary[:2000]}\n\n"
-        f"INITIAL LOGIC: {initial_logic}\n"
-        f"INITIAL RISK: {initial_risk}\n"
-        f"INITIAL CONFIDENCE: {initial_conf}\n\n"
-        "OUTPUT JSON ONLY:"
-    )
+    u2 = f"DRAFT ANALYSIS: {initial_logic}\nPICK: {pick}\nOUTPUT JSON ONLY:"
 
-    analysis_2 = None
     try:
         raw2 = call_groq_sdk(
             CFG.AI_MODEL_VALIDATOR,
-            [{"role": "user", "content": sys2 + "\n\n" + u2}],
-            temperature=0.3,
+            [{"role": "system", "content": sys_editor}, {"role": "user", "content": u2}],
+            temperature=0.2,
         )
         analysis_2 = robust_json_extractor(raw2)
-        logger.info("Model 2 (gpt-oss-20b) %s", "OK" if analysis_2 else "bad JSON")
+        if analysis_2 and analysis_2.get("validated_logic"):
+            initial_logic = analysis_2["validated_logic"]
     except Exception as e:
-        logger.warning("Model 2 failed: %s", e)
+        logger.warning("Model Editor failed: %s", e)
 
     result = dict(default_response)
-
     if analysis_1:
-        for k, v in analysis_1.items():
-            if v:
-                result[k] = v
-
-    # FIX 1: اعتبارسنجی پرچم‌ها
-    result["home_flag"] = validate_flag(result.get("home_flag", ""), home)
-    result["away_flag"] = validate_flag(result.get("away_flag", ""), away)
-
-    if analysis_2:
-        if analysis_2.get("validated_logic"):
-            result["logic"] = analysis_2["validated_logic"]
-        if analysis_2.get("confidence"):
-            conf = max(50, min(93, int(analysis_2["confidence"])))
-            result["confidence"] = conf
-            # FIX 4: همیشه risk_level با confidence sync باشه
-            if conf >= 75:
-                result["risk_level"] = "Low"
-            elif conf >= 60:
-                result["risk_level"] = "Medium"
-            else:
-                result["risk_level"] = "High"
-        elif analysis_2.get("risk_level"):
-            result["risk_level"] = analysis_2["risk_level"]
-
-    # fallback confidence
-    if result["confidence"] == 55 and ev_edge > 0:
-        conf = min(70, 55 + int(ev_edge * 300))
-        result["confidence"] = conf
-        if conf >= 75:
-            result["risk_level"] = "Low"
-        elif conf >= 60:
-            result["risk_level"] = "Medium"
-        else:
-            result["risk_level"] = "High"
+        result["sport_emoji"] = analysis_1.get("sport_emoji", result["sport_emoji"])
+        result["home_flag"] = validate_flag(analysis_1.get("home_flag", ""), home)
+        result["away_flag"] = validate_flag(analysis_1.get("away_flag", ""), away)
+    
+    safe_logic = str(initial_logic).strip()
+    if len(safe_logic) > 600:
+        safe_logic = safe_logic[:597] + "..."
+    result["logic"] = safe_logic
 
     return result
 
 # =========================================================
-# 14. TELEGRAM
+# 15. TELEGRAM & MAIN PIPELINE
 # =========================================================
-@retry_request(max_retries=3)
 def send_telegram(message_html: str) -> bool:
-    res = requests.post(
-        f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-        json={
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": message_html,
-            "parse_mode": "HTML",
-            "disable_web_page_preview": True,
-        },
-        timeout=10,
-    )
-    res.raise_for_status()
-    return True
+    """Sends a message to Telegram, implementing chunking for long texts."""
+    MAX_LEN = 4000
+    chunks = []
+    
+    if len(message_html) <= MAX_LEN:
+        chunks.append(message_html)
+    else:
+        # Safe chunking algorithm to prevent HTML tag breaking and 4096 limit
+        lines = message_html.split('\n')
+        current_chunk = ""
+        for line in lines:
+            if len(current_chunk) + len(line) + 1 > MAX_LEN:
+                chunks.append(current_chunk.strip())
+                current_chunk = line + "\n"
+            else:
+                current_chunk += line + "\n"
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+    success = True
+    for chunk in chunks:
+        res = requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={
+                "chat_id": TELEGRAM_CHAT_ID,
+                "text": chunk,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True,
+            },
+            timeout=10,
+        )
+        if not res.ok:
+            logger.error("Telegram API Error: %s", res.text)
+            success = False
+            
+    return success
 
 
 def format_message(
@@ -1245,7 +1179,6 @@ def format_message(
         else ("\U00002705" if confidence >= 65 else "\U000026A1")
     )
 
-    # FIX 3: منطق رو تمیز کن برای blockquote
     raw_logic = str(ai_data.get("logic", "")).replace("<", "").replace(">", "")
     logic_escaped = html_lib.escape(raw_logic)
 
@@ -1253,21 +1186,17 @@ def format_message(
     home_flag = ai_data.get("home_flag", "\U0001F3F3\uFE0F")
     away_flag = ai_data.get("away_flag", "\U0001F3F3\uFE0F")
 
-    # FIX 6: Pick و odds روی یه خط
     pick_line = (
         f"\U0001F3AF <b>Pick [{opp['market_label']}]:</b> "
         f"<b>{html_lib.escape(opp['pick'])}</b> "
         f"@ <code>{opp['odds']}</code>"
     )
 
-    # FIX 4: risk و confidence روی یه خط
     risk_conf_line = (
         f"{risk_icon} <b>Risk:</b> {risk_raw}"
         f"  |  {conf_icon} <b>Confidence: {confidence}%</b>"
     )
 
-    # FIX 5: آنالیز داخل blockquote
-    # FIX 3: حذف key stat و ev edge از پست
     msg = (
         f"{sport_emoji} <b>{html_lib.escape(sport)}</b>\n\n"
         f"\u2694\uFE0F <b>{html_lib.escape(home)}</b> {home_flag}"
@@ -1282,12 +1211,10 @@ def format_message(
     )
     return msg
 
-# =========================================================
-# 15. MAIN PIPELINE
-# =========================================================
+
 async def async_main():
     logger.info("=" * 60)
-    logger.info("ZBET90 ENTERPRISE ENGINE v2.4 STARTING")
+    logger.info("ZBET90 ENTERPRISE ENGINE v2.5 STARTING")
     logger.info("=" * 60)
 
     sent_history = SentHistory()
@@ -1295,7 +1222,6 @@ async def async_main():
     match_id_cache = MatchIDCache()
     now_utc = datetime.now(timezone.utc)
 
-    logger.info("Fetching events (async)...")
     events = await fetch_all_odds_async()
 
     if not events:
@@ -1321,17 +1247,10 @@ async def async_main():
         if not opportunities:
             continue
 
-        # FIX 2: فقط یه سیگنال per match per market
         opp = opportunities[0]
 
         if sent_history.was_sent(home, away, opp["market"]):
-            logger.info("SKIP duplicate: %s vs %s [%s]", home, away, opp["market"])
             continue
-
-        logger.info(
-            "Signal: %s vs %s | %s | EV:+%.1f%%",
-            home, away, opp["pick"], opp["edge_pct"],
-        )
 
         stats = await get_stats_async(
             home, away, sport_key, football_adapter, match_id_cache
