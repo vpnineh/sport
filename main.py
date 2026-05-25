@@ -61,7 +61,7 @@ class Config:
 
     # -- AI Models --
     AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
-    AI_MODEL_VALIDATOR: str = "qwen-qwq-32b"
+    AI_MODEL_VALIDATOR: str = "qwen/qwen3-32b"
     # تنظیم توکن ایمن برای جلوگیری از پر شدن کانتکست
     AI_MAX_TOKENS: int = 2048
 
