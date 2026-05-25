@@ -649,7 +649,7 @@ class FootballDataAdapter:
             "matches_analyzed": total
         }
 
-    def get_h2h((self, team1_id: int, team2_id: int) -> dict:
+    def get_h2h(self, team1_id: int, team2_id: int) -> dict:
         cache_key = f"h2h_{min(team1_id,team2_id)}_{max(team1_id,team2_id)}"
         if CacheManager.is_valid(self.daily_cache, cache_key, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, cache_key) or {}
