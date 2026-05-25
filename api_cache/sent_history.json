@@ -142,5 +142,17 @@
     "pick": "Bohemians",
     "market": "h2h_lay",
     "sent_at": "2026-05-25T19:01:09.312439+00:00"
+  },
+  "83ba5198934a0e7df300974183e7e9a6": {
+    "match": "Cleveland Guardians vs Washington Nationals",
+    "pick": "Cleveland Guardians",
+    "market": "h2h_lay",
+    "sent_at": "2026-05-25T22:11:01.326318+00:00"
+  },
+  "a0f796f7c23d6230318d21d0b5a289ac": {
+    "match": "San Diego Padres vs Philadelphia Phillies",
+    "pick": "San Diego Padres",
+    "market": "h2h_lay",
+    "sent_at": "2026-05-25T22:11:05.478877+00:00"
   }
 }
