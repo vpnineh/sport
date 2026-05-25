@@ -236,17 +236,27 @@ def retry_request(max_retries=3, delay=2, backoff=2):
 def robust_json_extractor(raw_text: str) -> Optional[dict]:
     if not raw_text:
         return None
+        
+    # 1. حذف کامل تگ‌های <think> و محتوای آن‌ها
+    text_clean = re.sub(r'<think>.*?</think>', '', raw_text, flags=re.DOTALL)
+    
+    # 2. اگر تگ <think> باز شده ولی به خاطر کمبود توکن بسته نشده است، کل آن را حذف کن
+    text_clean = re.sub(r'<think>.*', '', text_clean, flags=re.DOTALL)
+    
+    # ادامه روند استخراج روی متن پاک‌سازی شده
     try:
-        return json.loads(raw_text)
+        return json.loads(text_clean)
     except json.JSONDecodeError:
         pass
+        
     try:
-        match = re.search(r'\{[\s\S]*\}', raw_text)
+        match = re.search(r'\{[\s\S]*\}', text_clean)
         if match:
             return json.loads(match.group(0))
     except Exception:
         pass
-    logger.error(f"JSON parse failed: {raw_text[:300]}")
+        
+    logger.error(f"JSON parse failed. Cleaned text preview: {text_clean[:300]}")
     return None
 
 def clean_team_name(name: str) -> str:
