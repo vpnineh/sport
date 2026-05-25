@@ -61,7 +61,7 @@ class Config:
 
     # -- AI Models --
     AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
-    AI_MODEL_VALIDATOR: str = "qwen/qwen3-32b"
+    AI_MODEL_VALIDATOR: str = "openai/gpt-oss-20b"
     # تنظیم توکن ایمن برای جلوگیری از پر شدن کانتکست
     AI_MAX_TOKENS: int = 2048
 
@@ -240,10 +240,9 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
     # 1. حذف کامل تگ‌های <think> و محتوای آن‌ها
     text_clean = re.sub(r'<think>.*?</think>', '', raw_text, flags=re.DOTALL)
     
-    # 2. اگر تگ <think> باز شده ولی به خاطر کمبود توکن بسته نشده است، کل آن را حذف کن
+    # 2. اگر تگ <think> باز شده ولی بسته نشده است، کل آن را حذف کن
     text_clean = re.sub(r'<think>.*', '', text_clean, flags=re.DOTALL)
     
-    # ادامه روند استخراج روی متن پاک‌سازی شده
     try:
         return json.loads(text_clean)
     except json.JSONDecodeError:
@@ -326,18 +325,24 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
             bk = entry.get("bookmaker_key", "")
             if bk in CFG.SHARP_BOOKMAKERS:
                 for o in entry.get("outcomes", []):
-                    name, price = o["name"], float(o["price"])
+                    base_name = o["name"]
+                    point = o.get("point")
+                    # ترکیب اسم و لاین (مثلا Over 21.5)
+                    name = f"{base_name} {point}" if point is not None else base_name
+                    price = float(o["price"])
+                    
                     if price <= 1.0:
                         continue
                     if name not in sharp_odds or price > sharp_odds[name]["price"]:
-                        sharp_odds[name] = {
-                            "price": price,
-                            "bookmaker": entry["bookmaker"]
-                        }
+                        sharp_odds[name] = {"price": price, "bookmaker": entry["bookmaker"]}
 
         for entry in market_data_list:
             for o in entry.get("outcomes", []):
-                name, price = o["name"], float(o["price"])
+                base_name = o["name"]
+                point = o.get("point")
+                name = f"{base_name} {point}" if point is not None else base_name
+                price = float(o["price"])
+                
                 if price <= 1.0:
                     continue
                 if name not in best_odds or price > best_odds[name]["price"]:
@@ -895,8 +900,8 @@ def generate_dual_ai_analysis(
         "You are an Elite Quantitative Sports Analyst.\n"
         "A mathematical model found a +EV betting opportunity.\n\n"
         "YOUR TASKS:\n"
-        "1. Write EXACTLY 2 sentences justifying the Pick using specific numbers from the stats. No generic statements.\n"
-        "2. Extract the single most impactful statistic supporting this pick (key_stat).\n"
+        "1. Write exactly 2 sentences justifying the Pick. Use ONLY the data explicitly provided in the STATISTICS section. STRICT RULE: DO NOT invent, guess, or hallucinate any numbers! If deep statistical data is sparse (e.g. for Tennis or minor sports), base your reasoning strictly on the mathematical value, market edge, and available streaks.\n"
+        "2. Extract the single most impactful valid statistic supporting this pick (key_stat). If none exists, write 'Positive EV Edge vs Sharp Market'.\n"
         "3. Choose the correct sport_emoji.\n"
         "4. Determine the precise nationality of the teams/players and output the correct country flag emojis for home_flag and away_flag. Never use generic flags.\n"
         "5. Assign risk_level: Low, Medium, High.\n\n"
@@ -941,7 +946,7 @@ def generate_dual_ai_analysis(
         "+ H2H history supports pick: +7, neutral: +2, against: -5\n"
         "+ Market type bonus: totals=+3, btts=+2, h2h=0\n"
         "Cap final score at 93 (never claim 100% certainty).\n\n"
-        "If initial logic is vague or generic, rewrite it with specific stats.\n\n"
+        "If initial logic hallucinates fake numbers or is generic, rewrite it. STRICT RULE: Never invent statistics that are not explicitly provided in the input.\n\n"
         "OUTPUT: valid JSON object only. No markdown.\n"
         '{"confidence":72,"validated_logic":"Rewritten or approved logic here.",'
         '"risk_adjustment":"Medium"}\n\n'
@@ -966,7 +971,7 @@ def generate_dual_ai_analysis(
             temperature=0.6
         )
         analysis_2 = robust_json_extractor(raw2)
-        logger.info("Model 2 (qwen-qwq-32b) complete")
+        logger.info("Model 2 (openai/gpt-oss-20b) complete")
     except Exception as e:
         logger.warning(f"Model 2 failed: {e}")
 
