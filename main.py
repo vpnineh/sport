@@ -489,12 +489,14 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
         return "N/A"
 
 def get_market_label(market_key: str) -> str:
-    """Properly maps API market keys to human-readable VIP labels."""
+    """نقشه‌برداری هوشمند مارکت‌ها برای خروجی VIP تلگرام"""
     mapping = {
-        "h2h": "Moneyline (Match Winner)",
+        "h2h": "Match Winner",
         "totals": "Over/Under",
+        "h2h_lay": "Lay (Betting Against)",
         "spreads": "Point Spread / Handicap"
     }
+    # اگر کلید خاصی نبود، خود کلید را مرتب کرده و برمی‌گرداند
     return mapping.get(market_key, market_key.replace("_", " ").title())
 
 def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
