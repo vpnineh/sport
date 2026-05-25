@@ -73,12 +73,21 @@ CFG = Config()
 # =========================================================
 # 2. LOGGING SETUP
 # =========================================================
+# خواندن متغیر دیباگ از محیط (که از yml می‌آید)
+DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
+
 CFG.CACHE_DIR.mkdir(exist_ok=True)
 CFG.LOG_DIR.mkdir(exist_ok=True)
 CFG.HISTORICAL_DIR.mkdir(exist_ok=True)
 
 logger = logging.getLogger("ZBET90_ENGINE")
-logger.setLevel(logging.INFO)
+
+# اگر دیباگ فعال بود، لول لاگر را روی DEBUG تنظیم کن
+if DEBUG_MODE:
+    logger.setLevel(logging.DEBUG)
+    logger.info("--- DEBUG MODE ENABLED: Detailed logging active ---")
+else:
+    logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter(
     fmt="%(asctime)s | %(levelname)-8s | %(message)s",
@@ -93,13 +102,6 @@ file_handler = logging.FileHandler(CFG.LOG_FILE, mode="a", encoding="utf-8")
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-# در ابتدای اسکریپت
-DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
-
-if DEBUG_MODE:
-    logger.setLevel(logging.DEBUG)
-    logger.info("--- DEBUG MODE ENABLED: Detailed logging active ---")
-    
 # =========================================================
 # 3. API KEYS VALIDATION
 # =========================================================
