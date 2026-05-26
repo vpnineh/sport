@@ -1,0 +1,11 @@
+# Ignore heavy CSV datasets from being committed
+api_cache/historical/*.csv
+
+# Ignore Python specific files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
