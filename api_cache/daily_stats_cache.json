@@ -1,0 +1,23 @@
+{
+  "_call_count_today": {
+    "timestamp": "2026-05-26T18:07:52.114685+00:00",
+    "data": 7
+  },
+  "form_1": {
+    "timestamp": "2026-05-26T18:07:42.411202+00:00",
+    "data": {
+      "form_string": "DLDLL",
+      "win_rate": 0.0,
+      "draw_rate": 0.4,
+      "avg_goals_scored": 1.2,
+      "avg_goals_conceded": 2.6,
+      "btts_rate": 1.0,
+      "over25_rate": 0.8,
+      "matches_analyzed": 5
+    }
+  },
+  "h2h_1_1": {
+    "timestamp": "2026-05-26T18:07:42.374166+00:00",
+    "data": {}
+  }
+}
