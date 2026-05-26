@@ -44,7 +44,7 @@ class Config:
 
     FOOTBALL_DATA_DAILY_LIMIT: int = 80
     # OPTIMIZATION: Combine markets to save Odds API requests
-    ODDS_API_MARKETS_STR: str = "h2h,totals"
+    ODDS_API_MARKETS_STR: str = "h2h,totals" # You can add h2h_lay here if supported by your API plan
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
     TTL_SENT_HISTORY: float = 72.0
@@ -70,8 +70,9 @@ class Config:
     ELO_HOME_ADVANTAGE: float = 80.0
     ELO_DEFAULT: float = 1500.0
 
-    AI_MODEL_ANALYST: str = "meta-llama/llama-4-scout-17b-16e-instruct"
-    AI_MODEL_VALIDATOR: str = "openai/gpt-oss-20b"
+    # OPTIMIZED GROQ MODELS
+    AI_MODEL_ANALYST: str = "llama-3.3-70b-versatile"
+    AI_MODEL_VALIDATOR: str = "llama-3.1-8b-instant"
     AI_MAX_TOKENS: int = 1024
 
     TELEGRAM_ID: str = "@zBET90"
@@ -382,6 +383,35 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
         except json.JSONDecodeError: continue
     return None
 
+def get_display_pick(raw_pick: str, market: str, home: str, away: str) -> str:
+    """تبدیل نام مارکت‌ها به زبان بسیار ساده برای ممبرهای کانال و هوش مصنوعی"""
+    pick_lower = raw_pick.lower()
+    
+    # 1. Double Chance (Lay)
+    if market == "h2h_lay":
+        if home.lower() in pick_lower:
+            return f"{away} or Draw (Double Chance)"
+        elif away.lower() in pick_lower:
+            return f"{home} or Draw (Double Chance)"
+        elif "draw" in pick_lower or "tie" in pick_lower:
+            return f"{home} or {away} (No Draw)"
+            
+    # 2. Match Winner
+    elif market == "h2h":
+        if "draw" in pick_lower or "tie" in pick_lower:
+            return "Draw (Match to Tie)"
+        else:
+            return f"{raw_pick} to Win"
+            
+    # 3. Totals
+    elif market == "totals":
+        if "over" in pick_lower:
+            return raw_pick.title() + " (Total Goals/Points)"
+        elif "under" in pick_lower:
+            return raw_pick.title() + " (Total Goals/Points)"
+            
+    return raw_pick
+
 def clean_team_name(name: str) -> str:
     return re.sub(r"\s*\([^)]*\)", "", str(name)).strip()
 
@@ -401,7 +431,7 @@ def get_countdown_str(commence_time_str: str, now_utc: datetime) -> str:
     except Exception: return "N/A"
 
 def get_market_label(market_key: str) -> str:
-    mapping = {"h2h": "Match Winner", "totals": "Over/Under", "spreads": "Point Spread"}
+    mapping = {"h2h": "Match Winner", "totals": "Over/Under", "spreads": "Point Spread", "h2h_lay": "Double Chance"}
     return mapping.get(market_key, market_key.replace("_", " ").title())
 
 def calculate_combined_ev(markets_data: dict, elo_prediction: Optional[dict], sport_key: str) -> list:
@@ -437,8 +467,8 @@ def calculate_combined_ev(markets_data: dict, elo_prediction: Optional[dict], sp
         
         if not (CFG.MIN_VALID_IMPLIED_SUM <= implied_sum <= CFG.MAX_VALID_IMPLIED_SUM): continue
 
-        min_odds = CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
-        min_ev = (CFG.H2H_MIN_EV if market_key == "h2h" else CFG.TOTALS_MIN_EV) * (1.0 if has_real_sharp else 2.0)
+        min_odds = CFG.H2H_MIN_ODDS if market_key in ["h2h", "h2h_lay"] else CFG.TOTALS_MIN_ODDS
+        min_ev = (CFG.H2H_MIN_EV if market_key in ["h2h", "h2h_lay"] else CFG.TOTALS_MIN_EV) * (1.0 if has_real_sharp else 2.0)
 
         best_opp = None
         for outcome_name, sharp_data in sharp_odds.items():
@@ -492,7 +522,7 @@ async def fetch_all_odds_async() -> list:
     params = {
         "apiKey": ODDS_API_KEY, 
         "regions": CFG.ODDS_API_REGIONS, 
-        "markets": CFG.ODDS_API_MARKETS_STR, # Optimized: h2h and totals in one call
+        "markets": CFG.ODDS_API_MARKETS_STR,
         "oddsFormat": "decimal", 
         "dateFormat": "iso"
     }
@@ -847,23 +877,26 @@ def fetch_event_result(home: str, away: str) -> Optional[dict]:
 
 def _determine_win(pick: str, market: str, scores: dict, home: str, away: str) -> Optional[bool]:
     try:
+        home_sc = int(scores.get(home, {}).get("score", -1))
+        away_sc = int(scores.get(away, {}).get("score", -1))
+        if home_sc < 0 or away_sc < 0: return None
+        
+        pick_lower = pick.lower()
         if market == "h2h":
-            home_sc = int(scores.get(home, {}).get("score", -1))
-            away_sc = int(scores.get(away, {}).get("score", -1))
-            if home_sc < 0 or away_sc < 0: return None
-            
-            pick_lower = pick.lower()
             if home.lower() in pick_lower or "home" in pick_lower: return home_sc > away_sc
             if away.lower() in pick_lower or "away" in pick_lower: return away_sc > home_sc
             if "draw" in pick_lower or "tie" in pick_lower: return home_sc == away_sc
 
+        elif market == "h2h_lay":
+            if home.lower() in pick_lower or "home" in pick_lower:
+                return away_sc > home_sc or home_sc == away_sc
+            elif away.lower() in pick_lower or "away" in pick_lower:
+                return home_sc > away_sc or home_sc == away_sc
+            elif "draw" in pick_lower or "tie" in pick_lower:
+                return home_sc != away_sc
+
         elif market == "totals":
-            home_sc = int(scores.get(home, {}).get("score", -1))
-            away_sc = int(scores.get(away, {}).get("score", -1))
-            if home_sc < 0 or away_sc < 0: return None
             total = home_sc + away_sc
-            
-            pick_lower = pick.lower()
             m = re.search(r"(over|under)\s*([\d.]+)", pick_lower)
             if m:
                 direction, line = m.group(1), float(m.group(2))
@@ -997,7 +1030,10 @@ async def async_main():
         if has_real_stats: logger.info("✅ [STATS VERIFIED] Found rich data for %s vs %s", home, away)
         else: logger.info("⚠️ [STATS WARNING] Relying strictly on Sharp EV math for %s vs %s", home, away)
 
-        ai_data = generate_dual_ai_analysis(home, away, sport, opp["pick"], opp["market"], opp["ev"], stats, has_real_stats)
+        # Generate User-Friendly Pick
+        display_pick = get_display_pick(opp["pick"], opp["market"], home, away)
+
+        ai_data = generate_dual_ai_analysis(home, away, sport, display_pick, opp["market"], opp["ev"], stats, has_real_stats)
         
         # VIP Telegram Format
         conf_icon = "\U0001F525" if ai_data["confidence"] >= 75 else ("\U00002705" if ai_data["confidence"] >= 65 else "\U000026A1")
@@ -1007,7 +1043,7 @@ async def async_main():
             f"{ai_data.get('sport_emoji', '🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
             f"⚔️ <b>{html_lib.escape(home)}</b> {ai_data.get('home_flag', '🏳️')}  vs  {ai_data.get('away_flag', '🏳️')} <b>{html_lib.escape(away)}</b>\n"
             f"⏳ <b>Starts in:</b> {get_countdown_str(commence_time, now_utc)}\n\n"
-            f"🎯 <b>PICK: {html_lib.escape(opp['pick'])}</b> @ <code>{opp['odds']}</code>\n\n"
+            f"🎯 <b>PICK: {html_lib.escape(display_pick)}</b> @ <code>{opp['odds']}</code>\n\n"
             f"📊 <b>MARKET:</b> {html_lib.escape(opp['market_label'])}\n"
             f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  {conf_icon} <b>Confidence: {ai_data['confidence']}%</b>\n\n"
             f"💡 <b>EXPERT ANALYSIS:</b>\n<blockquote>{html_lib.escape(ai_data['logic'])}</blockquote>\n\n"
@@ -1015,6 +1051,7 @@ async def async_main():
         )
 
         if send_telegram(msg):
+            # Save raw pick into history for accurate result tracking
             sent_history.mark_sent(home, away, opp["pick"], opp["market"], opp["odds"], commence_time)
             total_sent += 1
             logger.info("Sent: %s vs %s | %s", home, away, opp["pick"])
