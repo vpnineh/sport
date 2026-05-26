@@ -49,3 +49,258 @@
 2026-05-24 22:57:16 | INFO     | 💾 دیتای خام بازی 15951867 جهت بررسی شما در پوشه 'log' ذخیره شد.
 2026-05-24 22:57:16 | INFO     | 🤖 Analyzing stats & generating UI elements via Groq...
 2026-05-24 22:57:17 | INFO     | ✅ Telegram Broadcast Success: Vegas Golden Knights vs Colorado Avalanche
+2026-05-26 13:55:25 | INFO     | CHECK | ODDS_API_KEY set                    | OK | True
+2026-05-26 13:55:25 | INFO     | CHECK | GROQ_API_KEY set                    | OK | True
+2026-05-26 13:55:25 | INFO     | CHECK | RAPIDAPI_KEY set                    | OK | True
+2026-05-26 13:55:25 | INFO     | CHECK | TELEGRAM_BOT_TOKEN set              | OK | True
+2026-05-26 13:55:25 | INFO     | CHECK | TELEGRAM_CHAT_ID set                | OK | True
+2026-05-26 13:55:25 | INFO     | CHECK | FOOTBALL_DATA_API_KEY set           | OK | True
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:25 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.0 STARTING
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:25 | INFO     | ELO: no existing data for football
+2026-05-26 13:55:25 | INFO     | ELO: no existing data for tennis
+2026-05-26 13:55:25 | INFO     | Bootstrap: flag not found - first run
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:25 | INFO     |   BOOTSTRAP - BUILDING ELO MODELS
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:25 | INFO     |   Building Football ELO
+2026-05-26 13:55:25 | INFO     | =======================================================
+2026-05-26 13:55:30 | INFO     | Football ELO: England Premier League -> 1520 matches
+2026-05-26 13:55:35 | INFO     | Football ELO: England Championship -> 2208 matches
+2026-05-26 13:55:39 | INFO     | Football ELO: Spain La Liga -> 1520 matches
+2026-05-26 13:55:43 | INFO     | Football ELO: Spain La Liga 2 -> 1848 matches
+2026-05-26 13:55:48 | INFO     | Football ELO: Germany Bundesliga -> 1224 matches
+2026-05-26 13:55:51 | INFO     | Football ELO: Germany 2. Bundesliga -> 1224 matches
+2026-05-26 13:55:55 | INFO     | Football ELO: Italy Serie A -> 1520 matches
+2026-05-26 13:55:59 | INFO     | Football ELO: Italy Serie B -> 1520 matches
+2026-05-26 13:56:03 | INFO     | Football ELO: France Ligue 1 -> 1372 matches
+2026-05-26 13:56:07 | INFO     | Football ELO: France Ligue 2 -> 1445 matches
+2026-05-26 13:56:10 | INFO     | Football ELO: Netherlands Eredivisie -> 1224 matches
+2026-05-26 13:56:14 | INFO     | Football ELO: Portugal Primeira Liga -> 1224 matches
+2026-05-26 13:56:18 | INFO     | Football ELO: Belgium Pro League -> 1236 matches
+2026-05-26 13:56:22 | INFO     | Football ELO: Turkey Super Lig -> 1444 matches
+2026-05-26 13:56:25 | INFO     | Football ELO: Greece Super League -> 953 matches
+2026-05-26 13:56:25 | INFO     | CHECK | Football ELO total matches processed | OK | 21482
+2026-05-26 13:56:25 | INFO     | CHECK | Football ELO unique teams           | OK | 358
+2026-05-26 13:56:25 | INFO     | =======================================================
+2026-05-26 13:56:25 | INFO     |   Building Tennis ELO
+2026-05-26 13:56:25 | INFO     | =======================================================
+2026-05-26 13:56:25 | INFO     | Tennis ELO: atp_matches_2020.csv -> 1462 matches
+2026-05-26 13:56:26 | INFO     | Tennis ELO: atp_matches_2021.csv -> 2733 matches
+2026-05-26 13:56:27 | INFO     | Tennis ELO: atp_matches_2022.csv -> 2917 matches
+2026-05-26 13:56:27 | INFO     | Tennis ELO: atp_matches_2023.csv -> 2986 matches
+2026-05-26 13:56:28 | INFO     | Tennis ELO: atp_matches_2024.csv -> 3076 matches
+2026-05-26 13:56:28 | INFO     | Tennis ELO: wta_matches_2020.csv -> 1276 matches
+2026-05-26 13:56:29 | INFO     | Tennis ELO: wta_matches_2021.csv -> 2597 matches
+2026-05-26 13:56:30 | INFO     | Tennis ELO: wta_matches_2022.csv -> 2594 matches
+2026-05-26 13:56:31 | INFO     | Tennis ELO: wta_matches_2023.csv -> 2810 matches
+2026-05-26 13:56:31 | INFO     | Tennis ELO: wta_matches_2024.csv -> 2689 matches
+2026-05-26 13:56:31 | INFO     | CHECK | Tennis ELO total matches processed  | OK | 25140
+2026-05-26 13:56:31 | INFO     | CHECK | Tennis ELO unique players           | OK | 1494
+2026-05-26 13:56:31 | INFO     | CHECK | Bootstrap football ELO teams        | OK | 358
+2026-05-26 13:56:31 | INFO     | CHECK | Bootstrap tennis ELO players        | OK | 1494
+2026-05-26 13:56:31 | INFO     | Bootstrap complete
+2026-05-26 13:56:31 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-26 13:56:31 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-26 13:56:31 | INFO     | CHECK | ELO football teams loaded           | OK | 358
+2026-05-26 13:56:31 | INFO     | CHECK | ELO tennis players loaded           | OK | 1494
+2026-05-26 13:56:31 | INFO     | Football-Data call counter reset for new day
+2026-05-26 13:56:31 | INFO     | CHECK | Football-Data calls today           | OK | 0
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:31 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:31 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:31 | INFO     | CHECK | Pending results to check            | OK | 0
+2026-05-26 13:56:31 | INFO     | No results to report this run
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:31 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-26 13:56:31 | INFO     | =======================================================
+2026-05-26 13:56:32 | INFO     | CHECK | Odds API requests remaining         | OK | 225
+2026-05-26 13:56:32 | INFO     | CHECK | Odds API requests used              | OK | 275
+2026-05-26 13:56:32 | INFO     | CHECK | Odds API events in window           | OK | 8
+2026-05-26 13:56:32 | INFO     | CHECK | Events fetched from Odds API        | OK | 8
+2026-05-26 13:56:32 | INFO     | =======================================================
+2026-05-26 13:56:32 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-26 13:56:32 | INFO     | =======================================================
+2026-05-26 13:56:32 | INFO     | --- Analyzing: Alina Korneeva vs Elisabetta Cocciaretto [WTA French Open]
+2026-05-26 13:56:32 | INFO     | CHECK | ELO predict Alina Korneeva vs Elisabetta Cocc | OK | H:51.35% D:0.00% A:48.65%
+2026-05-26 13:56:32 | WARNING  | Rejected unrealistic EV=19.4% for Alina Korneeva (sharp=True)
+2026-05-26 13:56:32 | DEBUG    | Skipping totals: implied_sum too high (2.143)
+2026-05-26 13:56:32 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-26 13:56:32 | INFO     | CHECK |   Opp: Alina Korneeva               | OK | EV=2.7% odds=3.0 src=Sharp
+2026-05-26 13:56:32 | INFO     | CHECK | Signal: Alina Korneeva vs Elisabetta Cocc | OK | pick=Alina Korneeva ev=2.7% odds=3.0
+2026-05-26 13:56:32 | INFO     | CHECK | ELO predict Alina Korneeva vs Elisabetta Cocc | OK | H:51.35% D:0.00% A:48.65%
+2026-05-26 13:56:32 | INFO     | CHECK | ELO for Alina Korneeva vs Elisabetta Cocc | OK | H=51.35% A=48.65% matches_h=9 matches_a=117
+2026-05-26 13:56:33 | INFO     | SofaScore: Alina Korneeva vs Elisabetta Cocciaretto -> ID:16220428
+2026-05-26 13:56:33 | INFO     | CHECK | SofaScore match_id Alina Korneeva   | OK | 16220428
+2026-05-26 13:56:33 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:56:33 | INFO     | CHECK | SofaScore data keys for match 16220428 | OK | ['lineups', 'streaks']
+2026-05-26 13:56:33 | INFO     | CHECK | Data quality Alina Korneeva vs Elisabetta Cocc | OK | high
+2026-05-26 13:56:33 | INFO     | CHECK | AI input stats_summary length       | OK | 278
+2026-05-26 13:56:33 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-26 13:56:34 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇷🇺",
+  "away_flag": "🇮🇹",
+  "risk_level": 
+2026-05-26 13:56:34 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:56:36 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":93,"validated_logic":"Alina Korneeva has a slight ELO advantage an
+2026-05-26 13:56:36 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:56:36 | INFO     | CHECK | Final confidence                    | OK | 93
+2026-05-26 13:56:36 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-26 13:56:36 | INFO     | CHECK | Final logic preview                 | OK | Alina Korneeva has a slight ELO advantage and a 51.3% win probability, supportin
+2026-05-26 13:56:36 | INFO     | Sent: Alina Korneeva vs Elisabetta Cocciaretto | Alina Korneeva
+2026-05-26 13:56:39 | INFO     | --- Analyzing: Royal Challengers Bangalore vs Gujarat Titans [IPL]
+2026-05-26 13:56:39 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-26 13:56:39 | DEBUG    | No EV opportunity: Royal Challengers Bangalore vs Gujarat Titans
+2026-05-26 13:56:39 | INFO     | --- Analyzing: Hanne Vandewinkel vs Madison Keys [WTA French Open]
+2026-05-26 13:56:39 | INFO     | CHECK | ELO predict Hanne Vandewink vs Madison Keys | OK | H:14.16% D:0.00% A:85.84%
+2026-05-26 13:56:39 | WARNING  | Rejected unrealistic EV=227.5% for Hanne Vandewinkel (sharp=True)
+2026-05-26 13:56:39 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-26 13:56:39 | INFO     | CHECK |   Opp: Hanne Vandewinkel            | OK | EV=3.1% odds=8.2 src=Sharp
+2026-05-26 13:56:39 | INFO     | CHECK | Signal: Hanne Vandewink vs Madison Keys | OK | pick=Hanne Vandewinkel ev=3.1% odds=8.2
+2026-05-26 13:56:39 | INFO     | CHECK | ELO predict Hanne Vandewink vs Madison Keys | OK | H:14.16% D:0.00% A:85.84%
+2026-05-26 13:56:39 | INFO     | CHECK | ELO for Hanne Vandewink vs Madison Keys | OK | H=14.16% A=85.84% matches_h=4 matches_a=176
+2026-05-26 13:56:40 | INFO     | SofaScore: Hanne Vandewinkel vs Madison Keys -> ID:16214882
+2026-05-26 13:56:40 | INFO     | CHECK | SofaScore match_id Hanne Vandewink  | OK | 16214882
+2026-05-26 13:56:40 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:56:41 | INFO     | CHECK | SofaScore data keys for match 16214882 | OK | ['lineups', 'streaks']
+2026-05-26 13:56:41 | INFO     | CHECK | Data quality Hanne Vandewink vs Madison Keys | OK | medium
+2026-05-26 13:56:41 | INFO     | CHECK | AI input stats_summary length       | OK | 239
+2026-05-26 13:56:41 | INFO     | CHECK | AI input data_quality               | OK | medium
+2026-05-26 13:56:42 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇧🇪",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-26 13:56:42 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:56:46 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":67,"validated_logic":"ELO ratings show Madison Keys has a 313‑poin
+2026-05-26 13:56:46 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:56:46 | INFO     | CHECK | Final confidence                    | OK | 67
+2026-05-26 13:56:46 | INFO     | CHECK | Final risk_level                    | OK | Medium
+2026-05-26 13:56:46 | INFO     | CHECK | Final logic preview                 | OK | ELO ratings show Madison Keys has a 313‑point advantage, implying an 85.8% win p
+2026-05-26 13:56:46 | INFO     | Sent: Hanne Vandewinkel vs Madison Keys | Hanne Vandewinkel
+2026-05-26 13:56:49 | INFO     | --- Analyzing: Alexander Bublik vs Jan-Lennard Struff [ATP French Open]
+2026-05-26 13:56:49 | INFO     | CHECK | ELO predict Alexander Bubli vs Jan-Lennard Str | OK | H:56.47% D:0.00% A:43.53%
+2026-05-26 13:56:49 | WARNING  | Rejected unrealistic EV=66.2% for Jan-Lennard Struff (sharp=True)
+2026-05-26 13:56:49 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-26 13:56:49 | DEBUG    | No EV opportunity: Alexander Bublik vs Jan-Lennard Struff
+2026-05-26 13:56:49 | INFO     | --- Analyzing: Anhelina Kalinina vs Diane Parry [WTA French Open]
+2026-05-26 13:56:49 | INFO     | CHECK | ELO predict Anhelina Kalini vs Diane Parry | OK | H:43.10% D:0.00% A:56.90%
+2026-05-26 13:56:49 | WARNING  | Rejected unrealistic EV=31.6% for Diane Parry (sharp=True)
+2026-05-26 13:56:49 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-26 13:56:49 | INFO     | CHECK |   Opp: Diane Parry                  | OK | EV=3.9% odds=3.3 src=Sharp
+2026-05-26 13:56:49 | INFO     | CHECK | Signal: Anhelina Kalini vs Diane Parry | OK | pick=Diane Parry ev=3.9% odds=3.3
+2026-05-26 13:56:49 | INFO     | CHECK | ELO predict Anhelina Kalini vs Diane Parry | OK | H:43.10% D:0.00% A:56.90%
+2026-05-26 13:56:49 | INFO     | CHECK | ELO for Anhelina Kalini vs Diane Parry | OK | H=43.10% A=56.90% matches_h=160 matches_a=95
+2026-05-26 13:56:50 | INFO     | SofaScore: Anhelina Kalinina vs Diane Parry -> ID:16214870
+2026-05-26 13:56:50 | INFO     | CHECK | SofaScore match_id Anhelina Kalini  | OK | 16214870
+2026-05-26 13:56:50 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:56:51 | INFO     | CHECK | SofaScore data keys for match 16214870 | OK | ['lineups', 'streaks']
+2026-05-26 13:56:51 | INFO     | CHECK | Data quality Anhelina Kalini vs Diane Parry | OK | high
+2026-05-26 13:56:51 | INFO     | CHECK | AI input stats_summary length       | OK | 193
+2026-05-26 13:56:51 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-26 13:56:51 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇺🇦",
+  "away_flag": "🇫🇷",
+  "risk_level": 
+2026-05-26 13:56:51 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:56:54 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":89,"validated_logic":"ELO ratings show Diane Parry has a 56.9% win
+2026-05-26 13:56:54 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:56:54 | INFO     | CHECK | Final confidence                    | OK | 89
+2026-05-26 13:56:54 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-26 13:56:54 | INFO     | CHECK | Final logic preview                 | OK | ELO ratings show Diane Parry has a 56.9% win probability versus 43.1% for Kalini
+2026-05-26 13:56:55 | INFO     | Sent: Anhelina Kalinina vs Diane Parry | Diane Parry
+2026-05-26 13:56:58 | INFO     | --- Analyzing: Anna Kalinskaya vs Lois Boisson [WTA French Open]
+2026-05-26 13:56:58 | INFO     | CHECK | ELO predict Anna Kalinskaya vs Lois Boisson | OK | H:80.20% D:0.00% A:19.80%
+2026-05-26 13:56:58 | WARNING  | Rejected unrealistic EV=45.3% for Lois Boisson (sharp=True)
+2026-05-26 13:56:58 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-26 13:56:58 | INFO     | CHECK |   Opp: Anna Kalinskaya              | OK | EV=12.7% odds=1.62 src=ELO+Sharp
+2026-05-26 13:56:58 | INFO     | CHECK |   Opp: Lois Boisson                 | OK | EV=2.9% odds=2.78 src=Sharp
+2026-05-26 13:56:58 | INFO     | CHECK | Signal: Anna Kalinskaya vs Lois Boisson | OK | pick=Anna Kalinskaya ev=12.7% odds=1.62
+2026-05-26 13:56:58 | INFO     | CHECK | ELO predict Anna Kalinskaya vs Lois Boisson | OK | H:80.20% D:0.00% A:19.80%
+2026-05-26 13:56:58 | INFO     | CHECK | ELO for Anna Kalinskaya vs Lois Boisson | OK | H=80.20% A=19.80% matches_h=146 matches_a=0
+2026-05-26 13:56:59 | INFO     | SofaScore: Anna Kalinskaya vs Lois Boisson -> ID:16214876
+2026-05-26 13:56:59 | INFO     | CHECK | SofaScore match_id Anna Kalinskaya  | OK | 16214876
+2026-05-26 13:56:59 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:56:59 | INFO     | CHECK | SofaScore data keys for match 16214876 | OK | ['lineups', 'streaks']
+2026-05-26 13:56:59 | INFO     | CHECK | Data quality Anna Kalinskaya vs Lois Boisson | OK | high
+2026-05-26 13:56:59 | INFO     | CHECK | AI input stats_summary length       | OK | 193
+2026-05-26 13:56:59 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-26 13:57:00 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+  "risk_level": "Low
+2026-05-26 13:57:00 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:57:03 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"Anna Kalinskaya has a 243-point ELO advantag
+2026-05-26 13:57:03 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:57:03 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-26 13:57:03 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-26 13:57:03 | INFO     | CHECK | Final logic preview                 | OK | Anna Kalinskaya has a 243-point ELO advantage over Lois Boisson and an 80.2% win
+2026-05-26 13:57:03 | INFO     | Sent: Anna Kalinskaya vs Lois Boisson | Anna Kalinskaya
+2026-05-26 13:57:06 | INFO     | --- Analyzing: Coco Gauff vs Taylor Townsend [WTA French Open]
+2026-05-26 13:57:06 | INFO     | CHECK | ELO predict Coco Gauff vs Taylor Townsend | OK | H:86.10% D:0.00% A:13.90%
+2026-05-26 13:57:06 | WARNING  | Rejected unrealistic EV=222.1% for Taylor Townsend (sharp=True)
+2026-05-26 13:57:06 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-26 13:57:06 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-26 13:57:06 | INFO     | CHECK |   Opp: Taylor Townsend              | OK | EV=12.8% odds=12.5 src=Sharp
+2026-05-26 13:57:06 | INFO     | CHECK | Signal: Coco Gauff vs Taylor Townsend | OK | pick=Taylor Townsend ev=12.8% odds=12.5
+2026-05-26 13:57:06 | INFO     | CHECK | ELO predict Coco Gauff vs Taylor Townsend | OK | H:86.10% D:0.00% A:13.90%
+2026-05-26 13:57:06 | INFO     | CHECK | ELO for Coco Gauff vs Taylor Townsend | OK | H=86.10% A=13.90% matches_h=269 matches_a=56
+2026-05-26 13:57:07 | INFO     | SofaScore: Coco Gauff vs Taylor Townsend -> ID:16214879
+2026-05-26 13:57:07 | INFO     | CHECK | SofaScore match_id Coco Gauff       | OK | 16214879
+2026-05-26 13:57:07 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:57:08 | INFO     | CHECK | SofaScore data keys for match 16214879 | OK | ['lineups', 'streaks']
+2026-05-26 13:57:08 | INFO     | CHECK | Data quality Coco Gauff vs Taylor Townsend | OK | high
+2026-05-26 13:57:08 | INFO     | CHECK | AI input stats_summary length       | OK | 193
+2026-05-26 13:57:08 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-26 13:57:09 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-26 13:57:09 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:57:11 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":87,"validated_logic":"ELO indicates strong favorite for Gauff; lay
+2026-05-26 13:57:11 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:57:11 | INFO     | CHECK | Final confidence                    | OK | 87
+2026-05-26 13:57:11 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-26 13:57:11 | INFO     | CHECK | Final logic preview                 | OK | ELO indicates strong favorite for Gauff; lay on Townsend justified; EV +12.8%.
+2026-05-26 13:57:11 | INFO     | Sent: Coco Gauff vs Taylor Townsend | Taylor Townsend
+2026-05-26 13:57:14 | INFO     | --- Analyzing: Elena Pridankina vs Oleksandra Oliynykova [WTA French Open]
+2026-05-26 13:57:14 | INFO     | CHECK | ELO predict Elena Pridankin vs Oleksandra Oliy | OK | H:48.09% D:0.00% A:51.91%
+2026-05-26 13:57:14 | WARNING  | Rejected unrealistic EV=21.8% for Elena Pridankina (sharp=True)
+2026-05-26 13:57:14 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-26 13:57:14 | INFO     | CHECK |   Opp: Oleksandra Oliynykov         | OK | EV=9.3% odds=1.63 src=Sharp
+2026-05-26 13:57:14 | INFO     | CHECK | Signal: Elena Pridankin vs Oleksandra Oliy | OK | pick=Oleksandra Oliynykova ev=9.3% odds=1.63
+2026-05-26 13:57:14 | INFO     | CHECK | ELO predict Elena Pridankin vs Oleksandra Oliy | OK | H:48.09% D:0.00% A:51.91%
+2026-05-26 13:57:14 | INFO     | CHECK | ELO for Elena Pridankin vs Oleksandra Oliy | OK | H=48.09% A=51.91% matches_h=3 matches_a=0
+2026-05-26 13:57:15 | INFO     | SofaScore: Elena Pridankina vs Oleksandra Oliynykova -> ID:16220433
+2026-05-26 13:57:15 | INFO     | CHECK | SofaScore match_id Elena Pridankin  | OK | 16220433
+2026-05-26 13:57:15 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-26 13:57:16 | INFO     | CHECK | SofaScore data keys for match 16220433 | OK | ['lineups', 'streaks']
+2026-05-26 13:57:16 | INFO     | CHECK | Data quality Elena Pridankin vs Oleksandra Oliy | OK | medium
+2026-05-26 13:57:16 | INFO     | CHECK | AI input stats_summary length       | OK | 280
+2026-05-26 13:57:16 | INFO     | CHECK | AI input data_quality               | OK | medium
+2026-05-26 13:57:17 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇷🇺",
+  "away_flag": "🇺🇦",
+  "risk_level": 
+2026-05-26 13:57:17 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-26 13:57:19 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":85,"validated_logic":"logic.","risk_level":"Low"}
+2026-05-26 13:57:19 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-26 13:57:19 | INFO     | CHECK | Final confidence                    | OK | 85
+2026-05-26 13:57:19 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-26 13:57:19 | INFO     | CHECK | Final logic preview                 | OK | logic.
+2026-05-26 13:57:20 | INFO     | Sent: Elena Pridankina vs Oleksandra Oliynykova | Oleksandra Oliynykova
+2026-05-26 13:57:23 | INFO     | =======================================================
+2026-05-26 13:57:23 | INFO     |   RUN COMPLETE
+2026-05-26 13:57:23 | INFO     | =======================================================
+2026-05-26 13:57:23 | INFO     | CHECK | Total signals sent this run         | OK | 6
+2026-05-26 13:57:23 | INFO     | =======================================================
