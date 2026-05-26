@@ -209,92 +209,28 @@
     "market": "h2h",
     "sent_at": "2026-05-26T08:42:57.127258+00:00"
   },
-  "6b86fc557e0b24553536ff86248080a1": {
-    "match": "Alina Korneeva vs Elisabetta Cocciaretto",
-    "home": "Alina Korneeva",
-    "away": "Elisabetta Cocciaretto",
-    "pick": "Alina Korneeva",
+  "31727970314861cf86b6210a144c2191": {
+    "match": "Baltimore Orioles vs Tampa Bay Rays",
+    "pick": "Baltimore Orioles",
     "market": "h2h_lay",
-    "odds": 3.0,
-    "commence_time": "2026-05-26T14:00:00Z",
-    "sent_at": "2026-05-26T13:56:36.869103+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-26T22:10:00.982049+00:00"
   },
-  "6eb069a197234b090d003882e9f57272": {
-    "match": "Hanne Vandewinkel vs Madison Keys",
-    "home": "Hanne Vandewinkel",
-    "away": "Madison Keys",
-    "pick": "Hanne Vandewinkel",
+  "78fbbf7a4cf36eef26cf771be3f1c687": {
+    "match": "Pittsburgh Pirates vs Chicago Cubs",
+    "pick": "Chicago Cubs",
     "market": "h2h_lay",
-    "odds": 8.2,
-    "commence_time": "2026-05-26T14:00:00Z",
-    "sent_at": "2026-05-26T13:56:46.700361+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-26T22:10:07.536224+00:00"
   },
-  "233d02df46eb053915100a277307e228": {
-    "match": "Anhelina Kalinina vs Diane Parry",
-    "home": "Anhelina Kalinina",
-    "away": "Diane Parry",
-    "pick": "Diane Parry",
+  "e9110efce9d5f78a4de29fb1c0f5b833": {
+    "match": "Detroit Tigers vs Los Angeles Angels",
+    "pick": "Detroit Tigers",
     "market": "h2h_lay",
-    "odds": 3.3,
-    "commence_time": "2026-05-26T14:30:00Z",
-    "sent_at": "2026-05-26T13:56:55.059169+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-26T22:10:14.244362+00:00"
   },
-  "c5bc310625fa93d1c4365c3c70da4e44": {
-    "match": "Anna Kalinskaya vs Lois Boisson",
-    "home": "Anna Kalinskaya",
-    "away": "Lois Boisson",
-    "pick": "Anna Kalinskaya",
-    "market": "h2h",
-    "odds": 1.62,
-    "commence_time": "2026-05-26T14:30:00Z",
-    "sent_at": "2026-05-26T13:57:03.468163+00:00",
-    "result_checked": false
-  },
-  "7001e5ef26cee8dea71ec462a28004b4": {
-    "match": "Coco Gauff vs Taylor Townsend",
-    "home": "Coco Gauff",
-    "away": "Taylor Townsend",
-    "pick": "Taylor Townsend",
+  "eb0f70c5125a951f378f572fc5f5c8bb": {
+    "match": "Boston Red Sox vs Atlanta Braves",
+    "pick": "Atlanta Braves",
     "market": "h2h_lay",
-    "odds": 12.5,
-    "commence_time": "2026-05-26T14:30:00Z",
-    "sent_at": "2026-05-26T13:57:11.895920+00:00",
-    "result_checked": false
-  },
-  "d9e1a29a0f7e8b412ce8cde0bf3b87f3": {
-    "match": "Elena Pridankina vs Oleksandra Oliynykova",
-    "home": "Elena Pridankina",
-    "away": "Oleksandra Oliynykova",
-    "pick": "Oleksandra Oliynykova",
-    "market": "h2h_lay",
-    "odds": 1.63,
-    "commence_time": "2026-05-26T15:00:00Z",
-    "sent_at": "2026-05-26T13:57:20.241314+00:00",
-    "result_checked": false
-  },
-  "4bcd03eafadb8f28376758361faa6d68": {
-    "match": "Greuther Fürth vs Rot-Weiss Essen",
-    "home": "Greuther Fürth",
-    "away": "Rot-Weiss Essen",
-    "pick": "Rot-Weiss Essen",
-    "market": "h2h",
-    "odds": 4.4,
-    "commence_time": "2026-05-26T18:30:00Z",
-    "sent_at": "2026-05-26T18:07:46.011236+00:00",
-    "result_checked": false
-  },
-  "d1c2069dc7523186c6dd4cfba624adeb": {
-    "match": "Saint Etienne vs Nice",
-    "home": "Saint Etienne",
-    "away": "Nice",
-    "pick": "Nice",
-    "market": "h2h",
-    "odds": 2.95,
-    "commence_time": "2026-05-26T18:45:00Z",
-    "sent_at": "2026-05-26T18:07:55.736594+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-26T22:10:20.216024+00:00"
   }
 }
