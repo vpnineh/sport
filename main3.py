@@ -9,6 +9,7 @@ import hashlib
 import asyncio
 import aiohttp
 import requests
+import httpx  # <--- این ایمپورت اضافه شد
 import pandas as pd
 from io import StringIO
 from groq import Groq
@@ -44,7 +45,7 @@ class Config:
 
     FOOTBALL_DATA_DAILY_LIMIT: int = 80
     # OPTIMIZATION: Combine markets to save Odds API requests
-    ODDS_API_MARKETS_STR: str = "h2h,totals" # You can add h2h_lay here if supported by your API plan
+    ODDS_API_MARKETS_STR: str = "h2h,totals"
     ODDS_API_REGIONS: str = "eu,us,uk,au"
 
     TTL_SENT_HISTORY: float = 72.0
@@ -70,7 +71,6 @@ class Config:
     ELO_HOME_ADVANTAGE: float = 80.0
     ELO_DEFAULT: float = 1500.0
 
-    # OPTIMIZED GROQ MODELS
     AI_MODEL_ANALYST: str = "llama-3.3-70b-versatile"
     AI_MODEL_VALIDATOR: str = "llama-3.1-8b-instant"
     AI_MAX_TOKENS: int = 1024
@@ -387,7 +387,6 @@ def get_display_pick(raw_pick: str, market: str, home: str, away: str) -> str:
     """تبدیل نام مارکت‌ها به زبان بسیار ساده برای ممبرهای کانال و هوش مصنوعی"""
     pick_lower = raw_pick.lower()
     
-    # 1. Double Chance (Lay)
     if market == "h2h_lay":
         if home.lower() in pick_lower:
             return f"{away} or Draw (Double Chance)"
@@ -396,14 +395,12 @@ def get_display_pick(raw_pick: str, market: str, home: str, away: str) -> str:
         elif "draw" in pick_lower or "tie" in pick_lower:
             return f"{home} or {away} (No Draw)"
             
-    # 2. Match Winner
     elif market == "h2h":
         if "draw" in pick_lower or "tie" in pick_lower:
             return "Draw (Match to Tie)"
         else:
             return f"{raw_pick} to Win"
             
-    # 3. Totals
     elif market == "totals":
         if "over" in pick_lower:
             return raw_pick.title() + " (Total Goals/Points)"
