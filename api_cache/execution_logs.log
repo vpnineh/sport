@@ -457,3 +457,52 @@
 2026-05-27 00:08:55 | INFO     | ============================================================
 2026-05-27 00:08:55 | INFO     | Done! 4 signal(s) sent.
 2026-05-27 00:08:55 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-27 00:21:48 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-27 00:21:48 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-27 00:21:48 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-27 00:21:48 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-27 00:21:48 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-27 00:21:48 | INFO     | Bootstrap: data is fresh
+2026-05-27 00:21:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-27 00:21:48 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-27 00:21:48 | INFO     | Football-Data call counter reset
+2026-05-27 00:21:48 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | CHECK | Odds API requests remaining              | OK | 185
+2026-05-27 00:21:48 | INFO     | CHECK | Odds API requests used this month        | OK | 315
+2026-05-27 00:21:48 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | --- Santos vs C.D. Cuenca [Copa Sudamericana]
+2026-05-27 00:21:48 | INFO     | --- Club Universitario de Deportes vs Deportes Tolima [Copa Libertadores]
+2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h                               | OK | Club Universitario de Deportes EV=2.9% odds=2.25 elo=False
+2026-05-27 00:21:48 | INFO     | SKIP duplicate: Club Universitario de Deportes vs Deportes Tolima
+2026-05-27 00:21:48 | INFO     | --- Nacional de Montevideo vs Coquimbo Unido [Copa Libertadores]
+2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h                               | OK | Coquimbo Unido EV=2.1% odds=3.7 elo=False
+2026-05-27 00:21:48 | INFO     | SKIP duplicate: Nacional de Montevideo vs Coquimbo Unido
+2026-05-27 00:21:48 | INFO     | --- Flamengo-RJ vs Cusco FC [Copa Libertadores]
+2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h_lay                           | OK | Draw EV=4.5% odds=14.01 elo=False
+2026-05-27 00:21:48 | INFO     | SKIP duplicate: Flamengo-RJ vs Cusco FC
+2026-05-27 00:21:48 | INFO     | --- Estudiantes La Plata vs Independiente Medellín [Copa Libertadores]
+2026-05-27 00:21:48 | INFO     | --- San Lorenzo vs Recoleta FC [Copa Sudamericana]
+2026-05-27 00:21:48 | INFO     | --- Albuquerque Isotopes vs El Paso Chihuahuas [MiLB]
+2026-05-27 00:21:48 | INFO     | --- Oklahoma City Thunder vs San Antonio Spurs [NBA]
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     |   RUN COMPLETE
+2026-05-27 00:21:48 | INFO     | ============================================================
+2026-05-27 00:21:48 | INFO     | CHECK | Signals sent this run                    | OK | 0
