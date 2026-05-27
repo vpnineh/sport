@@ -506,3 +506,127 @@
 2026-05-27 00:21:48 | INFO     |   RUN COMPLETE
 2026-05-27 00:21:48 | INFO     | ============================================================
 2026-05-27 00:21:48 | INFO     | CHECK | Signals sent this run                    | OK | 0
+2026-05-27 09:08:38 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-27 09:08:38 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-27 09:08:38 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-27 09:08:38 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-27 09:08:38 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-27 09:08:38 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:38 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:38 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-27 09:08:38 | INFO     | Bootstrap: data is fresh
+2026-05-27 09:08:38 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-27 09:08:38 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-27 09:08:38 | INFO     | Football-Data call counter reset
+2026-05-27 09:08:38 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:38 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:38 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:38 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-27 09:08:38 | INFO     | ============================================================
+2026-05-27 09:08:39 | INFO     | CHECK | Odds API requests remaining              | OK | 169
+2026-05-27 09:08:39 | INFO     | CHECK | Odds API requests used this month        | OK | 331
+2026-05-27 09:08:39 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-27 09:08:39 | INFO     | ============================================================
+2026-05-27 09:08:39 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-27 09:08:39 | INFO     | ============================================================
+2026-05-27 09:08:39 | INFO     | --- Alejandro Davidovich Fokina vs Thiago Agustin Tirante [ATP French Open]
+2026-05-27 09:08:39 | WARNING  | Rejected unrealistic EV=22.3% for Alejandro Davidovich Fokina
+2026-05-27 09:08:39 | INFO     | CHECK | EV opp h2h                               | OK | Thiago Agustin Tirante EV=2.6% odds=1.69 elo=True
+2026-05-27 09:08:39 | INFO     | CHECK | EV opp h2h_lay                           | OK | Alejandro Davidovich Fokina EV=2.5% odds=2.64 elo=False
+2026-05-27 09:08:39 | INFO     | CHECK | ELO Alejandro Da vs Thiago Agust         | OK | H=60.6% D=0.0% A=39.4% hm=220 am=17
+2026-05-27 09:08:40 | INFO     | SofaScore: Alejandro Davidovich Fokina vs Thiago Agustin Tirante -> ID:16198512
+2026-05-27 09:08:41 | INFO     | CHECK | SofaScore data for match 16198512        | OK | ['lineups', 'streaks']
+2026-05-27 09:08:41 | INFO     | CHECK | Data quality Alejandro Da vs Thiago Agust | OK | high
+2026-05-27 09:08:41 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇪🇸",
+  "away_flag": "🇦
+2026-05-27 09:08:41 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-27 09:08:42 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Thiago Agustin Tirante's 75-point ELO di
+2026-05-27 09:08:42 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-27 09:08:42 | INFO     | CHECK | Final confidence                         | OK | 84
+2026-05-27 09:08:42 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-27 09:08:42 | INFO     | CHECK | Logic preview                            | OK | Thiago Agustin Tirante's 75-point ELO difference implies a 3
+2026-05-27 09:08:42 | INFO     | Sent: Alejandro Davidovich Fokina vs Thiago Agustin Tirante | Thiago Agustin Tirante
+2026-05-27 09:08:45 | INFO     | --- Doosan Bears vs KT Wiz [KBO]
+2026-05-27 09:08:45 | INFO     | --- NC Dinos vs Hanwha Eagles [KBO]
+2026-05-27 09:08:45 | INFO     | --- Kiwoom Heroes vs Kia Tigers [KBO]
+2026-05-27 09:08:45 | INFO     | CHECK | EV opp h2h                               | OK | Kiwoom Heroes EV=1.7% odds=2.48 elo=False
+2026-05-27 09:08:47 | INFO     | SofaScore: Kiwoom Heroes vs Kia Tigers -> ID:15290321
+2026-05-27 09:08:50 | INFO     | CHECK | SofaScore data for match 15290321        | OK | ['lineups', 'streaks']
+2026-05-27 09:08:50 | INFO     | CHECK | Data quality Kiwoom Heroe vs Kia Tigers  | OK | medium
+2026-05-27 09:08:50 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇰🇷",
+  "away_flag": "
+2026-05-27 09:08:50 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-27 09:08:50 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Kiwoom Heroes' home performance and Kia 
+2026-05-27 09:08:50 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-27 09:08:50 | INFO     | CHECK | Final confidence                         | OK | 67
+2026-05-27 09:08:50 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-27 09:08:50 | INFO     | CHECK | Logic preview                            | OK | Kiwoom Heroes' home performance and Kia Tigers' recent head-
+2026-05-27 09:08:51 | INFO     | Sent: Kiwoom Heroes vs Kia Tigers | Kiwoom Heroes
+2026-05-27 09:08:54 | INFO     | --- Lotte Giants vs LG Twins [KBO]
+2026-05-27 09:08:54 | INFO     | --- SSG Landers vs Samsung Lions [KBO]
+2026-05-27 09:08:54 | INFO     | CHECK | EV opp h2h                               | OK | SSG Landers EV=1.7% odds=2.53 elo=False
+2026-05-27 09:08:55 | INFO     | SofaScore: SSG Landers vs Samsung Lions -> ID:15290337
+2026-05-27 09:08:56 | INFO     | CHECK | SofaScore data for match 15290337        | OK | ['lineups', 'streaks']
+2026-05-27 09:08:56 | INFO     | CHECK | Data quality SSG Landers vs Samsung Lion | OK | medium
+2026-05-27 09:08:57 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇰🇷",
+  "away_flag": "
+2026-05-27 09:08:57 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-27 09:08:57 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"SSG Landers have a recent head-to-head e
+2026-05-27 09:08:57 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-27 09:08:57 | INFO     | CHECK | Final confidence                         | OK | 67
+2026-05-27 09:08:57 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-27 09:08:57 | INFO     | CHECK | Logic preview                            | OK | SSG Landers have a recent head-to-head edge with 4 wins agai
+2026-05-27 09:08:58 | INFO     | Sent: SSG Landers vs Samsung Lions | SSG Landers
+2026-05-27 09:09:01 | INFO     | --- Federico Cinà vs Jesper De Jong [ATP French Open]
+2026-05-27 09:09:01 | INFO     | CHECK | EV opp h2h_lay                           | OK | Jesper De Jong EV=2.3% odds=1.72 elo=False
+2026-05-27 09:09:01 | INFO     | CHECK | ELO Federico Cin vs Jesper De Jo         | OK | H=53.2% D=0.0% A=46.8% hm=0 am=10
+2026-05-27 09:09:02 | INFO     | SofaScore: Federico Cinà vs Jesper De Jong -> ID:16198504
+2026-05-27 09:09:03 | INFO     | CHECK | SofaScore data for match 16198504        | OK | ['lineups', 'streaks']
+2026-05-27 09:09:03 | INFO     | CHECK | Data quality Federico Cin vs Jesper De Jo | OK | high
+2026-05-27 09:09:03 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+
+2026-05-27 09:09:03 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-27 09:09:03 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Jesper De Jong's recent form suggests an
+2026-05-27 09:09:03 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-27 09:09:03 | INFO     | CHECK | Final confidence                         | OK | 74
+2026-05-27 09:09:03 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-27 09:09:03 | INFO     | CHECK | Logic preview                            | OK | Jesper De Jong's recent form suggests an advantage, driven b
+2026-05-27 09:09:04 | INFO     | Sent: Federico Cinà vs Jesper De Jong | Jesper De Jong
+2026-05-27 09:09:07 | INFO     | --- Ireland vs New Zealand [Test Matches]
+2026-05-27 09:09:07 | INFO     | CHECK | EV opp h2h                               | OK | Draw EV=9.3% odds=9.5 elo=False
+2026-05-27 09:09:08 | INFO     | SofaScore: Ireland vs New Zealand -> ID:11635611
+2026-05-27 09:09:10 | INFO     | CHECK | SofaScore data for match 11635611        | OK | ['lineups', 'streaks']
+2026-05-27 09:09:10 | INFO     | CHECK | Data quality Ireland vs New Zealand      | OK | medium
+2026-05-27 09:09:10 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji":"🏏",
+"home_flag":"🇮🇪",
+"away_flag":"🇳🇿",
+"lo
+2026-05-27 09:09:10 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-27 09:09:10 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick of a draw is driven by a sharp 
+2026-05-27 09:09:10 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-27 09:09:10 | INFO     | CHECK | Final confidence                         | OK | 75
+2026-05-27 09:09:10 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-27 09:09:10 | INFO     | CHECK | Logic preview                            | OK | The pick of a draw is driven by a sharp market discrepancy, 
+2026-05-27 09:09:11 | INFO     | Sent: Ireland vs New Zealand | Draw
+2026-05-27 09:09:14 | INFO     | ============================================================
+2026-05-27 09:09:14 | INFO     |   RUN COMPLETE
+2026-05-27 09:09:14 | INFO     | ============================================================
+2026-05-27 09:09:14 | INFO     | CHECK | Signals sent this run                    | OK | 5

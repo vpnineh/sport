@@ -250,5 +250,60 @@
     "pick": "Cusco FC",
     "market": "h2h_lay",
     "sent_at": "2026-05-27T00:27:29.582920+00:00"
+  },
+  "ae53ce52bf29ca9672dc12441bc9b294": {
+    "match": "Alejandro Davidovich Fokina vs Thiago Agustin Tirante",
+    "home": "Alejandro Davidovich Fokina",
+    "away": "Thiago Agustin Tirante",
+    "pick": "Thiago Agustin Tirante",
+    "market": "h2h",
+    "odds": 1.69,
+    "commence_time": "2026-05-27T09:14:00Z",
+    "sent_at": "2026-05-27T09:08:42.712517+00:00",
+    "result_checked": false
+  },
+  "fecd11022ab2af5ae5bada1661277491": {
+    "match": "Kiwoom Heroes vs Kia Tigers",
+    "home": "Kiwoom Heroes",
+    "away": "Kia Tigers",
+    "pick": "Kiwoom Heroes",
+    "market": "h2h",
+    "odds": 2.48,
+    "commence_time": "2026-05-27T09:30:00Z",
+    "sent_at": "2026-05-27T09:08:51.430233+00:00",
+    "result_checked": false
+  },
+  "22475ed24e3b64360eac87f938fef689": {
+    "match": "SSG Landers vs Samsung Lions",
+    "home": "SSG Landers",
+    "away": "Samsung Lions",
+    "pick": "SSG Landers",
+    "market": "h2h",
+    "odds": 2.53,
+    "commence_time": "2026-05-27T09:30:00Z",
+    "sent_at": "2026-05-27T09:08:58.169328+00:00",
+    "result_checked": false
+  },
+  "aee54e1e0d3de11e9cf98075d6f2d515": {
+    "match": "Federico Cinà vs Jesper De Jong",
+    "home": "Federico Cinà",
+    "away": "Jesper De Jong",
+    "pick": "Jesper De Jong",
+    "market": "h2h_lay",
+    "odds": 1.72,
+    "commence_time": "2026-05-27T10:00:00Z",
+    "sent_at": "2026-05-27T09:09:04.308392+00:00",
+    "result_checked": false
+  },
+  "9bc489849ad833d6ec320e8c8087e1fd": {
+    "match": "Ireland vs New Zealand",
+    "home": "Ireland",
+    "away": "New Zealand",
+    "pick": "Draw",
+    "market": "h2h",
+    "odds": 9.5,
+    "commence_time": "2026-05-27T10:00:00Z",
+    "sent_at": "2026-05-27T09:09:11.214557+00:00",
+    "result_checked": false
   }
 }
