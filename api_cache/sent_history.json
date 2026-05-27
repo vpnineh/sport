@@ -232,5 +232,49 @@
     "pick": "Atlanta Braves",
     "market": "h2h_lay",
     "sent_at": "2026-05-26T22:10:20.216024+00:00"
+  },
+  "5dc0ba70071e390164216cf37bf29f96": {
+    "match": "Club Universitario de Deportes vs Deportes Tolima",
+    "home": "Club Universitario de Deportes",
+    "away": "Deportes Tolima",
+    "pick": "Club Universitario de Deportes",
+    "market": "h2h",
+    "odds": 2.37,
+    "commence_time": "2026-05-27T00:30:00Z",
+    "sent_at": "2026-05-27T00:08:31.637379+00:00",
+    "result_checked": false
+  },
+  "3582feae767ef139cff94e4f8976919e": {
+    "match": "Nacional de Montevideo vs Coquimbo Unido",
+    "home": "Nacional de Montevideo",
+    "away": "Coquimbo Unido",
+    "pick": "Coquimbo Unido",
+    "market": "h2h",
+    "odds": 3.95,
+    "commence_time": "2026-05-27T00:30:00Z",
+    "sent_at": "2026-05-27T00:08:38.646096+00:00",
+    "result_checked": false
+  },
+  "7ebb3036a609ca3d84d6b4d92e29f9ef": {
+    "match": "Flamengo-RJ vs Cusco FC",
+    "home": "Flamengo-RJ",
+    "away": "Cusco FC",
+    "pick": "Cusco FC",
+    "market": "h2h_lay",
+    "odds": 30.03,
+    "commence_time": "2026-05-27T00:30:00Z",
+    "sent_at": "2026-05-27T00:08:45.892171+00:00",
+    "result_checked": false
+  },
+  "a2e2315e087e81241c4bebc8fd4dbdfe": {
+    "match": "San Lorenzo vs Recoleta FC",
+    "home": "San Lorenzo",
+    "away": "Recoleta FC",
+    "pick": "Draw",
+    "market": "h2h",
+    "odds": 5.03,
+    "commence_time": "2026-05-27T00:30:00Z",
+    "sent_at": "2026-05-27T00:08:52.780122+00:00",
+    "result_checked": false
   }
 }

@@ -438,3 +438,22 @@
 2026-05-26 18:07:58 | INFO     | =======================================================
 2026-05-26 18:07:58 | INFO     | CHECK | Total signals sent this run         | OK | 2
 2026-05-26 18:07:58 | INFO     | =======================================================
+2026-05-27 00:08:28 | INFO     | ============================================================
+2026-05-27 00:08:28 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.0 (AI + ELO + REPORTS) STARTING
+2026-05-27 00:08:28 | INFO     | ============================================================
+2026-05-27 00:08:28 | INFO     | Checking pending results...
+2026-05-27 00:08:28 | INFO     | Fetching combined events (h2h & totals)...
+2026-05-27 00:08:28 | INFO     | Analyzing 8 events...
+2026-05-27 00:08:30 | INFO     | ⚠️ [STATS WARNING] Relying strictly on Sharp EV math for Club Universitario de Deportes vs Deportes Tolima
+2026-05-27 00:08:31 | INFO     | Sent: Club Universitario de Deportes vs Deportes Tolima | Club Universitario de Deportes
+2026-05-27 00:08:37 | INFO     | ✅ [STATS VERIFIED] Found rich data for Nacional de Montevideo vs Coquimbo Unido
+2026-05-27 00:08:38 | INFO     | Sent: Nacional de Montevideo vs Coquimbo Unido | Coquimbo Unido
+2026-05-27 00:08:44 | INFO     | ✅ [STATS VERIFIED] Found rich data for Flamengo-RJ vs Cusco FC
+2026-05-27 00:08:45 | INFO     | Sent: Flamengo-RJ vs Cusco FC | Cusco FC
+2026-05-27 00:08:50 | INFO     | ✅ [STATS VERIFIED] Found rich data for San Lorenzo vs Recoleta FC
+2026-05-27 00:08:52 | INFO     | Sent: San Lorenzo vs Recoleta FC | Draw
+2026-05-27 00:08:55 | INFO     | ============================================================
+2026-05-27 00:08:55 | INFO     |   RUN COMPLETE
+2026-05-27 00:08:55 | INFO     | ============================================================
+2026-05-27 00:08:55 | INFO     | Done! 4 signal(s) sent.
+2026-05-27 00:08:55 | INFO     | ============================================================
