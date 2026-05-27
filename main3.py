@@ -716,7 +716,7 @@ async def get_stats_async(home: str, away: str, sport_key: str, football_adapter
     if elo_pred and elo_pred.get("home_matches", 0) > 0: stats["elo"] = elo_pred
 
     cached_mid = match_id_cache.get(home, away)
-    match_id = cached_mid if cached_mid is != None else await search_sofascore_match_async(home, away)
+    match_id = cached_mid if cached_mid is not None else await search_sofascore_match_async(home, away)
     if cached_mid is None: match_id_cache.set(home, away, match_id if match_id else 0)
 
     task_names, coros = [], []
