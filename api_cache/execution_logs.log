@@ -1113,3 +1113,64 @@
 2026-05-28 22:53:35 | INFO     | =======================================================
 2026-05-28 22:53:35 | INFO     | CHECK | Total signals sent this run         | OK | 2
 2026-05-28 22:53:35 | INFO     | =======================================================
+2026-05-28 22:56:56 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-28 22:56:56 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-28 22:56:56 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-28 22:56:56 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-28 22:56:56 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-28 22:56:56 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-28 22:56:56 | INFO     | ============================================================
+2026-05-28 22:56:56 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-28 22:56:56 | INFO     | ============================================================
+2026-05-28 22:56:56 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-28 22:56:56 | INFO     | Bootstrap: data is fresh
+2026-05-28 22:56:56 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-28 22:56:56 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-28 22:56:56 | INFO     | Football-Data call counter reset
+2026-05-28 22:56:56 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-28 22:56:56 | INFO     | ============================================================
+2026-05-28 22:56:56 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 22:56:56 | INFO     | ============================================================
+2026-05-28 22:56:56 | INFO     | CHECK | Pending results                          | OK | 18
+2026-05-28 22:56:57 | INFO     | Result not found yet: Alina Korneeva vs Elisabetta Cocciaretto
+2026-05-28 22:56:57 | INFO     | Result not found yet: Hanne Vandewinkel vs Madison Keys
+2026-05-28 22:56:57 | INFO     | Result not found yet: Anhelina Kalinina vs Diane Parry
+2026-05-28 22:56:57 | INFO     | Result not found yet: Anna Kalinskaya vs Lois Boisson
+2026-05-28 22:56:57 | INFO     | Result not found yet: Coco Gauff vs Taylor Townsend
+2026-05-28 22:56:58 | INFO     | Result not found yet: Elena Pridankina vs Oleksandra Oliynykova
+2026-05-28 22:56:58 | INFO     | Result not found yet: Greuther Fürth vs Rot-Weiss Essen
+2026-05-28 22:56:58 | INFO     | Result not found yet: Saint Etienne vs Nice
+2026-05-28 22:56:58 | INFO     | Result not found yet: Yuliia Starodubtseva vs Elena Rybakina
+2026-05-28 22:56:58 | INFO     | Result not found yet: Marta Kostyuk vs Katie Volynets
+2026-05-28 22:56:59 | INFO     | Result not found yet: Viktorija Golubic vs Alycia Parks
+2026-05-28 22:56:59 | INFO     | Result not found yet: Jil Teichmann vs Magdalena Frech
+2026-05-28 22:56:59 | INFO     | Result not found yet: Nuno Borges vs Miomir Kecmanovic
+2026-05-28 22:56:59 | INFO     | Result not found yet: Ugo Humbert vs Quentin Halys
+2026-05-28 22:57:00 | INFO     | Result not found yet: Ann Li vs Diane Parry
+2026-05-28 22:57:00 | INFO     | Result not found yet: Antonia Ruzic vs Madison Keys
+2026-05-28 22:57:00 | INFO     | Result not found yet: Aryna Sabalenka vs Elsa Jacquemot
+2026-05-28 22:57:00 | INFO     | Result not found yet: Francisco Comesana vs Luciano Darderi
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     | CHECK | Odds API requests remaining              | OK | 73
+2026-05-28 22:57:00 | INFO     | CHECK | Odds API requests used this month        | OK | 427
+2026-05-28 22:57:00 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     | --- Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox [MiLB]
+2026-05-28 22:57:00 | INFO     | --- Nashville Sounds vs Gwinnett Stripers [MiLB]
+2026-05-28 22:57:00 | INFO     | --- Omaha Storm Chasers vs Memphis Redbirds [MiLB]
+2026-05-28 22:57:00 | INFO     | --- Round Rock Express vs Salt Lake Bees [MiLB]
+2026-05-28 22:57:00 | INFO     | --- Sugar Land Space Cowboys vs Oklahoma City Comets [MiLB]
+2026-05-28 22:57:00 | INFO     | --- Texas Rangers vs Houston Astros [MLB]
+2026-05-28 22:57:00 | INFO     | --- Dallas Wings vs Las Vegas Aces [WNBA]
+2026-05-28 22:57:00 | INFO     | --- CA Tigre BA vs Alianza Atlético [Copa Sudamericana]
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     |   RUN COMPLETE
+2026-05-28 22:57:00 | INFO     | ============================================================
+2026-05-28 22:57:00 | INFO     | CHECK | Signals sent this run                    | OK | 0
