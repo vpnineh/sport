@@ -959,3 +959,157 @@
 2026-05-28 19:19:25 | INFO     | =======================================================
 2026-05-28 19:19:25 | INFO     | CHECK | Total signals sent this run         | OK | 0
 2026-05-28 19:19:25 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     | CHECK | ODDS_API_KEY set                    | OK | True
+2026-05-28 22:53:17 | INFO     | CHECK | GROQ_API_KEY set                    | OK | True
+2026-05-28 22:53:17 | INFO     | CHECK | RAPIDAPI_KEY set                    | OK | True
+2026-05-28 22:53:17 | INFO     | CHECK | TELEGRAM_BOT_TOKEN set              | OK | True
+2026-05-28 22:53:17 | INFO     | CHECK | TELEGRAM_CHAT_ID set                | OK | True
+2026-05-28 22:53:17 | INFO     | CHECK | FOOTBALL_DATA_API_KEY set           | OK | True
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.0 STARTING
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-28 22:53:17 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-28 22:53:17 | INFO     | Bootstrap: data is fresh - skipping
+2026-05-28 22:53:17 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-28 22:53:17 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-28 22:53:17 | INFO     | CHECK | ELO football teams loaded           | OK | 358
+2026-05-28 22:53:17 | INFO     | CHECK | ELO tennis players loaded           | OK | 1494
+2026-05-28 22:53:17 | INFO     | Football-Data call counter reset for new day
+2026-05-28 22:53:17 | INFO     | CHECK | Football-Data calls today           | OK | 0
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 22:53:17 | INFO     | =======================================================
+2026-05-28 22:53:17 | INFO     | CHECK | Pending results to check            | OK | 18
+2026-05-28 22:53:17 | INFO     | Checking result: Alina Korneeva vs Elisabetta Cocciaretto | Pick: Alina Korneeva
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Alina Korneeva         | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Hanne Vandewinkel vs Madison Keys | Pick: Hanne Vandewinkel
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Hanne Vandewink        | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Anhelina Kalinina vs Diane Parry | Pick: Diane Parry
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Anhelina Kalini        | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Anna Kalinskaya vs Lois Boisson | Pick: Anna Kalinskaya
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Anna Kalinskaya        | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Coco Gauff vs Taylor Townsend | Pick: Taylor Townsend
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Coco Gauff             | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Elena Pridankina vs Oleksandra Oliynykova | Pick: Oleksandra Oliynykova
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Elena Pridankin        | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Greuther Fürth vs Rot-Weiss Essen | Pick: Rot-Weiss Essen
+2026-05-28 22:53:18 | INFO     | CHECK | Result event Greuther Fürth         | OK | not found
+2026-05-28 22:53:18 | INFO     | Checking result: Saint Etienne vs Nice | Pick: Nice
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Saint Etienne          | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Yuliia Starodubtseva vs Elena Rybakina | Pick: Yuliia Starodubtseva
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Yuliia Starodub        | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Marta Kostyuk vs Katie Volynets | Pick: Katie Volynets
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Marta Kostyuk          | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Viktorija Golubic vs Alycia Parks | Pick: Alycia Parks
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Viktorija Golub        | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Jil Teichmann vs Magdalena Frech | Pick: Magdalena Frech
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Jil Teichmann          | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Nuno Borges vs Miomir Kecmanovic | Pick: Nuno Borges
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Nuno Borges            | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Ugo Humbert vs Quentin Halys | Pick: Ugo Humbert
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Ugo Humbert            | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Ann Li vs Diane Parry | Pick: Diane Parry
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Ann Li                 | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Antonia Ruzic vs Madison Keys | Pick: Antonia Ruzic
+2026-05-28 22:53:19 | INFO     | CHECK | Result event Antonia Ruzic          | OK | not found
+2026-05-28 22:53:19 | INFO     | Checking result: Aryna Sabalenka vs Elsa Jacquemot | Pick: Elsa Jacquemot
+2026-05-28 22:53:20 | INFO     | CHECK | Result event Aryna Sabalenka        | OK | not found
+2026-05-28 22:53:20 | INFO     | Checking result: Francisco Comesana vs Luciano Darderi | Pick: Francisco Comesana
+2026-05-28 22:53:20 | INFO     | CHECK | Result event Francisco Comes        | OK | not found
+2026-05-28 22:53:20 | INFO     | CHECK | Results - Wins                      | OK | 0
+2026-05-28 22:53:20 | INFO     | CHECK | Results - Losses                    | OK | 0
+2026-05-28 22:53:20 | INFO     | CHECK | Results - Unknown                   | OK | 18
+2026-05-28 22:53:20 | INFO     | No results to report this run
+2026-05-28 22:53:20 | INFO     | =======================================================
+2026-05-28 22:53:20 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-28 22:53:20 | INFO     | =======================================================
+2026-05-28 22:53:20 | INFO     | CHECK | Odds API requests remaining         | OK | 81
+2026-05-28 22:53:20 | INFO     | CHECK | Odds API requests used              | OK | 419
+2026-05-28 22:53:20 | INFO     | CHECK | Odds API events in window           | OK | 8
+2026-05-28 22:53:20 | INFO     | CHECK | Events fetched from Odds API        | OK | 8
+2026-05-28 22:53:20 | INFO     | =======================================================
+2026-05-28 22:53:20 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-28 22:53:20 | INFO     | =======================================================
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox [MiLB]
+2026-05-28 22:53:20 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Nashville Sounds vs Gwinnett Stripers [MiLB]
+2026-05-28 22:53:20 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Nashville Sounds vs Gwinnett Stripers
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Omaha Storm Chasers vs Memphis Redbirds [MiLB]
+2026-05-28 22:53:20 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Omaha Storm Chasers vs Memphis Redbirds
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Round Rock Express vs Salt Lake Bees [MiLB]
+2026-05-28 22:53:20 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Round Rock Express vs Salt Lake Bees
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Sugar Land Space Cowboys vs Oklahoma City Comets [MiLB]
+2026-05-28 22:53:20 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Sugar Land Space Cowboys vs Oklahoma City Comets
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Texas Rangers vs Houston Astros [MLB]
+2026-05-28 22:53:20 | DEBUG    | Skipping totals: implied_sum too high (2.043)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 22:53:20 | DEBUG    | No EV opportunity: Texas Rangers vs Houston Astros
+2026-05-28 22:53:20 | INFO     | --- Analyzing: Dallas Wings vs Las Vegas Aces [WNBA]
+2026-05-28 22:53:20 | DEBUG    | Skipping totals: implied_sum too high (2.074)
+2026-05-28 22:53:20 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-28 22:53:20 | INFO     | CHECK |   Opp: Dallas Wings                 | OK | EV=2.4% odds=2.98 src=Sharp
+2026-05-28 22:53:20 | INFO     | CHECK | Signal: Dallas Wings vs Las Vegas Aces | OK | pick=Dallas Wings ev=2.4% odds=2.98
+2026-05-28 22:53:21 | INFO     | SofaScore: Dallas Wings vs Las Vegas Aces -> ID:15415697
+2026-05-28 22:53:21 | INFO     | CHECK | SofaScore match_id Dallas Wings     | OK | 15415697
+2026-05-28 22:53:21 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-28 22:53:22 | INFO     | CHECK | SofaScore data keys for match 15415697 | OK | ['lineups', 'streaks']
+2026-05-28 22:53:22 | INFO     | CHECK | Data quality Dallas Wings vs Las Vegas Aces | OK | medium
+2026-05-28 22:53:22 | INFO     | CHECK | AI input stats_summary length       | OK | 1011
+2026-05-28 22:53:22 | INFO     | CHECK | AI input data_quality               | OK | medium
+2026-05-28 22:53:22 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🏀",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-28 22:53:22 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 22:53:25 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":57,"validated_logic":"Data quality medium (+8) + EV edge 2.4% (+4)
+2026-05-28 22:53:25 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 22:53:25 | INFO     | CHECK | Final confidence                    | OK | 57
+2026-05-28 22:53:25 | INFO     | CHECK | Final risk_level                    | OK | High
+2026-05-28 22:53:25 | INFO     | CHECK | Final logic preview                 | OK | Data quality medium (+8) + EV edge 2.4% (+4) + H2H against pick (-5) = 7 points 
+2026-05-28 22:53:25 | INFO     | Sent: Dallas Wings vs Las Vegas Aces | Dallas Wings
+2026-05-28 22:53:28 | INFO     | --- Analyzing: CA Tigre BA vs Alianza Atlético [Copa Sudamericana]
+2026-05-28 22:53:28 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-28 22:53:28 | INFO     | CHECK |   Opp: Draw                         | OK | EV=4.5% odds=6.8 src=Sharp
+2026-05-28 22:53:28 | INFO     | CHECK |   Opp: Alianza Atlético             | OK | EV=1.8% odds=15.5 src=Sharp
+2026-05-28 22:53:28 | INFO     | CHECK | Signal: CA Tigre BA vs Alianza Atlétic | OK | pick=Draw ev=4.5% odds=6.8
+2026-05-28 22:53:29 | INFO     | CHECK | SofaScore match_id CA Tigre BA      | EMPTY (ok)
+2026-05-28 22:53:29 | INFO     | CHECK | Data quality CA Tigre BA vs Alianza Atlétic | OK | none
+2026-05-28 22:53:29 | INFO     | CHECK | AI input stats_summary length       | OK | 29
+2026-05-28 22:53:29 | INFO     | CHECK | AI input data_quality               | OK | none
+2026-05-28 22:53:30 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "⚽️",
+  "home_flag": "🇦🇷",
+  "away_flag": "🇵🇪",
+  "risk_level":
+2026-05-28 22:53:30 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 22:53:32 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":52,"validated_logic":"No statistical data available; only EV edge 
+2026-05-28 22:53:32 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 22:53:32 | INFO     | CHECK | Final confidence                    | OK | 52
+2026-05-28 22:53:32 | INFO     | CHECK | Final risk_level                    | OK | High
+2026-05-28 22:53:32 | INFO     | CHECK | Final logic preview                 | OK | No statistical data available; only EV edge +4.5% and H2H indicates against pick
+2026-05-28 22:53:32 | INFO     | Sent: CA Tigre BA vs Alianza Atlético | Draw
+2026-05-28 22:53:35 | INFO     | =======================================================
+2026-05-28 22:53:35 | INFO     |   RUN COMPLETE
+2026-05-28 22:53:35 | INFO     | =======================================================
+2026-05-28 22:53:35 | INFO     | CHECK | Total signals sent this run         | OK | 2
+2026-05-28 22:53:35 | INFO     | =======================================================
