@@ -438,195 +438,441 @@
 2026-05-26 18:07:58 | INFO     | =======================================================
 2026-05-26 18:07:58 | INFO     | CHECK | Total signals sent this run         | OK | 2
 2026-05-26 18:07:58 | INFO     | =======================================================
-2026-05-27 00:08:28 | INFO     | ============================================================
-2026-05-27 00:08:28 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.0 (AI + ELO + REPORTS) STARTING
-2026-05-27 00:08:28 | INFO     | ============================================================
-2026-05-27 00:08:28 | INFO     | Checking pending results...
-2026-05-27 00:08:28 | INFO     | Fetching combined events (h2h & totals)...
-2026-05-27 00:08:28 | INFO     | Analyzing 8 events...
-2026-05-27 00:08:30 | INFO     | ⚠️ [STATS WARNING] Relying strictly on Sharp EV math for Club Universitario de Deportes vs Deportes Tolima
-2026-05-27 00:08:31 | INFO     | Sent: Club Universitario de Deportes vs Deportes Tolima | Club Universitario de Deportes
-2026-05-27 00:08:37 | INFO     | ✅ [STATS VERIFIED] Found rich data for Nacional de Montevideo vs Coquimbo Unido
-2026-05-27 00:08:38 | INFO     | Sent: Nacional de Montevideo vs Coquimbo Unido | Coquimbo Unido
-2026-05-27 00:08:44 | INFO     | ✅ [STATS VERIFIED] Found rich data for Flamengo-RJ vs Cusco FC
-2026-05-27 00:08:45 | INFO     | Sent: Flamengo-RJ vs Cusco FC | Cusco FC
-2026-05-27 00:08:50 | INFO     | ✅ [STATS VERIFIED] Found rich data for San Lorenzo vs Recoleta FC
-2026-05-27 00:08:52 | INFO     | Sent: San Lorenzo vs Recoleta FC | Draw
-2026-05-27 00:08:55 | INFO     | ============================================================
-2026-05-27 00:08:55 | INFO     |   RUN COMPLETE
-2026-05-27 00:08:55 | INFO     | ============================================================
-2026-05-27 00:08:55 | INFO     | Done! 4 signal(s) sent.
-2026-05-27 00:08:55 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-27 00:21:48 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-27 00:21:48 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-27 00:21:48 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-27 00:21:48 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-27 00:21:48 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-27 00:21:48 | INFO     | Bootstrap: data is fresh
-2026-05-27 00:21:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-27 00:21:48 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-27 00:21:48 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-27 00:21:48 | INFO     | Football-Data call counter reset
-2026-05-27 00:21:48 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | CHECK | Pending results                          | OK | 0
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | CHECK | Odds API requests remaining              | OK | 185
-2026-05-27 00:21:48 | INFO     | CHECK | Odds API requests used this month        | OK | 315
-2026-05-27 00:21:48 | INFO     | CHECK | Events in 2h window                      | OK | 8
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | --- Santos vs C.D. Cuenca [Copa Sudamericana]
-2026-05-27 00:21:48 | INFO     | --- Club Universitario de Deportes vs Deportes Tolima [Copa Libertadores]
-2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h                               | OK | Club Universitario de Deportes EV=2.9% odds=2.25 elo=False
-2026-05-27 00:21:48 | INFO     | SKIP duplicate: Club Universitario de Deportes vs Deportes Tolima
-2026-05-27 00:21:48 | INFO     | --- Nacional de Montevideo vs Coquimbo Unido [Copa Libertadores]
-2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h                               | OK | Coquimbo Unido EV=2.1% odds=3.7 elo=False
-2026-05-27 00:21:48 | INFO     | SKIP duplicate: Nacional de Montevideo vs Coquimbo Unido
-2026-05-27 00:21:48 | INFO     | --- Flamengo-RJ vs Cusco FC [Copa Libertadores]
-2026-05-27 00:21:48 | INFO     | CHECK | EV opp h2h_lay                           | OK | Draw EV=4.5% odds=14.01 elo=False
-2026-05-27 00:21:48 | INFO     | SKIP duplicate: Flamengo-RJ vs Cusco FC
-2026-05-27 00:21:48 | INFO     | --- Estudiantes La Plata vs Independiente Medellín [Copa Libertadores]
-2026-05-27 00:21:48 | INFO     | --- San Lorenzo vs Recoleta FC [Copa Sudamericana]
-2026-05-27 00:21:48 | INFO     | --- Albuquerque Isotopes vs El Paso Chihuahuas [MiLB]
-2026-05-27 00:21:48 | INFO     | --- Oklahoma City Thunder vs San Antonio Spurs [NBA]
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     |   RUN COMPLETE
-2026-05-27 00:21:48 | INFO     | ============================================================
-2026-05-27 00:21:48 | INFO     | CHECK | Signals sent this run                    | OK | 0
-2026-05-27 09:08:38 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-27 09:08:38 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-27 09:08:38 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-27 09:08:38 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-27 09:08:38 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-27 09:08:38 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:38 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:38 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-27 09:08:38 | INFO     | Bootstrap: data is fresh
-2026-05-27 09:08:38 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-27 09:08:38 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-27 09:08:38 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-27 09:08:38 | INFO     | Football-Data call counter reset
-2026-05-27 09:08:38 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:38 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:38 | INFO     | CHECK | Pending results                          | OK | 0
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:38 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-27 09:08:38 | INFO     | ============================================================
-2026-05-27 09:08:39 | INFO     | CHECK | Odds API requests remaining              | OK | 169
-2026-05-27 09:08:39 | INFO     | CHECK | Odds API requests used this month        | OK | 331
-2026-05-27 09:08:39 | INFO     | CHECK | Events in 2h window                      | OK | 8
-2026-05-27 09:08:39 | INFO     | ============================================================
-2026-05-27 09:08:39 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-27 09:08:39 | INFO     | ============================================================
-2026-05-27 09:08:39 | INFO     | --- Alejandro Davidovich Fokina vs Thiago Agustin Tirante [ATP French Open]
-2026-05-27 09:08:39 | WARNING  | Rejected unrealistic EV=22.3% for Alejandro Davidovich Fokina
-2026-05-27 09:08:39 | INFO     | CHECK | EV opp h2h                               | OK | Thiago Agustin Tirante EV=2.6% odds=1.69 elo=True
-2026-05-27 09:08:39 | INFO     | CHECK | EV opp h2h_lay                           | OK | Alejandro Davidovich Fokina EV=2.5% odds=2.64 elo=False
-2026-05-27 09:08:39 | INFO     | CHECK | ELO Alejandro Da vs Thiago Agust         | OK | H=60.6% D=0.0% A=39.4% hm=220 am=17
-2026-05-27 09:08:40 | INFO     | SofaScore: Alejandro Davidovich Fokina vs Thiago Agustin Tirante -> ID:16198512
-2026-05-27 09:08:41 | INFO     | CHECK | SofaScore data for match 16198512        | OK | ['lineups', 'streaks']
-2026-05-27 09:08:41 | INFO     | CHECK | Data quality Alejandro Da vs Thiago Agust | OK | high
-2026-05-27 09:08:41 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+2026-05-27 12:01:06 | INFO     | CHECK | ODDS_API_KEY set                    | OK | True
+2026-05-27 12:01:06 | INFO     | CHECK | GROQ_API_KEY set                    | OK | True
+2026-05-27 12:01:06 | INFO     | CHECK | RAPIDAPI_KEY set                    | OK | True
+2026-05-27 12:01:06 | INFO     | CHECK | TELEGRAM_BOT_TOKEN set              | OK | True
+2026-05-27 12:01:06 | INFO     | CHECK | TELEGRAM_CHAT_ID set                | OK | True
+2026-05-27 12:01:06 | INFO     | CHECK | FOOTBALL_DATA_API_KEY set           | OK | True
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.0 STARTING
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-27 12:01:06 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-27 12:01:06 | INFO     | Bootstrap: data is fresh - skipping
+2026-05-27 12:01:06 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-27 12:01:06 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-27 12:01:06 | INFO     | CHECK | ELO football teams loaded           | OK | 358
+2026-05-27 12:01:06 | INFO     | CHECK | ELO tennis players loaded           | OK | 1494
+2026-05-27 12:01:06 | INFO     | Football-Data call counter reset for new day
+2026-05-27 12:01:06 | INFO     | CHECK | Football-Data calls today           | OK | 0
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-27 12:01:06 | INFO     | =======================================================
+2026-05-27 12:01:06 | INFO     | CHECK | Pending results to check            | OK | 8
+2026-05-27 12:01:06 | INFO     | Checking result: Alina Korneeva vs Elisabetta Cocciaretto | Pick: Alina Korneeva
+2026-05-27 12:01:06 | INFO     | CHECK | Result event Alina Korneeva         | OK | not found
+2026-05-27 12:01:06 | INFO     | Checking result: Hanne Vandewinkel vs Madison Keys | Pick: Hanne Vandewinkel
+2026-05-27 12:01:06 | INFO     | CHECK | Result event Hanne Vandewink        | OK | not found
+2026-05-27 12:01:06 | INFO     | Checking result: Anhelina Kalinina vs Diane Parry | Pick: Diane Parry
+2026-05-27 12:01:06 | INFO     | CHECK | Result event Anhelina Kalini        | OK | not found
+2026-05-27 12:01:07 | INFO     | Checking result: Anna Kalinskaya vs Lois Boisson | Pick: Anna Kalinskaya
+2026-05-27 12:01:07 | INFO     | CHECK | Result event Anna Kalinskaya        | OK | not found
+2026-05-27 12:01:07 | INFO     | Checking result: Coco Gauff vs Taylor Townsend | Pick: Taylor Townsend
+2026-05-27 12:01:07 | INFO     | CHECK | Result event Coco Gauff             | OK | not found
+2026-05-27 12:01:07 | INFO     | Checking result: Elena Pridankina vs Oleksandra Oliynykova | Pick: Oleksandra Oliynykova
+2026-05-27 12:01:07 | INFO     | CHECK | Result event Elena Pridankin        | OK | not found
+2026-05-27 12:01:07 | INFO     | Checking result: Greuther Fürth vs Rot-Weiss Essen | Pick: Rot-Weiss Essen
+2026-05-27 12:01:07 | INFO     | CHECK | Result event Greuther Fürth         | OK | not found
+2026-05-27 12:01:07 | INFO     | Checking result: Saint Etienne vs Nice | Pick: Nice
+2026-05-27 12:01:07 | INFO     | CHECK | Result event Saint Etienne          | OK | not found
+2026-05-27 12:01:07 | INFO     | CHECK | Results - Wins                      | OK | 0
+2026-05-27 12:01:07 | INFO     | CHECK | Results - Losses                    | OK | 0
+2026-05-27 12:01:07 | INFO     | CHECK | Results - Unknown                   | OK | 8
+2026-05-27 12:01:07 | INFO     | No results to report this run
+2026-05-27 12:01:07 | INFO     | =======================================================
+2026-05-27 12:01:07 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-27 12:01:07 | INFO     | =======================================================
+2026-05-27 12:01:07 | INFO     | CHECK | Odds API requests remaining         | OK | 145
+2026-05-27 12:01:07 | INFO     | CHECK | Odds API requests used              | OK | 355
+2026-05-27 12:01:07 | INFO     | CHECK | Odds API events in window           | OK | 8
+2026-05-27 12:01:07 | INFO     | CHECK | Events fetched from Odds API        | OK | 8
+2026-05-27 12:01:07 | INFO     | =======================================================
+2026-05-27 12:01:07 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-27 12:01:07 | INFO     | =======================================================
+2026-05-27 12:01:07 | INFO     | --- Analyzing: Elina Svitolina vs Kaitlin Quevedo [WTA French Open]
+2026-05-27 12:01:07 | INFO     | CHECK | ELO predict Elina Svitolina vs Kaitlin Quevedo | OK | H:81.08% D:0.00% A:18.92%
+2026-05-27 12:01:07 | WARNING  | Rejected unrealistic EV=339.0% for Kaitlin Quevedo (sharp=True)
+2026-05-27 12:01:07 | DEBUG    | Skipping totals: implied_sum too high (2.083)
+2026-05-27 12:01:07 | WARNING  | Rejected unrealistic EV=118.1% for Kaitlin Quevedo (sharp=True)
+2026-05-27 12:01:07 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-27 12:01:07 | DEBUG    | No EV opportunity: Elina Svitolina vs Kaitlin Quevedo
+2026-05-27 12:01:07 | INFO     | --- Analyzing: Yuliia Starodubtseva vs Elena Rybakina [WTA French Open]
+2026-05-27 12:01:07 | INFO     | CHECK | ELO predict Yuliia Starodub vs Elena Rybakina | OK | H:17.16% D:0.00% A:82.84%
+2026-05-27 12:01:07 | WARNING  | Rejected unrealistic EV=390.6% for Yuliia Starodubtseva (sharp=True)
+2026-05-27 12:01:07 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-27 12:01:07 | INFO     | CHECK |   Opp: Yuliia Starodubtseva         | OK | EV=4.7% odds=14.01 src=Sharp
+2026-05-27 12:01:07 | INFO     | CHECK | Signal: Yuliia Starodub vs Elena Rybakina | OK | pick=Yuliia Starodubtseva ev=4.7% odds=14.01
+2026-05-27 12:01:07 | INFO     | CHECK | ELO predict Yuliia Starodub vs Elena Rybakina | OK | H:17.16% D:0.00% A:82.84%
+2026-05-27 12:01:07 | INFO     | CHECK | ELO for Yuliia Starodub vs Elena Rybakina | OK | H=17.16% A=82.84% matches_h=15 matches_a=281
+2026-05-27 12:01:08 | INFO     | SofaScore: Yuliia Starodubtseva vs Elena Rybakina -> ID:16198558
+2026-05-27 12:01:08 | INFO     | CHECK | SofaScore match_id Yuliia Starodub  | OK | 16198558
+2026-05-27 12:01:08 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:09 | INFO     | CHECK | SofaScore data keys for match 16198558 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:09 | INFO     | CHECK | Data quality Yuliia Starodub vs Elena Rybakina | OK | high
+2026-05-27 12:01:09 | INFO     | CHECK | AI input stats_summary length       | OK | 194
+2026-05-27 12:01:09 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:09 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
 "sport_emoji": "🎾",
-  "home_flag": "🇪🇸",
-  "away_flag": "🇦
-2026-05-27 09:08:41 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-27 09:08:42 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Thiago Agustin Tirante's 75-point ELO di
-2026-05-27 09:08:42 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-27 09:08:42 | INFO     | CHECK | Final confidence                         | OK | 84
-2026-05-27 09:08:42 | INFO     | CHECK | Final risk                               | OK | Low
-2026-05-27 09:08:42 | INFO     | CHECK | Logic preview                            | OK | Thiago Agustin Tirante's 75-point ELO difference implies a 3
-2026-05-27 09:08:42 | INFO     | Sent: Alejandro Davidovich Fokina vs Thiago Agustin Tirante | Thiago Agustin Tirante
-2026-05-27 09:08:45 | INFO     | --- Doosan Bears vs KT Wiz [KBO]
-2026-05-27 09:08:45 | INFO     | --- NC Dinos vs Hanwha Eagles [KBO]
-2026-05-27 09:08:45 | INFO     | --- Kiwoom Heroes vs Kia Tigers [KBO]
-2026-05-27 09:08:45 | INFO     | CHECK | EV opp h2h                               | OK | Kiwoom Heroes EV=1.7% odds=2.48 elo=False
-2026-05-27 09:08:47 | INFO     | SofaScore: Kiwoom Heroes vs Kia Tigers -> ID:15290321
-2026-05-27 09:08:50 | INFO     | CHECK | SofaScore data for match 15290321        | OK | ['lineups', 'streaks']
-2026-05-27 09:08:50 | INFO     | CHECK | Data quality Kiwoom Heroe vs Kia Tigers  | OK | medium
-2026-05-27 09:08:50 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "⚾️",
-  "home_flag": "🇰🇷",
-  "away_flag": "
-2026-05-27 09:08:50 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-27 09:08:50 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Kiwoom Heroes' home performance and Kia 
-2026-05-27 09:08:50 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-27 09:08:50 | INFO     | CHECK | Final confidence                         | OK | 67
-2026-05-27 09:08:50 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-27 09:08:50 | INFO     | CHECK | Logic preview                            | OK | Kiwoom Heroes' home performance and Kia Tigers' recent head-
-2026-05-27 09:08:51 | INFO     | Sent: Kiwoom Heroes vs Kia Tigers | Kiwoom Heroes
-2026-05-27 09:08:54 | INFO     | --- Lotte Giants vs LG Twins [KBO]
-2026-05-27 09:08:54 | INFO     | --- SSG Landers vs Samsung Lions [KBO]
-2026-05-27 09:08:54 | INFO     | CHECK | EV opp h2h                               | OK | SSG Landers EV=1.7% odds=2.53 elo=False
-2026-05-27 09:08:55 | INFO     | SofaScore: SSG Landers vs Samsung Lions -> ID:15290337
-2026-05-27 09:08:56 | INFO     | CHECK | SofaScore data for match 15290337        | OK | ['lineups', 'streaks']
-2026-05-27 09:08:56 | INFO     | CHECK | Data quality SSG Landers vs Samsung Lion | OK | medium
-2026-05-27 09:08:57 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "⚾️",
-  "home_flag": "🇰🇷",
-  "away_flag": "
-2026-05-27 09:08:57 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-27 09:08:57 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"SSG Landers have a recent head-to-head e
-2026-05-27 09:08:57 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-27 09:08:57 | INFO     | CHECK | Final confidence                         | OK | 67
-2026-05-27 09:08:57 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-27 09:08:57 | INFO     | CHECK | Logic preview                            | OK | SSG Landers have a recent head-to-head edge with 4 wins agai
-2026-05-27 09:08:58 | INFO     | Sent: SSG Landers vs Samsung Lions | SSG Landers
-2026-05-27 09:09:01 | INFO     | --- Federico Cinà vs Jesper De Jong [ATP French Open]
-2026-05-27 09:09:01 | INFO     | CHECK | EV opp h2h_lay                           | OK | Jesper De Jong EV=2.3% odds=1.72 elo=False
-2026-05-27 09:09:01 | INFO     | CHECK | ELO Federico Cin vs Jesper De Jo         | OK | H=53.2% D=0.0% A=46.8% hm=0 am=10
-2026-05-27 09:09:02 | INFO     | SofaScore: Federico Cinà vs Jesper De Jong -> ID:16198504
-2026-05-27 09:09:03 | INFO     | CHECK | SofaScore data for match 16198504        | OK | ['lineups', 'streaks']
-2026-05-27 09:09:03 | INFO     | CHECK | Data quality Federico Cin vs Jesper De Jo | OK | high
-2026-05-27 09:09:03 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+  "home_flag": "🇺🇦",
+  "away_flag": "🇰🇿",
+  "risk_level": 
+2026-05-27 12:01:09 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:12 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":89,"validated_logic":"logic.","risk_level":"Low"}
+2026-05-27 12:01:12 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:12 | INFO     | CHECK | Final confidence                    | OK | 89
+2026-05-27 12:01:12 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:12 | INFO     | CHECK | Final logic preview                 | OK | logic.
+2026-05-27 12:01:12 | INFO     | Sent: Yuliia Starodubtseva vs Elena Rybakina | Yuliia Starodubtseva
+2026-05-27 12:01:15 | INFO     | --- Analyzing: Marta Kostyuk vs Katie Volynets [WTA French Open]
+2026-05-27 12:01:15 | INFO     | CHECK | ELO predict Marta Kostyuk vs Katie Volynets | OK | H:82.00% D:0.00% A:18.00%
+2026-05-27 12:01:15 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-27 12:01:15 | INFO     | CHECK |   Opp: Katie Volynets               | OK | EV=3.6% odds=8.0 src=Sharp
+2026-05-27 12:01:15 | INFO     | CHECK | Signal: Marta Kostyuk vs Katie Volynets | OK | pick=Katie Volynets ev=3.6% odds=8.0
+2026-05-27 12:01:15 | INFO     | CHECK | ELO predict Marta Kostyuk vs Katie Volynets | OK | H:82.00% D:0.00% A:18.00%
+2026-05-27 12:01:15 | INFO     | CHECK | ELO for Marta Kostyuk vs Katie Volynets | OK | H=82.00% A=18.00% matches_h=182 matches_a=66
+2026-05-27 12:01:16 | INFO     | SofaScore: Marta Kostyuk vs Katie Volynets -> ID:16198538
+2026-05-27 12:01:16 | INFO     | CHECK | SofaScore match_id Marta Kostyuk    | OK | 16198538
+2026-05-27 12:01:16 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:16 | INFO     | CHECK | SofaScore data keys for match 16198538 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:16 | INFO     | CHECK | Data quality Marta Kostyuk vs Katie Volynets | OK | high
+2026-05-27 12:01:16 | INFO     | CHECK | AI input stats_summary length       | OK | 281
+2026-05-27 12:01:16 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:17 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
 "sport_emoji": "🎾",
-  "home_flag": "",
-  "away_flag": "",
-
-2026-05-27 09:09:03 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-27 09:09:03 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Jesper De Jong's recent form suggests an
-2026-05-27 09:09:03 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-27 09:09:03 | INFO     | CHECK | Final confidence                         | OK | 74
-2026-05-27 09:09:03 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-27 09:09:03 | INFO     | CHECK | Logic preview                            | OK | Jesper De Jong's recent form suggests an advantage, driven b
-2026-05-27 09:09:04 | INFO     | Sent: Federico Cinà vs Jesper De Jong | Jesper De Jong
-2026-05-27 09:09:07 | INFO     | --- Ireland vs New Zealand [Test Matches]
-2026-05-27 09:09:07 | INFO     | CHECK | EV opp h2h                               | OK | Draw EV=9.3% odds=9.5 elo=False
-2026-05-27 09:09:08 | INFO     | SofaScore: Ireland vs New Zealand -> ID:11635611
-2026-05-27 09:09:10 | INFO     | CHECK | SofaScore data for match 11635611        | OK | ['lineups', 'streaks']
-2026-05-27 09:09:10 | INFO     | CHECK | Data quality Ireland vs New Zealand      | OK | medium
-2026-05-27 09:09:10 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji":"🏏",
-"home_flag":"🇮🇪",
-"away_flag":"🇳🇿",
-"lo
-2026-05-27 09:09:10 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-27 09:09:10 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick of a draw is driven by a sharp 
-2026-05-27 09:09:10 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-27 09:09:10 | INFO     | CHECK | Final confidence                         | OK | 75
-2026-05-27 09:09:10 | INFO     | CHECK | Final risk                               | OK | Low
-2026-05-27 09:09:10 | INFO     | CHECK | Logic preview                            | OK | The pick of a draw is driven by a sharp market discrepancy, 
-2026-05-27 09:09:11 | INFO     | Sent: Ireland vs New Zealand | Draw
-2026-05-27 09:09:14 | INFO     | ============================================================
-2026-05-27 09:09:14 | INFO     |   RUN COMPLETE
-2026-05-27 09:09:14 | INFO     | ============================================================
-2026-05-27 09:09:14 | INFO     | CHECK | Signals sent this run                    | OK | 5
+  "home_flag": "🇺🇦",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-27 12:01:17 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:19 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":84,"risk_level":"Low","validated_logic":"The data quality is high 
+2026-05-27 12:01:19 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:19 | INFO     | CHECK | Final confidence                    | OK | 84
+2026-05-27 12:01:19 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:19 | INFO     | CHECK | Final logic preview                 | OK | The data quality is high (+15), ELO data is available (+10), and the EV edge of 
+2026-05-27 12:01:20 | INFO     | Sent: Marta Kostyuk vs Katie Volynets | Katie Volynets
+2026-05-27 12:01:23 | INFO     | --- Analyzing: James Duckworth vs Rafael Jodar [ATP French Open]
+2026-05-27 12:01:23 | INFO     | CHECK | ELO predict James Duckworth vs Rafael Jodar | OK | H:45.66% D:0.00% A:54.34%
+2026-05-27 12:01:23 | WARNING  | Rejected unrealistic EV=588.6% for James Duckworth (sharp=True)
+2026-05-27 12:01:23 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-27 12:01:23 | DEBUG    | No EV opportunity: James Duckworth vs Rafael Jodar
+2026-05-27 12:01:23 | INFO     | --- Analyzing: Viktorija Golubic vs Alycia Parks [WTA French Open]
+2026-05-27 12:01:23 | INFO     | CHECK | ELO predict Viktorija Golub vs Alycia Parks | OK | H:69.84% D:0.00% A:30.16%
+2026-05-27 12:01:23 | WARNING  | Rejected unrealistic EV=16.3% for Viktorija Golubic (sharp=True)
+2026-05-27 12:01:23 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-27 12:01:23 | INFO     | CHECK |   Opp: Alycia Parks                 | OK | EV=14.9% odds=1.97 src=ELO+Sharp
+2026-05-27 12:01:23 | INFO     | CHECK |   Opp: Alycia Parks                 | OK | EV=2.5% odds=2.02 src=Sharp
+2026-05-27 12:01:23 | INFO     | CHECK | Signal: Viktorija Golub vs Alycia Parks | OK | pick=Alycia Parks ev=14.9% odds=1.97
+2026-05-27 12:01:23 | INFO     | CHECK | ELO predict Viktorija Golub vs Alycia Parks | OK | H:69.84% D:0.00% A:30.16%
+2026-05-27 12:01:23 | INFO     | CHECK | ELO for Viktorija Golub vs Alycia Parks | OK | H=69.84% A=30.16% matches_h=125 matches_a=60
+2026-05-27 12:01:24 | INFO     | SofaScore: Viktorija Golubic vs Alycia Parks -> ID:16198541
+2026-05-27 12:01:24 | INFO     | CHECK | SofaScore match_id Viktorija Golub  | OK | 16198541
+2026-05-27 12:01:24 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:25 | INFO     | CHECK | SofaScore data keys for match 16198541 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:25 | INFO     | CHECK | Data quality Viktorija Golub vs Alycia Parks | OK | high
+2026-05-27 12:01:25 | INFO     | CHECK | AI input stats_summary length       | OK | 193
+2026-05-27 12:01:25 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:26 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇨🇭",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-27 12:01:26 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:28 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"Despite a 146-point ELO disadvantage, Alycia
+2026-05-27 12:01:28 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:28 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-27 12:01:28 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:28 | INFO     | CHECK | Final logic preview                 | OK | Despite a 146-point ELO disadvantage, Alycia Parks has a historical win rate aga
+2026-05-27 12:01:28 | INFO     | Sent: Viktorija Golubic vs Alycia Parks | Alycia Parks
+2026-05-27 12:01:31 | INFO     | --- Analyzing: Jil Teichmann vs Magdalena Frech [WTA French Open]
+2026-05-27 12:01:31 | INFO     | CHECK | ELO predict Jil Teichmann vs Magdalena Frech | OK | H:26.43% D:0.00% A:73.57%
+2026-05-27 12:01:31 | WARNING  | Rejected unrealistic EV=32.1% for Jil Teichmann (sharp=True)
+2026-05-27 12:01:31 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-27 12:01:31 | INFO     | CHECK |   Opp: Magdalena Frech              | OK | EV=9.5% odds=1.68 src=ELO+Sharp
+2026-05-27 12:01:31 | INFO     | CHECK |   Opp: Magdalena Frech              | OK | EV=2.3% odds=1.71 src=Sharp
+2026-05-27 12:01:31 | INFO     | CHECK | Signal: Jil Teichmann vs Magdalena Frech | OK | pick=Magdalena Frech ev=9.5% odds=1.68
+2026-05-27 12:01:31 | INFO     | CHECK | ELO predict Jil Teichmann vs Magdalena Frech | OK | H:26.43% D:0.00% A:73.57%
+2026-05-27 12:01:31 | INFO     | CHECK | ELO for Jil Teichmann vs Magdalena Frech | OK | H=26.43% A=73.57% matches_h=144 matches_a=137
+2026-05-27 12:01:32 | INFO     | SofaScore: Jil Teichmann vs Magdalena Frech -> ID:16198564
+2026-05-27 12:01:32 | INFO     | CHECK | SofaScore match_id Jil Teichmann    | OK | 16198564
+2026-05-27 12:01:32 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:32 | INFO     | CHECK | SofaScore data keys for match 16198564 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:32 | INFO     | CHECK | Data quality Jil Teichmann vs Magdalena Frech | OK | high
+2026-05-27 12:01:32 | INFO     | CHECK | AI input stats_summary length       | OK | 194
+2026-05-27 12:01:32 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:33 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇨🇭",
+  "away_flag": "🇵🇱",
+  "risk_level": 
+2026-05-27 12:01:33 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:35 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"logic.","risk_level":"Low"}
+2026-05-27 12:01:35 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:35 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-27 12:01:35 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:35 | INFO     | CHECK | Final logic preview                 | OK | logic.
+2026-05-27 12:01:35 | INFO     | Sent: Jil Teichmann vs Magdalena Frech | Magdalena Frech
+2026-05-27 12:01:38 | INFO     | --- Analyzing: Nuno Borges vs Miomir Kecmanovic [ATP French Open]
+2026-05-27 12:01:38 | INFO     | CHECK | ELO predict Nuno Borges vs Miomir Kecmanov | OK | H:46.71% D:0.00% A:53.29%
+2026-05-27 12:01:38 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-27 12:01:38 | INFO     | CHECK |   Opp: Nuno Borges                  | OK | EV=12.4% odds=2.45 src=ELO+Sharp
+2026-05-27 12:01:38 | INFO     | CHECK |   Opp: Nuno Borges                  | OK | EV=2.5% odds=2.5 src=Sharp
+2026-05-27 12:01:38 | INFO     | CHECK | Signal: Nuno Borges vs Miomir Kecmanov | OK | pick=Nuno Borges ev=12.4% odds=2.45
+2026-05-27 12:01:38 | INFO     | CHECK | ELO predict Nuno Borges vs Miomir Kecmanov | OK | H:46.71% D:0.00% A:53.29%
+2026-05-27 12:01:38 | INFO     | CHECK | ELO for Nuno Borges vs Miomir Kecmanov | OK | H=46.71% A=53.29% matches_h=89 matches_a=245
+2026-05-27 12:01:39 | INFO     | SofaScore: Nuno Borges vs Miomir Kecmanovic -> ID:16198478
+2026-05-27 12:01:39 | INFO     | CHECK | SofaScore match_id Nuno Borges      | OK | 16198478
+2026-05-27 12:01:39 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:39 | INFO     | CHECK | SofaScore data keys for match 16198478 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:39 | INFO     | CHECK | Data quality Nuno Borges vs Miomir Kecmanov | OK | high
+2026-05-27 12:01:39 | INFO     | CHECK | AI input stats_summary length       | OK | 326
+2026-05-27 12:01:39 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:40 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇵🇹",
+  "away_flag": "🇷🇸",
+  "risk_level": 
+2026-05-27 12:01:40 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:42 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"Nuno Borges has a -23 Elo difference but a 4
+2026-05-27 12:01:42 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:42 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-27 12:01:42 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:42 | INFO     | CHECK | Final logic preview                 | OK | Nuno Borges has a -23 Elo difference but a 46.7% win probability, indicating a s
+2026-05-27 12:01:43 | INFO     | Sent: Nuno Borges vs Miomir Kecmanovic | Nuno Borges
+2026-05-27 12:01:46 | INFO     | --- Analyzing: Ugo Humbert vs Quentin Halys [ATP French Open]
+2026-05-27 12:01:46 | INFO     | CHECK | ELO predict Ugo Humbert vs Quentin Halys | OK | H:78.21% D:0.00% A:21.79%
+2026-05-27 12:01:46 | WARNING  | Rejected unrealistic EV=35.6% for Quentin Halys (sharp=True)
+2026-05-27 12:01:46 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-27 12:01:46 | INFO     | CHECK |   Opp: Ugo Humbert                  | OK | EV=13.1% odds=1.7 src=ELO+Sharp
+2026-05-27 12:01:46 | INFO     | CHECK |   Opp: Quentin Halys                | OK | EV=2.2% odds=2.48 src=Sharp
+2026-05-27 12:01:46 | INFO     | CHECK | Signal: Ugo Humbert vs Quentin Halys | OK | pick=Ugo Humbert ev=13.1% odds=1.7
+2026-05-27 12:01:46 | INFO     | CHECK | ELO predict Ugo Humbert vs Quentin Halys | OK | H:78.21% D:0.00% A:21.79%
+2026-05-27 12:01:46 | INFO     | CHECK | ELO for Ugo Humbert vs Quentin Halys | OK | H=78.21% A=21.79% matches_h=226 matches_a=72
+2026-05-27 12:01:47 | INFO     | SofaScore: Ugo Humbert vs Quentin Halys -> ID:16198507
+2026-05-27 12:01:47 | INFO     | CHECK | SofaScore match_id Ugo Humbert      | OK | 16198507
+2026-05-27 12:01:47 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-27 12:01:48 | INFO     | CHECK | SofaScore data keys for match 16198507 | OK | ['lineups', 'streaks']
+2026-05-27 12:01:48 | INFO     | CHECK | Data quality Ugo Humbert vs Quentin Halys | OK | high
+2026-05-27 12:01:48 | INFO     | CHECK | AI input stats_summary length       | OK | 238
+2026-05-27 12:01:48 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-27 12:01:49 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇫🇷",
+  "away_flag": "🇫🇷",
+  "risk_level": 
+2026-05-27 12:01:49 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-27 12:01:51 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"Ugo Humbert’s ELO rating is 222 points highe
+2026-05-27 12:01:51 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-27 12:01:51 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-27 12:01:51 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-27 12:01:51 | INFO     | CHECK | Final logic preview                 | OK | Ugo Humbert’s ELO rating is 222 points higher than Quentin Halys, translating to
+2026-05-27 12:01:51 | INFO     | Sent: Ugo Humbert vs Quentin Halys | Ugo Humbert
+2026-05-27 12:01:54 | INFO     | =======================================================
+2026-05-27 12:01:54 | INFO     |   RUN COMPLETE
+2026-05-27 12:01:54 | INFO     | =======================================================
+2026-05-27 12:01:54 | INFO     | CHECK | Total signals sent this run         | OK | 6
+2026-05-27 12:01:54 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     | CHECK | ODDS_API_KEY set                    | OK | True
+2026-05-28 13:41:42 | INFO     | CHECK | GROQ_API_KEY set                    | OK | True
+2026-05-28 13:41:42 | INFO     | CHECK | RAPIDAPI_KEY set                    | OK | True
+2026-05-28 13:41:42 | INFO     | CHECK | TELEGRAM_BOT_TOKEN set              | OK | True
+2026-05-28 13:41:42 | INFO     | CHECK | TELEGRAM_CHAT_ID set                | OK | True
+2026-05-28 13:41:42 | INFO     | CHECK | FOOTBALL_DATA_API_KEY set           | OK | True
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.0 STARTING
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-28 13:41:42 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-28 13:41:42 | INFO     | Bootstrap: data is fresh - skipping
+2026-05-28 13:41:42 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-28 13:41:42 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-28 13:41:42 | INFO     | CHECK | ELO football teams loaded           | OK | 358
+2026-05-28 13:41:42 | INFO     | CHECK | ELO tennis players loaded           | OK | 1494
+2026-05-28 13:41:42 | INFO     | Football-Data call counter reset for new day
+2026-05-28 13:41:42 | INFO     | CHECK | Football-Data calls today           | OK | 0
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 13:41:42 | INFO     | =======================================================
+2026-05-28 13:41:42 | INFO     | CHECK | Pending results to check            | OK | 14
+2026-05-28 13:41:42 | INFO     | Checking result: Alina Korneeva vs Elisabetta Cocciaretto | Pick: Alina Korneeva
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Alina Korneeva         | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Hanne Vandewinkel vs Madison Keys | Pick: Hanne Vandewinkel
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Hanne Vandewink        | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Anhelina Kalinina vs Diane Parry | Pick: Diane Parry
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Anhelina Kalini        | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Anna Kalinskaya vs Lois Boisson | Pick: Anna Kalinskaya
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Anna Kalinskaya        | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Coco Gauff vs Taylor Townsend | Pick: Taylor Townsend
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Coco Gauff             | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Elena Pridankina vs Oleksandra Oliynykova | Pick: Oleksandra Oliynykova
+2026-05-28 13:41:42 | INFO     | CHECK | Result event Elena Pridankin        | OK | not found
+2026-05-28 13:41:42 | INFO     | Checking result: Greuther Fürth vs Rot-Weiss Essen | Pick: Rot-Weiss Essen
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Greuther Fürth         | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Saint Etienne vs Nice | Pick: Nice
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Saint Etienne          | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Yuliia Starodubtseva vs Elena Rybakina | Pick: Yuliia Starodubtseva
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Yuliia Starodub        | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Marta Kostyuk vs Katie Volynets | Pick: Katie Volynets
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Marta Kostyuk          | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Viktorija Golubic vs Alycia Parks | Pick: Alycia Parks
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Viktorija Golub        | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Jil Teichmann vs Magdalena Frech | Pick: Magdalena Frech
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Jil Teichmann          | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Nuno Borges vs Miomir Kecmanovic | Pick: Nuno Borges
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Nuno Borges            | OK | not found
+2026-05-28 13:41:43 | INFO     | Checking result: Ugo Humbert vs Quentin Halys | Pick: Ugo Humbert
+2026-05-28 13:41:43 | INFO     | CHECK | Result event Ugo Humbert            | OK | not found
+2026-05-28 13:41:43 | INFO     | CHECK | Results - Wins                      | OK | 0
+2026-05-28 13:41:43 | INFO     | CHECK | Results - Losses                    | OK | 0
+2026-05-28 13:41:43 | INFO     | CHECK | Results - Unknown                   | OK | 14
+2026-05-28 13:41:43 | INFO     | No results to report this run
+2026-05-28 13:41:43 | INFO     | =======================================================
+2026-05-28 13:41:43 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-28 13:41:43 | INFO     | =======================================================
+2026-05-28 13:41:43 | INFO     | CHECK | Odds API requests remaining         | OK | 129
+2026-05-28 13:41:43 | INFO     | CHECK | Odds API requests used              | OK | 371
+2026-05-28 13:41:43 | INFO     | CHECK | Odds API events in window           | OK | 8
+2026-05-28 13:41:43 | INFO     | CHECK | Events fetched from Odds API        | OK | 8
+2026-05-28 13:41:43 | INFO     | =======================================================
+2026-05-28 13:41:43 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-28 13:41:43 | INFO     | =======================================================
+2026-05-28 13:41:43 | INFO     | --- Analyzing: Felix Auger-Aliassime vs Roman Andres Burruchaga [ATP French Open]
+2026-05-28 13:41:43 | INFO     | CHECK | ELO predict Felix Auger-Ali vs Roman Andres Bu | OK | H:55.44% D:0.00% A:44.56%
+2026-05-28 13:41:43 | WARNING  | Rejected unrealistic EV=42.6% for Roman Andres Burruchaga (sharp=True)
+2026-05-28 13:41:43 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 13:41:43 | DEBUG    | No EV opportunity: Felix Auger-Aliassime vs Roman Andres Burruchaga
+2026-05-28 13:41:43 | INFO     | --- Analyzing: Julia Grabher vs Amanda Anisimova [WTA French Open]
+2026-05-28 13:41:43 | INFO     | CHECK | ELO predict Julia Grabher vs Amanda Anisimov | OK | H:15.80% D:0.00% A:84.20%
+2026-05-28 13:41:43 | WARNING  | Rejected unrealistic EV=168.7% for Julia Grabher (sharp=True)
+2026-05-28 13:41:43 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 13:41:43 | DEBUG    | No EV opportunity: Julia Grabher vs Amanda Anisimova
+2026-05-28 13:41:43 | INFO     | --- Analyzing: Ann Li vs Diane Parry [WTA French Open]
+2026-05-28 13:41:43 | INFO     | CHECK | ELO predict Ann Li vs Diane Parry   | OK | H:41.92% D:0.00% A:58.08%
+2026-05-28 13:41:43 | WARNING  | Rejected unrealistic EV=37.7% for Diane Parry (sharp=True)
+2026-05-28 13:41:43 | DEBUG    | Skipping totals: implied_sum too high (2.134)
+2026-05-28 13:41:43 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-28 13:41:43 | INFO     | CHECK |   Opp: Diane Parry                  | OK | EV=2.1% odds=3.45 src=Sharp
+2026-05-28 13:41:43 | INFO     | CHECK | Signal: Ann Li vs Diane Parry       | OK | pick=Diane Parry ev=2.1% odds=3.45
+2026-05-28 13:41:43 | INFO     | CHECK | ELO predict Ann Li vs Diane Parry   | OK | H:41.92% D:0.00% A:58.08%
+2026-05-28 13:41:43 | INFO     | CHECK | ELO for Ann Li vs Diane Parry       | OK | H=41.92% A=58.08% matches_h=80 matches_a=95
+2026-05-28 13:41:44 | INFO     | SofaScore: Ann Li vs Diane Parry -> ID:16198549
+2026-05-28 13:41:44 | INFO     | CHECK | SofaScore match_id Ann Li           | OK | 16198549
+2026-05-28 13:41:44 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-28 13:41:46 | INFO     | CHECK | SofaScore data keys for match 16198549 | OK | ['lineups', 'streaks']
+2026-05-28 13:41:46 | INFO     | CHECK | Data quality Ann Li vs Diane Parry  | OK | high
+2026-05-28 13:41:46 | INFO     | CHECK | AI input stats_summary length       | OK | 193
+2026-05-28 13:41:46 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-28 13:41:46 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇫🇷",
+  "risk_level": 
+2026-05-28 13:41:46 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 13:41:50 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":86,"validated_logic":"ELO indicates 58.1% chance for Diane Parry, 
+2026-05-28 13:41:50 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 13:41:50 | INFO     | CHECK | Final confidence                    | OK | 86
+2026-05-28 13:41:50 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-28 13:41:50 | INFO     | CHECK | Final logic preview                 | OK | ELO indicates 58.1% chance for Diane Parry, supporting a lay bet on Ann Li. H2H 
+2026-05-28 13:41:50 | INFO     | Sent: Ann Li vs Diane Parry | Diane Parry
+2026-05-28 13:41:53 | INFO     | --- Analyzing: Antonia Ruzic vs Madison Keys [WTA French Open]
+2026-05-28 13:41:53 | INFO     | CHECK | ELO predict Antonia Ruzic vs Madison Keys | OK | H:14.51% D:0.00% A:85.49%
+2026-05-28 13:41:53 | WARNING  | Rejected unrealistic EV=219.8% for Antonia Ruzic (sharp=True)
+2026-05-28 13:41:53 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-28 13:41:53 | INFO     | CHECK |   Opp: Antonia Ruzic                | OK | EV=3.6% odds=8.0 src=Sharp
+2026-05-28 13:41:53 | INFO     | CHECK | Signal: Antonia Ruzic vs Madison Keys | OK | pick=Antonia Ruzic ev=3.6% odds=8.0
+2026-05-28 13:41:53 | INFO     | CHECK | ELO predict Antonia Ruzic vs Madison Keys | OK | H:14.51% D:0.00% A:85.49%
+2026-05-28 13:41:53 | INFO     | CHECK | ELO for Antonia Ruzic vs Madison Keys | OK | H=14.51% A=85.49% matches_h=8 matches_a=176
+2026-05-28 13:41:55 | INFO     | SofaScore: Antonia Ruzic vs Madison Keys -> ID:16198583
+2026-05-28 13:41:55 | INFO     | CHECK | SofaScore match_id Antonia Ruzic    | OK | 16198583
+2026-05-28 13:41:55 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-28 13:41:57 | INFO     | CHECK | SofaScore data keys for match 16198583 | OK | ['lineups', 'streaks']
+2026-05-28 13:41:57 | INFO     | CHECK | Data quality Antonia Ruzic vs Madison Keys | OK | high
+2026-05-28 13:41:57 | INFO     | CHECK | AI input stats_summary length       | OK | 239
+2026-05-28 13:41:57 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-28 13:41:58 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇭🇷",
+  "away_flag": "🇺🇸",
+  "risk_level": 
+2026-05-28 13:41:58 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 13:42:00 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":84,"validated_logic":"ELO difference of -308 points favors Madison
+2026-05-28 13:42:00 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 13:42:00 | INFO     | CHECK | Final confidence                    | OK | 84
+2026-05-28 13:42:00 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-28 13:42:00 | INFO     | CHECK | Final logic preview                 | OK | ELO difference of -308 points favors Madison Keys, but Antonia Ruzic’s pick has 
+2026-05-28 13:42:01 | INFO     | Sent: Antonia Ruzic vs Madison Keys | Antonia Ruzic
+2026-05-28 13:42:04 | INFO     | --- Analyzing: Aryna Sabalenka vs Elsa Jacquemot [WTA French Open]
+2026-05-28 13:42:04 | INFO     | CHECK | ELO predict Aryna Sabalenka vs Elsa Jacquemot | OK | H:97.60% D:0.00% A:2.40%
+2026-05-28 13:42:04 | WARNING  | Rejected unrealistic EV=1521.3% for Elsa Jacquemot (sharp=True)
+2026-05-28 13:42:04 | INFO     | CHECK | EV opportunities found              | OK | 2
+2026-05-28 13:42:04 | INFO     | CHECK |   Opp: Elsa Jacquemot               | OK | EV=5.3% odds=44.0 src=Sharp
+2026-05-28 13:42:04 | INFO     | CHECK |   Opp: Over 16.5                    | OK | EV=3.9% odds=2.02 src=Sharp
+2026-05-28 13:42:04 | INFO     | CHECK | Signal: Aryna Sabalenka vs Elsa Jacquemot | OK | pick=Elsa Jacquemot ev=5.3% odds=44.0
+2026-05-28 13:42:04 | INFO     | CHECK | ELO predict Aryna Sabalenka vs Elsa Jacquemot | OK | H:97.60% D:0.00% A:2.40%
+2026-05-28 13:42:04 | INFO     | CHECK | ELO for Aryna Sabalenka vs Elsa Jacquemot | OK | H=97.60% A=2.40% matches_h=297 matches_a=17
+2026-05-28 13:42:04 | INFO     | SofaScore: Aryna Sabalenka vs Elsa Jacquemot -> ID:16198578
+2026-05-28 13:42:04 | INFO     | CHECK | SofaScore match_id Aryna Sabalenka  | OK | 16198578
+2026-05-28 13:42:04 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-28 13:42:06 | INFO     | CHECK | SofaScore data keys for match 16198578 | OK | ['lineups', 'streaks']
+2026-05-28 13:42:06 | INFO     | CHECK | Data quality Aryna Sabalenka vs Elsa Jacquemot | OK | high
+2026-05-28 13:42:06 | INFO     | CHECK | AI input stats_summary length       | OK | 192
+2026-05-28 13:42:06 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-28 13:42:07 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇧🇾",
+  "away_flag": "🇫🇷",
+  "risk_level": 
+2026-05-28 13:42:07 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 13:42:09 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":92,"validated_logic":"Data quality is high (+15). ELO ratings are 
+2026-05-28 13:42:09 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 13:42:09 | INFO     | CHECK | Final confidence                    | OK | 92
+2026-05-28 13:42:09 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-28 13:42:09 | INFO     | CHECK | Final logic preview                 | OK | Data quality is high (+15). ELO ratings are available for 5+ matches (+10). The 
+2026-05-28 13:42:09 | INFO     | Sent: Aryna Sabalenka vs Elsa Jacquemot | Elsa Jacquemot
+2026-05-28 13:42:12 | INFO     | --- Analyzing: Coco Gauff vs Mayar Sherif [WTA French Open]
+2026-05-28 13:42:12 | INFO     | CHECK | ELO predict Coco Gauff vs Mayar Sherif | OK | H:90.79% D:0.00% A:9.21%
+2026-05-28 13:42:12 | WARNING  | Rejected unrealistic EV=649.7% for Mayar Sherif (sharp=True)
+2026-05-28 13:42:12 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 13:42:12 | DEBUG    | No EV opportunity: Coco Gauff vs Mayar Sherif
+2026-05-28 13:42:12 | INFO     | --- Analyzing: Daria Kasatkina vs Susan Bandecchi [WTA French Open]
+2026-05-28 13:42:12 | INFO     | CHECK | ELO predict Daria Kasatkina vs Susan Bandecchi | OK | H:87.35% D:0.00% A:12.65%
+2026-05-28 13:42:12 | WARNING  | Rejected unrealistic EV=246.1% for Susan Bandecchi (sharp=True)
+2026-05-28 13:42:12 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-28 13:42:12 | DEBUG    | No EV opportunity: Daria Kasatkina vs Susan Bandecchi
+2026-05-28 13:42:12 | INFO     | --- Analyzing: Francisco Comesana vs Luciano Darderi [ATP French Open]
+2026-05-28 13:42:12 | INFO     | CHECK | ELO predict Francisco Comes vs Luciano Darderi | OK | H:55.88% D:0.00% A:44.12%
+2026-05-28 13:42:12 | WARNING  | Rejected unrealistic EV=47.0% for Francisco Comesana (sharp=True)
+2026-05-28 13:42:12 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-28 13:42:12 | INFO     | CHECK |   Opp: Francisco Comesana           | OK | EV=4.4% odds=4.1 src=Sharp
+2026-05-28 13:42:12 | INFO     | CHECK | Signal: Francisco Comes vs Luciano Darderi | OK | pick=Francisco Comesana ev=4.4% odds=4.1
+2026-05-28 13:42:12 | INFO     | CHECK | ELO predict Francisco Comes vs Luciano Darderi | OK | H:55.88% D:0.00% A:44.12%
+2026-05-28 13:42:12 | INFO     | CHECK | ELO for Francisco Comes vs Luciano Darderi | OK | H=55.88% A=44.12% matches_h=11 matches_a=54
+2026-05-28 13:42:13 | INFO     | SofaScore: Francisco Comesana vs Luciano Darderi -> ID:16198502
+2026-05-28 13:42:13 | INFO     | CHECK | SofaScore match_id Francisco Comes  | OK | 16198502
+2026-05-28 13:42:13 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-28 13:42:15 | INFO     | CHECK | SofaScore data keys for match 16198502 | OK | ['lineups', 'streaks']
+2026-05-28 13:42:15 | INFO     | CHECK | Data quality Francisco Comes vs Luciano Darderi | OK | high
+2026-05-28 13:42:15 | INFO     | CHECK | AI input stats_summary length       | OK | 237
+2026-05-28 13:42:15 | INFO     | CHECK | AI input data_quality               | OK | high
+2026-05-28 13:42:16 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇦🇷",
+  "away_flag": "🇮🇹",
+  "risk_level": 
+2026-05-28 13:42:16 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-28 13:42:18 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":82,"validated_logic":"Francisco Comesana has a 41‑point ELO advant
+2026-05-28 13:42:18 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-28 13:42:18 | INFO     | CHECK | Final confidence                    | OK | 82
+2026-05-28 13:42:18 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-28 13:42:18 | INFO     | CHECK | Final logic preview                 | OK | Francisco Comesana has a 41‑point ELO advantage over Luciano Darderi, translatin
+2026-05-28 13:42:18 | INFO     | Sent: Francisco Comesana vs Luciano Darderi | Francisco Comesana
+2026-05-28 13:42:21 | INFO     | =======================================================
+2026-05-28 13:42:21 | INFO     |   RUN COMPLETE
+2026-05-28 13:42:21 | INFO     | =======================================================
+2026-05-28 13:42:21 | INFO     | CHECK | Total signals sent this run         | OK | 4
+2026-05-28 13:42:21 | INFO     | =======================================================

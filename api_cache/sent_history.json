@@ -1,94 +1,4 @@
 {
-  "7b79a90f1bc7ca14625403af23198643": {
-    "match": "Petra Marcinko vs Eva Lys",
-    "pick": "Petra Marcinko",
-    "market": "h2h",
-    "sent_at": "2026-05-25T11:41:42.291291+00:00"
-  },
-  "98cc86ba4db8548af9d8085bccd1d2c5": {
-    "match": "Petra Marcinko vs Eva Lys",
-    "pick": "Petra Marcinko",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:41:48.864767+00:00"
-  },
-  "5b4e3222a8d32428d83f6fb5342cc67f": {
-    "match": "Veronika Erjavec vs Elena Rybakina",
-    "pick": "Under 16.5",
-    "market": "totals",
-    "sent_at": "2026-05-25T11:41:57.464996+00:00"
-  },
-  "e133df85dbdd653824d0bbe58066c996": {
-    "match": "Veronika Erjavec vs Elena Rybakina",
-    "pick": "Veronika Erjavec",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:42:03.487467+00:00"
-  },
-  "6cf2ed025a07a916ea3ab74bebff7623": {
-    "match": "Kaitlin Quevedo vs Leolia Jeanjean",
-    "pick": "Leolia Jeanjean",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:42:11.242250+00:00"
-  },
-  "99ac33970224c81076cfe1172eebf4c0": {
-    "match": "Maya Joint vs Anastasia Potapova",
-    "pick": "Maya Joint",
-    "market": "h2h",
-    "sent_at": "2026-05-25T11:42:21.054609+00:00"
-  },
-  "de96361728d8b5d25600cb7333fe4273": {
-    "match": "Jaume Munar vs Hubert Hurkacz",
-    "pick": "Hubert Hurkacz",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:42:39.476664+00:00"
-  },
-  "af57fd24b5cbd447b5cdc4cb62201135": {
-    "match": "IK Start vs Vålerenga",
-    "pick": "IK Start",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:43:03.022370+00:00"
-  },
-  "d12b74dbc1627594782ccae8b971106a": {
-    "match": "IK Start vs Vålerenga",
-    "pick": "Vålerenga",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:43:09.485938+00:00"
-  },
-  "55409f5ca894e579cd486bc24f269e4a": {
-    "match": "Emilio Nava vs Camilo Ugo Carabelli",
-    "pick": "Emilio Nava",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T11:43:20.589422+00:00"
-  },
-  "5ceed2962d7853194b0836c2f68e398c": {
-    "match": "Maya Joint vs Anastasia Potapova",
-    "pick": "Maya Joint",
-    "market": "h2h",
-    "sent_at": "2026-05-25T12:03:44.796822+00:00"
-  },
-  "9866708045596c80d13b606773609e5e": {
-    "match": "Elina Svitolina vs Anna Bondár",
-    "pick": "Anna Bondár",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T12:03:52.667331+00:00"
-  },
-  "49ac93caa93677d7fca5b879216b7f8d": {
-    "match": "Jaume Munar vs Hubert Hurkacz",
-    "pick": "Jaume Munar",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T12:03:59.555774+00:00"
-  },
-  "cc8db70e33ac1671f9f36e67e1ad7bfc": {
-    "match": "Emilio Nava vs Camilo Ugo Carabelli",
-    "pick": "Camilo Ugo Carabelli",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T12:04:08.709184+00:00"
-  },
-  "f066433ff2ddb3b8a059d72e729c91dc": {
-    "match": "Mariano Navone vs Jenson Brooksby",
-    "pick": "Jenson Brooksby",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-25T12:04:28.158179+00:00"
-  },
   "314c106709c8038b038a8aaa52ca2a85": {
     "match": "Chicago White Sox vs Minnesota Twins",
     "pick": "Chicago White Sox",
@@ -209,70 +119,202 @@
     "market": "h2h",
     "sent_at": "2026-05-26T08:42:57.127258+00:00"
   },
-  "31727970314861cf86b6210a144c2191": {
-    "match": "Baltimore Orioles vs Tampa Bay Rays",
-    "pick": "Baltimore Orioles",
+  "6b86fc557e0b24553536ff86248080a1": {
+    "match": "Alina Korneeva vs Elisabetta Cocciaretto",
+    "home": "Alina Korneeva",
+    "away": "Elisabetta Cocciaretto",
+    "pick": "Alina Korneeva",
     "market": "h2h_lay",
-    "sent_at": "2026-05-26T22:10:00.982049+00:00"
+    "odds": 3.0,
+    "commence_time": "2026-05-26T14:00:00Z",
+    "sent_at": "2026-05-26T13:56:36.869103+00:00",
+    "result_checked": false
   },
-  "78fbbf7a4cf36eef26cf771be3f1c687": {
-    "match": "Pittsburgh Pirates vs Chicago Cubs",
-    "pick": "Chicago Cubs",
+  "6eb069a197234b090d003882e9f57272": {
+    "match": "Hanne Vandewinkel vs Madison Keys",
+    "home": "Hanne Vandewinkel",
+    "away": "Madison Keys",
+    "pick": "Hanne Vandewinkel",
     "market": "h2h_lay",
-    "sent_at": "2026-05-26T22:10:07.536224+00:00"
+    "odds": 8.2,
+    "commence_time": "2026-05-26T14:00:00Z",
+    "sent_at": "2026-05-26T13:56:46.700361+00:00",
+    "result_checked": false
   },
-  "e9110efce9d5f78a4de29fb1c0f5b833": {
-    "match": "Detroit Tigers vs Los Angeles Angels",
-    "pick": "Detroit Tigers",
+  "233d02df46eb053915100a277307e228": {
+    "match": "Anhelina Kalinina vs Diane Parry",
+    "home": "Anhelina Kalinina",
+    "away": "Diane Parry",
+    "pick": "Diane Parry",
     "market": "h2h_lay",
-    "sent_at": "2026-05-26T22:10:14.244362+00:00"
+    "odds": 3.3,
+    "commence_time": "2026-05-26T14:30:00Z",
+    "sent_at": "2026-05-26T13:56:55.059169+00:00",
+    "result_checked": false
   },
-  "eb0f70c5125a951f378f572fc5f5c8bb": {
-    "match": "Boston Red Sox vs Atlanta Braves",
-    "pick": "Atlanta Braves",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-26T22:10:20.216024+00:00"
-  },
-  "5dc0ba70071e390164216cf37bf29f96": {
-    "match": "Club Universitario de Deportes vs Deportes Tolima",
-    "pick": "Club Universitario de Deportes",
+  "c5bc310625fa93d1c4365c3c70da4e44": {
+    "match": "Anna Kalinskaya vs Lois Boisson",
+    "home": "Anna Kalinskaya",
+    "away": "Lois Boisson",
+    "pick": "Anna Kalinskaya",
     "market": "h2h",
-    "sent_at": "2026-05-27T00:27:09.255951+00:00"
+    "odds": 1.62,
+    "commence_time": "2026-05-26T14:30:00Z",
+    "sent_at": "2026-05-26T13:57:03.468163+00:00",
+    "result_checked": false
   },
-  "355bae3fa0705ebf7c5d34567a183659": {
-    "match": "Nacional de Montevideo vs Coquimbo Unido",
-    "pick": "Coquimbo Unido",
+  "7001e5ef26cee8dea71ec462a28004b4": {
+    "match": "Coco Gauff vs Taylor Townsend",
+    "home": "Coco Gauff",
+    "away": "Taylor Townsend",
+    "pick": "Taylor Townsend",
     "market": "h2h_lay",
-    "sent_at": "2026-05-27T00:27:16.130565+00:00"
+    "odds": 12.5,
+    "commence_time": "2026-05-26T14:30:00Z",
+    "sent_at": "2026-05-26T13:57:11.895920+00:00",
+    "result_checked": false
   },
-  "7ebb3036a609ca3d84d6b4d92e29f9ef": {
-    "match": "Flamengo-RJ vs Cusco FC",
-    "pick": "Cusco FC",
+  "d9e1a29a0f7e8b412ce8cde0bf3b87f3": {
+    "match": "Elena Pridankina vs Oleksandra Oliynykova",
+    "home": "Elena Pridankina",
+    "away": "Oleksandra Oliynykova",
+    "pick": "Oleksandra Oliynykova",
     "market": "h2h_lay",
-    "sent_at": "2026-05-27T00:27:29.582920+00:00"
+    "odds": 1.63,
+    "commence_time": "2026-05-26T15:00:00Z",
+    "sent_at": "2026-05-26T13:57:20.241314+00:00",
+    "result_checked": false
   },
-  "fecd11022ab2af5ae5bada1661277491": {
-    "match": "Kiwoom Heroes vs Kia Tigers",
-    "pick": "Kiwoom Heroes",
+  "4bcd03eafadb8f28376758361faa6d68": {
+    "match": "Greuther Fürth vs Rot-Weiss Essen",
+    "home": "Greuther Fürth",
+    "away": "Rot-Weiss Essen",
+    "pick": "Rot-Weiss Essen",
     "market": "h2h",
-    "sent_at": "2026-05-27T09:11:40.177309+00:00"
+    "odds": 4.4,
+    "commence_time": "2026-05-26T18:30:00Z",
+    "sent_at": "2026-05-26T18:07:46.011236+00:00",
+    "result_checked": false
   },
-  "22475ed24e3b64360eac87f938fef689": {
-    "match": "SSG Landers vs Samsung Lions",
-    "pick": "SSG Landers",
+  "d1c2069dc7523186c6dd4cfba624adeb": {
+    "match": "Saint Etienne vs Nice",
+    "home": "Saint Etienne",
+    "away": "Nice",
+    "pick": "Nice",
     "market": "h2h",
-    "sent_at": "2026-05-27T09:11:58.111073+00:00"
+    "odds": 2.95,
+    "commence_time": "2026-05-26T18:45:00Z",
+    "sent_at": "2026-05-26T18:07:55.736594+00:00",
+    "result_checked": false
   },
-  "aee54e1e0d3de11e9cf98075d6f2d515": {
-    "match": "Federico Cinà vs Jesper De Jong",
-    "pick": "Jesper De Jong",
+  "0a6ff089ef4eacd41ddb8d4fa95709e4": {
+    "match": "Yuliia Starodubtseva vs Elena Rybakina",
+    "home": "Yuliia Starodubtseva",
+    "away": "Elena Rybakina",
+    "pick": "Yuliia Starodubtseva",
     "market": "h2h_lay",
-    "sent_at": "2026-05-27T09:12:04.760948+00:00"
+    "odds": 14.01,
+    "commence_time": "2026-05-27T12:30:00Z",
+    "sent_at": "2026-05-27T12:01:12.524676+00:00",
+    "result_checked": false
   },
-  "9bc489849ad833d6ec320e8c8087e1fd": {
-    "match": "Ireland vs New Zealand",
-    "pick": "Draw",
+  "f73ea37ef7110adcaa9ebccad85f2bae": {
+    "match": "Marta Kostyuk vs Katie Volynets",
+    "home": "Marta Kostyuk",
+    "away": "Katie Volynets",
+    "pick": "Katie Volynets",
+    "market": "h2h_lay",
+    "odds": 8.0,
+    "commence_time": "2026-05-27T12:30:00Z",
+    "sent_at": "2026-05-27T12:01:20.346710+00:00",
+    "result_checked": false
+  },
+  "159d38a103040faa1998bc63a90332e5": {
+    "match": "Viktorija Golubic vs Alycia Parks",
+    "home": "Viktorija Golubic",
+    "away": "Alycia Parks",
+    "pick": "Alycia Parks",
     "market": "h2h",
-    "sent_at": "2026-05-27T09:12:13.698303+00:00"
+    "odds": 1.97,
+    "commence_time": "2026-05-27T13:00:00Z",
+    "sent_at": "2026-05-27T12:01:28.522309+00:00",
+    "result_checked": false
+  },
+  "c484b093ee6345e449145d4e1a9eb61d": {
+    "match": "Jil Teichmann vs Magdalena Frech",
+    "home": "Jil Teichmann",
+    "away": "Magdalena Frech",
+    "pick": "Magdalena Frech",
+    "market": "h2h",
+    "odds": 1.68,
+    "commence_time": "2026-05-27T13:00:00Z",
+    "sent_at": "2026-05-27T12:01:35.795837+00:00",
+    "result_checked": false
+  },
+  "c818610945a9ea36307677f59f880a01": {
+    "match": "Nuno Borges vs Miomir Kecmanovic",
+    "home": "Nuno Borges",
+    "away": "Miomir Kecmanovic",
+    "pick": "Nuno Borges",
+    "market": "h2h",
+    "odds": 2.45,
+    "commence_time": "2026-05-27T13:00:00Z",
+    "sent_at": "2026-05-27T12:01:43.341413+00:00",
+    "result_checked": false
+  },
+  "ac7ef2974b1a450666ec3eb778e6a527": {
+    "match": "Ugo Humbert vs Quentin Halys",
+    "home": "Ugo Humbert",
+    "away": "Quentin Halys",
+    "pick": "Ugo Humbert",
+    "market": "h2h",
+    "odds": 1.7,
+    "commence_time": "2026-05-27T13:05:00Z",
+    "sent_at": "2026-05-27T12:01:51.491259+00:00",
+    "result_checked": false
+  },
+  "f34567221e087e3f6b26b26611988868": {
+    "match": "Ann Li vs Diane Parry",
+    "home": "Ann Li",
+    "away": "Diane Parry",
+    "pick": "Diane Parry",
+    "market": "h2h_lay",
+    "odds": 3.45,
+    "commence_time": "2026-05-28T14:30:00Z",
+    "sent_at": "2026-05-28T13:41:50.972685+00:00",
+    "result_checked": false
+  },
+  "476b122c6d5fd5bc129ca76897744f4e": {
+    "match": "Antonia Ruzic vs Madison Keys",
+    "home": "Antonia Ruzic",
+    "away": "Madison Keys",
+    "pick": "Antonia Ruzic",
+    "market": "h2h_lay",
+    "odds": 8.0,
+    "commence_time": "2026-05-28T14:30:00Z",
+    "sent_at": "2026-05-28T13:42:01.019737+00:00",
+    "result_checked": false
+  },
+  "4f9d0e594d7680ddb8521663e069330c": {
+    "match": "Aryna Sabalenka vs Elsa Jacquemot",
+    "home": "Aryna Sabalenka",
+    "away": "Elsa Jacquemot",
+    "pick": "Elsa Jacquemot",
+    "market": "h2h_lay",
+    "odds": 44.0,
+    "commence_time": "2026-05-28T14:30:00Z",
+    "sent_at": "2026-05-28T13:42:09.745802+00:00",
+    "result_checked": false
+  },
+  "9b5df1a8d52bf6bf786d315b33cbf922": {
+    "match": "Francisco Comesana vs Luciano Darderi",
+    "home": "Francisco Comesana",
+    "away": "Luciano Darderi",
+    "pick": "Francisco Comesana",
+    "market": "h2h_lay",
+    "odds": 4.1,
+    "commence_time": "2026-05-28T14:30:00Z",
+    "sent_at": "2026-05-28T13:42:18.855315+00:00",
+    "result_checked": false
   }
 }
