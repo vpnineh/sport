@@ -947,3 +947,58 @@
 2026-05-28 13:43:16 | INFO     |   RUN COMPLETE
 2026-05-28 13:43:16 | INFO     | ============================================================
 2026-05-28 13:43:16 | INFO     | CHECK | Signals sent this run                    | OK | 0
+2026-05-28 18:38:34 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-28 18:38:34 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-28 18:38:34 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-28 18:38:34 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-28 18:38:34 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-28 18:38:34 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-28 18:38:34 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-28 18:38:34 | INFO     | Bootstrap: data is fresh
+2026-05-28 18:38:34 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-28 18:38:34 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-28 18:38:34 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-28 18:38:34 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-28 18:38:34 | INFO     | Football-Data call counter reset
+2026-05-28 18:38:34 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     | CHECK | Odds API requests remaining              | OK | 97
+2026-05-28 18:38:34 | INFO     | CHECK | Odds API requests used this month        | OK | 403
+2026-05-28 18:38:34 | INFO     | CHECK | Events in 2h window                      | OK | 2
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-28 18:38:34 | INFO     | ============================================================
+2026-05-28 18:38:34 | INFO     | --- Victoria Mboko vs Katerina Siniakova [WTA French Open]
+2026-05-28 18:38:34 | WARNING  | Rejected unrealistic EV=16.6% for Katerina Siniakova
+2026-05-28 18:38:34 | INFO     | CHECK | EV opp h2h_lay                           | OK | Katerina Siniakova EV=9.4% odds=5.6 elo=False
+2026-05-28 18:38:34 | INFO     | CHECK | ELO Victoria Mbo vs Katerina Sin         | OK | H=26.6% D=0.0% A=73.4% hm=1 am=187
+2026-05-28 18:38:36 | INFO     | SofaScore: Victoria Mboko vs Katerina Siniakova -> ID:16198580
+2026-05-28 18:38:37 | INFO     | CHECK | SofaScore data for match 16198580        | OK | ['lineups', 'streaks']
+2026-05-28 18:38:37 | INFO     | CHECK | Data quality Victoria Mbo vs Katerina Sin | OK | high
+2026-05-28 18:38:37 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+
+2026-05-28 18:38:37 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-28 18:38:38 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"This pick is driven by a sharp market di
+2026-05-28 18:38:38 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-28 18:38:38 | INFO     | CHECK | Final confidence                         | OK | 82
+2026-05-28 18:38:38 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-28 18:38:38 | INFO     | CHECK | Logic preview                            | OK | This pick is driven by a sharp market discrepancy and Kateri
+2026-05-28 18:38:38 | INFO     | Sent: Victoria Mboko vs Katerina Siniakova | Katerina Siniakova
+2026-05-28 18:38:41 | INFO     | --- Boston Red Sox vs Atlanta Braves [MLB]
+2026-05-28 18:38:41 | INFO     | ============================================================
+2026-05-28 18:38:41 | INFO     |   RUN COMPLETE
+2026-05-28 18:38:41 | INFO     | ============================================================
+2026-05-28 18:38:41 | INFO     | CHECK | Signals sent this run                    | OK | 1
