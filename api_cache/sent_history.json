@@ -1,156 +1,68 @@
 {
-  "0a6ff089ef4eacd41ddb8d4fa95709e4": {
-    "match": "Yuliia Starodubtseva vs Elena Rybakina",
-    "home": "Yuliia Starodubtseva",
-    "away": "Elena Rybakina",
-    "pick": "Yuliia Starodubtseva",
-    "market": "h2h_lay",
-    "odds": 14.01,
-    "commence_time": "2026-05-27T12:30:00Z",
-    "sent_at": "2026-05-27T12:01:12.524676+00:00",
-    "result_checked": false
-  },
-  "f73ea37ef7110adcaa9ebccad85f2bae": {
-    "match": "Marta Kostyuk vs Katie Volynets",
-    "home": "Marta Kostyuk",
-    "away": "Katie Volynets",
-    "pick": "Katie Volynets",
-    "market": "h2h_lay",
-    "odds": 8.0,
-    "commence_time": "2026-05-27T12:30:00Z",
-    "sent_at": "2026-05-27T12:01:20.346710+00:00",
-    "result_checked": false
-  },
-  "159d38a103040faa1998bc63a90332e5": {
-    "match": "Viktorija Golubic vs Alycia Parks",
-    "home": "Viktorija Golubic",
-    "away": "Alycia Parks",
-    "pick": "Alycia Parks",
-    "market": "h2h",
-    "odds": 1.97,
-    "commence_time": "2026-05-27T13:00:00Z",
-    "sent_at": "2026-05-27T12:01:28.522309+00:00",
-    "result_checked": false
-  },
-  "c484b093ee6345e449145d4e1a9eb61d": {
-    "match": "Jil Teichmann vs Magdalena Frech",
-    "home": "Jil Teichmann",
-    "away": "Magdalena Frech",
-    "pick": "Magdalena Frech",
-    "market": "h2h",
-    "odds": 1.68,
-    "commence_time": "2026-05-27T13:00:00Z",
-    "sent_at": "2026-05-27T12:01:35.795837+00:00",
-    "result_checked": false
-  },
-  "c818610945a9ea36307677f59f880a01": {
-    "match": "Nuno Borges vs Miomir Kecmanovic",
-    "home": "Nuno Borges",
-    "away": "Miomir Kecmanovic",
-    "pick": "Nuno Borges",
-    "market": "h2h",
-    "odds": 2.45,
-    "commence_time": "2026-05-27T13:00:00Z",
-    "sent_at": "2026-05-27T12:01:43.341413+00:00",
-    "result_checked": false
-  },
-  "ac7ef2974b1a450666ec3eb778e6a527": {
-    "match": "Ugo Humbert vs Quentin Halys",
-    "home": "Ugo Humbert",
-    "away": "Quentin Halys",
-    "pick": "Ugo Humbert",
-    "market": "h2h",
-    "odds": 1.7,
-    "commence_time": "2026-05-27T13:05:00Z",
-    "sent_at": "2026-05-27T12:01:51.491259+00:00",
-    "result_checked": false
-  },
-  "f34567221e087e3f6b26b26611988868": {
-    "match": "Ann Li vs Diane Parry",
-    "home": "Ann Li",
-    "away": "Diane Parry",
-    "pick": "Diane Parry",
-    "market": "h2h_lay",
-    "odds": 3.45,
-    "commence_time": "2026-05-28T14:30:00Z",
-    "sent_at": "2026-05-28T13:41:50.972685+00:00",
-    "result_checked": false
-  },
   "476b122c6d5fd5bc129ca76897744f4e": {
     "match": "Antonia Ruzic vs Madison Keys",
-    "home": "Antonia Ruzic",
-    "away": "Madison Keys",
     "pick": "Antonia Ruzic",
     "market": "h2h_lay",
-    "odds": 8.0,
-    "commence_time": "2026-05-28T14:30:00Z",
-    "sent_at": "2026-05-28T13:42:01.019737+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-28T13:45:09.218051+00:00"
   },
   "4f9d0e594d7680ddb8521663e069330c": {
     "match": "Aryna Sabalenka vs Elsa Jacquemot",
-    "home": "Aryna Sabalenka",
-    "away": "Elsa Jacquemot",
     "pick": "Elsa Jacquemot",
     "market": "h2h_lay",
-    "odds": 44.0,
-    "commence_time": "2026-05-28T14:30:00Z",
-    "sent_at": "2026-05-28T13:42:09.745802+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-28T13:45:16.230144+00:00"
   },
   "9b5df1a8d52bf6bf786d315b33cbf922": {
     "match": "Francisco Comesana vs Luciano Darderi",
-    "home": "Francisco Comesana",
-    "away": "Luciano Darderi",
     "pick": "Francisco Comesana",
     "market": "h2h_lay",
-    "odds": 4.1,
-    "commence_time": "2026-05-28T14:30:00Z",
-    "sent_at": "2026-05-28T13:42:18.855315+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-28T13:45:24.955534+00:00"
   },
-  "9527f681d0344b43fd437079744164b4": {
-    "match": "Dallas Wings vs Las Vegas Aces",
-    "home": "Dallas Wings",
-    "away": "Las Vegas Aces",
-    "pick": "Dallas Wings",
+  "d82c156ab651985e0fd01500f25d12a4": {
+    "match": "Golden State Valkyries vs Indiana Fever",
+    "pick": "Golden State Valkyries",
     "market": "h2h_lay",
-    "odds": 2.98,
-    "commence_time": "2026-05-29T00:10:00Z",
-    "sent_at": "2026-05-28T22:53:25.614834+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T00:42:05.487882+00:00"
   },
-  "14247091ed407ab70a6f9b08ee08b004": {
-    "match": "CA Tigre BA vs Alianza Atlético",
-    "home": "CA Tigre BA",
-    "away": "Alianza Atlético",
-    "pick": "Draw",
+  "6702949b1fc1f7815d1034e3ca338a8e": {
+    "match": "Alex de Minaur vs Jakub Mensik",
+    "pick": "Jakub Mensik",
     "market": "h2h_lay",
-    "odds": 6.8,
-    "commence_time": "2026-05-29T00:30:00Z",
-    "sent_at": "2026-05-28T22:53:32.580670+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:42:37.229172+00:00"
+  },
+  "0b075ca6020759caca67411a0e168bbf": {
+    "match": "Tennessee Volunteers vs East Carolina Pirates",
+    "pick": "East Carolina Pirates",
+    "market": "h2h",
+    "sent_at": "2026-05-29T15:42:42.678392+00:00"
+  },
+  "0565858feaef6a7554dede964f18268a": {
+    "match": "Casper Ruud vs Tommy Paul",
+    "pick": "Tommy Paul",
+    "market": "h2h_lay",
+    "sent_at": "2026-05-29T15:42:48.341136+00:00"
+  },
+  "6f1308faa49a2774fe57f3a0e92b2b2f": {
+    "match": "Worcestershire vs Birmingham Bears",
+    "pick": "Birmingham Bears",
+    "market": "h2h",
+    "sent_at": "2026-05-29T15:42:59.574077+00:00"
+  },
+  "49e600c8e71fbec6b33a630b015980bd": {
+    "match": "Aalesund vs HamKam",
+    "pick": "HamKam",
+    "market": "h2h_lay",
+    "sent_at": "2026-05-29T15:43:05.327215+00:00"
   },
   "be57a53571c7c620ab32d82b2b98ff54": {
     "match": "Texas A&M Aggies vs Lamar Cardinals",
-    "home": "Texas A&M Aggies",
-    "away": "Lamar Cardinals",
     "pick": "Lamar Cardinals",
     "market": "h2h",
-    "odds": 5.46,
-    "commence_time": "2026-05-29T20:05:00Z",
-    "sent_at": "2026-05-29T19:53:07.866926+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T19:54:59.492677+00:00"
   },
   "86d65f46f7db59fc9e8db246830ba88f": {
     "match": "West Virginia Mountaineers vs Binghamton Bearcats",
-    "home": "West Virginia Mountaineers",
-    "away": "Binghamton Bearcats",
     "pick": "Binghamton Bearcats",
     "market": "h2h",
-    "odds": 5.29,
-    "commence_time": "2026-05-29T21:00:00Z",
-    "sent_at": "2026-05-29T19:53:13.982963+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T19:55:03.758210+00:00"
   }
 }
