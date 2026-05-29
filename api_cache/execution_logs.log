@@ -1349,3 +1349,77 @@
 2026-05-29 15:41:09 | INFO     |   RUN COMPLETE
 2026-05-29 15:41:09 | INFO     | ============================================================
 2026-05-29 15:41:09 | INFO     | CHECK | Signals sent this run                    | OK | 5
+2026-05-29 19:51:48 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-29 19:51:48 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-29 19:51:48 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-29 19:51:48 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-29 19:51:48 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-29 19:51:48 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 19:51:48 | INFO     | Bootstrap: data is fresh
+2026-05-29 19:51:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 19:51:48 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-29 19:51:48 | INFO     | Football-Data call counter reset
+2026-05-29 19:51:48 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     | CHECK | Odds API requests remaining              | OK | 25
+2026-05-29 19:51:48 | INFO     | CHECK | Odds API requests used this month        | OK | 475
+2026-05-29 19:51:48 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-29 19:51:48 | INFO     | ============================================================
+2026-05-29 19:51:48 | INFO     | --- Florida St Seminoles vs St. John's Red Storm [NCAA Baseball]
+2026-05-29 19:51:48 | INFO     | --- Texas A&M Aggies vs Lamar Cardinals [NCAA Baseball]
+2026-05-29 19:51:48 | INFO     | CHECK | EV opp h2h                               | OK | Lamar Cardinals EV=9.4% odds=5.46 elo=False
+2026-05-29 19:51:49 | INFO     | SofaScore: Texas A&M Aggies vs Lamar Cardinals -> ID:11744428
+2026-05-29 19:51:50 | INFO     | CHECK | SofaScore data for match 11744428        | OK | ['lineups', 'streaks']
+2026-05-29 19:51:50 | INFO     | CHECK | Data quality Texas A&M Ag vs Lamar Cardin | OK | medium
+2026-05-29 19:51:50 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "
+2026-05-29 19:51:50 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 19:51:51 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on the given information, the pick
+2026-05-29 19:51:51 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 19:51:51 | INFO     | CHECK | Final confidence                         | OK | 75
+2026-05-29 19:51:51 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-29 19:51:51 | INFO     | CHECK | Logic preview                            | OK | Based on the given information, the pick is driven by a shar
+2026-05-29 19:51:51 | INFO     | Sent: Texas A&M Aggies vs Lamar Cardinals | Lamar Cardinals
+2026-05-29 19:51:54 | INFO     | --- Nebraska Cornhuskers vs South Dakota St Jackrabbits [NCAA Baseball]
+2026-05-29 19:51:54 | WARNING  | Rejected unrealistic EV=20.2% for South Dakota St Jackrabbits
+2026-05-29 19:51:54 | INFO     | --- West Virginia Mountaineers vs Binghamton Bearcats [NCAA Baseball]
+2026-05-29 19:51:54 | INFO     | CHECK | EV opp h2h                               | OK | Binghamton Bearcats EV=9.5% odds=5.29 elo=False
+2026-05-29 19:51:55 | INFO     | SofaScore: West Virginia Mountaineers vs Binghamton Bearcats -> ID:16234828
+2026-05-29 19:51:55 | INFO     | CHECK | SofaScore data for match 16234828        | EMPTY (ok)
+2026-05-29 19:51:55 | INFO     | CHECK | Data quality West Virgini vs Binghamton B | OK | none
+2026-05-29 19:51:56 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "
+2026-05-29 19:51:56 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 19:51:56 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-29 19:51:56 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 19:51:56 | INFO     | CHECK | Final confidence                         | OK | 67
+2026-05-29 19:51:56 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-29 19:51:56 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
+2026-05-29 19:51:57 | INFO     | Sent: West Virginia Mountaineers vs Binghamton Bearcats | Binghamton Bearcats
+2026-05-29 19:52:00 | INFO     | --- Georgia Bulldogs vs LIU Sharks [NCAA Baseball]
+2026-05-29 19:52:00 | INFO     | --- North Carolina Tar Heels vs VCU Rams [NCAA Baseball]
+2026-05-29 19:52:00 | INFO     | --- Oklahoma Sooners vs The Citadel Bulldogs [NCAA Baseball]
+2026-05-29 19:52:00 | INFO     | --- Charlie Edwards vs Sikho Nqothole [Boxing]
+2026-05-29 19:52:00 | INFO     | ============================================================
+2026-05-29 19:52:00 | INFO     |   RUN COMPLETE
+2026-05-29 19:52:00 | INFO     | ============================================================
+2026-05-29 19:52:00 | INFO     | CHECK | Signals sent this run                    | OK | 2
