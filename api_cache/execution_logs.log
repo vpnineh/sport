@@ -1174,3 +1174,57 @@
 2026-05-28 22:57:00 | INFO     |   RUN COMPLETE
 2026-05-28 22:57:00 | INFO     | ============================================================
 2026-05-28 22:57:00 | INFO     | CHECK | Signals sent this run                    | OK | 0
+2026-05-29 00:40:04 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-29 00:40:04 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-29 00:40:04 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-29 00:40:04 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-29 00:40:04 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-29 00:40:04 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 00:40:04 | INFO     | Bootstrap: data is fresh
+2026-05-29 00:40:04 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 00:40:04 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-29 00:40:04 | INFO     | Football-Data call counter reset
+2026-05-29 00:40:04 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     | CHECK | Odds API requests remaining              | OK | 57
+2026-05-29 00:40:04 | INFO     | CHECK | Odds API requests used this month        | OK | 443
+2026-05-29 00:40:04 | INFO     | CHECK | Events in 2h window                      | OK | 4
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-29 00:40:04 | INFO     | ============================================================
+2026-05-29 00:40:04 | INFO     | --- Colorado Eagles vs Chicago Wolves [AHL]
+2026-05-29 00:40:04 | INFO     | --- Reno Aces vs Sacramento River Cats [MiLB]
+2026-05-29 00:40:04 | INFO     | --- Tacoma Rainiers vs Las Vegas Aviators [MiLB]
+2026-05-29 00:40:04 | INFO     | --- Golden State Valkyries vs Indiana Fever [WNBA]
+2026-05-29 00:40:04 | INFO     | CHECK | EV opp h2h_lay                           | OK | Golden State Valkyries EV=2.8% odds=1.9 elo=False
+2026-05-29 00:40:06 | INFO     | SofaScore: Golden State Valkyries vs Indiana Fever -> ID:15415698
+2026-05-29 00:40:08 | INFO     | CHECK | SofaScore data for match 15415698        | OK | ['lineups', 'streaks']
+2026-05-29 00:40:08 | INFO     | CHECK | Data quality Golden State vs Indiana Feve | OK | medium
+2026-05-29 00:40:08 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🏀",
+  "home_flag": "US",
+  "away_flag": "U
+2026-05-29 00:40:08 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 00:40:09 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on the provided statistics, the Go
+2026-05-29 00:40:09 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 00:40:09 | INFO     | CHECK | Final confidence                         | OK | 67
+2026-05-29 00:40:09 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-29 00:40:09 | INFO     | CHECK | Logic preview                            | OK | Based on the provided statistics, the Golden State Valkyries
+2026-05-29 00:40:09 | INFO     | Sent: Golden State Valkyries vs Indiana Fever | Golden State Valkyries
+2026-05-29 00:40:12 | INFO     | ============================================================
+2026-05-29 00:40:12 | INFO     |   RUN COMPLETE
+2026-05-29 00:40:12 | INFO     | ============================================================
+2026-05-29 00:40:12 | INFO     | CHECK | Signals sent this run                    | OK | 1
