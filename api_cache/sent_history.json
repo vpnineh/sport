@@ -1,64 +1,4 @@
 {
-  "fecd11022ab2af5ae5bada1661277491": {
-    "match": "Kiwoom Heroes vs Kia Tigers",
-    "pick": "Kiwoom Heroes",
-    "market": "h2h",
-    "sent_at": "2026-05-27T09:11:40.177309+00:00"
-  },
-  "22475ed24e3b64360eac87f938fef689": {
-    "match": "SSG Landers vs Samsung Lions",
-    "pick": "SSG Landers",
-    "market": "h2h",
-    "sent_at": "2026-05-27T09:11:58.111073+00:00"
-  },
-  "aee54e1e0d3de11e9cf98075d6f2d515": {
-    "match": "Federico Cinà vs Jesper De Jong",
-    "pick": "Jesper De Jong",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T09:12:04.760948+00:00"
-  },
-  "9bc489849ad833d6ec320e8c8087e1fd": {
-    "match": "Ireland vs New Zealand",
-    "pick": "Draw",
-    "market": "h2h",
-    "sent_at": "2026-05-27T09:12:13.698303+00:00"
-  },
-  "0a6ff089ef4eacd41ddb8d4fa95709e4": {
-    "match": "Yuliia Starodubtseva vs Elena Rybakina",
-    "pick": "Yuliia Starodubtseva",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:08.528509+00:00"
-  },
-  "f73ea37ef7110adcaa9ebccad85f2bae": {
-    "match": "Marta Kostyuk vs Katie Volynets",
-    "pick": "Katie Volynets",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:15.670454+00:00"
-  },
-  "e778ec8c38fe1b067e27dbc063cf26c1": {
-    "match": "Viktorija Golubic vs Alycia Parks",
-    "pick": "Alycia Parks",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:21.947867+00:00"
-  },
-  "bc08fe4d5a417201992b02fff7727f09": {
-    "match": "Jil Teichmann vs Magdalena Frech",
-    "pick": "Magdalena Frech",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:28.458187+00:00"
-  },
-  "d1d357e71c120d4ffc266381ef049692": {
-    "match": "Nuno Borges vs Miomir Kecmanovic",
-    "pick": "Nuno Borges",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:35.834401+00:00"
-  },
-  "93aeb34d6a4975a835ca831804b55ec4": {
-    "match": "Ugo Humbert vs Quentin Halys",
-    "pick": "Quentin Halys",
-    "market": "h2h_lay",
-    "sent_at": "2026-05-27T12:05:43.192538+00:00"
-  },
   "476b122c6d5fd5bc129ca76897744f4e": {
     "match": "Antonia Ruzic vs Madison Keys",
     "pick": "Antonia Ruzic",
@@ -85,57 +25,32 @@
   },
   "6702949b1fc1f7815d1034e3ca338a8e": {
     "match": "Alex de Minaur vs Jakub Mensik",
-    "home": "Alex de Minaur",
-    "away": "Jakub Mensik",
     "pick": "Jakub Mensik",
     "market": "h2h_lay",
-    "odds": 5.1,
-    "commence_time": "2026-05-29T15:45:00Z",
-    "sent_at": "2026-05-29T15:40:40.184731+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:42:37.229172+00:00"
   },
   "0b075ca6020759caca67411a0e168bbf": {
     "match": "Tennessee Volunteers vs East Carolina Pirates",
-    "home": "Tennessee Volunteers",
-    "away": "East Carolina Pirates",
     "pick": "East Carolina Pirates",
     "market": "h2h",
-    "odds": 2.72,
-    "commence_time": "2026-05-29T16:00:00Z",
-    "sent_at": "2026-05-29T15:40:47.517996+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:42:42.678392+00:00"
   },
   "0565858feaef6a7554dede964f18268a": {
     "match": "Casper Ruud vs Tommy Paul",
-    "home": "Casper Ruud",
-    "away": "Tommy Paul",
     "pick": "Tommy Paul",
     "market": "h2h_lay",
-    "odds": 4.1,
-    "commence_time": "2026-05-29T16:05:00Z",
-    "sent_at": "2026-05-29T15:40:54.406500+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:42:48.341136+00:00"
   },
   "6f1308faa49a2774fe57f3a0e92b2b2f": {
     "match": "Worcestershire vs Birmingham Bears",
-    "home": "Worcestershire",
-    "away": "Birmingham Bears",
     "pick": "Birmingham Bears",
     "market": "h2h",
-    "odds": 2.1,
-    "commence_time": "2026-05-29T16:30:00Z",
-    "sent_at": "2026-05-29T15:41:00.059918+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:42:59.574077+00:00"
   },
   "49e600c8e71fbec6b33a630b015980bd": {
     "match": "Aalesund vs HamKam",
-    "home": "Aalesund",
-    "away": "HamKam",
     "pick": "HamKam",
     "market": "h2h_lay",
-    "odds": 3.75,
-    "commence_time": "2026-05-29T17:00:00Z",
-    "sent_at": "2026-05-29T15:41:06.816630+00:00",
-    "result_checked": false
+    "sent_at": "2026-05-29T15:43:05.327215+00:00"
   }
 }
