@@ -1113,313 +1113,144 @@
 2026-05-28 22:53:35 | INFO     | =======================================================
 2026-05-28 22:53:35 | INFO     | CHECK | Total signals sent this run         | OK | 2
 2026-05-28 22:53:35 | INFO     | =======================================================
-2026-05-28 22:56:56 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-28 22:56:56 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-28 22:56:56 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-28 22:56:56 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-28 22:56:56 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-28 22:56:56 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-28 22:56:56 | INFO     | ============================================================
-2026-05-28 22:56:56 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-28 22:56:56 | INFO     | ============================================================
-2026-05-28 22:56:56 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-28 22:56:56 | INFO     | Bootstrap: data is fresh
-2026-05-28 22:56:56 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-28 22:56:56 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-28 22:56:56 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-28 22:56:56 | INFO     | Football-Data call counter reset
-2026-05-28 22:56:56 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-28 22:56:56 | INFO     | ============================================================
-2026-05-28 22:56:56 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-28 22:56:56 | INFO     | ============================================================
-2026-05-28 22:56:56 | INFO     | CHECK | Pending results                          | OK | 18
-2026-05-28 22:56:57 | INFO     | Result not found yet: Alina Korneeva vs Elisabetta Cocciaretto
-2026-05-28 22:56:57 | INFO     | Result not found yet: Hanne Vandewinkel vs Madison Keys
-2026-05-28 22:56:57 | INFO     | Result not found yet: Anhelina Kalinina vs Diane Parry
-2026-05-28 22:56:57 | INFO     | Result not found yet: Anna Kalinskaya vs Lois Boisson
-2026-05-28 22:56:57 | INFO     | Result not found yet: Coco Gauff vs Taylor Townsend
-2026-05-28 22:56:58 | INFO     | Result not found yet: Elena Pridankina vs Oleksandra Oliynykova
-2026-05-28 22:56:58 | INFO     | Result not found yet: Greuther Fürth vs Rot-Weiss Essen
-2026-05-28 22:56:58 | INFO     | Result not found yet: Saint Etienne vs Nice
-2026-05-28 22:56:58 | INFO     | Result not found yet: Yuliia Starodubtseva vs Elena Rybakina
-2026-05-28 22:56:58 | INFO     | Result not found yet: Marta Kostyuk vs Katie Volynets
-2026-05-28 22:56:59 | INFO     | Result not found yet: Viktorija Golubic vs Alycia Parks
-2026-05-28 22:56:59 | INFO     | Result not found yet: Jil Teichmann vs Magdalena Frech
-2026-05-28 22:56:59 | INFO     | Result not found yet: Nuno Borges vs Miomir Kecmanovic
-2026-05-28 22:56:59 | INFO     | Result not found yet: Ugo Humbert vs Quentin Halys
-2026-05-28 22:57:00 | INFO     | Result not found yet: Ann Li vs Diane Parry
-2026-05-28 22:57:00 | INFO     | Result not found yet: Antonia Ruzic vs Madison Keys
-2026-05-28 22:57:00 | INFO     | Result not found yet: Aryna Sabalenka vs Elsa Jacquemot
-2026-05-28 22:57:00 | INFO     | Result not found yet: Francisco Comesana vs Luciano Darderi
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     | CHECK | Odds API requests remaining              | OK | 73
-2026-05-28 22:57:00 | INFO     | CHECK | Odds API requests used this month        | OK | 427
-2026-05-28 22:57:00 | INFO     | CHECK | Events in 2h window                      | OK | 8
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     | --- Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox [MiLB]
-2026-05-28 22:57:00 | INFO     | --- Nashville Sounds vs Gwinnett Stripers [MiLB]
-2026-05-28 22:57:00 | INFO     | --- Omaha Storm Chasers vs Memphis Redbirds [MiLB]
-2026-05-28 22:57:00 | INFO     | --- Round Rock Express vs Salt Lake Bees [MiLB]
-2026-05-28 22:57:00 | INFO     | --- Sugar Land Space Cowboys vs Oklahoma City Comets [MiLB]
-2026-05-28 22:57:00 | INFO     | --- Texas Rangers vs Houston Astros [MLB]
-2026-05-28 22:57:00 | INFO     | --- Dallas Wings vs Las Vegas Aces [WNBA]
-2026-05-28 22:57:00 | INFO     | --- CA Tigre BA vs Alianza Atlético [Copa Sudamericana]
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     |   RUN COMPLETE
-2026-05-28 22:57:00 | INFO     | ============================================================
-2026-05-28 22:57:00 | INFO     | CHECK | Signals sent this run                    | OK | 0
-2026-05-29 00:40:04 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-29 00:40:04 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-29 00:40:04 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-29 00:40:04 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-29 00:40:04 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-29 00:40:04 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 00:40:04 | INFO     | Bootstrap: data is fresh
-2026-05-29 00:40:04 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 00:40:04 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-29 00:40:04 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-29 00:40:04 | INFO     | Football-Data call counter reset
-2026-05-29 00:40:04 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     | CHECK | Pending results                          | OK | 0
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     | CHECK | Odds API requests remaining              | OK | 57
-2026-05-29 00:40:04 | INFO     | CHECK | Odds API requests used this month        | OK | 443
-2026-05-29 00:40:04 | INFO     | CHECK | Events in 2h window                      | OK | 4
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-29 00:40:04 | INFO     | ============================================================
-2026-05-29 00:40:04 | INFO     | --- Colorado Eagles vs Chicago Wolves [AHL]
-2026-05-29 00:40:04 | INFO     | --- Reno Aces vs Sacramento River Cats [MiLB]
-2026-05-29 00:40:04 | INFO     | --- Tacoma Rainiers vs Las Vegas Aviators [MiLB]
-2026-05-29 00:40:04 | INFO     | --- Golden State Valkyries vs Indiana Fever [WNBA]
-2026-05-29 00:40:04 | INFO     | CHECK | EV opp h2h_lay                           | OK | Golden State Valkyries EV=2.8% odds=1.9 elo=False
-2026-05-29 00:40:06 | INFO     | SofaScore: Golden State Valkyries vs Indiana Fever -> ID:15415698
-2026-05-29 00:40:08 | INFO     | CHECK | SofaScore data for match 15415698        | OK | ['lineups', 'streaks']
-2026-05-29 00:40:08 | INFO     | CHECK | Data quality Golden State vs Indiana Feve | OK | medium
-2026-05-29 00:40:08 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "🏀",
-  "home_flag": "US",
-  "away_flag": "U
-2026-05-29 00:40:08 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 00:40:09 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on the provided statistics, the Go
-2026-05-29 00:40:09 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 00:40:09 | INFO     | CHECK | Final confidence                         | OK | 67
-2026-05-29 00:40:09 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-29 00:40:09 | INFO     | CHECK | Logic preview                            | OK | Based on the provided statistics, the Golden State Valkyries
-2026-05-29 00:40:09 | INFO     | Sent: Golden State Valkyries vs Indiana Fever | Golden State Valkyries
-2026-05-29 00:40:12 | INFO     | ============================================================
-2026-05-29 00:40:12 | INFO     |   RUN COMPLETE
-2026-05-29 00:40:12 | INFO     | ============================================================
-2026-05-29 00:40:12 | INFO     | CHECK | Signals sent this run                    | OK | 1
-2026-05-29 15:40:36 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-29 15:40:36 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-29 15:40:36 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-29 15:40:36 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-29 15:40:36 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-29 15:40:36 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 15:40:36 | INFO     | Bootstrap: data is fresh
-2026-05-29 15:40:36 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 15:40:36 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-29 15:40:36 | INFO     | Football-Data call counter reset
-2026-05-29 15:40:36 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     | CHECK | Pending results                          | OK | 0
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     | CHECK | Odds API requests remaining              | OK | 41
-2026-05-29 15:40:36 | INFO     | CHECK | Odds API requests used this month        | OK | 459
-2026-05-29 15:40:36 | INFO     | CHECK | Events in 2h window                      | OK | 8
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-29 15:40:36 | INFO     | ============================================================
-2026-05-29 15:40:36 | INFO     | --- Alex de Minaur vs Jakub Mensik [ATP French Open]
-2026-05-29 15:40:36 | WARNING  | Rejected unrealistic EV=95.1% for Jakub Mensik
-2026-05-29 15:40:36 | INFO     | CHECK | EV opp h2h_lay                           | OK | Jakub Mensik EV=2.6% odds=5.1 elo=False
-2026-05-29 15:40:36 | INFO     | CHECK | ELO Alex de Mina vs Jakub Mensik         | OK | H=69.0% D=0.0% A=31.0% hm=289 am=49
-2026-05-29 15:40:37 | INFO     | SofaScore: Alex de Minaur vs Jakub Mensik -> ID:16198527
-2026-05-29 15:40:38 | INFO     | CHECK | SofaScore data for match 16198527        | OK | ['lineups', 'streaks']
-2026-05-29 15:40:38 | INFO     | CHECK | Data quality Alex de Mina vs Jakub Mensik | OK | high
-2026-05-29 15:40:39 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "🎾",
-  "home_flag": "🇦🇺",
-  "away_flag": "🇨
-2026-05-29 15:40:39 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 15:40:39 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Despite a significant ELO advantage, a s
-2026-05-29 15:40:39 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 15:40:39 | INFO     | CHECK | Final confidence                         | OK | 84
-2026-05-29 15:40:39 | INFO     | CHECK | Final risk                               | OK | Low
-2026-05-29 15:40:39 | INFO     | CHECK | Logic preview                            | OK | Despite a significant ELO advantage, a substantial market di
-2026-05-29 15:40:40 | INFO     | Sent: Alex de Minaur vs Jakub Mensik | Jakub Mensik
-2026-05-29 15:40:43 | INFO     | --- Boston College Eagles vs Liberty Flames [NCAA Baseball]
-2026-05-29 15:40:43 | INFO     | --- Tennessee Volunteers vs East Carolina Pirates [NCAA Baseball]
-2026-05-29 15:40:43 | INFO     | CHECK | EV opp h2h                               | OK | East Carolina Pirates EV=2.8% odds=2.72 elo=False
-2026-05-29 15:40:44 | INFO     | SofaScore: Tennessee Volunteers vs East Carolina Pirates -> ID:16237418
-2026-05-29 15:40:46 | INFO     | CHECK | SofaScore data for match 16237418        | OK | ['lineups', 'streaks']
-2026-05-29 15:40:46 | INFO     | CHECK | Data quality Tennessee Vo vs East Carolin | OK | medium
-2026-05-29 15:40:46 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+2026-05-29 19:53:00 | INFO     | CHECK | ODDS_API_KEY set                    | OK | True
+2026-05-29 19:53:00 | INFO     | CHECK | GROQ_API_KEY set                    | OK | True
+2026-05-29 19:53:00 | INFO     | CHECK | RAPIDAPI_KEY set                    | OK | True
+2026-05-29 19:53:00 | INFO     | CHECK | TELEGRAM_BOT_TOKEN set              | OK | True
+2026-05-29 19:53:00 | INFO     | CHECK | TELEGRAM_CHAT_ID set                | OK | True
+2026-05-29 19:53:00 | INFO     | CHECK | FOOTBALL_DATA_API_KEY set           | OK | True
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.0 STARTING
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-29 19:53:00 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-29 19:53:00 | INFO     | Bootstrap: data is fresh - skipping
+2026-05-29 19:53:00 | INFO     | ELO loaded (football): 358 teams/players
+2026-05-29 19:53:00 | INFO     | ELO loaded (tennis): 1494 teams/players
+2026-05-29 19:53:00 | INFO     | CHECK | ELO football teams loaded           | OK | 358
+2026-05-29 19:53:00 | INFO     | CHECK | ELO tennis players loaded           | OK | 1494
+2026-05-29 19:53:00 | INFO     | Football-Data call counter reset for new day
+2026-05-29 19:53:00 | INFO     | CHECK | Football-Data calls today           | OK | 0
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-29 19:53:00 | INFO     | =======================================================
+2026-05-29 19:53:00 | INFO     | CHECK | Pending results to check            | OK | 12
+2026-05-29 19:53:00 | INFO     | Checking result: Yuliia Starodubtseva vs Elena Rybakina | Pick: Yuliia Starodubtseva
+2026-05-29 19:53:00 | INFO     | CHECK | Result event Yuliia Starodub        | OK | not found
+2026-05-29 19:53:00 | INFO     | Checking result: Marta Kostyuk vs Katie Volynets | Pick: Katie Volynets
+2026-05-29 19:53:00 | INFO     | CHECK | Result event Marta Kostyuk          | OK | not found
+2026-05-29 19:53:00 | INFO     | Checking result: Viktorija Golubic vs Alycia Parks | Pick: Alycia Parks
+2026-05-29 19:53:00 | INFO     | CHECK | Result event Viktorija Golub        | OK | not found
+2026-05-29 19:53:00 | INFO     | Checking result: Jil Teichmann vs Magdalena Frech | Pick: Magdalena Frech
+2026-05-29 19:53:00 | INFO     | CHECK | Result event Jil Teichmann          | OK | not found
+2026-05-29 19:53:00 | INFO     | Checking result: Nuno Borges vs Miomir Kecmanovic | Pick: Nuno Borges
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Nuno Borges            | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Ugo Humbert vs Quentin Halys | Pick: Ugo Humbert
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Ugo Humbert            | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Ann Li vs Diane Parry | Pick: Diane Parry
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Ann Li                 | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Antonia Ruzic vs Madison Keys | Pick: Antonia Ruzic
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Antonia Ruzic          | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Aryna Sabalenka vs Elsa Jacquemot | Pick: Elsa Jacquemot
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Aryna Sabalenka        | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Francisco Comesana vs Luciano Darderi | Pick: Francisco Comesana
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Francisco Comes        | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: Dallas Wings vs Las Vegas Aces | Pick: Dallas Wings
+2026-05-29 19:53:01 | INFO     | CHECK | Result event Dallas Wings           | OK | not found
+2026-05-29 19:53:01 | INFO     | Checking result: CA Tigre BA vs Alianza Atlético | Pick: Draw
+2026-05-29 19:53:02 | INFO     | CHECK | Result event CA Tigre BA            | OK | not found
+2026-05-29 19:53:02 | INFO     | CHECK | Results - Wins                      | OK | 0
+2026-05-29 19:53:02 | INFO     | CHECK | Results - Losses                    | OK | 0
+2026-05-29 19:53:02 | INFO     | CHECK | Results - Unknown                   | OK | 12
+2026-05-29 19:53:02 | INFO     | No results to report this run
+2026-05-29 19:53:02 | INFO     | =======================================================
+2026-05-29 19:53:02 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-29 19:53:02 | INFO     | =======================================================
+2026-05-29 19:53:02 | INFO     | CHECK | Odds API requests remaining         | OK | 17
+2026-05-29 19:53:02 | INFO     | CHECK | Odds API requests used              | OK | 483
+2026-05-29 19:53:02 | INFO     | CHECK | Odds API events in window           | OK | 8
+2026-05-29 19:53:02 | INFO     | CHECK | Events fetched from Odds API        | OK | 8
+2026-05-29 19:53:02 | INFO     | =======================================================
+2026-05-29 19:53:02 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-29 19:53:02 | INFO     | =======================================================
+2026-05-29 19:53:02 | INFO     | --- Analyzing: Florida St Seminoles vs St. John's Red Storm [NCAA Baseball]
+2026-05-29 19:53:02 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:02 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:02 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:02 | DEBUG    | No EV opportunity: Florida St Seminoles vs St. John's Red Storm
+2026-05-29 19:53:02 | INFO     | --- Analyzing: Texas A&M Aggies vs Lamar Cardinals [NCAA Baseball]
+2026-05-29 19:53:02 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:02 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-29 19:53:02 | INFO     | CHECK |   Opp: Lamar Cardinals              | OK | EV=9.4% odds=5.46 src=Sharp
+2026-05-29 19:53:02 | INFO     | CHECK | Signal: Texas A&M Aggie vs Lamar Cardinals | OK | pick=Lamar Cardinals ev=9.4% odds=5.46
+2026-05-29 19:53:03 | INFO     | SofaScore: Texas A&M Aggies vs Lamar Cardinals -> ID:11744428
+2026-05-29 19:53:03 | INFO     | CHECK | SofaScore match_id Texas A&M Aggie  | OK | 11744428
+2026-05-29 19:53:03 | DEBUG    | SofaScore 204 for https://sofascore.p.rapidapi.com/matches/get-h2h-events
+2026-05-29 19:53:04 | INFO     | CHECK | SofaScore data keys for match 11744428 | OK | ['lineups', 'streaks']
+2026-05-29 19:53:04 | INFO     | CHECK | Data quality Texas A&M Aggie vs Lamar Cardinals | OK | medium
+2026-05-29 19:53:04 | INFO     | CHECK | AI input stats_summary length       | OK | 1011
+2026-05-29 19:53:04 | INFO     | CHECK | AI input data_quality               | OK | medium
+2026-05-29 19:53:05 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
 "sport_emoji": "⚾️",
   "home_flag": "🇺🇸",
-  "away_flag": "
-2026-05-29 15:40:46 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 15:40:47 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
-2026-05-29 15:40:47 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 15:40:47 | INFO     | CHECK | Final confidence                         | OK | 67
-2026-05-29 15:40:47 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-29 15:40:47 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, and the un
-2026-05-29 15:40:47 | INFO     | Sent: Tennessee Volunteers vs East Carolina Pirates | East Carolina Pirates
-2026-05-29 15:40:50 | INFO     | --- Georgia Tech Yellow Jackets vs UIC Flames [NCAA Baseball]
-2026-05-29 15:40:50 | WARNING  | Rejected unrealistic EV=47.1% for UIC Flames
-2026-05-29 15:40:50 | INFO     | --- Wake Forest Demon Deacons vs Kentucky Wildcats [NCAA Baseball]
-2026-05-29 15:40:50 | INFO     | --- Casper Ruud vs Tommy Paul [ATP French Open]
-2026-05-29 15:40:50 | WARNING  | Rejected unrealistic EV=60.0% for Tommy Paul
-2026-05-29 15:40:50 | INFO     | CHECK | EV opp h2h_lay                           | OK | Tommy Paul EV=3.5% odds=4.1 elo=False
-2026-05-29 15:40:50 | INFO     | CHECK | ELO Casper Ruud vs Tommy Paul            | OK | H=35.6% D=0.0% A=64.4% hm=321 am=274
-2026-05-29 15:40:52 | INFO     | SofaScore: Casper Ruud vs Tommy Paul -> ID:16198530
-2026-05-29 15:40:53 | INFO     | CHECK | SofaScore data for match 16198530        | OK | ['lineups', 'streaks']
-2026-05-29 15:40:53 | INFO     | CHECK | Data quality Casper Ruud vs Tommy Paul   | OK | high
-2026-05-29 15:40:53 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "🎾",
-  "home_flag": "🇳🇴",
-  "away_flag": "🇺
-2026-05-29 15:40:53 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 15:40:53 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on ELO advantage and recent form, 
-2026-05-29 15:40:53 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 15:40:53 | INFO     | CHECK | Final confidence                         | OK | 88
-2026-05-29 15:40:53 | INFO     | CHECK | Final risk                               | OK | Low
-2026-05-29 15:40:53 | INFO     | CHECK | Logic preview                            | OK | Based on ELO advantage and recent form, Tommy Paul has a 64.
-2026-05-29 15:40:54 | INFO     | Sent: Casper Ruud vs Tommy Paul | Tommy Paul
-2026-05-29 15:40:57 | INFO     | --- Worcestershire vs Birmingham Bears [T20 Blast]
-2026-05-29 15:40:57 | INFO     | CHECK | EV opp h2h                               | OK | Birmingham Bears EV=1.9% odds=2.1 elo=False
-2026-05-29 15:40:58 | INFO     | CHECK | Data quality Worcestershi vs Birmingham B | OK | none
-2026-05-29 15:40:59 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "🏏",
-  "home_flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-  "away_flag
-2026-05-29 15:40:59 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 15:40:59 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
-2026-05-29 15:40:59 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 15:40:59 | INFO     | CHECK | Final confidence                         | OK | 59
-2026-05-29 15:40:59 | INFO     | CHECK | Final risk                               | OK | High
-2026-05-29 15:40:59 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
-2026-05-29 15:41:00 | INFO     | Sent: Worcestershire vs Birmingham Bears | Birmingham Bears
-2026-05-29 15:41:03 | INFO     | --- Aalesund vs HamKam [Eliteserien - Norway]
-2026-05-29 15:41:03 | INFO     | CHECK | EV opp h2h_lay                           | OK | HamKam EV=4.8% odds=3.75 elo=False
-2026-05-29 15:41:04 | INFO     | SofaScore: Aalesund vs HamKam -> ID:15260817
-2026-05-29 15:41:05 | INFO     | CHECK | SofaScore data for match 15260817        | OK | ['lineups', 'streaks']
-2026-05-29 15:41:05 | INFO     | CHECK | Data quality Aalesund vs HamKam          | OK | medium
-2026-05-29 15:41:05 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "⚽️",
-  "home_flag": "🇳🇴",
-  "away_flag": "
-2026-05-29 15:41:05 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 15:41:06 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Historical data suggests HamKam's resili
-2026-05-29 15:41:06 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 15:41:06 | INFO     | CHECK | Final confidence                         | OK | 71
-2026-05-29 15:41:06 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-29 15:41:06 | INFO     | CHECK | Logic preview                            | OK | Historical data suggests HamKam's resilience against Aalesun
-2026-05-29 15:41:06 | INFO     | Sent: Aalesund vs HamKam | HamKam
-2026-05-29 15:41:09 | INFO     | ============================================================
-2026-05-29 15:41:09 | INFO     |   RUN COMPLETE
-2026-05-29 15:41:09 | INFO     | ============================================================
-2026-05-29 15:41:09 | INFO     | CHECK | Signals sent this run                    | OK | 5
-2026-05-29 19:51:48 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
-2026-05-29 19:51:48 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
-2026-05-29 19:51:48 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
-2026-05-29 19:51:48 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
-2026-05-29 19:51:48 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
-2026-05-29 19:51:48 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 19:51:48 | INFO     | Bootstrap: data is fresh
-2026-05-29 19:51:48 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
-2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
-2026-05-29 19:51:48 | INFO     | CHECK | ELO football teams                       | OK | 358
-2026-05-29 19:51:48 | INFO     | CHECK | ELO tennis players                       | OK | 1494
-2026-05-29 19:51:48 | INFO     | Football-Data call counter reset
-2026-05-29 19:51:48 | INFO     | CHECK | Football-Data calls today                | OK | 0
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     |   PHASE 1 - RESULTS CHECK
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     | CHECK | Pending results                          | OK | 0
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     |   PHASE 2 - FETCHING ODDS
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     | CHECK | Odds API requests remaining              | OK | 25
-2026-05-29 19:51:48 | INFO     | CHECK | Odds API requests used this month        | OK | 475
-2026-05-29 19:51:48 | INFO     | CHECK | Events in 2h window                      | OK | 8
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
-2026-05-29 19:51:48 | INFO     | ============================================================
-2026-05-29 19:51:48 | INFO     | --- Florida St Seminoles vs St. John's Red Storm [NCAA Baseball]
-2026-05-29 19:51:48 | INFO     | --- Texas A&M Aggies vs Lamar Cardinals [NCAA Baseball]
-2026-05-29 19:51:48 | INFO     | CHECK | EV opp h2h                               | OK | Lamar Cardinals EV=9.4% odds=5.46 elo=False
-2026-05-29 19:51:49 | INFO     | SofaScore: Texas A&M Aggies vs Lamar Cardinals -> ID:11744428
-2026-05-29 19:51:50 | INFO     | CHECK | SofaScore data for match 11744428        | OK | ['lineups', 'streaks']
-2026-05-29 19:51:50 | INFO     | CHECK | Data quality Texas A&M Ag vs Lamar Cardin | OK | medium
-2026-05-29 19:51:50 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+  "away_flag": "🇺🇸",
+  "risk_level":
+2026-05-29 19:53:05 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-29 19:53:07 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":75,"validated_logic":"The pick is supported by a strong head‑to‑he
+2026-05-29 19:53:07 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-29 19:53:07 | INFO     | CHECK | Final confidence                    | OK | 75
+2026-05-29 19:53:07 | INFO     | CHECK | Final risk_level                    | OK | Low
+2026-05-29 19:53:07 | INFO     | CHECK | Final logic preview                 | OK | The pick is supported by a strong head‑to‑head advantage for Lamar and a signifi
+2026-05-29 19:53:07 | INFO     | Sent: Texas A&M Aggies vs Lamar Cardinals | Lamar Cardinals
+2026-05-29 19:53:10 | INFO     | --- Analyzing: Nebraska Cornhuskers vs South Dakota St Jackrabbits [NCAA Baseball]
+2026-05-29 19:53:10 | WARNING  | Rejected unrealistic EV=20.2% for South Dakota St Jackrabbits (sharp=True)
+2026-05-29 19:53:10 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:10 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:10 | DEBUG    | No EV opportunity: Nebraska Cornhuskers vs South Dakota St Jackrabbits
+2026-05-29 19:53:10 | INFO     | --- Analyzing: West Virginia Mountaineers vs Binghamton Bearcats [NCAA Baseball]
+2026-05-29 19:53:10 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:10 | INFO     | CHECK | EV opportunities found              | OK | 1
+2026-05-29 19:53:10 | INFO     | CHECK |   Opp: Binghamton Bearcats          | OK | EV=9.5% odds=5.29 src=Sharp
+2026-05-29 19:53:10 | INFO     | CHECK | Signal: West Virginia M vs Binghamton Bear | OK | pick=Binghamton Bearcats ev=9.5% odds=5.29
+2026-05-29 19:53:11 | INFO     | CHECK | SofaScore match_id West Virginia M  | EMPTY (ok)
+2026-05-29 19:53:11 | INFO     | CHECK | Data quality West Virginia M vs Binghamton Bear | OK | none
+2026-05-29 19:53:11 | INFO     | CHECK | AI input stats_summary length       | OK | 29
+2026-05-29 19:53:11 | INFO     | CHECK | AI input data_quality               | OK | none
+2026-05-29 19:53:11 | INFO     | CHECK | Groq meta-llama/llama-4-s response  | OK | {
 "sport_emoji": "⚾️",
   "home_flag": "🇺🇸",
-  "away_flag": "
-2026-05-29 19:51:50 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 19:51:51 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on the given information, the pick
-2026-05-29 19:51:51 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 19:51:51 | INFO     | CHECK | Final confidence                         | OK | 75
-2026-05-29 19:51:51 | INFO     | CHECK | Final risk                               | OK | Low
-2026-05-29 19:51:51 | INFO     | CHECK | Logic preview                            | OK | Based on the given information, the pick is driven by a shar
-2026-05-29 19:51:51 | INFO     | Sent: Texas A&M Aggies vs Lamar Cardinals | Lamar Cardinals
-2026-05-29 19:51:54 | INFO     | --- Nebraska Cornhuskers vs South Dakota St Jackrabbits [NCAA Baseball]
-2026-05-29 19:51:54 | WARNING  | Rejected unrealistic EV=20.2% for South Dakota St Jackrabbits
-2026-05-29 19:51:54 | INFO     | --- West Virginia Mountaineers vs Binghamton Bearcats [NCAA Baseball]
-2026-05-29 19:51:54 | INFO     | CHECK | EV opp h2h                               | OK | Binghamton Bearcats EV=9.5% odds=5.29 elo=False
-2026-05-29 19:51:55 | INFO     | SofaScore: West Virginia Mountaineers vs Binghamton Bearcats -> ID:16234828
-2026-05-29 19:51:55 | INFO     | CHECK | SofaScore data for match 16234828        | EMPTY (ok)
-2026-05-29 19:51:55 | INFO     | CHECK | Data quality West Virgini vs Binghamton B | OK | none
-2026-05-29 19:51:56 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
-"sport_emoji": "⚾️",
-  "home_flag": "🇺🇸",
-  "away_flag": "
-2026-05-29 19:51:56 | INFO     | CHECK | Model 1 result                           | OK | OK
-2026-05-29 19:51:56 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
-2026-05-29 19:51:56 | INFO     | CHECK | Model 2 result                           | OK | OK
-2026-05-29 19:51:56 | INFO     | CHECK | Final confidence                         | OK | 67
-2026-05-29 19:51:56 | INFO     | CHECK | Final risk                               | OK | Medium
-2026-05-29 19:51:56 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
-2026-05-29 19:51:57 | INFO     | Sent: West Virginia Mountaineers vs Binghamton Bearcats | Binghamton Bearcats
-2026-05-29 19:52:00 | INFO     | --- Georgia Bulldogs vs LIU Sharks [NCAA Baseball]
-2026-05-29 19:52:00 | INFO     | --- North Carolina Tar Heels vs VCU Rams [NCAA Baseball]
-2026-05-29 19:52:00 | INFO     | --- Oklahoma Sooners vs The Citadel Bulldogs [NCAA Baseball]
-2026-05-29 19:52:00 | INFO     | --- Charlie Edwards vs Sikho Nqothole [Boxing]
-2026-05-29 19:52:00 | INFO     | ============================================================
-2026-05-29 19:52:00 | INFO     |   RUN COMPLETE
-2026-05-29 19:52:00 | INFO     | ============================================================
-2026-05-29 19:52:00 | INFO     | CHECK | Signals sent this run                    | OK | 2
+  "away_flag": "🇺🇸",
+  "risk_level":
+2026-05-29 19:53:11 | INFO     | CHECK | Model 1 analysis_1                  | OK | OK
+2026-05-29 19:53:13 | INFO     | CHECK | Groq openai/gpt-oss-20b response    | OK | {"confidence":67,"validated_logic":"The pick is supported by a strong EV edge of
+2026-05-29 19:53:13 | INFO     | CHECK | Model 2 analysis_2                  | OK | OK
+2026-05-29 19:53:13 | INFO     | CHECK | Final confidence                    | OK | 67
+2026-05-29 19:53:13 | INFO     | CHECK | Final risk_level                    | OK | Medium
+2026-05-29 19:53:13 | INFO     | CHECK | Final logic preview                 | OK | The pick is supported by a strong EV edge of +9.5% (worth +10 points) and a head
+2026-05-29 19:53:13 | INFO     | Sent: West Virginia Mountaineers vs Binghamton Bearcats | Binghamton Bearcats
+2026-05-29 19:53:16 | INFO     | --- Analyzing: Georgia Bulldogs vs LIU Sharks [NCAA Baseball]
+2026-05-29 19:53:16 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:16 | DEBUG    | No EV opportunity: Georgia Bulldogs vs LIU Sharks
+2026-05-29 19:53:16 | INFO     | --- Analyzing: North Carolina Tar Heels vs VCU Rams [NCAA Baseball]
+2026-05-29 19:53:16 | DEBUG    | No sharp line for h2h - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:16 | DEBUG    | No EV opportunity: North Carolina Tar Heels vs VCU Rams
+2026-05-29 19:53:16 | INFO     | --- Analyzing: Oklahoma Sooners vs The Citadel Bulldogs [NCAA Baseball]
+2026-05-29 19:53:16 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:16 | DEBUG    | No EV opportunity: Oklahoma Sooners vs The Citadel Bulldogs
+2026-05-29 19:53:16 | INFO     | --- Analyzing: Charlie Edwards vs Sikho Nqothole [Boxing]
+2026-05-29 19:53:16 | DEBUG    | No sharp line for totals - skipping (REQUIRE_SHARP_LINE=True)
+2026-05-29 19:53:16 | INFO     | CHECK | EV opportunities found              | OK | 0
+2026-05-29 19:53:16 | DEBUG    | No EV opportunity: Charlie Edwards vs Sikho Nqothole
+2026-05-29 19:53:16 | INFO     | =======================================================
+2026-05-29 19:53:16 | INFO     |   RUN COMPLETE
+2026-05-29 19:53:16 | INFO     | =======================================================
+2026-05-29 19:53:16 | INFO     | CHECK | Total signals sent this run         | OK | 2
+2026-05-29 19:53:16 | INFO     | =======================================================
