@@ -1228,3 +1228,124 @@
 2026-05-29 00:40:12 | INFO     |   RUN COMPLETE
 2026-05-29 00:40:12 | INFO     | ============================================================
 2026-05-29 00:40:12 | INFO     | CHECK | Signals sent this run                    | OK | 1
+2026-05-29 15:40:36 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-29 15:40:36 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-29 15:40:36 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-29 15:40:36 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-29 15:40:36 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-29 15:40:36 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 15:40:36 | INFO     | Bootstrap: data is fresh
+2026-05-29 15:40:36 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-29 15:40:36 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-29 15:40:36 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-29 15:40:36 | INFO     | Football-Data call counter reset
+2026-05-29 15:40:36 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     | CHECK | Odds API requests remaining              | OK | 41
+2026-05-29 15:40:36 | INFO     | CHECK | Odds API requests used this month        | OK | 459
+2026-05-29 15:40:36 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-29 15:40:36 | INFO     | ============================================================
+2026-05-29 15:40:36 | INFO     | --- Alex de Minaur vs Jakub Mensik [ATP French Open]
+2026-05-29 15:40:36 | WARNING  | Rejected unrealistic EV=95.1% for Jakub Mensik
+2026-05-29 15:40:36 | INFO     | CHECK | EV opp h2h_lay                           | OK | Jakub Mensik EV=2.6% odds=5.1 elo=False
+2026-05-29 15:40:36 | INFO     | CHECK | ELO Alex de Mina vs Jakub Mensik         | OK | H=69.0% D=0.0% A=31.0% hm=289 am=49
+2026-05-29 15:40:37 | INFO     | SofaScore: Alex de Minaur vs Jakub Mensik -> ID:16198527
+2026-05-29 15:40:38 | INFO     | CHECK | SofaScore data for match 16198527        | OK | ['lineups', 'streaks']
+2026-05-29 15:40:38 | INFO     | CHECK | Data quality Alex de Mina vs Jakub Mensik | OK | high
+2026-05-29 15:40:39 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇦🇺",
+  "away_flag": "🇨
+2026-05-29 15:40:39 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 15:40:39 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Despite a significant ELO advantage, a s
+2026-05-29 15:40:39 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 15:40:39 | INFO     | CHECK | Final confidence                         | OK | 84
+2026-05-29 15:40:39 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-29 15:40:39 | INFO     | CHECK | Logic preview                            | OK | Despite a significant ELO advantage, a substantial market di
+2026-05-29 15:40:40 | INFO     | Sent: Alex de Minaur vs Jakub Mensik | Jakub Mensik
+2026-05-29 15:40:43 | INFO     | --- Boston College Eagles vs Liberty Flames [NCAA Baseball]
+2026-05-29 15:40:43 | INFO     | --- Tennessee Volunteers vs East Carolina Pirates [NCAA Baseball]
+2026-05-29 15:40:43 | INFO     | CHECK | EV opp h2h                               | OK | East Carolina Pirates EV=2.8% odds=2.72 elo=False
+2026-05-29 15:40:44 | INFO     | SofaScore: Tennessee Volunteers vs East Carolina Pirates -> ID:16237418
+2026-05-29 15:40:46 | INFO     | CHECK | SofaScore data for match 16237418        | OK | ['lineups', 'streaks']
+2026-05-29 15:40:46 | INFO     | CHECK | Data quality Tennessee Vo vs East Carolin | OK | medium
+2026-05-29 15:40:46 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "
+2026-05-29 15:40:46 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 15:40:47 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-29 15:40:47 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 15:40:47 | INFO     | CHECK | Final confidence                         | OK | 67
+2026-05-29 15:40:47 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-29 15:40:47 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, and the un
+2026-05-29 15:40:47 | INFO     | Sent: Tennessee Volunteers vs East Carolina Pirates | East Carolina Pirates
+2026-05-29 15:40:50 | INFO     | --- Georgia Tech Yellow Jackets vs UIC Flames [NCAA Baseball]
+2026-05-29 15:40:50 | WARNING  | Rejected unrealistic EV=47.1% for UIC Flames
+2026-05-29 15:40:50 | INFO     | --- Wake Forest Demon Deacons vs Kentucky Wildcats [NCAA Baseball]
+2026-05-29 15:40:50 | INFO     | --- Casper Ruud vs Tommy Paul [ATP French Open]
+2026-05-29 15:40:50 | WARNING  | Rejected unrealistic EV=60.0% for Tommy Paul
+2026-05-29 15:40:50 | INFO     | CHECK | EV opp h2h_lay                           | OK | Tommy Paul EV=3.5% odds=4.1 elo=False
+2026-05-29 15:40:50 | INFO     | CHECK | ELO Casper Ruud vs Tommy Paul            | OK | H=35.6% D=0.0% A=64.4% hm=321 am=274
+2026-05-29 15:40:52 | INFO     | SofaScore: Casper Ruud vs Tommy Paul -> ID:16198530
+2026-05-29 15:40:53 | INFO     | CHECK | SofaScore data for match 16198530        | OK | ['lineups', 'streaks']
+2026-05-29 15:40:53 | INFO     | CHECK | Data quality Casper Ruud vs Tommy Paul   | OK | high
+2026-05-29 15:40:53 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🎾",
+  "home_flag": "🇳🇴",
+  "away_flag": "🇺
+2026-05-29 15:40:53 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 15:40:53 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Based on ELO advantage and recent form, 
+2026-05-29 15:40:53 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 15:40:53 | INFO     | CHECK | Final confidence                         | OK | 88
+2026-05-29 15:40:53 | INFO     | CHECK | Final risk                               | OK | Low
+2026-05-29 15:40:53 | INFO     | CHECK | Logic preview                            | OK | Based on ELO advantage and recent form, Tommy Paul has a 64.
+2026-05-29 15:40:54 | INFO     | Sent: Casper Ruud vs Tommy Paul | Tommy Paul
+2026-05-29 15:40:57 | INFO     | --- Worcestershire vs Birmingham Bears [T20 Blast]
+2026-05-29 15:40:57 | INFO     | CHECK | EV opp h2h                               | OK | Birmingham Bears EV=1.9% odds=2.1 elo=False
+2026-05-29 15:40:58 | INFO     | CHECK | Data quality Worcestershi vs Birmingham B | OK | none
+2026-05-29 15:40:59 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🏏",
+  "home_flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "away_flag
+2026-05-29 15:40:59 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 15:40:59 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-29 15:40:59 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 15:40:59 | INFO     | CHECK | Final confidence                         | OK | 59
+2026-05-29 15:40:59 | INFO     | CHECK | Final risk                               | OK | High
+2026-05-29 15:40:59 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
+2026-05-29 15:41:00 | INFO     | Sent: Worcestershire vs Birmingham Bears | Birmingham Bears
+2026-05-29 15:41:03 | INFO     | --- Aalesund vs HamKam [Eliteserien - Norway]
+2026-05-29 15:41:03 | INFO     | CHECK | EV opp h2h_lay                           | OK | HamKam EV=4.8% odds=3.75 elo=False
+2026-05-29 15:41:04 | INFO     | SofaScore: Aalesund vs HamKam -> ID:15260817
+2026-05-29 15:41:05 | INFO     | CHECK | SofaScore data for match 15260817        | OK | ['lineups', 'streaks']
+2026-05-29 15:41:05 | INFO     | CHECK | Data quality Aalesund vs HamKam          | OK | medium
+2026-05-29 15:41:05 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚽️",
+  "home_flag": "🇳🇴",
+  "away_flag": "
+2026-05-29 15:41:05 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-29 15:41:06 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"Historical data suggests HamKam's resili
+2026-05-29 15:41:06 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-29 15:41:06 | INFO     | CHECK | Final confidence                         | OK | 71
+2026-05-29 15:41:06 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-29 15:41:06 | INFO     | CHECK | Logic preview                            | OK | Historical data suggests HamKam's resilience against Aalesun
+2026-05-29 15:41:06 | INFO     | Sent: Aalesund vs HamKam | HamKam
+2026-05-29 15:41:09 | INFO     | ============================================================
+2026-05-29 15:41:09 | INFO     |   RUN COMPLETE
+2026-05-29 15:41:09 | INFO     | ============================================================
+2026-05-29 15:41:09 | INFO     | CHECK | Signals sent this run                    | OK | 5
