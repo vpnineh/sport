@@ -2011,3 +2011,98 @@
 2026-05-30 18:30:27 | INFO     | ============================================================
 2026-05-30 18:30:27 | INFO     | CHECK | Signals sent                               | OK | 3
 2026-05-30 18:30:27 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=484 | 1275084d…:ok/rem=492
+2026-05-30 18:50:34 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 18:50:34 | INFO     |   KEY STATUS
+2026-05-30 18:50:34 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 18:50:34 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-30 18:50:34 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-30 18:50:34 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-30 18:50:34 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-30 18:50:34 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=7903…
+2026-05-30 18:50:34 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-30 18:50:34 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-30 18:50:34 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-30 18:50:34 | INFO     | Odds API keys available: 3/3
+2026-05-30 18:50:34 | INFO     | ============================================================
+2026-05-30 18:50:34 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.2 STARTING
+2026-05-30 18:50:34 | INFO     | ============================================================
+2026-05-30 18:50:34 | INFO     | OddsKeyManager status:
+2026-05-30 18:50:34 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-30 18:50:34 | INFO     |   key=4342465d…    status=ok         remaining=484   used=16
+2026-05-30 18:50:34 | INFO     |   key=1275084d…    status=ok         remaining=492   used=8
+2026-05-30 18:50:34 | INFO     | ============================================================
+2026-05-30 18:50:34 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-30 18:50:34 | INFO     | ============================================================
+2026-05-30 18:50:34 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-30 18:50:34 | INFO     | Key 4342465d… updated: status=ok remaining=484 used=16
+2026-05-30 18:50:34 | INFO     | Key 4342465d… ✅ VALID | sports=49 remaining=484 used=16
+2026-05-30 18:50:35 | INFO     | Key 1275084d… updated: status=ok remaining=492 used=8
+2026-05-30 18:50:35 | INFO     | Key 1275084d… ✅ VALID | sports=49 remaining=492 used=8
+2026-05-30 18:50:35 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=484 | 1275084d…:ok/rem=492
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 18:50:35 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 18:50:35 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 18:50:35 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 18:50:35 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 18:50:35 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 18:50:35 | INFO     | CHECK | FD calls today                             | OK | 17
+2026-05-30 18:50:35 | INFO     | ============================================================
+2026-05-30 18:50:35 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 18:50:35 | INFO     | ============================================================
+2026-05-30 18:50:35 | INFO     | CHECK | Pending results                            | OK | 8
+2026-05-30 18:50:35 | INFO     | Checking: Song Yadong vs Deiveson Figueiredo | Deiveson Figueiredo
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-30 18:50:35 | INFO     | Checking: Moise Kouame vs Alejandro Tabilo | Moise Kouame
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-30 18:50:35 | INFO     | Checking: Matteo Arnaldi vs Raphael Collignon | Matteo Arnaldi
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-30 18:50:35 | INFO     | Checking: Victoria Mboko vs Madison Keys | Madison Keys
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-30 18:50:35 | INFO     | Checking: Coco Gauff vs Anastasia Potapova | Anastasia Potapova
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-30 18:50:35 | INFO     | Checking: FC Lahti vs Ilves Tampere | FC Lahti
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-30 18:50:35 | INFO     | Checking: Molde vs Sandefjord | Molde
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:35 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-30 18:50:35 | INFO     | Checking: TPS Turku vs VPS Vaasa | VPS Vaasa
+2026-05-30 18:50:35 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:36 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=484 | 1275084d…:ok/rem=492
+2026-05-30 18:50:36 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=492)
+2026-05-30 18:50:36 | INFO     | Attempt 1/4 with key=1275084d…
+2026-05-30 18:50:36 | INFO     | Key 1275084d… updated: status=ok remaining=484 used=16
+2026-05-30 18:50:36 | INFO     | API▶ OddsAPI                | status=200 | records=8    | {'regions': 'eu,us,uk,au', 'markets': 'h2h,totals'}
+2026-05-30 18:50:36 | DEBUG    | API▶ OddsAPI                | sample=remaining=484 used=16
+2026-05-30 18:50:36 | INFO     | OddsAPI ✅ | key=1275084d… | remaining=484 used=16 | events=8
+2026-05-30 18:50:36 | INFO     | ✅ Got 8 events from key=1275084d…
+2026-05-30 18:50:36 | INFO     | CHECK | Total events                               | OK | 8
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'NCAA Baseball' [Arizona St Sun Devils vs South Dakota St Jackrabbits]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'MMA' [Tommy Hawthorn vs Ashlee Evans-Smith]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'Brazil Série B' [Atletico Goianiense vs Goiás]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'Brazil Série A' [Atletico Paranaense vs Mirassol]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'NCAA Baseball' [NC State Wolfpack vs Auburn Tigers]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'Brazil Série B' [Avai vs Criciuma]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'Primera División - Chile' [La Serena vs Colo Colo]
+2026-05-30 18:50:36 | INFO     | SKIP unsupported sport: 'Brazil Série A' [Flamengo vs Coritiba]
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     |   RUN COMPLETE
+2026-05-30 18:50:36 | INFO     | ============================================================
+2026-05-30 18:50:36 | INFO     | CHECK | Signals sent                               | OK | 0
+2026-05-30 18:50:36 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=484 | 1275084d…:ok/rem=484
