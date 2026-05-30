@@ -55,8 +55,13 @@ class Config:
     TOTALS_MIN_EV: float = 0.020
     MAX_REALISTIC_EV: float = 0.12
 
+    # مارکت‌های معتبر — فقط h2h و totals
+    VALID_MARKETS: tuple = field(default_factory=lambda: (
+        "h2h", "totals"
+    ))
+
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
-        "h2h": {"min": 2, "max": 3},
+        "h2h":    {"min": 2, "max": 3},
         "totals": {"min": 2, "max": 2},
     })
     MAX_VALID_IMPLIED_SUM: float = 1.20
@@ -73,14 +78,16 @@ class Config:
 
     TELEGRAM_ID: str = "@zBET90"
 
+    # حداقل confidence برای ارسال
+    MIN_CONFIDENCE_TO_SEND: int = 55
+
     SHARP_BOOKMAKERS: list = field(default_factory=lambda: [
         "pinnacle", "betfair_ex_eu", "matchbook", "betfair_ex_uk"
     ])
 
     MARKET_DISPLAY: dict = field(default_factory=lambda: {
-        "h2h":     "1X2 Full Time",
-        "totals":  "Over / Under Goals",
-        "spreads": "Asian Handicap",
+        "h2h":    "1X2 Full Time",
+        "totals": "Over / Under Goals",
     })
 
     FD_COMPETITION_IDS: list = field(default_factory=lambda: [
@@ -88,26 +95,35 @@ class Config:
         2003, 2017, 2016, 2001,
     ])
 
-    # ── تنظیمات منابع رایگان ─────────────────────────────
-    # تأخیر بین درخواست‌های SofaScore (ثانیه)
+    # ── StatsProvider تنظیمات ────────────────────────────
     SOFA_REQUEST_DELAY: float = 0.8
-    # مدت توقف بعد از 429 (دقیقه)
     SOFA_RATE_LIMIT_PAUSE: int = 5
-    # ESPN slugها برای فوتبال
-    ESPN_FOOTBALL_LEAGUES: dict = field(default_factory=lambda: {
-        "premier league":   "eng.1",
-        "la liga":          "esp.1",
-        "bundesliga":       "ger.1",
-        "serie a":          "ita.1",
-        "ligue 1":          "fra.1",
-        "champions league": "uefa.champions",
-        "europa league":    "uefa.europa",
-        "eredivisie":       "ned.1",
-        "primeira liga":    "por.1",
-        "mls":              "usa.1",
-        "süper lig":        "tur.1",
-        "brasileirao":      "bra.1",
-    })
+
+    # ESPN Football slugها
+    ESPN_FOOTBALL_SLUGS: tuple = field(default_factory=lambda: (
+        "eng.1", "esp.1", "ger.1", "ita.1", "fra.1",
+        "uefa.champions", "uefa.europa", "uefa.europa.conf",
+        "ned.1", "por.1", "tur.1",
+        "bra.1", "bra.2",
+        "arg.1", "mex.1", "usa.1",
+        "sco.1", "bel.1", "rus.1",
+        "gre.1", "ukr.1", "cze.1",
+        "pol.1", "aut.1", "sui.1",
+    ))
+
+    # ESPN Tennis slugها
+    ESPN_TENNIS_SLUGS: tuple = field(default_factory=lambda: (
+        "atp",
+        "wta",
+        "atp-french-open",
+        "wta-french-open",
+        "atp-wimbledon",
+        "wta-wimbledon",
+        "atp-us-open",
+        "wta-us-open",
+        "atp-australian-open",
+        "wta-australian-open",
+    ))
 
 
 CFG = Config()
@@ -151,9 +167,7 @@ def log_api_call(
     sample=None,
 ) -> None:
     safe = {
-        k: ("***" if any(s in k.lower()
-                         for s in ["key", "token", "api"])
-            else v)
+        k: ("***" if any(s in k.lower() for s in ["key", "token", "api"]) else v)
         for k, v in (params or {}).items()
     }
     logger.info(
@@ -164,23 +178,17 @@ def log_api_call(
         str(safe)[:120],
     )
     if sample is not None:
-        logger.debug(
-            "API▶ %-22s | sample=%s", api_name, str(sample)[:300]
-        )
+        logger.debug("API▶ %-22s | sample=%s", api_name, str(sample)[:300])
 
 
-def log_check(
-    label: str, value, warn_if_none: bool = True
-) -> None:
+def log_check(label: str, value, warn_if_none: bool = True) -> None:
     if value is None or value in ({}, [], ""):
         if warn_if_none:
             logger.warning("CHECK | %-42s | EMPTY/NONE", label)
         else:
             logger.info("CHECK | %-42s | EMPTY (ok)", label)
     else:
-        logger.info(
-            "CHECK | %-42s | OK | %s", label, str(value)[:100]
-        )
+        logger.info("CHECK | %-42s | OK | %s", label, str(value)[:100])
 
 # =========================================================
 # 3. API KEYS
@@ -190,9 +198,7 @@ RAPIDAPI_KEY          = os.getenv("RAPIDAPI_KEY", "").strip()
 TELEGRAM_BOT_TOKEN    = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID      = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 FOOTBALL_DATA_API_KEY = os.getenv("FOOTBALL_DATA_API_KEY", "").strip()
-FORCE_BOOTSTRAP       = (
-    os.getenv("FORCE_BOOTSTRAP", "false").lower() == "true"
-)
+FORCE_BOOTSTRAP       = os.getenv("FORCE_BOOTSTRAP", "false").lower() == "true"
 
 _RAW_ODDS_KEYS: list[str] = [
     os.getenv("ODDS_API_KEY",  "").strip(),
@@ -206,10 +212,7 @@ logger.info("  KEY STATUS")
 logger.info("━" * 60)
 for _i, _raw in enumerate(_RAW_ODDS_KEYS, 1):
     if _raw:
-        logger.info(
-            "KEY  | ODDS_API_KEY%-2d | SET  | len=%-3d | prefix=%s…",
-            _i, len(_raw), _raw[:6],
-        )
+        logger.info("KEY  | ODDS_API_KEY%-2d | SET  | len=%-3d | prefix=%s…", _i, len(_raw), _raw[:6])
     else:
         logger.warning("KEY  | ODDS_API_KEY%-2d | MISSING", _i)
 
@@ -221,10 +224,7 @@ for _name, _val in [
     ("FOOTBALL_DATA_API_KEY", FOOTBALL_DATA_API_KEY),
 ]:
     if _val:
-        logger.info(
-            "KEY  | %-28s | SET  | len=%-3d | prefix=%s…",
-            _name, len(_val), _val[:4],
-        )
+        logger.info("KEY  | %-28s | SET  | len=%-3d | prefix=%s…", _name, len(_val), _val[:4])
     else:
         logger.warning("KEY  | %-28s | MISSING", _name)
 
@@ -250,16 +250,17 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "zverev": "DE", "struff": "DE",
     "tiafoe": "US", "fritz": "US", "paul": "US", "korda": "US",
     "gauff": "US", "keys": "US", "pegula": "US",
+    "nakashima": "US", "sock": "US", "isner": "US",
     "medvedev": "RU", "rublev": "RU", "khachanov": "RU",
     "tsitsipas": "GR", "ruud": "NO", "rune": "DK",
     "hurkacz": "PL", "swiatek": "PL",
-    "auger-aliassime": "CA", "shapovalov": "CA",
-    "kyrgios": "AU", "de minaur": "AU",
+    "auger-aliassime": "CA", "shapovalov": "CA", "raonic": "CA",
+    "kyrgios": "AU", "de minaur": "AU", "thompson": "AU",
     "sabalenka": "BY", "kvitova": "CZ", "vondrousova": "CZ",
     "jabeur": "TN", "rybakina": "KZ", "bublik": "KZ",
     "norrie": "GB", "murray": "GB", "draper": "GB",
-    "wawrinka": "CH", "monfils": "FR",
-    "etcheverry": "AR", "cerundolo": "AR",
+    "wawrinka": "CH", "monfils": "FR", "simon": "FR",
+    "etcheverry": "AR", "cerundolo": "AR", "schwartzman": "AR",
     "manchester united": "GB", "manchester city": "GB",
     "liverpool": "GB", "chelsea": "GB", "arsenal": "GB",
     "tottenham": "GB", "newcastle": "GB", "west ham": "GB",
@@ -280,6 +281,9 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "anderlecht": "BE", "club brugge": "BE",
     "copenhagen": "DK", "midtjylland": "DK",
     "malmo": "SE", "djurgarden": "SE",
+    "flamengo": "BR", "palmeiras": "BR", "corinthians": "BR",
+    "atletico mineiro": "BR", "sao paulo": "BR",
+    "boca juniors": "AR", "river plate": "AR",
 }
 
 
@@ -302,13 +306,8 @@ def get_flag_from_name(name: str) -> str:
 def validate_flag(flag: str, fallback_name: str) -> str:
     if not flag:
         return get_flag_from_name(fallback_name)
-    BAD = {"\U0001F3F3\uFE0F", "\U0001F3C1", "\U0001F6A9",
-           "", "🏁", "🏳️", "🏳"}
-    return (
-        get_flag_from_name(fallback_name)
-        if flag.strip() in BAD
-        else flag.strip()
-    )
+    BAD = {"\U0001F3F3\uFE0F", "\U0001F3C1", "\U0001F6A9", "", "🏁", "🏳️", "🏳"}
+    return get_flag_from_name(fallback_name) if flag.strip() in BAD else flag.strip()
 
 # =========================================================
 # 5. CACHE MANAGER
@@ -342,10 +341,7 @@ class CacheManager:
             return False
         try:
             ct = datetime.fromisoformat(entry["timestamp"])
-            return (
-                datetime.now(timezone.utc) - ct
-                < timedelta(hours=ttl_hours)
-            )
+            return datetime.now(timezone.utc) - ct < timedelta(hours=ttl_hours)
         except Exception:
             return False
 
@@ -384,9 +380,7 @@ class OddsKeyManager:
         CacheManager.save(CFG.KEY_STATUS_FILE, self._status)
 
     def _prefix(self, key: str) -> str:
-        return self._status.get(self._kid(key), {}).get(
-            "prefix", key[:8] + "…"
-        )
+        return self._status.get(self._kid(key), {}).get("prefix", key[:8] + "…")
 
     def _init_keys(self) -> None:
         changed = False
@@ -411,17 +405,15 @@ class OddsKeyManager:
             st = self._status.get(self._kid(k), {})
             logger.info(
                 "  key=%-12s status=%-10s remaining=%-5s used=%s",
-                st.get("prefix", "?"),
-                st.get("status",  "?"),
-                st.get("remaining", "?"),
-                st.get("used",    "?"),
+                st.get("prefix", "?"), st.get("status", "?"),
+                st.get("remaining", "?"), st.get("used", "?"),
             )
 
     def get_best_key(self) -> Optional[str]:
         candidates: list[tuple[int, str]] = []
         for k in self.keys:
-            kid = self._kid(k)
-            st  = self._status.get(kid, {})
+            kid    = self._kid(k)
+            st     = self._status.get(kid, {})
             status = st.get("status", self.STATUS_UNKNOWN)
 
             if status == self.STATUS_INVALID:
@@ -431,14 +423,11 @@ class OddsKeyManager:
                 last = st.get("last_used", "")
                 try:
                     lt = datetime.fromisoformat(last)
-                    if (datetime.now(timezone.utc).date() > lt.date()):
-                        self._status[kid]["status"] = self.STATUS_UNKNOWN
+                    if datetime.now(timezone.utc).date() > lt.date():
+                        self._status[kid]["status"]    = self.STATUS_UNKNOWN
                         self._status[kid]["remaining"] = None
                         self._save()
-                        logger.info(
-                            "Key %s: new day → reset to unknown",
-                            st.get("prefix", "?"),
-                        )
+                        logger.info("Key %s: new day → reset", st.get("prefix", "?"))
                     else:
                         continue
                 except Exception:
@@ -470,11 +459,10 @@ class OddsKeyManager:
             rem_int: Optional[int] = int(remaining)
         except (ValueError, TypeError):
             rem_int = None
-
         self._status[kid].update({
             "status": (
                 self.STATUS_EXHAUSTED
-                if (rem_int is not None and rem_int <= 0)
+                if rem_int is not None and rem_int <= 0
                 else self.STATUS_OK
             ),
             "remaining":  rem_int,
@@ -486,8 +474,7 @@ class OddsKeyManager:
         logger.info(
             "Key %s updated: status=%s remaining=%s used=%s",
             self._status[kid].get("prefix", "?"),
-            self._status[kid]["status"],
-            remaining, used,
+            self._status[kid]["status"], remaining, used,
         )
 
     def mark_invalid(self, key: str, reason: str) -> None:
@@ -500,10 +487,7 @@ class OddsKeyManager:
             "last_used":  datetime.now(timezone.utc).isoformat(),
         })
         self._save()
-        logger.error(
-            "Key %s marked INVALID: %s",
-            self._status[kid].get("prefix", "?"), reason,
-        )
+        logger.error("Key %s marked INVALID: %s", self._status[kid].get("prefix", "?"), reason)
 
     def mark_exhausted(self, key: str) -> None:
         kid = self._kid(key)
@@ -515,25 +499,18 @@ class OddsKeyManager:
             "last_used": datetime.now(timezone.utc).isoformat(),
         })
         self._save()
-        logger.warning(
-            "Key %s marked EXHAUSTED",
-            self._status[kid].get("prefix", "?"),
-        )
+        logger.warning("Key %s marked EXHAUSTED", self._status[kid].get("prefix", "?"))
 
     def get_summary(self) -> str:
         parts = []
         for k in self.keys:
             st = self._status.get(self._kid(k), {})
             parts.append(
-                f"{st.get('prefix','?')}:"
-                f"{st.get('status','?')}/"
-                f"rem={st.get('remaining','?')}"
+                f"{st.get('prefix','?')}:{st.get('status','?')}/rem={st.get('remaining','?')}"
             )
         return " | ".join(parts)
 
-    async def validate_all_keys_async(
-        self, session: aiohttp.ClientSession
-    ) -> None:
+    async def validate_all_keys_async(self, session: aiohttp.ClientSession) -> None:
         log_section("VALIDATING ALL ODDS API KEYS")
         for key in self.keys:
             kid    = self._kid(key)
@@ -548,7 +525,7 @@ class OddsKeyManager:
                     timeout=aiohttp.ClientTimeout(total=10),
                 ) as res:
                     remaining = res.headers.get("x-requests-remaining", "?")
-                    used = res.headers.get("x-requests-used", "?")
+                    used      = res.headers.get("x-requests-used", "?")
                     if res.status == 200:
                         body = await res.json()
                         self.mark_success(key, remaining, used)
@@ -559,7 +536,7 @@ class OddsKeyManager:
                     elif res.status == 401:
                         self.mark_invalid(key, "HTTP 401")
                     elif res.status == 422:
-                        self.mark_invalid(key, "HTTP 422 format error")
+                        self.mark_invalid(key, "HTTP 422")
                     elif res.status == 429:
                         self.mark_exhausted(key)
                     else:
@@ -582,8 +559,7 @@ class SentHistory:
         for k, v in self.history.items():
             try:
                 sa = v.get("sent_at", "2000-01-01T00:00:00+00:00")
-                if (now - datetime.fromisoformat(sa)
-                        > timedelta(hours=CFG.TTL_SENT_HISTORY)):
+                if now - datetime.fromisoformat(sa) > timedelta(hours=CFG.TTL_SENT_HISTORY):
                     to_del.append(k)
             except Exception:
                 to_del.append(k)
@@ -635,9 +611,7 @@ class SentHistory:
                 continue
         return out
 
-    def mark_result_checked(
-        self, key: str, result: str, won: Optional[bool]
-    ) -> None:
+    def mark_result_checked(self, key: str, result: str, won: Optional[bool]) -> None:
         if key in self.history:
             self.history[key].update({
                 "result_checked": True,
@@ -649,6 +623,17 @@ class SentHistory:
 # =========================================================
 # 8. ELO SYSTEM
 # =========================================================
+def normalize_player_name(name: str) -> str:
+    """
+    نرمال‌سازی اسم بازیکن تنیس برای ELO lookup.
+    'Felix Auger-Aliassime' → 'auger-aliassime'
+    """
+    parts = name.strip().split()
+    if len(parts) >= 2:
+        return " ".join(parts[1:]).lower().strip()
+    return name.lower().strip()
+
+
 class ELOSystem:
     def __init__(self, sport: str = "football") -> None:
         self.sport = sport
@@ -659,11 +644,7 @@ class ELOSystem:
         )
         self.ratings:     dict = {}
         self.match_count: dict = {}
-        fp = (
-            CFG.ELO_FOOTBALL_FILE
-            if sport == "football"
-            else CFG.ELO_TENNIS_FILE
-        )
+        fp = CFG.ELO_FOOTBALL_FILE if sport == "football" else CFG.ELO_TENNIS_FILE
         self._load(fp)
 
     def _load(self, fp: Path) -> None:
@@ -671,20 +652,12 @@ class ELOSystem:
         if data:
             self.ratings     = data.get("ratings", {})
             self.match_count = data.get("match_count", {})
-            log_check(
-                f"ELO {self.sport} loaded",
-                f"{len(self.ratings)} entities",
-                warn_if_none=False,
-            )
+            log_check(f"ELO {self.sport} loaded", f"{len(self.ratings)} entities", warn_if_none=False)
         else:
             logger.info("ELO %s: no data (bootstrap needed)", self.sport)
 
     def save(self) -> None:
-        fp = (
-            CFG.ELO_FOOTBALL_FILE
-            if self.sport == "football"
-            else CFG.ELO_TENNIS_FILE
-        )
+        fp = CFG.ELO_FOOTBALL_FILE if self.sport == "football" else CFG.ELO_TENNIS_FILE
         CacheManager.save(fp, {
             "ratings":     self.ratings,
             "match_count": self.match_count,
@@ -692,14 +665,30 @@ class ELOSystem:
         })
 
     def get_rating(self, name: str) -> float:
-        return self.ratings.get(name.lower().strip(), CFG.ELO_DEFAULT)
+        key = name.lower().strip()
+        if key in self.ratings:
+            return self.ratings[key]
+        # برای تنیس: اسم خانوادگی را هم امتحان کن
+        if self.sport == "tennis":
+            short = normalize_player_name(name)
+            if short in self.ratings:
+                return self.ratings[short]
+        return CFG.ELO_DEFAULT
+
+    def get_match_count(self, name: str) -> int:
+        key = name.lower().strip()
+        if key in self.match_count:
+            return self.match_count[key]
+        if self.sport == "tennis":
+            short = normalize_player_name(name)
+            if short in self.match_count:
+                return self.match_count[short]
+        return 0
 
     def expected_score(self, ra: float, rb: float) -> float:
         return 1.0 / (1.0 + 10 ** ((rb - ra) / 400))
 
-    def update(
-        self, a: str, b: str, sa: float, is_home_a: bool = False
-    ) -> None:
+    def update(self, a: str, b: str, sa: float, is_home_a: bool = False) -> None:
         ka = a.lower().strip()
         kb = b.lower().strip()
         ra = self.get_rating(a)
@@ -707,8 +696,8 @@ class ELOSystem:
         ea = self.expected_score(
             ra + (CFG.ELO_HOME_ADVANTAGE if is_home_a else 0), rb
         )
-        na = self.match_count.get(ka, 0)
-        nb = self.match_count.get(kb, 0)
+        na   = self.get_match_count(a)
+        nb   = self.get_match_count(b)
         kf_a = self.k * (1.5 if na < 20 else 1.0)
         kf_b = self.k * (1.5 if nb < 20 else 1.0)
         self.ratings[ka]     = ra + kf_a * (sa - ea)
@@ -716,9 +705,7 @@ class ELOSystem:
         self.match_count[ka] = na + 1
         self.match_count[kb] = nb + 1
 
-    def predict(
-        self, home: str, away: str, apply_home: bool = True
-    ) -> dict:
+    def predict(self, home: str, away: str, apply_home: bool = True) -> dict:
         ra = self.get_rating(home)
         rb = self.get_rating(away)
         hp = self.expected_score(
@@ -733,6 +720,8 @@ class ELOSystem:
             dp2 = df
             t   = hp2 + ap2 + dp2
             hp, ap, dp = hp2 / t, ap2 / t, dp2 / t
+        hm = self.get_match_count(home)
+        am = self.get_match_count(away)
         return {
             "home_prob":    round(hp, 4),
             "away_prob":    round(ap, 4),
@@ -740,8 +729,8 @@ class ELOSystem:
             "home_elo":     round(ra, 1),
             "away_elo":     round(rb, 1),
             "elo_diff":     round(ra - rb, 1),
-            "home_matches": self.match_count.get(home.lower().strip(), 0),
-            "away_matches": self.match_count.get(away.lower().strip(), 0),
+            "home_matches": hm,
+            "away_matches": am,
         }
 
 # =========================================================
@@ -749,20 +738,19 @@ class ELOSystem:
 # =========================================================
 class DataBootstrap:
     FOOTBALL_LEAGUES = [
-        ("E0", "England PL"), ("E1", "England Championship"),
-        ("SP1", "La Liga"),   ("D1",  "Bundesliga"),
-        ("I1",  "Serie A"),   ("F1",  "Ligue 1"),
-        ("N1",  "Eredivisie"),("P1",  "Liga Portugal"),
-        ("B1",  "Belgium"),   ("T1",  "Turkey"),
-        ("G1",  "Greece"),    ("SP2", "La Liga 2"),
-        ("D2",  "Bundesliga 2"), ("I2", "Serie B"),
-        ("F2",  "Ligue 2"),
+        ("E0",  "England PL"),       ("E1",  "England Championship"),
+        ("SP1", "La Liga"),          ("D1",  "Bundesliga"),
+        ("I1",  "Serie A"),          ("F1",  "Ligue 1"),
+        ("N1",  "Eredivisie"),       ("P1",  "Liga Portugal"),
+        ("B1",  "Belgium"),          ("T1",  "Turkey"),
+        ("G1",  "Greece"),           ("SP2", "La Liga 2"),
+        ("D2",  "Bundesliga 2"),     ("I2",  "Serie B"),
+        ("F2",  "Ligue 2"),          ("SC0", "Scotland PL"),
+        ("A1",  "Austria"),          ("C1",  "Czech Republic"),
     ]
     TENNIS_FILES = [
-        "atp_matches_2022.csv", "atp_matches_2023.csv",
-        "atp_matches_2024.csv",
-        "wta_matches_2022.csv", "wta_matches_2023.csv",
-        "wta_matches_2024.csv",
+        "atp_matches_2022.csv", "atp_matches_2023.csv", "atp_matches_2024.csv",
+        "wta_matches_2022.csv", "wta_matches_2023.csv", "wta_matches_2024.csv",
     ]
 
     def __init__(self) -> None:
@@ -775,9 +763,7 @@ class DataBootstrap:
         if not CFG.BOOTSTRAP_FLAG.exists():
             return True
         try:
-            ft = datetime.fromisoformat(
-                CFG.BOOTSTRAP_FLAG.read_text().strip()
-            )
+            ft = datetime.fromisoformat(CFG.BOOTSTRAP_FLAG.read_text().strip())
             return (datetime.now(timezone.utc) - ft).days >= 7
         except Exception:
             return True
@@ -788,9 +774,7 @@ class DataBootstrap:
         self._build_tennis_elo()
         self.elo_football.save()
         self.elo_tennis.save()
-        CFG.BOOTSTRAP_FLAG.write_text(
-            datetime.now(timezone.utc).isoformat()
-        )
+        CFG.BOOTSTRAP_FLAG.write_text(datetime.now(timezone.utc).isoformat())
         log_check("Football teams", len(self.elo_football.ratings))
         log_check("Tennis players", len(self.elo_tennis.ratings))
 
@@ -812,11 +796,8 @@ class DataBootstrap:
         for code, name in self.FOOTBALL_LEAGUES:
             cnt = 0
             for s in ["2223", "2324", "2425"]:
-                url = (
-                    f"https://www.football-data.co.uk/"
-                    f"mmz4281/{s}/{code}.csv"
-                )
-                df = self._download_csv(url)
+                url = f"https://www.football-data.co.uk/mmz4281/{s}/{code}.csv"
+                df  = self._download_csv(url)
                 if df is None or df.empty:
                     continue
                 if not {"HomeTeam", "AwayTeam", "FTR"}.issubset(df.columns):
@@ -825,15 +806,11 @@ class DataBootstrap:
                 for _, r in df.iterrows():
                     try:
                         ftr = str(r["FTR"]).strip().upper()
-                        sc  = (
-                            1.0 if ftr == "H"
-                            else (0.0 if ftr == "A" else 0.5)
-                        )
+                        sc  = 1.0 if ftr == "H" else (0.0 if ftr == "A" else 0.5)
                         self.elo_football.update(
                             str(r["HomeTeam"]).strip(),
                             str(r["AwayTeam"]).strip(),
-                            sc,
-                            is_home_a=True,
+                            sc, is_home_a=True,
                         )
                         cnt += 1
                     except Exception:
@@ -850,11 +827,8 @@ class DataBootstrap:
         total = 0
         for fn in self.TENNIS_FILES:
             tour = "atp" if fn.startswith("atp") else "wta"
-            url  = (
-                f"https://raw.githubusercontent.com/"
-                f"JeffSackmann/tennis_{tour}/master/{fn}"
-            )
-            df = self._download_csv(url)
+            url  = f"https://raw.githubusercontent.com/JeffSackmann/tennis_{tour}/master/{fn}"
+            df   = self._download_csv(url)
             if df is None or df.empty:
                 continue
             if not {"winner_name", "loser_name"}.issubset(df.columns):
@@ -863,11 +837,16 @@ class DataBootstrap:
             cnt = 0
             for _, r in df.iterrows():
                 try:
-                    self.elo_tennis.update(
-                        str(r["winner_name"]).strip(),
-                        str(r["loser_name"]).strip(),
-                        1.0,
-                    )
+                    winner = str(r["winner_name"]).strip()
+                    loser  = str(r["loser_name"]).strip()
+                    self.elo_tennis.update(winner, loser, 1.0)
+                    # ذخیره اسم خانوادگی هم
+                    wk = normalize_player_name(winner)
+                    lk = normalize_player_name(loser)
+                    if wk not in self.elo_tennis.ratings:
+                        self.elo_tennis.ratings[wk] = self.elo_tennis.get_rating(winner)
+                    if lk not in self.elo_tennis.ratings:
+                        self.elo_tennis.ratings[lk] = self.elo_tennis.get_rating(loser)
                     cnt += 1
                 except Exception:
                     continue
@@ -890,36 +869,20 @@ def retry_sync(max_retries: int = 3, delay: float = 2, backoff: float = 2):
                 try:
                     return func(*args, **kwargs)
                 except requests.exceptions.HTTPError as e:
-                    st = (
-                        e.response.status_code
-                        if e.response is not None
-                        else 0
-                    )
+                    st = e.response.status_code if e.response is not None else 0
                     if st == 429:
-                        wait = int(
-                            e.response.headers.get("Retry-After", cd * 3)
-                        )
+                        wait = int(e.response.headers.get("Retry-After", cd * 3))
                         logger.warning("429 %s — sleep %ds", func.__name__, wait)
                         time.sleep(wait)
                     elif st in [401, 403]:
                         logger.error("Auth %d in %s", st, func.__name__)
                         return None
                     else:
-                        logger.warning(
-                            "HTTP %d in %s (attempt %d/%d)",
-                            st, func.__name__, attempt + 1, max_retries,
-                        )
+                        logger.warning("HTTP %d in %s (attempt %d/%d)", st, func.__name__, attempt + 1, max_retries)
                         if attempt == max_retries - 1:
                             return None
-                except (
-                    requests.exceptions.Timeout,
-                    requests.exceptions.RequestException,
-                ) as e:
-                    logger.warning(
-                        "%s in %s (attempt %d/%d): %s",
-                        type(e).__name__, func.__name__,
-                        attempt + 1, max_retries, e,
-                    )
+                except (requests.exceptions.Timeout, requests.exceptions.RequestException) as e:
+                    logger.warning("%s in %s (attempt %d/%d): %s", type(e).__name__, func.__name__, attempt + 1, max_retries, e)
                     if attempt == max_retries - 1:
                         return None
                 time.sleep(cd)
@@ -963,13 +926,14 @@ def normalize_sport_key(sport_title: str) -> str:
     tl = sport_title.lower()
     if any(k in tl for k in [
         "tennis", "atp", "wta", "wimbledon",
-        "roland garros", "us open", "australian open",
+        "roland garros", "us open", "australian open", "french open",
     ]):
         return "tennis"
     if any(k in tl for k in [
-        "soccer", "football", "premier", "liga",
-        "bundesliga", "serie", "ligue", "champions",
-        "europa", "mls", "eredivisie", "fa cup", "copa del rey",
+        "soccer", "football", "premier", "liga", "bundesliga",
+        "serie", "ligue", "champions", "europa", "mls",
+        "eredivisie", "fa cup", "copa del rey", "brasileirao",
+        "süper lig", "primeira", "scottish",
     ]):
         return "football"
     return "other"
@@ -1074,6 +1038,9 @@ async def _try_one_key(
                     for bm in e.get("bookmakers", []):
                         for m in bm.get("markets", []):
                             mk = m["key"]
+                            # فقط مارکت‌های معتبر
+                            if mk not in CFG.VALID_MARKETS:
+                                continue
                             md = collected[eid]["_markets_data"]
                             if mk not in md:
                                 md[mk] = []
@@ -1117,10 +1084,7 @@ async def fetch_all_odds_async(
     for attempt in range(max_attempts):
         key = km.get_best_key()
         if key is None:
-            logger.critical(
-                "All Odds API keys exhausted/invalid! Status: %s",
-                km.get_summary(),
-            )
+            logger.critical("All Odds API keys exhausted/invalid! Status: %s", km.get_summary())
             return []
 
         kid = km._kid(key)
@@ -1129,10 +1093,7 @@ async def fetch_all_odds_async(
             break
         tried_keys.add(kid)
 
-        logger.info(
-            "Attempt %d/%d with key=%s",
-            attempt + 1, max_attempts, km._prefix(key),
-        )
+        logger.info("Attempt %d/%d with key=%s", attempt + 1, max_attempts, km._prefix(key))
         events, try_next = await _try_one_key(key, km, now_utc, session)
 
         if events:
@@ -1162,6 +1123,12 @@ def calculate_combined_ev(
     best_per_market: dict = {}
 
     for market_key, market_data_list in markets_data.items():
+
+        # فقط مارکت‌های معتبر
+        if market_key not in CFG.VALID_MARKETS:
+            logger.debug("Skipping unknown market: %s", market_key)
+            continue
+
         sharp_odds: dict = {}
         best_odds:  dict = {}
         has_real_sharp   = False
@@ -1178,20 +1145,13 @@ def calculate_combined_ev(
                 if price <= 1.0:
                     continue
                 if bk in CFG.SHARP_BOOKMAKERS:
-                    if (name not in sharp_odds
-                            or price > sharp_odds[name]["price"]):
-                        sharp_odds[name] = {
-                            "price":     price,
-                            "bookmaker": entry["bookmaker"],
-                        }
-                if (name not in best_odds
-                        or price > best_odds[name]["price"]):
-                    best_odds[name] = {
-                        "price":     price,
-                        "bookmaker": entry["bookmaker"],
-                    }
+                    if name not in sharp_odds or price > sharp_odds[name]["price"]:
+                        sharp_odds[name] = {"price": price, "bookmaker": entry["bookmaker"]}
+                if name not in best_odds or price > best_odds[name]["price"]:
+                    best_odds[name] = {"price": price, "bookmaker": entry["bookmaker"]}
 
         if not has_real_sharp:
+            logger.debug("No sharp line: %s", market_key)
             continue
         if not sharp_odds:
             continue
@@ -1202,6 +1162,7 @@ def calculate_combined_ev(
             continue
 
         if not (CFG.MIN_VALID_IMPLIED_SUM <= implied_sum <= CFG.MAX_VALID_IMPLIED_SUM):
+            logger.debug("Invalid implied_sum %.3f for %s", implied_sum, market_key)
             continue
 
         exp = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
@@ -1232,6 +1193,12 @@ def calculate_combined_ev(
                         etp = elo_prediction.get("home_prob")
                     else:
                         etp = elo_prediction.get("away_prob")
+                elif hm >= 3 or am >= 3:
+                    # حتی با کمتر از 5 بازی هم استفاده می‌کنیم
+                    if home_team.lower() in nl:
+                        etp = elo_prediction.get("home_prob")
+                    elif away_team.lower() in nl:
+                        etp = elo_prediction.get("away_prob")
 
             tp  = 0.6 * stp + 0.4 * etp if etp is not None else stp
             bd  = best_odds.get(oname, {})
@@ -1242,6 +1209,7 @@ def calculate_combined_ev(
                 continue
 
             ev = (tp * bp) - 1.0
+
             if ev > CFG.MAX_REALISTIC_EV:
                 logger.warning("Rejected EV=%.1f%% for %s", ev * 100, oname)
                 continue
@@ -1270,24 +1238,20 @@ def calculate_combined_ev(
                 best_opp["odds"], best_opp["bookmaker"], best_opp["elo_used"],
             )
 
-    return sorted(
-        best_per_market.values(), key=lambda x: x["ev"], reverse=True
-    )[:1]
+    return sorted(best_per_market.values(), key=lambda x: x["ev"], reverse=True)[:1]
 
 # =========================================================
 # 13. MULTI-SOURCE STATS PROVIDER
-#     اولویت: SofaScore Internal → ESPN → football-data.co.uk
-#     هیچ‌کدام نیاز به API Key ندارند
+#     اولویت: SofaScore → ESPN → football-data.co.uk CSV
 # =========================================================
 class StatsProvider:
     """
-    سه منبع رایگان و بدون کلید:
-      1. SofaScore Internal API  — غنی‌ترین داده، ممکن است 429 بدهد
-      2. ESPN API (غیررسمی)     — پایدارترین منبع برای فوتبال
-      3. football-data.co.uk    — CSV تاریخی برای H2H سبک
+    منابع رایگان و بدون کلید:
+      1. SofaScore Internal API  — غنی‌ترین داده
+      2. ESPN API (غیررسمی)     — پایدارترین (فوتبال + تنیس)
+      3. football-data.co.uk    — CSV تاریخی (H2H فوتبال)
     """
 
-    # ── Headers ──────────────────────────────────────────
     _SOFA_HEADERS = {
         "User-Agent":      (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -1299,21 +1263,24 @@ class StatsProvider:
         "Origin":          "https://www.sofascore.com",
         "Referer":         "https://www.sofascore.com/",
         "Cache-Control":   "no-cache",
+        "Pragma":          "no-cache",
     }
     _ESPN_HEADERS = {
-        "User-Agent": "Mozilla/5.0 (compatible; ZBET90/4.0)",
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/122.0.0.0 Safari/537.36"
+        ),
         "Accept":     "application/json",
     }
-    _ESPN_BASE   = "https://site.api.espn.com/apis/site/v2/sports"
-    _SOFA_BASE   = "https://api.sofascore.com/api/v1"
+    _ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports"
+    _SOFA_BASE = "https://api.sofascore.com/api/v1"
 
     def __init__(self) -> None:
-        # زمان توقف SofaScore پس از 429
         self._sofa_blocked_until: Optional[datetime] = None
-        # شمارنده درخواست‌های موفق SofaScore در این اجرا
         self._sofa_ok_count = 0
 
-    # ── helper: GET با مدیریت کامل خطا ──────────────────
+    # ── helper GET ────────────────────────────────────────
     async def _get(
         self,
         session:  aiohttp.ClientSession,
@@ -1343,11 +1310,9 @@ class StatsProvider:
                             CFG.SOFA_RATE_LIMIT_PAUSE,
                         )
                     else:
-                        logger.warning("⚠️  [%s] 429", label)
+                        logger.warning("⚠️  [%s] 429 rate limit", label)
                     return None
-                logger.debug(
-                    "❌ [%s] HTTP %d: %s", label, res.status, url[:70]
-                )
+                logger.debug("❌ [%s] HTTP %d: %s", label, res.status, url[:70])
                 return None
         except asyncio.TimeoutError:
             logger.debug("⏱ [%s] timeout: %s", label, url[:60])
@@ -1355,11 +1320,34 @@ class StatsProvider:
             logger.debug("❓ [%s] %s", label, e)
         return None
 
-    # ── helpers: name matching ────────────────────────────
+    # ── name matching هوشمند ─────────────────────────────
     @staticmethod
     def _match_name(a: str, b: str) -> bool:
-        a, b = a.lower().strip(), b.lower().strip()
-        return a in b or b in a or a == b
+        """تطابق انعطاف‌پذیر اسم تیم/بازیکن."""
+        if not a or not b:
+            return False
+        a = a.lower().strip()
+        b = b.lower().strip()
+
+        # تطابق مستقیم
+        if a == b or a in b or b in a:
+            return True
+
+        # حذف کلمات رایج
+        stopwords = {
+            "fc", "cf", "sc", "ac", "rc", "fk", "sk", "bk",
+            "united", "city", "town", "athletic", "atletico",
+            "sport", "sporting", "club", "the", "de", "1.",
+        }
+        wa = {w for w in re.split(r"[\s\-_]+", a) if w not in stopwords and len(w) > 1}
+        wb = {w for w in re.split(r"[\s\-_]+", b) if w not in stopwords and len(w) > 1}
+
+        if not wa or not wb:
+            return False
+
+        common = wa & wb
+        threshold = max(1, min(len(wa), len(wb)) // 2)
+        return len(common) >= threshold
 
     def _sofa_available(self) -> bool:
         if self._sofa_blocked_until is None:
@@ -1372,24 +1360,7 @@ class StatsProvider:
     # ==================================================
     #  SOURCE 1 — SofaScore Internal API
     # ==================================================
-    async def _sofa_search_id(
-        self, home: str, away: str, session: aiohttp.ClientSession
-    ) -> Optional[int]:
-        if not self._sofa_available():
-            return None
-
-        q    = f"{clean_team_name(home)} {clean_team_name(away)}"
-        data = await self._get(
-            session,
-            f"{self._SOFA_BASE}/search/all",
-            self._SOFA_HEADERS,
-            params={"q": q},
-            timeout=10,
-            label="Sofa-Search",
-        )
-        if not data:
-            return None
-
+    def _sofa_extract_id(self, data: dict, home: str, away: str) -> Optional[int]:
         hl = clean_team_name(home).lower()
         al = clean_team_name(away).lower()
         for item in data.get("results", []):
@@ -1401,40 +1372,60 @@ class StatsProvider:
                 continue
             hn = e.get("homeTeam", {}).get("name", "").lower()
             an = e.get("awayTeam", {}).get("name", "").lower()
-            if (hl in hn or hn in hl) and (al in an or an in al):
-                logger.info(
-                    "SofaScore: '%s' vs '%s' → id=%d", home, away, mid
-                )
+            if self._match_name(hl, hn) and self._match_name(al, an):
+                logger.info("SofaScore: '%s' vs '%s' → id=%d", home, away, mid)
                 return int(mid)
         return None
 
+    async def _sofa_search_id(
+        self, home: str, away: str, session: aiohttp.ClientSession
+    ) -> Optional[int]:
+        if not self._sofa_available():
+            logger.debug("SofaScore skipped (rate-limited)")
+            return None
+
+        home_clean = clean_team_name(home)
+        away_clean = clean_team_name(away)
+
+        # چند query امتحان کن
+        queries = [
+            f"{home_clean} {away_clean}",
+            home_clean,
+            away_clean,
+        ]
+
+        for q in queries:
+            await asyncio.sleep(CFG.SOFA_REQUEST_DELAY)
+            data = await self._get(
+                session,
+                f"{self._SOFA_BASE}/search/all",
+                self._SOFA_HEADERS,
+                params={"q": q},
+                timeout=10,
+                label="Sofa-Search",
+            )
+            if not data:
+                continue
+            mid = self._sofa_extract_id(data, home, away)
+            if mid:
+                return mid
+
+        return None
+
     async def _sofa_fetch(
-        self,
-        mid:     int,
-        home:    str,
-        away:    str,
-        session: aiohttp.ClientSession,
+        self, mid: int, home: str, away: str, session: aiohttp.ClientSession
     ) -> dict:
         if not self._sofa_available():
             return {}
 
         base = f"{self._SOFA_BASE}/event/{mid}"
-        # تأخیر کوچک برای جلوگیری از rate-limit
         await asyncio.sleep(CFG.SOFA_REQUEST_DELAY)
 
-        form_d, h2h_d, lu_d = await asyncio.gather(
-            self._get(
-                session, f"{base}/pregame-form",
-                self._SOFA_HEADERS, label="Sofa-Form",
-            ),
-            self._get(
-                session, f"{base}/h2h/events",
-                self._SOFA_HEADERS, label="Sofa-H2H",
-            ),
-            self._get(
-                session, f"{base}/lineups",
-                self._SOFA_HEADERS, label="Sofa-Lineups",
-            ),
+        form_d, h2h_d, lu_d, stats_d = await asyncio.gather(
+            self._get(session, f"{base}/pregame-form",    self._SOFA_HEADERS, label="Sofa-Form"),
+            self._get(session, f"{base}/h2h/events",      self._SOFA_HEADERS, label="Sofa-H2H"),
+            self._get(session, f"{base}/lineups",          self._SOFA_HEADERS, label="Sofa-Lineups"),
+            self._get(session, f"{base}/statistics",       self._SOFA_HEADERS, label="Sofa-Stats"),
             return_exceptions=True,
         )
 
@@ -1467,7 +1458,7 @@ class StatsProvider:
                 if hs is None or as_ is None:
                     continue
                 h_name = m.get("homeTeam", {}).get("name", "").lower()
-                if clean_team_name(home).lower() in h_name:
+                if self._match_name(clean_team_name(home).lower(), h_name):
                     if hs > as_:   hw += 1
                     elif as_ > hs: aw += 1
                     else:          d  += 1
@@ -1487,72 +1478,90 @@ class StatsProvider:
                 "away_formation": lu_d.get("away", {}).get("formation", "N/A"),
             }
 
+        # -- Statistics (آمار اضافی) --
+        if isinstance(stats_d, dict) and stats_d:
+            groups = stats_d.get("statistics", [])
+            if groups:
+                out["match_stats"] = self._parse_sofa_stats(groups)
+
         if out:
             self._sofa_ok_count += 1
-            logger.info(
-                "SofaScore ✅ id=%d | keys=%s",
-                mid, list(out.keys()),
-            )
+            logger.info("SofaScore ✅ id=%d | keys=%s", mid, list(out.keys()))
         return out
 
+    def _parse_sofa_stats(self, groups: list) -> dict:
+        """استخراج آمار مهم از SofaScore statistics."""
+        result: dict = {}
+        wanted = {
+            "Ball possession", "Total shots", "Shots on target",
+            "Corner kicks", "Fouls", "Yellow cards",
+            "Expected goals", "Big chances",
+        }
+        for group in groups:
+            for item in group.get("statisticsItems", []):
+                name = item.get("name", "")
+                if name in wanted:
+                    result[name] = {
+                        "home": item.get("home"),
+                        "away": item.get("away"),
+                    }
+        return result
+
     # ==================================================
-    #  SOURCE 2 — ESPN (فوتبال + تنیس)
+    #  SOURCE 2 — ESPN API
     # ==================================================
     async def _espn_search_event(
-        self,
-        home:      str,
-        away:      str,
-        sport_key: str,
-        session:   aiohttp.ClientSession,
+        self, home: str, away: str, sport_key: str,
+        session: aiohttp.ClientSession,
     ) -> Optional[dict]:
-        """
-        در ESPN دنبال رویداد می‌گردد.
-        برای تنیس از endpoint مخصوص استفاده می‌کند.
-        """
         today = datetime.now(timezone.utc)
         dates = [
             today.strftime("%Y%m%d"),
             (today + timedelta(days=1)).strftime("%Y%m%d"),
+            (today - timedelta(days=1)).strftime("%Y%m%d"),
         ]
         hl = clean_team_name(home).lower()
         al = clean_team_name(away).lower()
 
         if sport_key == "football":
-            slugs = list(CFG.ESPN_FOOTBALL_LEAGUES.values())
+            slugs      = CFG.ESPN_FOOTBALL_SLUGS
             sport_path = "soccer"
         elif sport_key == "tennis":
-            # ESPN tennis scoreboard
-            slugs = ["atp", "wta"]
+            slugs      = CFG.ESPN_TENNIS_SLUGS
             sport_path = "tennis"
         else:
-            slugs = []
-            sport_path = ""
+            return None
 
         for slug in slugs:
             for date_str in dates:
-                url = f"{self._ESPN_BASE}/{sport_path}/{slug}/scoreboard"
+                url  = f"{self._ESPN_BASE}/{sport_path}/{slug}/scoreboard"
                 data = await self._get(
                     session, url, self._ESPN_HEADERS,
-                    params={"dates": date_str, "limit": "100"},
-                    label=f"ESPN-{slug}",
+                    params={"dates": date_str, "limit": "200"},
+                    label=f"ESPN-{slug[:8]}",
                 )
                 if not data:
                     continue
+
                 for event in data.get("events", []):
-                    comps = event.get("competitions", [{}])
-                    if not comps:
-                        continue
-                    competitors = comps[0].get("competitors", [])
-                    names = [
-                        c.get("team", {}).get("displayName", "").lower()
-                        for c in competitors
-                    ]
-                    if (
-                        any(self._match_name(hl, n) for n in names)
-                        and any(self._match_name(al, n) for n in names)
-                    ):
+                    comps       = event.get("competitions", [{}])
+                    competitors = comps[0].get("competitors", []) if comps else []
+
+                    # جمع همه نام‌های ممکن
+                    names: list[str] = []
+                    for c in competitors:
+                        team = c.get("team", {})
+                        for field in ["displayName", "shortDisplayName", "name", "abbreviation", "nickname"]:
+                            val = team.get(field, "")
+                            if val:
+                                names.append(val.lower())
+
+                    home_match = any(self._match_name(hl, n) for n in names)
+                    away_match = any(self._match_name(al, n) for n in names)
+
+                    if home_match and away_match:
                         logger.info(
-                            "ESPN ✅ found '%s' vs '%s' in %s/%s",
+                            "ESPN ✅ '%s' vs '%s' → %s/%s",
                             home, away, sport_path, slug,
                         )
                         return {
@@ -1561,14 +1570,12 @@ class StatsProvider:
                             "sport_path": sport_path,
                             "event":      event,
                         }
+        logger.debug("ESPN: no event for '%s' vs '%s'", home, away)
         return None
 
     async def _espn_fetch_stats(
-        self,
-        event_info: dict,
-        home:       str,
-        away:       str,
-        session:    aiohttp.ClientSession,
+        self, event_info: dict, home: str, away: str,
+        session: aiohttp.ClientSession,
     ) -> dict:
         eid        = event_info.get("event_id")
         slug       = event_info.get("slug", "eng.1")
@@ -1595,10 +1602,9 @@ class StatsProvider:
         out: dict = {}
         try:
             hl = clean_team_name(home).lower()
-            al = clean_team_name(away).lower()
 
-            # ── فوتبال: boxscore ─────────────────────────
             if sport_path == "soccer":
+                # boxscore آمار
                 for team_data in data.get("boxscore", {}).get("teams", []):
                     tname = team_data.get("team", {}).get("displayName", "")
                     stats = {
@@ -1614,10 +1620,26 @@ class StatsProvider:
                         "shots_target": stats.get("shotsOnTarget", "N/A"),
                         "corners":      stats.get("corners", "N/A"),
                         "fouls":        stats.get("fouls", "N/A"),
+                        "yellow_cards": stats.get("yellowCards", "N/A"),
+                        "xg":           stats.get("expectedGoals", "N/A"),
                     }
 
-            # ── تنیس: player stats ───────────────────────
+                # H2H از ESPN
+                h2h_raw = data.get("headToHeadRecord", {})
+                if h2h_raw:
+                    out["h2h_espn"] = {
+                        "home_wins": h2h_raw.get("homeWins", 0),
+                        "away_wins": h2h_raw.get("awayWins", 0),
+                        "draws":     h2h_raw.get("ties", 0),
+                    }
+
+                # standings (جدول)
+                standings = data.get("standings", {})
+                if standings:
+                    out["standings"] = standings
+
             elif sport_path == "tennis":
+                # آمار تنیس
                 for comp in data.get("boxscore", {}).get("players", []):
                     pname = comp.get("athlete", {}).get("displayName", "")
                     stats = {
@@ -1627,56 +1649,42 @@ class StatsProvider:
                     is_home = self._match_name(hl, pname.lower())
                     k = "home_espn_stats" if is_home else "away_espn_stats"
                     out[k] = {
-                        "player":       pname,
-                        "aces":         stats.get("aces", "N/A"),
-                        "double_faults": stats.get("doubleFaults", "N/A"),
-                        "first_serve":  stats.get("firstServePercent", "N/A"),
-                        "winners":      stats.get("winners", "N/A"),
+                        "player":         pname,
+                        "aces":           stats.get("aces", "N/A"),
+                        "double_faults":  stats.get("doubleFaults", "N/A"),
+                        "first_serve":    stats.get("firstServePercent", "N/A"),
+                        "winners":        stats.get("winners", "N/A"),
+                        "unforced_errors":stats.get("unforcedErrors", "N/A"),
                     }
-
-            # ── H2H عمومی ────────────────────────────────
-            h2h_raw = data.get("headToHeadRecord", {})
-            if h2h_raw:
-                out["h2h_espn"] = {
-                    "home_wins": h2h_raw.get("homeWins", 0),
-                    "away_wins": h2h_raw.get("awayWins", 0),
-                    "draws":     h2h_raw.get("ties", 0),
-                }
 
         except Exception as e:
             logger.debug("ESPN parse error: %s", e)
         return out
 
     # ==================================================
-    #  SOURCE 3 — football-data.co.uk CSV (H2H سبک)
-    #  فقط برای فوتبال، بدون API Key
+    #  SOURCE 3 — football-data.co.uk CSV (H2H بک‌آپ)
     # ==================================================
     async def _csv_h2h(
-        self,
-        home:    str,
-        away:    str,
-        session: aiohttp.ClientSession,
+        self, home: str, away: str, session: aiohttp.ClientSession,
     ) -> dict:
-        """
-        داده‌های تاریخی CSV از football-data.co.uk.
-        فقط H2H محاسبه می‌کند — بدون نیاز به هیچ کلید.
-        """
         hl = clean_team_name(home).lower()
         al = clean_team_name(away).lower()
 
-        # فقط لیگ‌های اصلی را بررسی می‌کنیم تا سریع باشد
+        # لیگ‌های اصلی — فقط آخرین فصل برای سرعت
         QUICK_LEAGUES = [
-            ("E0", "2425"), ("SP1", "2425"),
+            ("E0",  "2425"), ("SP1", "2425"),
             ("D1",  "2425"), ("I1",  "2425"),
-            ("F1",  "2425"),
+            ("F1",  "2425"), ("N1",  "2425"),
+            ("P1",  "2425"), ("B1",  "2425"),
+            ("T1",  "2425"), ("SC0", "2425"),
+            # فصل قبل هم برای H2H بیشتر
+            ("E0",  "2324"), ("SP1", "2324"),
+            ("D1",  "2324"), ("I1",  "2324"),
         ]
         hw = aw = d = tg = bt = o25 = n = 0
 
         for code, season in QUICK_LEAGUES:
-            url = (
-                f"https://www.football-data.co.uk/"
-                f"mmz4281/{season}/{code}.csv"
-            )
+            url = f"https://www.football-data.co.uk/mmz4281/{season}/{code}.csv"
             try:
                 async with session.get(
                     url, headers=self._ESPN_HEADERS,
@@ -1686,23 +1694,23 @@ class StatsProvider:
                         continue
                     text = await res.text(encoding="latin-1")
                     df   = pd.read_csv(StringIO(text))
-                    if not {"HomeTeam", "AwayTeam", "FTHG", "FTAG"}.issubset(
-                        df.columns
-                    ):
+                    needed = {"HomeTeam", "AwayTeam", "FTHG", "FTAG"}
+                    if not needed.issubset(df.columns):
                         continue
                     df = df.dropna(subset=["HomeTeam", "AwayTeam"])
 
                     for _, r in df.iterrows():
                         rh = str(r["HomeTeam"]).lower()
                         ra = str(r["AwayTeam"]).lower()
-                        # یک طرف بازی مطابقت داشته باشد
-                        if not (
-                            (self._match_name(hl, rh)
-                             and self._match_name(al, ra))
-                            or
-                            (self._match_name(al, rh)
-                             and self._match_name(hl, ra))
-                        ):
+                        match_a = (
+                            self._match_name(hl, rh)
+                            and self._match_name(al, ra)
+                        )
+                        match_b = (
+                            self._match_name(al, rh)
+                            and self._match_name(hl, ra)
+                        )
+                        if not (match_a or match_b):
                             continue
                         try:
                             hg = int(r.get("FTHG", 0) or 0)
@@ -1710,7 +1718,7 @@ class StatsProvider:
                         except (ValueError, TypeError):
                             continue
 
-                        home_is_rh = self._match_name(hl, rh)
+                        home_is_rh = match_a
                         if hg > ag:
                             if home_is_rh: hw += 1
                             else:          aw += 1
@@ -1747,7 +1755,7 @@ class StatsProvider:
         return result
 
     # ==================================================
-    #  متد اصلی — ادغام هوشمند همه منابع
+    #  متد اصلی — ادغام هوشمند
     # ==================================================
     async def get_all_stats(
         self,
@@ -1756,14 +1764,6 @@ class StatsProvider:
         sport_key: str,
         session:   aiohttp.ClientSession,
     ) -> dict:
-        """
-        اولویت‌بندی:
-          SofaScore (غنی‌ترین) → ESPN (پایدارترین) → CSV (H2H بک‌آپ)
-
-        خروجی دیکشنری با کلیدهای استاندارد:
-          home_form, away_form, h2h, lineups,
-          espn_stats, _sources
-        """
         out:     dict      = {}
         sources: list[str] = []
 
@@ -1784,21 +1784,17 @@ class StatsProvider:
                 home, away, sport_key, session
             )
             if ev_info:
-                espn = await self._espn_fetch_stats(
-                    ev_info, home, away, session
-                )
+                espn = await self._espn_fetch_stats(ev_info, home, away, session)
                 if espn:
-                    # ESPN stats را در کلید مجزا نگه می‌داریم
-                    # تا با SofaScore تداخل نداشته باشد
                     out["espn_stats"] = espn
                     sources.append("espn")
-                    # اگر SofaScore H2H نداد، از ESPN استفاده کن
+                    # اگر H2H از SofaScore نداریم
                     if "h2h" not in out and "h2h_espn" in espn:
                         out["h2h"] = espn["h2h_espn"]
         except Exception as e:
             logger.debug("StatsProvider ESPN error: %s", e)
 
-        # ── 3. CSV H2H (فقط فوتبال، اگر H2H هنوز خالیه) ─
+        # ── 3. CSV H2H (فوتبال، اگر H2H هنوز خالیه) ─────
         if sport_key == "football" and "h2h" not in out:
             try:
                 csv_h2h = await self._csv_h2h(home, away, session)
@@ -1830,21 +1826,15 @@ class FootballDataAdapter:
     def __init__(self) -> None:
         self.headers = (
             {"X-Auth-Token": FOOTBALL_DATA_API_KEY}
-            if FOOTBALL_DATA_API_KEY
-            else {}
+            if FOOTBALL_DATA_API_KEY else {}
         )
         self.daily_cache = CacheManager.load(CFG.DAILY_STATS_CACHE_FILE)
         self.call_count  = 0
         entry = self.daily_cache.get("_call_count_today", {})
-        self.call_count = (
-            entry.get("data", 0)
-            if isinstance(entry.get("data"), int)
-            else 0
-        )
+        self.call_count = entry.get("data", 0) if isinstance(entry.get("data"), int) else 0
         try:
             last = entry.get("timestamp", "2000-01-01T00:00:00+00:00")
-            if (datetime.now(timezone.utc).date()
-                    > datetime.fromisoformat(last).date()):
+            if datetime.now(timezone.utc).date() > datetime.fromisoformat(last).date():
                 self.call_count = 0
                 logger.info("FD call counter reset (new day)")
         except Exception:
@@ -1852,16 +1842,11 @@ class FootballDataAdapter:
         log_check("FD calls today", self.call_count, warn_if_none=False)
 
     def _can_call(self) -> bool:
-        return (
-            self.call_count < CFG.FOOTBALL_DATA_DAILY_LIMIT
-            and bool(FOOTBALL_DATA_API_KEY)
-        )
+        return self.call_count < CFG.FOOTBALL_DATA_DAILY_LIMIT and bool(FOOTBALL_DATA_API_KEY)
 
     def _inc(self) -> None:
         self.call_count += 1
-        self.daily_cache = CacheManager.set(
-            self.daily_cache, "_call_count_today", self.call_count
-        )
+        self.daily_cache = CacheManager.set(self.daily_cache, "_call_count_today", self.call_count)
         CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
 
     @retry_sync(max_retries=2, delay=3)
@@ -1895,12 +1880,12 @@ class FootballDataAdapter:
                 if (clean == tn or clean == ts or clean == tt
                         or clean in tn or tn in clean or clean in ts):
                     tid = t["id"]
-                    logger.info(
-                        "FD: '%s' → id=%d (comp=%s)", team_name, tid, ccode
-                    )
+                    logger.info("FD: '%s' → id=%d (comp=%s matched='%s')", team_name, tid, ccode, tn)
                     break
             if tid:
                 break
+        if tid is None:
+            logger.warning("FD: team '%s' NOT found", team_name)
         cache[key] = tid
         CacheManager.save(CFG.TEAM_ID_CACHE_FILE, cache)
         return tid
@@ -1909,10 +1894,7 @@ class FootballDataAdapter:
         ck = f"form_{team_id}"
         if CacheManager.is_valid(self.daily_cache, ck, CFG.TTL_TEAM_FORM):
             return CacheManager.get(self.daily_cache, ck) or {}
-        data = self._get(
-            f"/teams/{team_id}/matches/",
-            {"status": "FINISHED", "limit": "5"},
-        )
+        data = self._get(f"/teams/{team_id}/matches/", {"status": "FINISHED", "limit": "5"})
         if not data:
             return {}
         form = self._parse_form(data.get("matches", []), team_id, team_name)
@@ -1958,10 +1940,8 @@ class FootballDataAdapter:
         }
         logger.info(
             "FD form [%s]: %s WR=%.0f%% GF=%.1f GA=%.1f",
-            tname, f["form_string"],
-            f["win_rate"] * 100,
-            f["avg_goals_scored"],
-            f["avg_goals_conceded"],
+            tname, f["form_string"], f["win_rate"] * 100,
+            f["avg_goals_scored"], f["avg_goals_conceded"],
         )
         return f
 
@@ -1969,26 +1949,20 @@ class FootballDataAdapter:
         ck = f"h2h_{min(t1_id, t2_id)}_{max(t1_id, t2_id)}"
         if CacheManager.is_valid(self.daily_cache, ck, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, ck) or {}
-        data = self._get(
-            f"/teams/{t1_id}/matches/",
-            {"status": "FINISHED", "limit": "20"},
-        )
+        data = self._get(f"/teams/{t1_id}/matches/", {"status": "FINISHED", "limit": "20"})
         if not data:
             return {}
         all_m  = data.get("matches", [])
         h2h_m  = [
             m for m in all_m
-            if {m.get("homeTeam", {}).get("id"),
-                m.get("awayTeam", {}).get("id")} == {t1_id, t2_id}
+            if {m.get("homeTeam", {}).get("id"), m.get("awayTeam", {}).get("id")} == {t1_id, t2_id}
         ]
         result = self._parse_h2h(h2h_m, t1_id, t1n, t2n)
         self.daily_cache = CacheManager.set(self.daily_cache, ck, result)
         CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
         return result
 
-    def _parse_h2h(
-        self, matches: list, t1_id: int, t1: str, t2: str
-    ) -> dict:
+    def _parse_h2h(self, matches: list, t1_id: int, t1: str, t2: str) -> dict:
         w1 = w2 = d = tg = bt = o25 = 0
         n  = len(matches)
         for m in matches:
@@ -2028,11 +2002,7 @@ class MatchIDCache:
 
     def get(self, home: str, away: str) -> Optional[int]:
         k = self._key(home, away)
-        return (
-            CacheManager.get(self.cache, k)
-            if CacheManager.is_valid(self.cache, k, CFG.TTL_MATCH_ID)
-            else None
-        )
+        return CacheManager.get(self.cache, k) if CacheManager.is_valid(self.cache, k, CFG.TTL_MATCH_ID) else None
 
     def set(self, home: str, away: str, mid: Optional[int]) -> None:
         k          = self._key(home, away)
@@ -2041,23 +2011,21 @@ class MatchIDCache:
 
     @staticmethod
     def _key(home: str, away: str) -> str:
-        return hashlib.md5(
-            f"{home.lower()}|{away.lower()}".encode()
-        ).hexdigest()
+        return hashlib.md5(f"{home.lower()}|{away.lower()}".encode()).hexdigest()
 
 # =========================================================
-# 16. STATS AGGREGATOR  (بازنویسی شده)
+# 16. STATS AGGREGATOR
 # =========================================================
 async def get_stats_async(
-    home:       str,
-    away:       str,
-    sport_key:  str,
-    fd:         FootballDataAdapter,
-    mic:        MatchIDCache,
-    elo_f:      ELOSystem,
-    elo_t:      ELOSystem,
-    session:    aiohttp.ClientSession,
-    sp:         StatsProvider,          # ← جدید
+    home:      str,
+    away:      str,
+    sport_key: str,
+    fd:        FootballDataAdapter,
+    mic:       MatchIDCache,
+    elo_f:     ELOSystem,
+    elo_t:     ELOSystem,
+    session:   aiohttp.ClientSession,
+    sp:        StatsProvider,
 ) -> tuple:
     log_section(f"STATS: {home} vs {away}")
     stats: dict = {
@@ -2076,38 +2044,42 @@ async def get_stats_async(
     elif sport_key == "tennis":
         elo_pred = elo_t.predict(home, away, apply_home=False)
 
-    if elo_pred and (
-        elo_pred.get("home_matches", 0) >= 3
-        or elo_pred.get("away_matches", 0) >= 3
-    ):
+    if elo_pred and (elo_pred.get("home_matches", 0) >= 3
+                     or elo_pred.get("away_matches", 0) >= 3):
         stats["elo"] = elo_pred
         logger.info(
-            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%%"
-            " | hm=%d am=%d diff=%.0f",
+            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%% | hm=%d am=%d diff=%.0f",
             home, away,
-            elo_pred["home_prob"] * 100,
-            elo_pred["draw_prob"] * 100,
+            elo_pred["home_prob"] * 100, elo_pred["draw_prob"] * 100,
             elo_pred["away_prob"] * 100,
-            elo_pred["home_matches"],
-            elo_pred["away_matches"],
+            elo_pred["home_matches"], elo_pred["away_matches"],
             elo_pred["elo_diff"],
+        )
+    else:
+        logger.warning(
+            "ELO insufficient: %s(hm=%d) %s(am=%d)",
+            home, (elo_pred or {}).get("home_matches", 0),
+            away, (elo_pred or {}).get("away_matches", 0),
         )
 
     # ── StatsProvider (SofaScore + ESPN + CSV) ───────────
     free_data = await sp.get_all_stats(home, away, sport_key, session)
 
     if free_data:
-        for k in ["home_form", "away_form", "h2h", "lineups"]:
+        for k in ["home_form", "away_form", "h2h", "lineups", "match_stats"]:
             if k in free_data and free_data[k]:
                 stats[k] = free_data[k]
-        # بخش sofascore برای build_stats_summary
+        # بخش sofascore
         ss_keys = [k for k in free_data
-                   if k in ("home_form", "away_form", "h2h",
-                             "lineups") and free_data[k]]
+                   if k in ("home_form", "away_form", "h2h", "lineups", "match_stats")
+                   and free_data[k]]
         if ss_keys:
             stats["sofascore"] = {k: free_data[k] for k in ss_keys}
+        if free_data.get("espn_stats"):
+            stats["espn_stats"] = free_data["espn_stats"]
+        stats["_sources"] = free_data.get("_sources", [])
 
-    # ── Football-Data.org (فرم + H2H رسمی) ──────────────
+    # ── Football-Data.org ─────────────────────────────────
     if sport_key == "football":
         loop = asyncio.get_running_loop()
 
@@ -2132,7 +2104,7 @@ async def get_stats_async(
 
         try:
             fd_data = await get_fd()
-            # FD داده رسمی‌تر است → override می‌کند
+            # FD رسمی‌تر است → override
             if fd_data.get("home_form"): stats["home_form"] = fd_data["home_form"]
             if fd_data.get("away_form"): stats["away_form"] = fd_data["away_form"]
             if fd_data.get("h2h"):       stats["h2h"]       = fd_data["h2h"]
@@ -2146,6 +2118,7 @@ async def get_stats_async(
         and not stats["sofascore"].get("fallback_used")
     )
     has_elo = bool(stats.get("elo"))
+    sources = stats.get("_sources", [])
 
     if (has_fb or has_elo) and has_ss:
         stats["data_quality"] = "high"
@@ -2155,8 +2128,7 @@ async def get_stats_async(
     logger.info(
         "DATA QUALITY | %s vs %s | %s (fb=%s ss=%s elo=%s sources=%s)",
         home, away, stats["data_quality"].upper(),
-        has_fb, has_ss, has_elo,
-        free_data.get("_sources", []),
+        has_fb, has_ss, has_elo, sources,
     )
     return stats, elo_pred
 
@@ -2181,9 +2153,10 @@ def calculate_confidence(
     am  = elo.get("away_matches", 0)
     if hm >= 10 and am >= 10: score += 10
     elif hm >= 5 and am >= 5: score += 6
+    elif hm >= 3 or am >= 3:  score += 3
 
-    if has_sharp:        score += 5
-    if market == "totals": score += 3
+    if has_sharp:           score += 5
+    if market == "totals":  score += 3
 
     hf = stats.get("home_form", {})
     af = stats.get("away_form", {})
@@ -2194,18 +2167,19 @@ def calculate_confidence(
     ss = stats.get("sofascore", {})
     if ss.get("home_form") and ss.get("away_form"): score += 4
 
-    # بونوس برای منابع متعدد
+    # بونوس منابع متعدد
     sources = stats.get("_sources", [])
-    if len(sources) >= 2: score += 3
+    if len(sources) >= 2: score += 4
+    elif len(sources) == 1: score += 2
+
+    # آمار ESPN
+    if stats.get("espn_stats"): score += 2
 
     score = max(50, min(93, score))
-    risk  = (
-        "Low" if score >= 75
-        else ("Medium" if score >= 60 else "High")
-    )
+    risk  = "Low" if score >= 75 else ("Medium" if score >= 60 else "High")
     logger.info(
-        "Confidence=%d risk=%s (dq=%s ev=%.1f%% hm=%d am=%d sharp=%s)",
-        score, risk, dq, ep, hm, am, has_sharp,
+        "Confidence=%d risk=%s (dq=%s ev=%.1f%% hm=%d am=%d sharp=%s sources=%s)",
+        score, risk, dq, ep, hm, am, has_sharp, sources,
     )
     return score, risk
 
@@ -2214,11 +2188,12 @@ def calculate_confidence(
 # =========================================================
 def build_stats_summary(stats: dict, home: str, away: str) -> str:
     parts: list[str] = []
-    elo = stats.get("elo", {})
-    hf  = stats.get("home_form", {})
-    af  = stats.get("away_form", {})
-    h2h = stats.get("h2h", {})
-    ss  = stats.get("sofascore", {})
+    elo  = stats.get("elo", {})
+    hf   = stats.get("home_form", {})
+    af   = stats.get("away_form", {})
+    h2h  = stats.get("h2h", {})
+    ss   = stats.get("sofascore", {})
+    espn = stats.get("espn_stats", {})
 
     if elo and elo.get("home_matches", 0) >= 3:
         parts.append(
@@ -2249,8 +2224,8 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
             f"O2.5={af.get('over25_rate',0):.0%}"
         )
     if h2h and h2h.get("total_h2h", 0) > 0:
-        w1 = h2h.get(f"{home}_wins", 0)
-        w2 = h2h.get(f"{away}_wins", 0)
+        w1  = h2h.get(f"{home}_wins", 0)
+        w2  = h2h.get(f"{away}_wins", 0)
         src = h2h.get("_source", "")
         parts.append(
             f"[HEAD TO HEAD — {h2h['total_h2h']} games"
@@ -2278,6 +2253,13 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
                 f"rating={saf.get('avg_rating','N/A')} "
                 f"pos={saf.get('position','N/A')}"
             )
+        ms = ss.get("match_stats", {})
+        if ms:
+            parts.append("[SOFASCORE MATCH STATS (Pre-game)]")
+            for stat_name, vals in ms.items():
+                parts.append(
+                    f"  {stat_name}: {home}={vals.get('home','?')} | {away}={vals.get('away','?')}"
+                )
         sh2h = ss.get("h2h", {})
         if sh2h and sh2h.get("total", 0) > 0:
             parts.append(
@@ -2289,9 +2271,33 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
         lu = ss.get("lineups", {})
         if lu:
             parts.append(
-                f"[LINEUPS] "
-                f"{home}={lu.get('home_formation','?')} "
+                f"[LINEUPS] {home}={lu.get('home_formation','?')} "
                 f"{away}={lu.get('away_formation','?')}"
+            )
+
+    # ESPN آمار
+    if espn:
+        hes = espn.get("home_espn_stats", {})
+        aes = espn.get("away_espn_stats", {})
+        if hes or aes:
+            parts.append("[ESPN STATS]")
+        if hes:
+            team = hes.get("team", home)
+            poss = hes.get("possession", "N/A")
+            xg   = hes.get("xg", "N/A")
+            parts.append(
+                f"  {team}: possession={poss} xG={xg} "
+                f"shots={hes.get('shots','N/A')} "
+                f"on_target={hes.get('shots_target','N/A')}"
+            )
+        if aes:
+            team = aes.get("team", away)
+            poss = aes.get("possession", "N/A")
+            xg   = aes.get("xg", "N/A")
+            parts.append(
+                f"  {team}: possession={poss} xG={xg} "
+                f"shots={aes.get('shots','N/A')} "
+                f"on_target={aes.get('shots_target','N/A')}"
             )
 
     if not parts:
@@ -2317,8 +2323,7 @@ async def call_groq_sdk_async(
         content = res.choices[0].message.content
         logger.info(
             "Groq %-32s | tokens=%s | out=%s",
-            model,
-            getattr(res.usage, "total_tokens", "?"),
+            model, getattr(res.usage, "total_tokens", "?"),
             (content or "")[:80],
         )
         return content
@@ -2335,6 +2340,7 @@ async def generate_dual_ai_analysis_async(
     summary   = build_stats_summary(stats, home, away)
     dq        = stats.get("data_quality", "none")
     has_stats = dq in ["medium", "high"]
+    sources   = stats.get("_sources", [])
 
     default: dict = {
         "sport_emoji": "\U0001F3C6",
@@ -2353,7 +2359,7 @@ async def generate_dual_ai_analysis_async(
         "- Never mention EV, models, algorithms, data quality.\n"
         "- If no stats: sharp market discrepancy drives pick.\n"
         "- Exact country flag emoji for home_flag, away_flag.\n"
-        "- Correct sport_emoji.\n"
+        "- Correct sport_emoji (⚽🎾🏀⚾🏒🥊 etc).\n"
         "OUTPUT: valid JSON only. No markdown.\n"
         '{"sport_emoji":"...","home_flag":"...","away_flag":"...","logic":"s1. s2."}'
     )
@@ -2362,7 +2368,7 @@ async def generate_dual_ai_analysis_async(
         f"SPORT: {sport}\n"
         f"PICK: {display_pick}\n"
         f"MARKET: {get_market_label(market)}\n"
-        f"DATA QUALITY: {dq}\n\n"
+        f"DATA QUALITY: {dq} | SOURCES: {sources}\n\n"
         f"STATISTICS:\n{summary}\n\nOUTPUT JSON ONLY:"
     )
 
@@ -2414,6 +2420,10 @@ async def generate_dual_ai_analysis_async(
 
     sl = str(logic).strip()
     result["logic"] = sl[:600] + "…" if len(sl) > 600 else sl
+    logger.info(
+        "AI final conf=%d risk=%s | '%s'",
+        result["confidence"], result["risk_level"], result["logic"][:80],
+    )
     return result
 
 # =========================================================
@@ -2427,13 +2437,11 @@ async def fetch_event_result_async(
     key = km.get_best_key()
     if not key:
         return None
-
     url    = "https://api.the-odds-api.com/v4/sports/upcoming/scores"
     params = {"apiKey": key, "daysFrom": 3, "dateFormat": "iso"}
     try:
         async with session.get(
-            url, params=params,
-            timeout=aiohttp.ClientTimeout(total=15),
+            url, params=params, timeout=aiohttp.ClientTimeout(total=15),
         ) as res:
             if res.status != 200:
                 return None
@@ -2451,7 +2459,7 @@ async def fetch_event_result_async(
 
 
 def _determine_win(
-    pick: str, market: str, scores, home: str, away: str
+    pick: str, market: str, scores, home: str, away: str,
 ) -> Optional[bool]:
     try:
         sm = (
@@ -2465,9 +2473,9 @@ def _determine_win(
             return None
         pl = pick.lower()
         if market == "h2h":
-            if home.lower() in pl:      return hs > as_
-            if away.lower() in pl:      return as_ > hs
-            if "draw" in pl or "tie" in pl: return hs == as_
+            if home.lower() in pl:             return hs > as_
+            if away.lower() in pl:             return as_ > hs
+            if "draw" in pl or "tie" in pl:    return hs == as_
         elif market == "totals":
             total = hs + as_
             m = re.search(r"(over|under)\s*([\d.]+)", pl)
@@ -2501,8 +2509,10 @@ async def check_and_report_results_async(
         at     = entry.get("away", "")
         pick   = entry.get("pick", "")
         market = entry.get("market", "")
+        logger.info("Checking: %s vs %s | %s", ht, at, pick)
         rev = await fetch_event_result_async(ht, at, km, session)
         if not rev:
+            logger.info("No result yet: %s vs %s", ht, at)
             continue
 
         scores = rev.get("scores", [])
@@ -2511,8 +2521,7 @@ async def check_and_report_results_async(
         try:
             sm = (
                 {s["name"]: s.get("score", "?") for s in scores}
-                if isinstance(scores, list)
-                else scores
+                if isinstance(scores, list) else scores
             )
             rs = f"{sm.get(ht,'?')} - {sm.get(at,'?')}"
         except Exception:
@@ -2535,18 +2544,14 @@ async def check_and_report_results_async(
     lines: list[str] = ["\U0001F4CA <b>RESULTS REPORT</b>\n"]
     for w in wins:
         lines.append(
-            f"\u2705 <b>{html_lib.escape(w['home'])} vs "
-            f"{html_lib.escape(w['away'])}</b>\n"
-            f"   Pick: {html_lib.escape(w['pick'])} "
-            f"@ <code>{w['odds']:.2f}</code>\n"
+            f"\u2705 <b>{html_lib.escape(w['home'])} vs {html_lib.escape(w['away'])}</b>\n"
+            f"   Pick: {html_lib.escape(w['pick'])} @ <code>{w['odds']:.2f}</code>\n"
             f"   Score: {w.get('result','?')} — WIN ✅\n"
         )
     for lo in losses:
         lines.append(
-            f"\u274C <b>{html_lib.escape(lo['home'])} vs "
-            f"{html_lib.escape(lo['away'])}</b>\n"
-            f"   Pick: {html_lib.escape(lo['pick'])} "
-            f"@ <code>{lo['odds']:.2f}</code>\n"
+            f"\u274C <b>{html_lib.escape(lo['home'])} vs {html_lib.escape(lo['away'])}</b>\n"
+            f"   Pick: {html_lib.escape(lo['pick'])} @ <code>{lo['odds']:.2f}</code>\n"
             f"   Score: {lo.get('result','?')} — LOSS ❌\n"
         )
     lines.append(
@@ -2592,10 +2597,7 @@ async def send_telegram_async(
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as res:
                 if res.status != 200:
-                    logger.error(
-                        "Telegram %d: %s",
-                        res.status, (await res.text())[:150],
-                    )
+                    logger.error("Telegram %d: %s", res.status, (await res.text())[:150])
                     ok = False
         except Exception as e:
             logger.error("Telegram send error: %s", e)
@@ -2613,22 +2615,14 @@ def build_telegram_message(
     now_utc: datetime, opp: dict, display_pick: str,
     conf: int, risk: str, ai: dict,
 ) -> str:
-    ci = (
-        "\U0001F525" if conf >= 75
-        else ("\u2705" if conf >= 60 else "\u26A1")
-    )
-    ri = {
-        "Low":    "\U0001F7E2",
-        "Medium": "\U0001F7E0",
-        "High":   "\U0001F534",
-    }.get(risk, "\U0001F7E0")
+    ci = "\U0001F525" if conf >= 75 else ("\u2705" if conf >= 60 else "\u26A1")
+    ri = {"Low": "\U0001F7E2", "Medium": "\U0001F7E0", "High": "\U0001F534"}.get(risk, "\U0001F7E0")
 
-    se = ai.get("sport_emoji", "\U0001F3C6")
-    hf = ai.get("home_flag",   "\U0001F3F3\uFE0F")
-    af = ai.get("away_flag",   "\U0001F3F3\uFE0F")
-    lo = html_lib.escape(
-        str(ai.get("logic", "")).strip()
-        .replace("<", "").replace(">", "")
+    se  = ai.get("sport_emoji", "\U0001F3C6")
+    hf  = ai.get("home_flag",   "\U0001F3F3\uFE0F")
+    af  = ai.get("away_flag",   "\U0001F3F3\uFE0F")
+    lo  = html_lib.escape(
+        str(ai.get("logic", "")).strip().replace("<", "").replace(">", "")
     )
     ml  = get_market_label(opp["market"])
     bk  = opp.get("bookmaker", "Best Available")
@@ -2637,18 +2631,14 @@ def build_telegram_message(
     return (
         f"{se} <b>{html_lib.escape(sport)}</b>\n"
         f"{SEP}\n"
-        f"{hf} <b>{html_lib.escape(home)}</b>"
-        f"  vs  "
-        f"<b>{html_lib.escape(away)}</b> {af}\n"
+        f"{hf} <b>{html_lib.escape(home)}</b>  vs  <b>{html_lib.escape(away)}</b> {af}\n"
         f"⏱ <b>Kick-off in:</b> {cd}\n"
         f"{SEP}\n"
         f"📌 <b>Market:</b> {html_lib.escape(ml)}\n"
         f"🎯 <b>Pick:</b> <code>{html_lib.escape(display_pick)}</code>\n"
-        f"💰 <b>Odds:</b> <code>{opp['odds']:.2f}</code> "
-        f"<i>({html_lib.escape(bk)})</i>\n"
+        f"💰 <b>Odds:</b> <code>{opp['odds']:.2f}</code> <i>({html_lib.escape(bk)})</i>\n"
         f"{SEP}\n"
-        f"{ri} <b>Risk:</b> {risk}  "
-        f"{ci} <b>Confidence:</b> {conf}%\n"
+        f"{ri} <b>Risk:</b> {risk}  {ci} <b>Confidence:</b> {conf}%\n"
         f"{SEP}\n"
         f"💡 <b>Analysis:</b>\n"
         f"<blockquote>{lo}</blockquote>\n"
@@ -2660,12 +2650,12 @@ def build_telegram_message(
 # 22. MAIN PIPELINE
 # =========================================================
 async def async_main() -> None:
-    log_section("ZBET90 ENTERPRISE ENGINE v4.1 STARTING")
+    log_section("ZBET90 ENTERPRISE ENGINE v4.2 STARTING")
 
     connector = aiohttp.TCPConnector(ssl=False, limit=20, limit_per_host=5)
     async with aiohttp.ClientSession(
         connector=connector,
-        headers={"User-Agent": "ZBET90/4.1"},
+        headers={"User-Agent": "ZBET90/4.2"},
     ) as session:
 
         # ── Key Manager ──────────────────────────────────
@@ -2690,13 +2680,11 @@ async def async_main() -> None:
         sent_history = SentHistory()
         fd           = FootballDataAdapter()
         mic          = MatchIDCache()
-        sp           = StatsProvider()          # ← جدید
+        sp           = StatsProvider()
         now_utc      = datetime.now(timezone.utc)
 
         # Phase 1: Results
-        results_msg = await check_and_report_results_async(
-            sent_history, km, session
-        )
+        results_msg = await check_and_report_results_async(sent_history, km, session)
         if results_msg:
             if await send_telegram_async(results_msg, session):
                 logger.info("Results report sent")
@@ -2726,6 +2714,14 @@ async def async_main() -> None:
             if not home or not away:
                 continue
 
+            # ── فیلتر ورزش‌های بدون پشتیبانی آمار ──────
+            if sk == "other":
+                logger.info(
+                    "SKIP unsupported sport: '%s' [%s vs %s]",
+                    sport, home, away,
+                )
+                continue
+
             logger.info("Processing: %s vs %s [%s]", home, away, sport)
 
             elo_pred: Optional[dict] = None
@@ -2744,7 +2740,6 @@ async def async_main() -> None:
                 logger.info("SKIP duplicate: %s vs %s", home, away)
                 continue
 
-            # ← sp پاس داده می‌شود
             stats, _ = await get_stats_async(
                 home, away, sk,
                 fd, mic, elo_football, elo_tennis,
@@ -2754,6 +2749,15 @@ async def async_main() -> None:
             conf, risk = calculate_confidence(
                 opp["ev"], stats, opp["market"], opp["has_sharp_line"],
             )
+
+            # ── فیلتر confidence پایین ───────────────────
+            if conf < CFG.MIN_CONFIDENCE_TO_SEND:
+                logger.info(
+                    "SKIP low confidence: %s vs %s conf=%d%% (min=%d%%)",
+                    home, away, conf, CFG.MIN_CONFIDENCE_TO_SEND,
+                )
+                continue
+
             dp = get_display_pick(opp["pick"], opp["market"], home, away)
 
             ai = await generate_dual_ai_analysis_async(
