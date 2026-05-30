@@ -11,7 +11,7 @@ import aiohttp
 import requests
 import pandas as pd
 from io import StringIO
-from groq import Groq
+from groq import AsyncGroq
 from functools import wraps
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -220,7 +220,7 @@ if not all([GROQ_API_KEY, RAPIDAPI_KEY,
     sys.exit(1)
 
 logger.info("Odds API keys available: %d/3", len(ODDS_API_KEYS))
-groq_client = Groq(api_key=GROQ_API_KEY, max_retries=3)
+groq_client = AsyncGroq(api_key=GROQ_API_KEY, max_retries=3)
 
 # =========================================================
 # 4. NATIONALITY FLAGS
@@ -2263,7 +2263,7 @@ def build_stats_summary(
     return summary
 
 
-def call_groq_sdk(
+async def call_groq_sdk_async(
     model: str, messages: list, temp: float = 0.1
 ) -> Optional[str]:
     SUPPORTS_JSON = [
@@ -2280,7 +2280,7 @@ def call_groq_sdk(
     if use_json:
         kwargs["response_format"] = {"type": "json_object"}
     try:
-        res     = groq_client.chat.completions.create(**kwargs)
+        res     = await groq_client.chat.completions.create(**kwargs)
         content = res.choices[0].message.content
         logger.info(
             "Groq %-32s | tokens=%s | out=%s",
@@ -2294,7 +2294,7 @@ def call_groq_sdk(
         return None
 
 
-def generate_dual_ai_analysis(
+async def generate_dual_ai_analysis_async(
     home: str,
     away: str,
     sport: str,
@@ -2349,7 +2349,7 @@ def generate_dual_ai_analysis(
 
     a1: Optional[dict] = None
     try:
-        r1 = call_groq_sdk(
+        r1 = await call_groq_sdk_async(
             CFG.AI_MODEL_ANALYST,
             [{"role": "system", "content": sys1},
              {"role": "user",   "content": u1}],
@@ -2369,7 +2369,7 @@ def generate_dual_ai_analysis(
         '{"validated_logic":"..."}'
     )
     try:
-        r2 = call_groq_sdk(
+        r2 = await call_groq_sdk_async(
             CFG.AI_MODEL_VALIDATOR,
             [
                 {"role": "system", "content": sys2},
@@ -2851,7 +2851,8 @@ async def async_main() -> None:
                 opp["pick"], opp["market"], home, away
             )
 
-            ai = generate_dual_ai_analysis(
+            # تغییر مهم: اینجا به await و نام تابع جدید تغییر کرد
+            ai = await generate_dual_ai_analysis_async(
                 home, away, sport, dp, opp["market"],
                 opp["ev"], stats, conf, risk,
             )
