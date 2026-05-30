@@ -1395,3 +1395,58 @@
 2026-05-30 11:04:56 | DEBUG    | API▶ OddsAPI            | sample={"message":"Usage quota has been reached. See usage plans at https://the-odds-api.com","error_code":"OUT_OF_USAGE_CREDITS","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.htm
 2026-05-30 11:04:56 | ERROR    | Odds API HTTP 401
 2026-05-30 11:04:56 | INFO     | No events in 2h window — exiting
+2026-05-30 13:02:17 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:02:17 | INFO     |   KEY STATUS
+2026-05-30 13:02:17 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:02:17 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-30 13:02:17 | WARNING  | KEY  | ODDS_API_KEY2  | MISSING
+2026-05-30 13:02:17 | WARNING  | KEY  | ODDS_API_KEY3  | MISSING
+2026-05-30 13:02:17 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-30 13:02:17 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=7903…
+2026-05-30 13:02:17 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-30 13:02:17 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-30 13:02:17 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-30 13:02:17 | INFO     | Odds API keys available: 1/3
+2026-05-30 13:02:17 | INFO     | ============================================================
+2026-05-30 13:02:17 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.0 STARTING
+2026-05-30 13:02:17 | INFO     | ============================================================
+2026-05-30 13:02:17 | INFO     | OddsKeyManager status:
+2026-05-30 13:02:17 | INFO     |   key=b99dc2cf…    status=unknown    remaining=None  used=None
+2026-05-30 13:02:17 | INFO     | ============================================================
+2026-05-30 13:02:17 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-30 13:02:17 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     | Key b99dc2cf… updated: status=ok remaining=1 used=499
+2026-05-30 13:02:18 | INFO     | Key b99dc2cf… ✅ VALID | sports=46 remaining=1 used=499
+2026-05-30 13:02:18 | INFO     | Validation summary: b99dc2cf…:ok/rem=1
+2026-05-30 13:02:18 | INFO     | OddsKeyManager: selected key=b99dc2cf… (status=ok remaining=1)
+2026-05-30 13:02:18 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:02:18 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:02:18 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:02:18 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:02:18 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 13:02:18 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 13:02:18 | INFO     | FD call counter reset (new day)
+2026-05-30 13:02:18 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     | CHECK | Pending results                            | OK | 0
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-30 13:02:18 | INFO     | ============================================================
+2026-05-30 13:02:18 | INFO     | Key status: b99dc2cf…:ok/rem=1
+2026-05-30 13:02:18 | INFO     | OddsKeyManager: selected key=b99dc2cf… (status=ok remaining=1)
+2026-05-30 13:02:18 | INFO     | Attempt 1/2 with key=b99dc2cf…
+2026-05-30 13:02:18 | ERROR    | Key b99dc2cf… marked INVALID: HTTP 401
+2026-05-30 13:02:18 | ERROR    | Key 401 → trying next key
+2026-05-30 13:02:18 | INFO     | Rotating to next key...
+2026-05-30 13:02:19 | CRITICAL | All Odds API keys exhausted/invalid!
+  Status: b99dc2cf…:invalid/rem=1
+  Solutions:
+  1. Renew key at the-odds-api.com
+  2. Wait until tomorrow (quota resets)
+  3. Add KEY2/KEY3 in GitHub Secrets
+2026-05-30 13:02:19 | ERROR    | No events received. Key status: b99dc2cf…:invalid/rem=1
