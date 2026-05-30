@@ -61,7 +61,7 @@ class Config:
     TOTALS_MIN_ODDS:   float = 1.60
     TOTALS_MIN_EV:     float = 0.020
     MAX_REALISTIC_EV:  float = 0.12
-    MIN_CONFIDENCE_TO_SEND: int = 55
+    MIN_CONFIDENCE_TO_SEND: int = 50 # کمی کاهش یافت تا سیگنال‌های خوب رد نشوند
 
     # ── مارکت‌های معتبر ───────────────────────────────────
     VALID_MARKETS: tuple = field(default_factory=lambda: ("h2h", "totals"))
@@ -101,11 +101,8 @@ class Config:
     ])
 
     # ── RapidAPI (SofaScore6) ─────────────────────────────
-    # تأخیر بین درخواست‌ها (ثانیه)
     RAPID_REQUEST_DELAY: float = 0.4
-    # مدت توقف بعد از 429 (دقیقه)
     RAPID_RATE_LIMIT_PAUSE: int = 3
-
 
 CFG = Config()
 
@@ -1153,7 +1150,6 @@ async def _try_one_key(
     key: str, km: OddsKeyManager,
     now_utc: datetime, session: aiohttp.ClientSession,
 ) -> tuple[list, bool]:
-    end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
     url     = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
     params  = {
         "apiKey":     key,
@@ -1192,8 +1188,11 @@ async def _try_one_key(
                 try:
                     ct = e.get("commence_time", "")
                     mt = datetime.fromisoformat(ct.replace("Z", "+00:00"))
-                    if not (now_utc <= mt <= end_win):
+                    
+                    # حذف باگ اصلی: اینجا نباید فیلتر 2 ساعته اعمال بشه تا کل مسابقات روز کش بشن
+                    if mt < now_utc:
                         continue
+                        
                     eid = e.get("id")
                     if not eid:
                         continue
@@ -1249,9 +1248,10 @@ async def fetch_all_odds_async(
 
     # ── چک کش روزانه ─────────────────────────────────────
     cached = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE)
+    end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
+    
     if cached is not None:
-        # فیلتر بر اساس پنجره زمانی
-        end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
+        # فیلتر بر اساس پنجره زمانی (اینجا درسته که انجام بشه)
         filtered = []
         for e in cached:
             try:
@@ -1292,8 +1292,7 @@ async def fetch_all_odds_async(
             DailyCache.save(CFG.DAILY_ODDS_CACHE_FILE, events)
             logger.info("✅ Got %d events → cached for today", len(events))
 
-            # فیلتر پنجره زمانی
-            end_win  = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
+            # فیلتر پنجره زمانی برای این اجرا
             filtered = []
             for e in events:
                 try:
@@ -1351,26 +1350,28 @@ def calculate_combined_ev(
                 if name not in best_odds or price > best_odds[name]["price"]:
                     best_odds[name] = {"price": price, "bookmaker": entry["bookmaker"]}
 
-        if not has_real_sharp or not sharp_odds:
+        # انتخاب بیس‌لاین: اگر لاین حرفه‌ای نبود، مسابقات معمولی رو با بقیه بوک‌میکرها بسنج
+        exp = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
+        valid_sharp = has_real_sharp and len(sharp_odds) >= exp["min"]
+        
+        baseline_odds = sharp_odds if valid_sharp else best_odds
+
+        if not baseline_odds or len(baseline_odds) < exp["min"]:
             continue
 
         try:
-            implied_sum = sum(1.0 / v["price"] for v in sharp_odds.values())
+            implied_sum = sum(1.0 / v["price"] for v in baseline_odds.values())
         except ZeroDivisionError:
             continue
 
         if not (CFG.MIN_VALID_IMPLIED_SUM <= implied_sum <= CFG.MAX_VALID_IMPLIED_SUM):
             continue
 
-        exp = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
-        if len(sharp_odds) < exp["min"]:
-            continue
-
         min_odds = CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
         min_ev   = CFG.H2H_MIN_EV   if market_key == "h2h" else CFG.TOTALS_MIN_EV
 
         best_opp = None
-        for oname, sd in sharp_odds.items():
+        for oname, sd in baseline_odds.items():
             stp = (1.0 / sd["price"]) / implied_sum
             etp: Optional[float] = None
 
@@ -1413,7 +1414,7 @@ def calculate_combined_ev(
                     "bookmaker":      bbk,
                     "ev":             round(ev, 4),
                     "edge_pct":       round(ev * 100, 2),
-                    "has_sharp_line": has_real_sharp,
+                    "has_sharp_line": valid_sharp,
                     "elo_used":       etp is not None,
                 }
                 if best_opp is None or opp["ev"] > best_opp["ev"]:
