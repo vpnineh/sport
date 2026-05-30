@@ -64,5 +64,60 @@
     "pick": "Binghamton Bearcats",
     "market": "h2h",
     "sent_at": "2026-05-29T19:55:03.758210+00:00"
+  },
+  "5ddd42315e3ed454bbdabfadcc682164": {
+    "match": "Song Yadong vs Deiveson Figueiredo",
+    "home": "Song Yadong",
+    "away": "Deiveson Figueiredo",
+    "pick": "Deiveson Figueiredo",
+    "market": "h2h_lay",
+    "odds": 7.0,
+    "commence_time": "2026-05-30T13:30:00Z",
+    "sent_at": "2026-05-30T13:17:47.592091+00:00",
+    "result_checked": false
+  },
+  "866a04cd2ee4fa88a6ff995a4329f2a9": {
+    "match": "Moise Kouame vs Alejandro Tabilo",
+    "home": "Moise Kouame",
+    "away": "Alejandro Tabilo",
+    "pick": "Moise Kouame",
+    "market": "h2h_lay",
+    "odds": 4.9,
+    "commence_time": "2026-05-30T13:45:00Z",
+    "sent_at": "2026-05-30T13:17:51.573598+00:00",
+    "result_checked": false
+  },
+  "337ed4d6c2d388c13131cd40b82f6f4f": {
+    "match": "Matteo Arnaldi vs Raphael Collignon",
+    "home": "Matteo Arnaldi",
+    "away": "Raphael Collignon",
+    "pick": "Matteo Arnaldi",
+    "market": "h2h_lay",
+    "odds": 3.05,
+    "commence_time": "2026-05-30T13:45:00Z",
+    "sent_at": "2026-05-30T13:17:55.330629+00:00",
+    "result_checked": false
+  },
+  "34072d336bcf23cc54b63127c243e7ba": {
+    "match": "Victoria Mboko vs Madison Keys",
+    "home": "Victoria Mboko",
+    "away": "Madison Keys",
+    "pick": "Madison Keys",
+    "market": "h2h_lay",
+    "odds": 2.14,
+    "commence_time": "2026-05-30T13:50:00Z",
+    "sent_at": "2026-05-30T13:17:59.138255+00:00",
+    "result_checked": false
+  },
+  "ec79fb4a4ad85d3fcdd5b65bf4182036": {
+    "match": "Coco Gauff vs Anastasia Potapova",
+    "home": "Coco Gauff",
+    "away": "Anastasia Potapova",
+    "pick": "Anastasia Potapova",
+    "market": "h2h_lay",
+    "odds": 4.5,
+    "commence_time": "2026-05-30T14:00:00Z",
+    "sent_at": "2026-05-30T13:18:03.542539+00:00",
+    "result_checked": false
   }
 }

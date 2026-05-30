@@ -1450,3 +1450,195 @@
   2. Wait until tomorrow (quota resets)
   3. Add KEY2/KEY3 in GitHub Secrets
 2026-05-30 13:02:19 | ERROR    | No events received. Key status: b99dc2cf…:invalid/rem=1
+2026-05-30 13:17:45 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:17:45 | INFO     |   KEY STATUS
+2026-05-30 13:17:45 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:17:45 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-30 13:17:45 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-30 13:17:45 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-30 13:17:45 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-30 13:17:45 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=7903…
+2026-05-30 13:17:45 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-30 13:17:45 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-30 13:17:45 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-30 13:17:45 | INFO     | Odds API keys available: 3/3
+2026-05-30 13:17:45 | INFO     | ============================================================
+2026-05-30 13:17:45 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.0 STARTING
+2026-05-30 13:17:45 | INFO     | ============================================================
+2026-05-30 13:17:45 | INFO     | OddsKeyManager status:
+2026-05-30 13:17:45 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-30 13:17:45 | INFO     |   key=4342465d…    status=unknown    remaining=None  used=None
+2026-05-30 13:17:45 | INFO     |   key=1275084d…    status=unknown    remaining=None  used=None
+2026-05-30 13:17:45 | INFO     | ============================================================
+2026-05-30 13:17:45 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-30 13:17:45 | INFO     | ============================================================
+2026-05-30 13:17:45 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-30 13:17:46 | INFO     | Key 4342465d… updated: status=ok remaining=500 used=0
+2026-05-30 13:17:46 | INFO     | Key 4342465d… ✅ VALID | sports=46 remaining=500 used=0
+2026-05-30 13:17:46 | INFO     | Key 1275084d… updated: status=ok remaining=500 used=0
+2026-05-30 13:17:46 | INFO     | Key 1275084d… ✅ VALID | sports=46 remaining=500 used=0
+2026-05-30 13:17:46 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=500 | 1275084d…:ok/rem=500
+2026-05-30 13:17:46 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=500)
+2026-05-30 13:17:46 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:17:46 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:17:46 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:17:46 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:17:46 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 13:17:46 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 13:17:46 | INFO     | FD call counter reset (new day)
+2026-05-30 13:17:46 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     | CHECK | Pending results                            | OK | 0
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=500 | 1275084d…:ok/rem=500
+2026-05-30 13:17:46 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=500)
+2026-05-30 13:17:46 | INFO     | Attempt 1/4 with key=4342465d…
+2026-05-30 13:17:46 | INFO     | Key 4342465d… updated: status=ok remaining=492 used=8
+2026-05-30 13:17:46 | INFO     | API▶ OddsAPI                | status=200 | records=8    | {'regions': 'eu,us,uk,au', 'markets': 'h2h,totals'}
+2026-05-30 13:17:46 | DEBUG    | API▶ OddsAPI                | sample=remaining=492 used=8
+2026-05-30 13:17:46 | INFO     | OddsAPI ✅ | key=4342465d… | remaining=492 used=8 | events=8
+2026-05-30 13:17:46 | INFO     | ✅ Got 8 events from key=4342465d…
+2026-05-30 13:17:46 | INFO     | CHECK | Total events                               | OK | 8
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     | Processing: Song Yadong vs Deiveson Figueiredo [MMA]
+2026-05-30 13:17:46 | INFO     | EV [h2h_lay] pick='Deiveson Figueiredo' ev=3.2% odds=7.00 bookie=Matchbook elo=False
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | INFO     |   STATS: Song Yadong vs Deiveson Figueiredo
+2026-05-30 13:17:46 | INFO     | ============================================================
+2026-05-30 13:17:46 | WARNING  | ELO insufficient: Song Yadong(hm=0) Deiveson Figueiredo(am=0)
+2026-05-30 13:17:46 | INFO     | API▶ SofaScore              | status=429 | records=0    | {'q': 'Song Yadong Deiveson Figueiredo', 'type': 'all', 'page': '0'}
+2026-05-30 13:17:46 | DEBUG    | API▶ SofaScore              | sample={"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade yo
+2026-05-30 13:17:46 | INFO     | SofaScore: no match_id for 'Song Yadong' vs 'Deiveson Figueiredo'
+2026-05-30 13:17:46 | INFO     | DATA QUALITY | Song Yadong vs Deiveson Figueiredo | NONE (fb=False ss=False elo=False)
+2026-05-30 13:17:46 | INFO     | Confidence=63 risk=Medium (dq=none ev=3.2% hm=0 am=0 sharp=True)
+2026-05-30 13:17:46 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=260 | out={
+"sport_emoji": "🥊",
+  "home_flag": "",
+  "away_flag": "",
+  "logic": "Sharp ma
+2026-05-30 13:17:46 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:17:47 | INFO     | Groq llama-3.1-8b-instant             | tokens=184 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick, Figueiredo's s
+2026-05-30 13:17:47 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:17:47 | INFO     | AI final conf=63 risk=Medium | 'Sharp market discrepancy drives the pick, Figueiredo's skills are being underval'
+2026-05-30 13:17:47 | INFO     | SIGNAL | Song Yadong vs Deiveson Figueiredo | pick=Deiveson Figueiredo odds=7.00 ev=3.2% conf=63%
+2026-05-30 13:17:47 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 619}
+2026-05-30 13:17:47 | INFO     | ✅ Sent: Song Yadong vs Deiveson Figueiredo
+2026-05-30 13:17:50 | INFO     | Processing: Moise Kouame vs Alejandro Tabilo [ATP French Open]
+2026-05-30 13:17:50 | INFO     | EV [h2h_lay] pick='Moise Kouame' ev=2.5% odds=4.90 bookie=Smarkets elo=False
+2026-05-30 13:17:50 | INFO     | ============================================================
+2026-05-30 13:17:50 | INFO     |   STATS: Moise Kouame vs Alejandro Tabilo
+2026-05-30 13:17:50 | INFO     | ============================================================
+2026-05-30 13:17:50 | INFO     | ELO | Moise Kouame vs Alejandro Tabilo | H=34.5% D=0.0% A=65.5% | hm=0 am=113 diff=-111
+2026-05-30 13:17:50 | INFO     | API▶ SofaScore              | status=429 | records=0    | {'q': 'Moise Kouame Alejandro Tabilo', 'type': 'all', 'page': '0'}
+2026-05-30 13:17:50 | DEBUG    | API▶ SofaScore              | sample={"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade yo
+2026-05-30 13:17:50 | INFO     | SofaScore: no match_id for 'Moise Kouame' vs 'Alejandro Tabilo'
+2026-05-30 13:17:50 | INFO     | DATA QUALITY | Moise Kouame vs Alejandro Tabilo | MEDIUM (fb=False ss=False elo=True)
+2026-05-30 13:17:50 | INFO     | Confidence=67 risk=Medium (dq=medium ev=2.5% hm=0 am=113 sharp=True)
+2026-05-30 13:17:51 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=267 | out={
+"sport_emoji": "🎾",
+  "home_flag": "🇫🇷",
+  "away_flag": "🇨🇱",
+  "logic": "Shar
+2026-05-30 13:17:51 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:17:51 | INFO     | Groq llama-3.1-8b-instant             | tokens=190 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick, as Moise Kouam
+2026-05-30 13:17:51 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:17:51 | INFO     | AI final conf=67 risk=Medium | 'Sharp market discrepancy drives the pick, as Moise Kouame is being undervalued. '
+2026-05-30 13:17:51 | INFO     | SIGNAL | Moise Kouame vs Alejandro Tabilo | pick=Moise Kouame odds=4.90 ev=2.5% conf=67%
+2026-05-30 13:17:51 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 615}
+2026-05-30 13:17:51 | INFO     | ✅ Sent: Moise Kouame vs Alejandro Tabilo
+2026-05-30 13:17:54 | INFO     | Processing: Matteo Arnaldi vs Raphael Collignon [ATP French Open]
+2026-05-30 13:17:54 | INFO     | EV [h2h_lay] pick='Matteo Arnaldi' ev=2.1% odds=3.05 bookie=Smarkets elo=False
+2026-05-30 13:17:54 | INFO     | ============================================================
+2026-05-30 13:17:54 | INFO     |   STATS: Matteo Arnaldi vs Raphael Collignon
+2026-05-30 13:17:54 | INFO     | ============================================================
+2026-05-30 13:17:54 | INFO     | ELO | Matteo Arnaldi vs Raphael Collignon | H=76.4% D=0.0% A=23.6% | hm=92 am=3 diff=204
+2026-05-30 13:17:54 | INFO     | API▶ SofaScore              | status=429 | records=0    | {'q': 'Matteo Arnaldi Raphael Collignon', 'type': 'all', 'page': '0'}
+2026-05-30 13:17:54 | DEBUG    | API▶ SofaScore              | sample={"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade yo
+2026-05-30 13:17:54 | INFO     | SofaScore: no match_id for 'Matteo Arnaldi' vs 'Raphael Collignon'
+2026-05-30 13:17:54 | INFO     | DATA QUALITY | Matteo Arnaldi vs Raphael Collignon | MEDIUM (fb=False ss=False elo=True)
+2026-05-30 13:17:54 | INFO     | Confidence=67 risk=Medium (dq=medium ev=2.1% hm=92 am=3 sharp=True)
+2026-05-30 13:17:54 | DEBUG    | Stats summary: 161 chars
+2026-05-30 13:17:54 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=343 | out={
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+  "logic": "Matteo A
+2026-05-30 13:17:54 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:17:55 | INFO     | Groq llama-3.1-8b-instant             | tokens=197 | out={
+  "validated_logic": "Matteo Arnaldi's higher ELO rating and win probability i
+2026-05-30 13:17:55 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:17:55 | INFO     | AI final conf=67 risk=Medium | 'Matteo Arnaldi's higher ELO rating and win probability indicate a strong advanta'
+2026-05-30 13:17:55 | INFO     | SIGNAL | Matteo Arnaldi vs Raphael Collignon | pick=Matteo Arnaldi odds=3.05 ev=2.1% conf=67%
+2026-05-30 13:17:55 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 594}
+2026-05-30 13:17:55 | INFO     | ✅ Sent: Matteo Arnaldi vs Raphael Collignon
+2026-05-30 13:17:58 | INFO     | Processing: Victoria Mboko vs Madison Keys [WTA French Open]
+2026-05-30 13:17:58 | INFO     | EV [h2h_lay] pick='Madison Keys' ev=2.8% odds=2.14 bookie=Smarkets elo=False
+2026-05-30 13:17:58 | INFO     | ============================================================
+2026-05-30 13:17:58 | INFO     |   STATS: Victoria Mboko vs Madison Keys
+2026-05-30 13:17:58 | INFO     | ============================================================
+2026-05-30 13:17:58 | INFO     | ELO | Victoria Mboko vs Madison Keys | H=12.1% D=0.0% A=87.9% | hm=1 am=176 diff=-345
+2026-05-30 13:17:58 | INFO     | API▶ SofaScore              | status=429 | records=0    | {'q': 'Victoria Mboko Madison Keys', 'type': 'all', 'page': '0'}
+2026-05-30 13:17:58 | DEBUG    | API▶ SofaScore              | sample={"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade yo
+2026-05-30 13:17:58 | INFO     | SofaScore: no match_id for 'Victoria Mboko' vs 'Madison Keys'
+2026-05-30 13:17:58 | INFO     | DATA QUALITY | Victoria Mboko vs Madison Keys | MEDIUM (fb=False ss=False elo=True)
+2026-05-30 13:17:58 | INFO     | Confidence=67 risk=Medium (dq=medium ev=2.8% hm=1 am=176 sharp=True)
+2026-05-30 13:17:58 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=258 | out={
+"sport_emoji": "🎾",
+  "home_flag": "🇧🇪",
+  "away_flag": "🇺🇸",
+  "logic": "Shar
+2026-05-30 13:17:58 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:17:58 | INFO     | Groq llama-3.1-8b-instant             | tokens=161 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick, as market over
+2026-05-30 13:17:58 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:17:58 | INFO     | AI final conf=67 risk=Medium | 'Sharp market discrepancy drives the pick, as market overvalues Victoria Mboko. M'
+2026-05-30 13:17:58 | INFO     | SIGNAL | Victoria Mboko vs Madison Keys | pick=Madison Keys odds=2.14 ev=2.8% conf=67%
+2026-05-30 13:17:59 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 599}
+2026-05-30 13:17:59 | INFO     | ✅ Sent: Victoria Mboko vs Madison Keys
+2026-05-30 13:18:02 | INFO     | Processing: Coco Gauff vs Anastasia Potapova [WTA French Open]
+2026-05-30 13:18:02 | INFO     | EV [h2h_lay] pick='Anastasia Potapova' ev=5.7% odds=4.50 bookie=Betfair elo=False
+2026-05-30 13:18:02 | INFO     | ============================================================
+2026-05-30 13:18:02 | INFO     |   STATS: Coco Gauff vs Anastasia Potapova
+2026-05-30 13:18:02 | INFO     | ============================================================
+2026-05-30 13:18:02 | INFO     | ELO | Coco Gauff vs Anastasia Potapova | H=86.9% D=0.0% A=13.1% | hm=269 am=178 diff=328
+2026-05-30 13:18:02 | INFO     | API▶ SofaScore              | status=429 | records=0    | {'q': 'Coco Gauff Anastasia Potapova', 'type': 'all', 'page': '0'}
+2026-05-30 13:18:02 | DEBUG    | API▶ SofaScore              | sample={"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade yo
+2026-05-30 13:18:02 | INFO     | SofaScore: no match_id for 'Coco Gauff' vs 'Anastasia Potapova'
+2026-05-30 13:18:02 | INFO     | DATA QUALITY | Coco Gauff vs Anastasia Potapova | MEDIUM (fb=False ss=False elo=True)
+2026-05-30 13:18:02 | INFO     | Confidence=85 risk=Low (dq=medium ev=5.7% hm=269 am=178 sharp=True)
+2026-05-30 13:18:02 | DEBUG    | Stats summary: 158 chars
+2026-05-30 13:18:02 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=339 | out={
+"sport_emoji": "🎾",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇷🇺",
+  "logic": "The 
+2026-05-30 13:18:02 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:18:03 | INFO     | Groq llama-3.1-8b-instant             | tokens=178 | out={
+  "validated_logic": "Sharp market discrepancy exists due to significant ELO d
+2026-05-30 13:18:03 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:18:03 | INFO     | AI final conf=85 risk=Low | 'Sharp market discrepancy exists due to significant ELO disparity and favourable '
+2026-05-30 13:18:03 | INFO     | SIGNAL | Coco Gauff vs Anastasia Potapova | pick=Anastasia Potapova odds=4.50 ev=5.7% conf=85%
+2026-05-30 13:18:03 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 584}
+2026-05-30 13:18:03 | INFO     | ✅ Sent: Coco Gauff vs Anastasia Potapova
+2026-05-30 13:18:06 | INFO     | Processing: KuPS Kuopio vs FC Inter Turku [Veikkausliiga - Finland]
+2026-05-30 13:18:06 | DEBUG    | Invalid implied_sum 2.037 for totals
+2026-05-30 13:18:06 | INFO     | Processing: FC Lahti vs Ilves Tampere [Veikkausliiga - Finland]
+2026-05-30 13:18:06 | DEBUG    | Invalid implied_sum 2.034 for totals
+2026-05-30 13:18:06 | INFO     | Processing: IF Gnistan vs SJK Seinäjoki [Veikkausliiga - Finland]
+2026-05-30 13:18:06 | DEBUG    | Invalid implied_sum 2.039 for totals
+2026-05-30 13:18:06 | INFO     | ============================================================
+2026-05-30 13:18:06 | INFO     |   RUN COMPLETE
+2026-05-30 13:18:06 | INFO     | ============================================================
+2026-05-30 13:18:06 | INFO     | CHECK | Signals sent                               | OK | 5
+2026-05-30 13:18:06 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=500
