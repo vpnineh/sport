@@ -1337,3 +1337,32 @@
 2026-05-30 01:31:57 | INFO     |   RUN COMPLETE
 2026-05-30 01:31:57 | INFO     | ============================================================
 2026-05-30 01:31:57 | INFO     | CHECK | Signals sent this run                    | OK | 3
+2026-05-30 09:11:39 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-30 09:11:39 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-30 09:11:39 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-30 09:11:39 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-30 09:11:39 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-30 09:11:39 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-30 09:11:39 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-30 09:11:39 | INFO     | Bootstrap: data is fresh
+2026-05-30 09:11:39 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-30 09:11:39 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-30 09:11:39 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-30 09:11:39 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-30 09:11:39 | INFO     | Football-Data call counter reset
+2026-05-30 09:11:39 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-30 09:11:39 | INFO     | ============================================================
+2026-05-30 09:11:39 | INFO     | CHECK | Odds API requests remaining              | OK | 1
+2026-05-30 09:11:39 | INFO     | CHECK | Odds API requests used this month        | OK | 499
+2026-05-30 09:11:39 | ERROR    | Odds API HTTP 401
+2026-05-30 09:11:39 | INFO     | No events in 2h window
