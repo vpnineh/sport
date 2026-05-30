@@ -119,5 +119,38 @@
     "commence_time": "2026-05-30T14:00:00Z",
     "sent_at": "2026-05-30T13:18:03.542539+00:00",
     "result_checked": false
+  },
+  "b1a1905b1b99359611f8311b639d239c": {
+    "match": "FC Lahti vs Ilves Tampere",
+    "home": "FC Lahti",
+    "away": "Ilves Tampere",
+    "pick": "FC Lahti",
+    "market": "h2h",
+    "odds": 2.55,
+    "commence_time": "2026-05-30T14:00:00Z",
+    "sent_at": "2026-05-30T13:53:56.060935+00:00",
+    "result_checked": false
+  },
+  "287d655e8c74805b11991bff0382a610": {
+    "match": "Molde vs Sandefjord",
+    "home": "Molde",
+    "away": "Sandefjord",
+    "pick": "Molde",
+    "market": "h2h_lay",
+    "odds": 1.7,
+    "commence_time": "2026-05-30T14:00:00Z",
+    "sent_at": "2026-05-30T13:55:12.887380+00:00",
+    "result_checked": false
+  },
+  "9008dbcd760cb157b2aeff5cfa46d5a8": {
+    "match": "TPS Turku vs VPS Vaasa",
+    "home": "TPS Turku",
+    "away": "VPS Vaasa",
+    "pick": "VPS Vaasa",
+    "market": "h2h",
+    "odds": 2.31,
+    "commence_time": "2026-05-30T14:00:00Z",
+    "sent_at": "2026-05-30T13:55:16.849876+00:00",
+    "result_checked": false
   }
 }

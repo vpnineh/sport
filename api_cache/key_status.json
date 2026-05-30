@@ -12,15 +12,15 @@
     "status": "ok",
     "remaining": 492,
     "used": "8",
-    "last_used": "2026-05-30T13:17:46.382216+00:00",
+    "last_used": "2026-05-30T13:53:54.674735+00:00",
     "last_error": null
   },
   "d8d7ed06": {
     "prefix": "1275084d…",
     "status": "ok",
-    "remaining": 500,
-    "used": "0",
-    "last_used": "2026-05-30T13:17:46.160935+00:00",
+    "remaining": 492,
+    "used": "8",
+    "last_used": "2026-05-30T13:53:54.875968+00:00",
     "last_error": null
   }
 }

@@ -1642,3 +1642,231 @@
 2026-05-30 13:18:06 | INFO     | ============================================================
 2026-05-30 13:18:06 | INFO     | CHECK | Signals sent                               | OK | 5
 2026-05-30 13:18:06 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=500
+2026-05-30 13:53:54 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:53:54 | INFO     |   KEY STATUS
+2026-05-30 13:53:54 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 13:53:54 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-30 13:53:54 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-30 13:53:54 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-30 13:53:54 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-30 13:53:54 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=7903…
+2026-05-30 13:53:54 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-30 13:53:54 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-30 13:53:54 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-30 13:53:54 | INFO     | Odds API keys available: 3/3
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.0 STARTING
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | OddsKeyManager status:
+2026-05-30 13:53:54 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-30 13:53:54 | INFO     |   key=4342465d…    status=ok         remaining=492   used=8
+2026-05-30 13:53:54 | INFO     |   key=1275084d…    status=ok         remaining=500   used=0
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-30 13:53:54 | INFO     | Key 4342465d… updated: status=ok remaining=492 used=8
+2026-05-30 13:53:54 | INFO     | Key 4342465d… ✅ VALID | sports=47 remaining=492 used=8
+2026-05-30 13:53:54 | INFO     | Key 1275084d… updated: status=ok remaining=500 used=0
+2026-05-30 13:53:54 | INFO     | Key 1275084d… ✅ VALID | sports=47 remaining=500 used=0
+2026-05-30 13:53:54 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=500
+2026-05-30 13:53:54 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=500)
+2026-05-30 13:53:54 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:53:54 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:53:54 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 13:53:54 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 13:53:54 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 13:53:54 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 13:53:54 | INFO     | FD call counter reset (new day)
+2026-05-30 13:53:54 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | CHECK | Pending results                            | OK | 0
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=500
+2026-05-30 13:53:54 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=500)
+2026-05-30 13:53:54 | INFO     | Attempt 1/4 with key=1275084d…
+2026-05-30 13:53:54 | INFO     | Key 1275084d… updated: status=ok remaining=492 used=8
+2026-05-30 13:53:54 | INFO     | API▶ OddsAPI                | status=200 | records=8    | {'regions': 'eu,us,uk,au', 'markets': 'h2h,totals'}
+2026-05-30 13:53:54 | DEBUG    | API▶ OddsAPI                | sample=remaining=492 used=8
+2026-05-30 13:53:54 | INFO     | OddsAPI ✅ | key=1275084d… | remaining=492 used=8 | events=8
+2026-05-30 13:53:54 | INFO     | ✅ Got 8 events from key=1275084d…
+2026-05-30 13:53:54 | INFO     | CHECK | Total events                               | OK | 8
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     | Processing: Moise Kouame vs Alejandro Tabilo [ATP French Open]
+2026-05-30 13:53:54 | INFO     | EV [h2h_lay] pick='Moise Kouame' ev=2.9% odds=5.00 bookie=Smarkets elo=False
+2026-05-30 13:53:54 | INFO     | SKIP duplicate: Moise Kouame vs Alejandro Tabilo
+2026-05-30 13:53:54 | INFO     | Processing: KuPS Kuopio vs FC Inter Turku [Veikkausliiga - Finland]
+2026-05-30 13:53:54 | INFO     | Processing: FC Lahti vs Ilves Tampere [Veikkausliiga - Finland]
+2026-05-30 13:53:54 | INFO     | EV [h2h] pick='FC Lahti' ev=1.6% odds=2.55 bookie=Coolbet elo=False
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | INFO     |   STATS: FC Lahti vs Ilves Tampere
+2026-05-30 13:53:54 | INFO     | ============================================================
+2026-05-30 13:53:54 | WARNING  | ELO insufficient: FC Lahti(hm=0) Ilves Tampere(am=0)
+2026-05-30 13:53:54 | DEBUG    | SofaScore 429 Limit Reached on: https://sofascore.p.rapidapi.com/search
+2026-05-30 13:53:55 | INFO     | SofaScore: no match_id for 'FC Lahti' vs 'Ilves Tampere'
+2026-05-30 13:53:55 | INFO     | SofaScore: no match_id for 'FC Lahti' vs 'Ilves Tampere'
+2026-05-30 13:53:55 | INFO     | DATA QUALITY | FC Lahti vs Ilves Tampere | NONE (fb=False ss=False elo=False)
+2026-05-30 13:53:55 | INFO     | Confidence=59 risk=High (dq=none ev=1.7% hm=0 am=0 sharp=True)
+2026-05-30 13:53:55 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=272 | out={
+"sport_emoji": "⚽️",
+  "home_flag": "🇫🇮",
+  "away_flag": "🇫🇮",
+  "logic": "Sha
+2026-05-30 13:53:55 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:53:55 | INFO     | Groq llama-3.1-8b-instant             | tokens=167 | out={
+  "validated_logic": "Contrarian bet on FC Lahti due to market overpricing of 
+2026-05-30 13:53:55 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:53:55 | INFO     | AI final conf=59 risk=High | 'Contrarian bet on FC Lahti due to market overpricing of Ilves Tampere, indicatin'
+2026-05-30 13:53:55 | INFO     | SIGNAL | FC Lahti vs Ilves Tampere | pick=FC Lahti to Win odds=2.55 ev=1.6% conf=59%
+2026-05-30 13:53:56 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 581}
+2026-05-30 13:53:56 | INFO     | ✅ Sent: FC Lahti vs Ilves Tampere
+2026-05-30 13:53:59 | INFO     | Processing: IF Gnistan vs SJK Seinäjoki [Veikkausliiga - Finland]
+2026-05-30 13:53:59 | DEBUG    | Invalid implied_sum 2.035 for totals
+2026-05-30 13:53:59 | INFO     | Processing: Matteo Arnaldi vs Raphael Collignon [ATP French Open]
+2026-05-30 13:53:59 | INFO     | EV [h2h_lay] pick='Matteo Arnaldi' ev=2.2% odds=3.10 bookie=Smarkets elo=False
+2026-05-30 13:53:59 | INFO     | SKIP duplicate: Matteo Arnaldi vs Raphael Collignon
+2026-05-30 13:53:59 | INFO     | Processing: Molde vs Sandefjord [Eliteserien - Norway]
+2026-05-30 13:53:59 | DEBUG    | Invalid implied_sum 2.035 for totals
+2026-05-30 13:53:59 | INFO     | EV [h2h_lay] pick='Molde' ev=2.1% odds=1.70 bookie=Betfair elo=False
+2026-05-30 13:53:59 | INFO     | ============================================================
+2026-05-30 13:53:59 | INFO     |   STATS: Molde vs Sandefjord
+2026-05-30 13:53:59 | INFO     | ============================================================
+2026-05-30 13:53:59 | WARNING  | ELO insufficient: Molde(hm=0) Sandefjord(am=0)
+2026-05-30 13:53:59 | DEBUG    | SofaScore 429 Limit Reached on: https://sofascore.p.rapidapi.com/search
+2026-05-30 13:53:59 | INFO     | SofaScore: no match_id for 'Molde' vs 'Sandefjord'
+2026-05-30 13:53:59 | INFO     | SofaScore: no match_id for 'Molde' vs 'Sandefjord'
+2026-05-30 13:54:00 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:00 | DEBUG    | FD /competitions/2021/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:00 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:54:00 | DEBUG    | API▶ FootballData           | sample=comp=PL
+2026-05-30 13:54:01 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:01 | DEBUG    | FD /competitions/2014/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:01 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:54:01 | DEBUG    | API▶ FootballData           | sample=comp=PD
+2026-05-30 13:54:03 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:03 | DEBUG    | FD /competitions/2002/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:03 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:54:03 | DEBUG    | API▶ FootballData           | sample=comp=BL1
+2026-05-30 13:54:05 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:05 | DEBUG    | FD /competitions/2019/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:05 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:54:05 | DEBUG    | API▶ FootballData           | sample=comp=SA
+2026-05-30 13:54:06 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:06 | DEBUG    | FD /competitions/2015/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:06 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:54:06 | DEBUG    | API▶ FootballData           | sample=comp=FL1
+2026-05-30 13:54:07 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:07 | DEBUG    | FD /competitions/2003/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:07 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:54:07 | DEBUG    | API▶ FootballData           | sample=comp=DED
+2026-05-30 13:54:08 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:08 | DEBUG    | FD /competitions/2017/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:08 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:54:08 | DEBUG    | API▶ FootballData           | sample=comp=PPL
+2026-05-30 13:54:09 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:09 | DEBUG    | FD /competitions/2016/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:09 | INFO     | API▶ FootballData           | status=200 | records=24   | {'season': '2024'}
+2026-05-30 13:54:09 | DEBUG    | API▶ FootballData           | sample=comp=ELC
+2026-05-30 13:54:11 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:11 | DEBUG    | FD /competitions/2001/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:11 | INFO     | API▶ FootballData           | status=200 | records=36   | {'season': '2024'}
+2026-05-30 13:54:11 | DEBUG    | API▶ FootballData           | sample=comp=CL
+2026-05-30 13:54:11 | WARNING  | FD: team 'Molde' NOT found
+2026-05-30 13:54:12 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:12 | DEBUG    | FD /competitions/2021/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:12 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:54:12 | DEBUG    | API▶ FootballData           | sample=comp=PL
+2026-05-30 13:54:13 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:54:13 | DEBUG    | FD /competitions/2014/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:54:13 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:54:13 | DEBUG    | API▶ FootballData           | sample=comp=PD
+2026-05-30 13:54:14 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-30 13:54:14 | WARNING  | 429 _get — sleep 9s
+2026-05-30 13:54:26 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-30 13:54:26 | WARNING  | 429 _get — sleep 18s
+2026-05-30 13:54:51 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-30 13:54:51 | WARNING  | 429 _get — sleep 9s
+2026-05-30 13:55:05 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:05 | DEBUG    | FD /competitions/2019/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:05 | INFO     | API▶ FootballData           | status=200 | records=20   | {'season': '2024'}
+2026-05-30 13:55:05 | DEBUG    | API▶ FootballData           | sample=comp=SA
+2026-05-30 13:55:07 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:07 | DEBUG    | FD /competitions/2015/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:07 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:55:07 | DEBUG    | API▶ FootballData           | sample=comp=FL1
+2026-05-30 13:55:08 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:08 | DEBUG    | FD /competitions/2003/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:08 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:55:08 | DEBUG    | API▶ FootballData           | sample=comp=DED
+2026-05-30 13:55:09 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:09 | DEBUG    | FD /competitions/2017/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:09 | INFO     | API▶ FootballData           | status=200 | records=18   | {'season': '2024'}
+2026-05-30 13:55:09 | DEBUG    | API▶ FootballData           | sample=comp=PPL
+2026-05-30 13:55:10 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:10 | DEBUG    | FD /competitions/2016/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:10 | INFO     | API▶ FootballData           | status=200 | records=24   | {'season': '2024'}
+2026-05-30 13:55:10 | DEBUG    | API▶ FootballData           | sample=comp=ELC
+2026-05-30 13:55:11 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-30 13:55:11 | DEBUG    | FD /competitions/2001/teams → keys=['count', 'filters', 'competition', 'season', 'teams']
+2026-05-30 13:55:11 | INFO     | API▶ FootballData           | status=200 | records=36   | {'season': '2024'}
+2026-05-30 13:55:11 | DEBUG    | API▶ FootballData           | sample=comp=CL
+2026-05-30 13:55:11 | WARNING  | FD: team 'Sandefjord' NOT found
+2026-05-30 13:55:11 | WARNING  | CHECK | FD id 'Molde'                              | EMPTY/NONE
+2026-05-30 13:55:11 | WARNING  | CHECK | FD id 'Sandefjord'                         | EMPTY/NONE
+2026-05-30 13:55:11 | INFO     | DATA QUALITY | Molde vs Sandefjord | NONE (fb=False ss=False elo=False)
+2026-05-30 13:55:11 | INFO     | Confidence=59 risk=High (dq=none ev=2.1% hm=0 am=0 sharp=True)
+2026-05-30 13:55:11 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=262 | out={
+"sport_emoji": "⚽️",
+  "home_flag": "🇳🇴",
+  "away_flag": "🇳🇴",
+  "logic": "Sha
+2026-05-30 13:55:11 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:55:12 | INFO     | Groq llama-3.1-8b-instant             | tokens=174 | out={
+  "validated_logic": "Sharp market discrepancy indicates value on Molde, marke
+2026-05-30 13:55:12 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:55:12 | INFO     | AI final conf=59 risk=High | 'Sharp market discrepancy indicates value on Molde, market overpriced on Sandefjo'
+2026-05-30 13:55:12 | INFO     | SIGNAL | Molde vs Sandefjord | pick=Molde odds=1.70 ev=2.1% conf=59%
+2026-05-30 13:55:12 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 600}
+2026-05-30 13:55:12 | INFO     | ✅ Sent: Molde vs Sandefjord
+2026-05-30 13:55:15 | INFO     | Processing: Oklahoma Sooners vs The Citadel Bulldogs [NCAA Baseball]
+2026-05-30 13:55:15 | DEBUG    | No sharp line: h2h
+2026-05-30 13:55:15 | DEBUG    | No sharp line: totals
+2026-05-30 13:55:15 | INFO     | Processing: TPS Turku vs VPS Vaasa [Veikkausliiga - Finland]
+2026-05-30 13:55:15 | INFO     | EV [h2h] pick='VPS Vaasa' ev=2.5% odds=2.31 bookie=GTbets elo=False
+2026-05-30 13:55:15 | INFO     | EV [h2h_lay] pick='VPS Vaasa' ev=2.2% odds=2.28 bookie=Betfair elo=False
+2026-05-30 13:55:15 | INFO     | ============================================================
+2026-05-30 13:55:15 | INFO     |   STATS: TPS Turku vs VPS Vaasa
+2026-05-30 13:55:15 | INFO     | ============================================================
+2026-05-30 13:55:15 | WARNING  | ELO insufficient: TPS Turku(hm=0) VPS Vaasa(am=0)
+2026-05-30 13:55:15 | DEBUG    | SofaScore 429 Limit Reached on: https://sofascore.p.rapidapi.com/search
+2026-05-30 13:55:16 | INFO     | SofaScore: no match_id for 'TPS Turku' vs 'VPS Vaasa'
+2026-05-30 13:55:16 | INFO     | SofaScore: no match_id for 'TPS Turku' vs 'VPS Vaasa'
+2026-05-30 13:55:16 | INFO     | DATA QUALITY | TPS Turku vs VPS Vaasa | NONE (fb=False ss=False elo=False)
+2026-05-30 13:55:16 | INFO     | Confidence=59 risk=High (dq=none ev=2.5% hm=0 am=0 sharp=True)
+2026-05-30 13:55:16 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=269 | out={
+"sport_emoji": "⚽️",
+  "home_flag": "🇫🇮",
+  "away_flag": "🇫🇮",
+  "logic": "Sha
+2026-05-30 13:55:16 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 13:55:16 | INFO     | Groq llama-3.1-8b-instant             | tokens=169 | out={
+  "validated_logic": "Sharp market discrepancy indicates value on VPS Vaasa, a
+2026-05-30 13:55:16 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 13:55:16 | INFO     | AI final conf=59 risk=High | 'Sharp market discrepancy indicates value on VPS Vaasa, a mispriced underdog. Mar'
+2026-05-30 13:55:16 | INFO     | SIGNAL | TPS Turku vs VPS Vaasa | pick=VPS Vaasa to Win odds=2.31 ev=2.5% conf=59%
+2026-05-30 13:55:16 | INFO     | API▶ Telegram               | status=200 | records=1    | {'chunk': 1, 'len': 603}
+2026-05-30 13:55:16 | INFO     | ✅ Sent: TPS Turku vs VPS Vaasa
+2026-05-30 13:55:19 | INFO     | ============================================================
+2026-05-30 13:55:19 | INFO     |   RUN COMPLETE
+2026-05-30 13:55:19 | INFO     | ============================================================
+2026-05-30 13:55:19 | INFO     | CHECK | Signals sent                               | OK | 3
+2026-05-30 13:55:19 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=492
