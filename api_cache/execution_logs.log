@@ -1870,3 +1870,144 @@
 2026-05-30 13:55:19 | INFO     | ============================================================
 2026-05-30 13:55:19 | INFO     | CHECK | Signals sent                               | OK | 3
 2026-05-30 13:55:19 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=492
+2026-05-30 18:30:12 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 18:30:12 | INFO     |   KEY STATUS
+2026-05-30 18:30:12 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-30 18:30:12 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-30 18:30:12 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-30 18:30:12 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-30 18:30:12 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-30 18:30:12 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=7903…
+2026-05-30 18:30:12 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-30 18:30:12 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-30 18:30:12 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-30 18:30:12 | INFO     | Odds API keys available: 3/3
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     |   ZBET90 ENTERPRISE ENGINE v4.1 STARTING
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     | OddsKeyManager status:
+2026-05-30 18:30:12 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-30 18:30:12 | INFO     |   key=4342465d…    status=ok         remaining=492   used=8
+2026-05-30 18:30:12 | INFO     |   key=1275084d…    status=ok         remaining=492   used=8
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-30 18:30:12 | INFO     | Key 4342465d… updated: status=ok remaining=492 used=8
+2026-05-30 18:30:12 | INFO     | Key 4342465d… ✅ VALID | sports=48 remaining=492 used=8
+2026-05-30 18:30:12 | INFO     | Key 1275084d… updated: status=ok remaining=492 used=8
+2026-05-30 18:30:12 | INFO     | Key 1275084d… ✅ VALID | sports=48 remaining=492 used=8
+2026-05-30 18:30:12 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=492
+2026-05-30 18:30:12 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:12 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 18:30:12 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 18:30:12 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 18:30:12 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 18:30:12 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 18:30:12 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 18:30:12 | INFO     | CHECK | FD calls today                             | OK | 17
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 18:30:12 | INFO     | ============================================================
+2026-05-30 18:30:12 | INFO     | CHECK | Pending results                            | OK | 8
+2026-05-30 18:30:12 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:12 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=492 | 1275084d…:ok/rem=492
+2026-05-30 18:30:13 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=492)
+2026-05-30 18:30:13 | INFO     | Attempt 1/4 with key=4342465d…
+2026-05-30 18:30:13 | INFO     | Key 4342465d… updated: status=ok remaining=484 used=16
+2026-05-30 18:30:13 | INFO     | API▶ OddsAPI                | status=200 | records=8    | {'regions': 'eu,us,uk,au', 'markets': 'h2h,totals'}
+2026-05-30 18:30:13 | DEBUG    | API▶ OddsAPI                | sample=remaining=484 used=16
+2026-05-30 18:30:13 | INFO     | OddsAPI ✅ | key=4342465d… | remaining=484 used=16 | events=8
+2026-05-30 18:30:13 | INFO     | ✅ Got 8 events from key=4342465d…
+2026-05-30 18:30:13 | INFO     | CHECK | Total events                               | OK | 8
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     | Processing: Felix Auger-Aliassime vs Brandon Nakashima [ATP French Open]
+2026-05-30 18:30:13 | INFO     | EV [h2h_lay] pick='Brandon Nakashima' ev=2.2% odds=3.80 bookie=Smarkets elo=False
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     |   STATS: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-30 18:30:13 | INFO     | ============================================================
+2026-05-30 18:30:13 | INFO     | ELO | Felix Auger-Aliassime vs Brandon Nakashima | H=25.7% D=0.0% A=74.3% | hm=0 am=176 diff=-185
+2026-05-30 18:30:14 | DEBUG    | ❌ [Sofa-Search] HTTP 403: https://api.sofascore.com/api/v1/search/all
+2026-05-30 18:30:14 | DEBUG    | ✅ [ESPN-atp] https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard → 200
+2026-05-30 18:30:14 | DEBUG    | ✅ [ESPN-atp] https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard → 200
+2026-05-30 18:30:15 | DEBUG    | ✅ [ESPN-wta] https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard → 200
+2026-05-30 18:30:15 | DEBUG    | ✅ [ESPN-wta] https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard → 200
+2026-05-30 18:30:15 | INFO     | StatsProvider | Felix Auger-Aliassime vs Brandon Nakashima | sources=[] | keys=[]
+2026-05-30 18:30:15 | INFO     | DATA QUALITY | Felix Auger-Aliassime vs Brandon Nakashima | MEDIUM (fb=False ss=False elo=True sources=[])
+2026-05-30 18:30:15 | INFO     | Confidence=67 risk=Medium (dq=medium ev=2.2% hm=0 am=176 sharp=True)
+2026-05-30 18:30:15 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=269 | out={
+"sport_emoji": "🎾",
+  "home_flag": "🇨🇦",
+  "away_flag": "🇺🇸",
+  "logic": "Shar
+2026-05-30 18:30:15 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 18:30:16 | INFO     | Groq llama-3.1-8b-instant             | tokens=180 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick, favoring Nakas
+2026-05-30 18:30:16 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 18:30:16 | INFO     | SIGNAL | Felix Auger-Aliassime vs Brandon Nakashima | pick=Brandon Nakashima odds=3.80 ev=2.2% conf=67%
+2026-05-30 18:30:16 | INFO     | ✅ Sent: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-30 18:30:19 | INFO     | Processing: Missouri St Bears vs Northeastern Huskies [NCAA Baseball]
+2026-05-30 18:30:19 | INFO     | Processing: Arizona St Sun Devils vs South Dakota St Jackrabbits [NCAA Baseball]
+2026-05-30 18:30:19 | INFO     | EV [h2h] pick='South Dakota St Jackrabbits' ev=11.8% odds=5.75 bookie=1xBet elo=False
+2026-05-30 18:30:19 | INFO     | ============================================================
+2026-05-30 18:30:19 | INFO     |   STATS: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-30 18:30:19 | INFO     | ============================================================
+2026-05-30 18:30:19 | DEBUG    | ❌ [Sofa-Search] HTTP 403: https://api.sofascore.com/api/v1/search/all
+2026-05-30 18:30:19 | INFO     | StatsProvider | Arizona St Sun Devils vs South Dakota St Jackrabbits | sources=[] | keys=[]
+2026-05-30 18:30:19 | INFO     | DATA QUALITY | Arizona St Sun Devils vs South Dakota St Jackrabbits | NONE (fb=False ss=False elo=False sources=[])
+2026-05-30 18:30:19 | INFO     | Confidence=67 risk=Medium (dq=none ev=11.8% hm=0 am=0 sharp=True)
+2026-05-30 18:30:20 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=284 | out={
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "logic": "Sha
+2026-05-30 18:30:20 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 18:30:20 | INFO     | Groq llama-3.1-8b-instant             | tokens=214 | out={
+  "validated_logic": "Sharp market discrepancy indicates value on the underdog
+2026-05-30 18:30:20 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 18:30:20 | INFO     | SIGNAL | Arizona St Sun Devils vs South Dakota St Jackrabbits | pick=South Dakota St Jackrabbits to Win odds=5.75 ev=11.8% conf=67%
+2026-05-30 18:30:20 | INFO     | ✅ Sent: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-30 18:30:23 | INFO     | Processing: Tommy Hawthorn vs Ashlee Evans-Smith [MMA]
+2026-05-30 18:30:23 | INFO     | Processing: Atletico Goianiense vs Goiás [Brazil Série B]
+2026-05-30 18:30:23 | INFO     | Processing: Atletico Paranaense vs Mirassol [Brazil Série A]
+2026-05-30 18:30:23 | INFO     | Processing: NC State Wolfpack vs Auburn Tigers [NCAA Baseball]
+2026-05-30 18:30:23 | INFO     | EV [h2h] pick='NC State Wolfpack' ev=2.4% odds=3.25 bookie=BetOnline.ag elo=False
+2026-05-30 18:30:23 | INFO     | ============================================================
+2026-05-30 18:30:23 | INFO     |   STATS: NC State Wolfpack vs Auburn Tigers
+2026-05-30 18:30:23 | INFO     | ============================================================
+2026-05-30 18:30:23 | DEBUG    | ❌ [Sofa-Search] HTTP 403: https://api.sofascore.com/api/v1/search/all
+2026-05-30 18:30:23 | INFO     | StatsProvider | NC State Wolfpack vs Auburn Tigers | sources=[] | keys=[]
+2026-05-30 18:30:23 | INFO     | DATA QUALITY | NC State Wolfpack vs Auburn Tigers | NONE (fb=False ss=False elo=False sources=[])
+2026-05-30 18:30:23 | INFO     | Confidence=59 risk=High (dq=none ev=2.4% hm=0 am=0 sharp=True)
+2026-05-30 18:30:24 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=259 | out={
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "logic": "Sha
+2026-05-30 18:30:24 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-30 18:30:24 | INFO     | Groq llama-3.1-8b-instant             | tokens=167 | out={
+  "validated_logic": "Sharp market discrepancy indicates value on NC State Wol
+2026-05-30 18:30:24 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-30 18:30:24 | INFO     | SIGNAL | NC State Wolfpack vs Auburn Tigers | pick=NC State Wolfpack to Win odds=3.25 ev=2.4% conf=59%
+2026-05-30 18:30:24 | INFO     | ✅ Sent: NC State Wolfpack vs Auburn Tigers
+2026-05-30 18:30:27 | INFO     | Processing: Avai vs Criciuma [Brazil Série B]
+2026-05-30 18:30:27 | INFO     | ============================================================
+2026-05-30 18:30:27 | INFO     |   RUN COMPLETE
+2026-05-30 18:30:27 | INFO     | ============================================================
+2026-05-30 18:30:27 | INFO     | CHECK | Signals sent                               | OK | 3
+2026-05-30 18:30:27 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=484 | 1275084d…:ok/rem=492
