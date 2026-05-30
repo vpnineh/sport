@@ -1366,3 +1366,32 @@
 2026-05-30 09:11:39 | INFO     | CHECK | Odds API requests used this month        | OK | 499
 2026-05-30 09:11:39 | ERROR    | Odds API HTTP 401
 2026-05-30 09:11:39 | INFO     | No events in 2h window
+2026-05-30 11:04:56 | INFO     | CHECK | ODDS_API_KEY                               | OK | True
+2026-05-30 11:04:56 | INFO     | CHECK | GROQ_API_KEY                               | OK | True
+2026-05-30 11:04:56 | INFO     | CHECK | RAPIDAPI_KEY                               | OK | True
+2026-05-30 11:04:56 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                         | OK | True
+2026-05-30 11:04:56 | INFO     | CHECK | TELEGRAM_CHAT_ID                           | OK | True
+2026-05-30 11:04:56 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                      | OK | True
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.3 STARTING
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 11:04:56 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 11:04:56 | INFO     | Bootstrap: data is fresh
+2026-05-30 11:04:56 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-30 11:04:56 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-30 11:04:56 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-30 11:04:56 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-30 11:04:56 | INFO     | Football-Data call counter reset (new day)
+2026-05-30 11:04:56 | INFO     | CHECK | Football-Data calls today                  | OK | 0
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     | CHECK | Pending results to check                   | OK | 0
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-30 11:04:56 | INFO     | ============================================================
+2026-05-30 11:04:56 | INFO     | API▶ OddsAPI            | https://api.the-odds-api.com/v4/sports/upcoming/odds | status=401 | records=0 | params={'apiKey': 'b99dc2cfbe0dfe7b36d776c9ea88192b', 'regions': 'eu,us,uk,au', 'markets': 'h2h,totals', 'oddsFormat': 'decimal
+2026-05-30 11:04:56 | DEBUG    | API▶ OddsAPI            | sample={"message":"Usage quota has been reached. See usage plans at https://the-odds-api.com","error_code":"OUT_OF_USAGE_CREDITS","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.htm
+2026-05-30 11:04:56 | ERROR    | Odds API HTTP 401
+2026-05-30 11:04:56 | INFO     | No events in 2h window — exiting
