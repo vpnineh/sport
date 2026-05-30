@@ -2605,23 +2605,23 @@ def build_telegram_message(
 
     return (
         f"{se} <b>{html_lib.escape(sport)}</b>\n"
-        f"{SEP}\n"
+        f"\n"
         f"{hf} <b>{html_lib.escape(home)}</b>"
         f"  vs  "
         f"<b>{html_lib.escape(away)}</b> {af}\n"
         f"⏱ <b>Kick-off in:</b> {cd}\n"
-        f"{SEP}\n"
+        f"\n"
         f"📌 <b>Market:</b> {html_lib.escape(ml)}\n"
         f"🎯 <b>Pick:</b> <code>{html_lib.escape(display_pick)}</code>\n"
         f"💰 <b>Odds:</b> <code>{opp['odds']:.2f}</code> "
         f"<i>({html_lib.escape(bk)})</i>\n"
-        f"{SEP}\n"
+        f"\n"
         f"{ri} <b>Risk:</b> {risk}  "
         f"{ci} <b>Confidence:</b> {conf}%\n"
-        f"{SEP}\n"
+        f"\n"
         f"💡 <b>Analysis:</b>\n"
         f"<blockquote>{lo}</blockquote>\n"
-        f"{SEP}\n"
+        f"\n"
         f"🆔 {CFG.TELEGRAM_ID}"
     )
 
