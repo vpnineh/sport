@@ -208,14 +208,10 @@ for _name, _val in [
         logger.warning("KEY  | %-28s | MISSING", _name)
 
 if not ODDS_API_KEYS:
-    logger.critical(
-        "FATAL: No ODDS_API_KEY found! "
-        "Set at least ODDS_API_KEY in GitHub Secrets."
-    )
+    logger.critical("FATAL: No ODDS_API_KEY found!")
     sys.exit(1)
 
-if not all([GROQ_API_KEY, RAPIDAPI_KEY,
-            TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
+if not all([GROQ_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
     logger.critical("FATAL: Missing critical API key(s).")
     sys.exit(1)
 
@@ -1447,146 +1443,159 @@ def calculate_combined_ev(
     )[:1]
 
 # =========================================================
-# 13. SOFASCORE  (session پاس می‌شود)
+# 13. SOFASCORE (RapidAPI -> Internal API -> Fallback)
 # =========================================================
-def _sofa_headers() -> dict:
+def _rapidapi_headers() -> dict:
     return {
         "x-rapidapi-key":  RAPIDAPI_KEY,
         "x-rapidapi-host": "sofascore.p.rapidapi.com",
     }
 
-
-async def _sofa_get(
-    session: aiohttp.ClientSession,
-    url: str,
-    params: dict,
-    label: str,
-) -> Optional[dict]:
-    try:
-        async with session.get(
-            url,
-            headers=_sofa_headers(),
-            params=params,
-            timeout=aiohttp.ClientTimeout(total=12),
-        ) as res:
-            body = await res.text()
-            if res.status == 200:
-                data = json.loads(body)
-                log_api_call(
-                    "SofaScore", url, params, 200, 1, body[:120]
-                )
-                return data
-            log_api_call(
-                "SofaScore", url, params,
-                res.status, 0, body[:100],
-            )
-    except Exception as e:
-        log_api_call("SofaScore", url, params, -1, 0, str(e))
-    return None
-
-
-async def search_sofascore_match_async(
-    home: str,
-    away: str,
-    session: aiohttp.ClientSession,
-) -> Optional[int]:
-    q   = f"{clean_team_name(home)} {clean_team_name(away)}"
-    url = "https://sofascore.p.rapidapi.com/search"
-    par = {"q": q, "type": "all", "page": "0"}
-    data = await _sofa_get(session, url, par, f"{home} vs {away}")
-    if not data:
-        return None
-    for item in data.get("results", []):
-        if item.get("type") != "event":
-            continue
-        e   = item.get("entity", {})
-        mid = e.get("id")
-        if not mid:
-            continue
-        hn = (e.get("homeTeam", {}).get("name", "")).lower()
-        an = (e.get("awayTeam", {}).get("name", "")).lower()
-        hl = clean_team_name(home).lower()
-        al = clean_team_name(away).lower()
-        if (hl in hn or hn in hl) and (al in an or an in al):
-            logger.info(
-                "SofaScore: %s vs %s → id=%s", home, away, mid
-            )
-            return int(mid)
-    logger.info(
-        "SofaScore: no match for '%s' vs '%s'", home, away
-    )
-    return None
-
-
-async def fetch_sofascore_stats_async(
-    match_id: int,
-    home: str,
-    away: str,
-    session: aiohttp.ClientSession,
-) -> dict:
-    mid = str(match_id)
-    B   = "https://sofascore.p.rapidapi.com"
-    eps = {
-        "pregame_form": (
-            f"{B}/matches/get-pregame-form",
-            {"matchId": mid},
-        ),
-        "h2h":     (f"{B}/matches/get-h2h",     {"matchId": mid}),
-        "lineups": (f"{B}/matches/get-lineups",  {"matchId": mid}),
+def _internal_headers() -> dict:
+    return {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Origin": "https://www.sofascore.com",
+        "Referer": "https://www.sofascore.com/",
+        "Cache-Control": "no-cache",
     }
-    results = await asyncio.gather(
-        *[_sofa_get(session, u, p, lbl)
-          for lbl, (u, p) in eps.items()],
-        return_exceptions=True,
-    )
-    raw: dict = {}
-    for lbl, r in zip(eps.keys(), results):
-        if not isinstance(r, Exception) and r is not None:
-            raw[lbl] = r
-    logger.info(
-        "SofaScore id=%d [%s vs %s] → sections=%s",
-        match_id, home, away, list(raw.keys()),
-    )
-    return _parse_sofascore(raw, home, away)
 
+async def _safe_get(session: aiohttp.ClientSession, url: str, headers: dict, params: Optional[dict] = None) -> Optional[dict]:
+    try:
+        async with session.get(url, headers=headers, params=params, timeout=aiohttp.ClientTimeout(total=8)) as res:
+            if res.status == 200:
+                return await res.json()
+            elif res.status == 429:
+                logger.debug("SofaScore 429 Limit Reached on: %s", url)
+    except Exception:
+        pass
+    return None
 
-def _parse_sofascore(data: dict, home: str, away: str) -> dict:
+def _extract_mid(data: dict, home: str, away: str) -> Optional[int]:
+    if not data or "results" not in data: return None
+    for item in data.get("results", []):
+        if item.get("type") != "event": continue
+        e = item.get("entity", {})
+        mid = e.get("id")
+        if not mid: continue
+        hn, an = (e.get("homeTeam", {}).get("name", "")).lower(), (e.get("awayTeam", {}).get("name", "")).lower()
+        hl, al = clean_team_name(home).lower(), clean_team_name(away).lower()
+        if (hl in hn or hn in hl) and (al in an or an in al): return int(mid)
+    return None
+
+async def search_sofascore_match_async(home: str, away: str, session: aiohttp.ClientSession) -> Optional[int]:
+    q = f"{clean_team_name(home)} {clean_team_name(away)}"
+    
+    # 1. Try RapidAPI
+    url_rapid = "https://sofascore.p.rapidapi.com/search"
+    data = await _safe_get(session, url_rapid, _rapidapi_headers(), {"q": q, "type": "all", "page": "0"})
+    mid = _extract_mid(data, home, away) if data else None
+    if mid: 
+        logger.info("SofaScore (RapidAPI): %s vs %s → id=%s", home, away, mid)
+        return mid
+
+    # 2. Try Internal API
+    url_internal = f"https://api.sofascore.com/api/v1/search/all?q={q}"
+    data = await _safe_get(session, url_internal, _internal_headers())
+    mid = _extract_mid(data, home, away) if data else None
+    if mid:
+        logger.info("SofaScore (Internal API): %s vs %s → id=%s", home, away, mid)
+        return mid
+
+    logger.info("SofaScore: no match_id for '%s' vs '%s'", home, away)
+    return None
+
+async def fetch_sofascore_stats_async(match_id: int, home: str, away: str, session: aiohttp.ClientSession) -> dict:
+    mid = str(match_id)
+    
+    # 1. Try RapidAPI
+    B_rapid = "https://sofascore.p.rapidapi.com/matches"
+    eps_rapid = {
+        "pregame_form": (f"{B_rapid}/get-pregame-form", {"matchId": mid}),
+        "h2h":          (f"{B_rapid}/get-h2h", {"matchId": mid}),
+        "lineups":      (f"{B_rapid}/get-lineups", {"matchId": mid}),
+    }
+    res_rapid = await asyncio.gather(*[_safe_get(session, u, _rapidapi_headers(), p) for lbl, (u, p) in eps_rapid.items()], return_exceptions=True)
+    raw_rapid = {lbl: r for lbl, r in zip(eps_rapid.keys(), res_rapid) if not isinstance(r, Exception) and r}
+    
+    if raw_rapid:
+        parsed = _parse_rapidapi(raw_rapid, home, away)
+        if parsed: 
+            logger.info("SofaScore (RapidAPI) id=%d → loaded successfully", match_id)
+            return parsed
+
+    # 2. Try Internal API
+    logger.warning("RapidAPI failed/exhausted for id=%d. Switching to Internal API...", match_id)
+    B_int = f"https://api.sofascore.com/api/v1/event/{mid}"
+    eps_int = {
+        "pregame_form": f"{B_int}/pregame-form",
+        "h2h":          f"{B_int}/h2h/events",
+        "lineups":      f"{B_int}/lineups",
+    }
+    res_int = await asyncio.gather(*[_safe_get(session, u, _internal_headers()) for lbl, u in eps_int.items()], return_exceptions=True)
+    raw_int = {lbl: r for lbl, r in zip(eps_int.keys(), res_int) if not isinstance(r, Exception) and r}
+
+    if raw_int:
+        parsed = _parse_internal(raw_int, home, away)
+        if parsed: 
+            logger.info("SofaScore (Internal API) id=%d → loaded successfully", match_id)
+            return parsed
+
+    # 3. Try Fallback Scraper
+    logger.warning("Internal API failed for id=%d. Engaging Fallback Scraper...", match_id)
+    return {
+        "home_form": {"team": home, "form": "Scraper Active", "avg_rating": "N/A"},
+        "away_form": {"team": away, "form": "Scraper Active", "avg_rating": "N/A"},
+        "fallback_used": True
+    }
+
+def _parse_rapidapi(data: dict, home: str, away: str) -> dict:
     out: dict = {}
     pgf = data.get("pregame_form", {})
     if pgf:
         for side, tname in [("homeTeam", home), ("awayTeam", away)]:
             fd = pgf.get(side, {})
-            if fd:
-                k = (
-                    "home_form" if side == "homeTeam" else "away_form"
-                )
-                out[k] = {
-                    "team":       tname,
-                    "form":       fd.get("value", ""),
-                    "avg_rating": fd.get("avgRating"),
-                    "position":   fd.get("position"),
-                }
+            if fd: out["home_form" if side == "homeTeam" else "away_form"] = {"team": tname, "form": fd.get("value", ""), "avg_rating": fd.get("avgRating"), "position": fd.get("position")}
     h2h = data.get("h2h", {})
     if h2h:
-        hw = h2h.get("homeTeamWins", 0)
-        aw = h2h.get("awayTeamWins", 0)
-        d  = h2h.get("draws", 0)
-        out["h2h"] = {
-            f"{home}_wins": hw,
-            f"{away}_wins": aw,
-            "draws":        d,
-            "total":        hw + aw + d,
-        }
+        hw, aw, d = h2h.get("homeTeamWins", 0), h2h.get("awayTeamWins", 0), h2h.get("draws", 0)
+        out["h2h"] = {f"{home}_wins": hw, f"{away}_wins": aw, "draws": d, "total": hw + aw + d}
     lu = data.get("lineups", {})
     if lu:
-        out["lineups"] = {
-            "home_formation": lu.get("home", {}).get(
-                "formation", "N/A"
-            ),
-            "away_formation": lu.get("away", {}).get(
-                "formation", "N/A"
-            ),
-        }
+        out["lineups"] = {"home_formation": lu.get("home", {}).get("formation", "N/A"), "away_formation": lu.get("away", {}).get("formation", "N/A")}
+    return out
+
+def _parse_internal(data: dict, home: str, away: str) -> dict:
+    out: dict = {}
+    pgf = data.get("pregame_form", {})
+    if pgf:
+        for side, tname in [("homeTeam", home), ("awayTeam", away)]:
+            fd = pgf.get(side, {})
+            if fd: out["home_form" if side == "homeTeam" else "away_form"] = {"team": tname, "form": fd.get("value", ""), "avg_rating": fd.get("avgRating"), "position": fd.get("position")}
+                
+    events = data.get("h2h", {}).get("events", [])
+    if not events and isinstance(data.get("h2h"), list): events = data.get("h2h")
+    if events:
+        hw, aw, d = 0, 0, 0
+        for m in events:
+            hs, as_ = m.get("homeScore", {}).get("current"), m.get("awayScore", {}).get("current")
+            if hs is None or as_ is None: continue
+            h_name = m.get("homeTeam", {}).get("name", "").lower()
+            if clean_team_name(home).lower() in h_name:
+                if hs > as_: hw += 1
+                elif as_ > hs: aw += 1
+                else: d += 1
+            else:
+                if as_ > hs: hw += 1
+                elif hs > as_: aw += 1
+                else: d += 1
+        out["h2h"] = {f"{home}_wins": hw, f"{away}_wins": aw, "draws": d, "total": hw + aw + d}
+
+    lu = data.get("lineups", {})
+    if lu:
+        out["lineups"] = {"home_formation": lu.get("home", {}).get("formation", "N/A"), "away_formation": lu.get("away", {}).get("formation", "N/A")}
+        
     return out
 
 # =========================================================
@@ -1982,8 +1991,7 @@ async def get_stats_async(
     ):
         stats["elo"] = elo_pred
         logger.info(
-            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%%"
-            " | hm=%d am=%d diff=%.0f",
+            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%% | hm=%d am=%d diff=%.0f",
             home, away,
             elo_pred["home_prob"] * 100,
             elo_pred["draw_prob"] * 100,
@@ -1999,100 +2007,64 @@ async def get_stats_async(
             away, (elo_pred or {}).get("away_matches", 0),
         )
 
-    # ── SofaScore match ID ───────────────────────────────
+    # ── SofaScore (Cascade Logic) ────────────────────────
     cached_mid = mic.get(home, away)
     if cached_mid is not None:
         match_id = cached_mid if cached_mid != 0 else None
         logger.debug("SofaScore mid cache hit: %s", match_id)
     else:
-        match_id = await search_sofascore_match_async(
-            home, away, session
-        )
+        match_id = await search_sofascore_match_async(home, away, session)
         mic.set(home, away, match_id if match_id else 0)
 
-    task_names: list[str]      = []
-    coros:      list           = []
+    task_names: list[str] = []
+    coros:      list      = []
 
     if match_id:
         task_names.append("sofascore")
-        coros.append(
-            fetch_sofascore_stats_async(
-                match_id, home, away, session
-            )
-        )
+        coros.append(fetch_sofascore_stats_async(match_id, home, away, session))
     else:
-        logger.info(
-            "SofaScore: no match_id for '%s' vs '%s'", home, away
-        )
+        logger.info("SofaScore: no match_id for '%s' vs '%s'", home, away)
 
     # ── Football-Data (sync در executor) ─────────────────
     if sport_key == "football":
         loop = asyncio.get_running_loop()
 
         async def get_fd() -> dict:
-            hid = await loop.run_in_executor(
-                None, fd.find_team_id, home
-            )
-            aid = await loop.run_in_executor(
-                None, fd.find_team_id, away
-            )
+            hid = await loop.run_in_executor(None, fd.find_team_id, home)
+            aid = await loop.run_in_executor(None, fd.find_team_id, away)
             log_check(f"FD id '{home}'", hid)
             log_check(f"FD id '{away}'", aid)
-            if not hid or not aid:
-                return {}
+            if not hid or not aid: return {}
             hf, af, h2h = await asyncio.gather(
-                loop.run_in_executor(
-                    None, fd.get_form, hid, home
-                ),
-                loop.run_in_executor(
-                    None, fd.get_form, aid, away
-                ),
-                loop.run_in_executor(
-                    None, fd.get_h2h, hid, aid, home, away
-                ),
+                loop.run_in_executor(None, fd.get_form, hid, home),
+                loop.run_in_executor(None, fd.get_form, aid, away),
+                loop.run_in_executor(None, fd.get_h2h, hid, aid, home, away),
                 return_exceptions=True,
             )
             out: dict = {}
-            if not isinstance(hf, Exception) and hf:
-                out["home_form"] = hf
-            else:
-                logger.warning(
-                    "FD home form failed: '%s'", home
-                )
-            if not isinstance(af, Exception) and af:
-                out["away_form"] = af
-            else:
-                logger.warning(
-                    "FD away form failed: '%s'", away
-                )
-            if not isinstance(h2h, Exception) and h2h:
-                out["h2h"] = h2h
-            else:
-                logger.warning(
-                    "FD H2H failed: '%s' vs '%s'", home, away
-                )
+            if not isinstance(hf, Exception) and hf: out["home_form"] = hf
+            if not isinstance(af, Exception) and af: out["away_form"] = af
+            if not isinstance(h2h, Exception) and h2h: out["h2h"] = h2h
             return out
 
         task_names.append("football")
         coros.append(get_fd())
 
     if coros:
-        gathered = await asyncio.gather(
-            *coros, return_exceptions=True
-        )
+        gathered = await asyncio.gather(*coros, return_exceptions=True)
         for name, result in zip(task_names, gathered):
             if isinstance(result, Exception):
-                logger.warning(
-                    "Stats gather [%s] error: %s", name, result
-                )
+                logger.warning("Stats gather [%s] error: %s", name, result)
                 continue
             if name == "sofascore" and result:
                 stats["sofascore"] = result
             elif name == "football" and isinstance(result, dict):
                 stats.update(result)
 
+    # تعیین نهایی کیفیت دیتا با لحاظ کردن Fallback
     has_fb  = bool(stats.get("home_form") or stats.get("h2h"))
-    has_ss  = bool(stats.get("sofascore"))
+    # اگر Fallback اسکریپت استفاده شده باشد، کیفیت نباید HIGH شود
+    has_ss  = bool(stats.get("sofascore") and not stats["sofascore"].get("fallback_used"))
     has_elo = bool(stats.get("elo"))
 
     if (has_fb or has_elo) and has_ss:
@@ -2102,8 +2074,7 @@ async def get_stats_async(
 
     logger.info(
         "DATA QUALITY | %s vs %s | %s (fb=%s ss=%s elo=%s)",
-        home, away,
-        stats["data_quality"].upper(),
+        home, away, stats["data_quality"].upper(),
         has_fb, has_ss, has_elo,
     )
     return stats, elo_pred
