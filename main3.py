@@ -40,7 +40,7 @@ class Config:
     KEY_STATUS_FILE:        Path = Path("api_cache/key_status.json")
 
     # ── پنجره زمانی ──────────────────────────────────────
-    MATCH_WINDOW_HOURS:     float = 2.0
+    MATCH_WINDOW_HOURS:     float = 3.0
     RESULT_CHECK_HOURS:     float = 3.0
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
