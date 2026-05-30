@@ -1103,20 +1103,46 @@ def get_countdown_str(ct: str, now: datetime) -> str:
 
 def get_display_pick(raw: str, market: str, home: str, away: str) -> str:
     pl = raw.lower().strip()
-    if market == "h2h":
-        if "draw" in pl or "tie" in pl:
-            return "Draw (X)"
-        if home.lower() in pl:
-            return f"{home} to Win"
-        if away.lower() in pl:
-            return f"{away} to Win"
+    hl = home.lower().strip()
+    al = away.lower().strip()
+
+    # تشخیص حالت Lay (شرط بندی علیه یک تیم/نتیجه)
+    is_lay = "lay" in pl
+    clean_pl = pl.replace("lay", "").strip()
+
+    if market in ["h2h", "h2h_lay"]:
+        # حالت مساوی
+        if "draw" in clean_pl or "tie" in clean_pl:
+            if is_lay:
+                return f"Either {home} OR {away} to Win (12 - No Draw)"
+            return "Match to end in a Draw (X)"
+        
+        # حالت تیم میزبان
+        if hl in clean_pl or clean_pl in hl:
+            if is_lay:
+                return f"{away} to Win OR Draw (X2 - Double Chance)"
+            return f"{home} to Win (1)"
+        
+        # حالت تیم میهمان
+        if al in clean_pl or clean_pl in al:
+            if is_lay:
+                return f"{home} to Win OR Draw (1X - Double Chance)"
+            return f"{away} to Win (2)"
+        
+        # حالت پیش‌فرض اگر نام تیم متفاوت نوشته شده بود
+        if is_lay:
+            return f"Opponent to Win OR Draw (Against {raw.replace('Lay', '').strip()})"
         return f"{raw} to Win"
+
     if market == "totals":
         m = re.match(r"(over|under)\s*([\d.]+)", pl)
         if m:
-            return f"{m.group(1).capitalize()} {m.group(2)} Goals"
+            action = "Over" if m.group(1) == "over" else "Under"
+            # استفاده از Goals/Points تا برای ورزش‌های غیر از فوتبال هم معنی بدهد
+            return f"{action} {m.group(2)} Total Goals/Points"
         return raw.title()
-    return raw
+    
+    return raw.title()
 
 
 def get_market_label(mk: str) -> str:
@@ -2683,14 +2709,6 @@ async def async_main() -> None:
             if not home or not away:
                 continue
 
-            # فقط فوتبال و تنیس
-            if sk == "other":
-                logger.info(
-                    "SKIP unsupported sport: '%s' [%s vs %s]",
-                    sport, home, away,
-                )
-                continue
-
             logger.info("Processing: %s vs %s [%s]", home, away, sport)
 
             elo_pred: Optional[dict] = None
@@ -2701,6 +2719,10 @@ async def async_main() -> None:
 
             opps = calculate_combined_ev(md, elo_pred, sk, home, away)
             if not opps:
+                logger.info(
+                    "SKIP no value/odds: %s vs %s (Odds < %.2f or EV < %.1f%%)",
+                    home, away, CFG.H2H_MIN_ODDS, CFG.H2H_MIN_EV * 100
+                )
                 continue
 
             opp = opps[0]
