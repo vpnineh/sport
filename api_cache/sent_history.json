@@ -64,38 +64,5 @@
     "pick": "Binghamton Bearcats",
     "market": "h2h",
     "sent_at": "2026-05-29T19:55:03.758210+00:00"
-  },
-  "209c9be3f3ed4ff82eb77465ef49efd9": {
-    "match": "Athletics vs New York Yankees",
-    "home": "Athletics",
-    "away": "New York Yankees",
-    "pick": "Athletics",
-    "market": "h2h_lay",
-    "odds": 2.32,
-    "commence_time": "2026-05-30T01:41:00Z",
-    "sent_at": "2026-05-30T01:31:46.982965+00:00",
-    "result_checked": false
-  },
-  "f61d6f960058f1d276d33d3561f2b2e0": {
-    "match": "Portland Fire vs Atlanta Dream",
-    "home": "Portland Fire",
-    "away": "Atlanta Dream",
-    "pick": "Portland Fire",
-    "market": "h2h_lay",
-    "odds": 4.6,
-    "commence_time": "2026-05-30T02:03:00Z",
-    "sent_at": "2026-05-30T01:31:51.010202+00:00",
-    "result_checked": false
-  },
-  "ba6e157e017807dd1085b69821c34dd6": {
-    "match": "Seattle Mariners vs Arizona Diamondbacks",
-    "home": "Seattle Mariners",
-    "away": "Arizona Diamondbacks",
-    "pick": "Arizona Diamondbacks",
-    "market": "h2h_lay",
-    "odds": 2.34,
-    "commence_time": "2026-05-30T02:11:00Z",
-    "sent_at": "2026-05-30T01:31:54.865984+00:00",
-    "result_checked": false
   }
 }
