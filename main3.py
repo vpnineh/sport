@@ -1081,8 +1081,8 @@ def normalize_sport_key(sport_title: str) -> str:
         return "tennis"
     if any(k in tl for k in [
         "soccer", "football", "premier", "liga", "bundesliga",
-        "serie", "ligue", "champions", "europa", "mls",
-        "eredivisie", "fa cup", "copa del rey", "brasileirao",
+        "serie", "série", "ligue", "champions", "europa", "mls",
+        "eredivisie", "fa cup", "copa del rey", "brasileirao", "brasileirão",
         "süper lig", "primeira", "scottish",
     ]):
         return "football"
