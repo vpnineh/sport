@@ -720,7 +720,7 @@ class SentHistory:
 
     def mark_sent(
         self, home: str, away: str, pick: str,
-        market: str, odds: float, commence_time: str,
+        market: str, odds: float, commence_time: str, sport_key: str = "upcoming"
     ) -> None:
         k = self._key(home, away, market)
         self.history[k] = {
@@ -731,6 +731,7 @@ class SentHistory:
             "market":         market,
             "odds":           odds,
             "commence_time":  commence_time,
+            "sport_key":      sport_key,
             "sent_at":        datetime.now(timezone.utc).isoformat(),
             "result_checked": False,
         }
@@ -1215,7 +1216,6 @@ async def _try_one_key(
                     ct = e.get("commence_time", "")
                     mt = datetime.fromisoformat(ct.replace("Z", "+00:00"))
                     
-                    # حذف باگ اصلی: اینجا نباید فیلتر 2 ساعته اعمال بشه تا کل مسابقات روز کش بشن
                     if mt < now_utc:
                         continue
                         
@@ -1228,6 +1228,7 @@ async def _try_one_key(
                             "home_team":     e.get("home_team", ""),
                             "away_team":     e.get("away_team", ""),
                             "sport_title":   e.get("sport_title", ""),
+                            "sport_key":     e.get("sport_key", ""),  # <-- کلید اضافه شد
                             "commence_time": ct,
                             "_markets_data": {},
                             "_source":       "odds_api",
@@ -1272,12 +1273,10 @@ async def fetch_all_odds_async(
 ) -> list:
     log_section("ODDS API — KEY ROTATION SYSTEM")
 
-    # ── چک کش روزانه ─────────────────────────────────────
     cached = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE)
     end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
     
     if cached is not None:
-        # فیلتر بر اساس پنجره زمانی (اینجا درسته که انجام بشه)
         filtered = []
         for e in cached:
             try:
@@ -1294,7 +1293,6 @@ async def fetch_all_odds_async(
         )
         return filtered
 
-    # ── دریافت از API ─────────────────────────────────────
     logger.info("Key status: %s", km.get_summary())
     tried_keys:  set[str] = set()
     max_attempts = len(ODDS_API_KEYS) + 1
@@ -1314,11 +1312,9 @@ async def fetch_all_odds_async(
         events, try_next = await _try_one_key(key, km, now_utc, session)
 
         if events:
-            # ── کش کل روز رو ذخیره کن ───────────────────
             DailyCache.save(CFG.DAILY_ODDS_CACHE_FILE, events)
             logger.info("✅ Got %d events → cached for today", len(events))
 
-            # فیلتر پنجره زمانی برای این اجرا
             filtered = []
             for e in events:
                 try:
@@ -2395,14 +2391,18 @@ async def generate_dual_ai_analysis_async(
 # 21. RESULTS CHECKER
 # =========================================================
 async def fetch_event_result_async(
-    home: str, away: str,
+    home: str, away: str, sport_key: str,
     km: OddsKeyManager, session: aiohttp.ClientSession,
 ) -> Optional[dict]:
     key = km.get_best_key()
     if not key:
         return None
-    url    = "https://api.the-odds-api.com/v4/sports/upcoming/scores"
+    
+    # استفاده از کلید دقیق ورزش به جای upcoming
+    sk = sport_key if sport_key else "upcoming"
+    url    = f"https://api.the-odds-api.com/v4/sports/{sk}/scores"
     params = {"apiKey": key, "daysFrom": 3, "dateFormat": "iso"}
+    
     try:
         async with session.get(
             url, params=params, timeout=aiohttp.ClientTimeout(total=15),
@@ -2466,12 +2466,15 @@ async def check_and_report_results_async(
     losses: list = []
 
     for key, entry in pending:
-        ht     = entry.get("home", "")
-        at     = entry.get("away", "")
-        pick   = entry.get("pick", "")
-        market = entry.get("market", "")
+        ht      = entry.get("home", "")
+        at      = entry.get("away", "")
+        pick    = entry.get("pick", "")
+        market  = entry.get("market", "")
+        sk      = entry.get("sport_key", "upcoming") # گرفتن کلید دقیق
+        
         logger.info("Checking: %s vs %s | %s", ht, at, pick)
-        rev = await fetch_event_result_async(ht, at, km, session)
+        rev = await fetch_event_result_async(ht, at, sk, km, session)
+        
         if not rev:
             logger.info("No result yet: %s vs %s", ht, at)
             continue
@@ -2634,7 +2637,6 @@ async def async_main() -> None:
         headers={"User-Agent": "ZBET90/5.0"},
     ) as session:
 
-        # ── Key Managers ─────────────────────────────────
         km        = OddsKeyManager(ODDS_API_KEYS)
         rapid_km  = RapidKeyManager(RAPIDAPI_KEYS)
 
@@ -2644,7 +2646,6 @@ async def async_main() -> None:
             logger.critical("NO VALID ODDS API KEY AVAILABLE!")
             sys.exit(1)
 
-        # ── Bootstrap ────────────────────────────────────
         bootstrap = DataBootstrap()
         if bootstrap.should_run():
             loop = asyncio.get_running_loop()
@@ -2661,7 +2662,6 @@ async def async_main() -> None:
         rapid        = SofaScoreRapidFetcher(rapid_km)
         now_utc      = datetime.now(timezone.utc)
 
-        # Phase 1: Results
         results_msg = await check_and_report_results_async(
             sent_history, km, session
         )
@@ -2670,7 +2670,6 @@ async def async_main() -> None:
                 logger.info("Results report sent")
             await asyncio.sleep(2)
 
-        # Phase 2: Odds (با Daily Cache)
         log_section("PHASE 2 — FETCHING ODDS")
         events = await fetch_all_odds_async(now_utc, km, session)
         if not events:
@@ -2679,11 +2678,9 @@ async def async_main() -> None:
 
         log_check("Total events in window", len(events))
 
-        # ── Prefetch آمار (فقط اجرای اول روز) ──────────
         if RAPIDAPI_KEYS:
             if not DailyCache.is_fresh(CFG.DAILY_RAPID_CACHE_FILE):
                 log_section("RAPIDAPI — DAILY PREFETCH (first run of day)")
-                # برای prefetch همه مسابقات امروز رو بگیر
                 all_today = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE) or events
                 await rapid.prefetch_all(all_today, session)
             else:
@@ -2694,7 +2691,6 @@ async def async_main() -> None:
         else:
             logger.warning("No RapidAPI keys — stats from FootballData only")
 
-        # Phase 3: Signals
         log_section("PHASE 3 — ANALYSIS & SIGNALS")
         total_sent = 0
 
@@ -2768,9 +2764,10 @@ async def async_main() -> None:
             )
 
             if await send_telegram_async(msg, session):
+                # انتقال کلید ورزش به حافظه برای دریافت موفقیت آمیز نتایج
                 sent_history.mark_sent(
                     home, away, opp["pick"], opp["market"],
-                    opp["odds"], ct,
+                    opp["odds"], ct, event.get("sport_key", "upcoming")
                 )
                 total_sent += 1
                 logger.info("✅ Sent: %s vs %s", home, away)
