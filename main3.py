@@ -34,6 +34,7 @@ class Config:
     ELO_FOOTBALL_FILE: Path = Path("api_cache/models/elo_football.json")
     ELO_TENNIS_FILE: Path = Path("api_cache/models/elo_tennis.json")
     BOOTSTRAP_FLAG: Path = Path("api_cache/models/bootstrap_done.flag")
+    KEY_STATUS_FILE: Path = Path("api_cache/key_status.json")
 
     MATCH_WINDOW_HOURS: float = 2.0
     RESULT_CHECK_HOURS: float = 3.0
@@ -82,31 +83,22 @@ class Config:
         "spreads": "Asian Handicap",
     })
 
-    # football-data.org competition IDs (tier-based)
     FD_COMPETITION_IDS: list = field(default_factory=lambda: [
-        2021,  # Premier League
-        2014,  # La Liga
-        2002,  # Bundesliga
-        2019,  # Serie A
-        2015,  # Ligue 1
-        2003,  # Eredivisie
-        2017,  # Primeira Liga
-        2016,  # Championship
-        2018,  # European Championship (fallback)
-        2001,  # Champions League
+        2021, 2014, 2002, 2019, 2015,
+        2003, 2017, 2016, 2001,
     ])
 
 
 CFG = Config()
 
 # =========================================================
-# 2. LOGGING  — خیلی مهم: همه API call ها لاگ می‌شن
+# 2. LOGGING
 # =========================================================
 for d in [CFG.CACHE_DIR, CFG.LOG_DIR, CFG.MODELS_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger("ZBET90")
-logger.setLevel(logging.DEBUG)   # DEBUG تا همه چیز دیده شود
+logger.setLevel(logging.DEBUG)
 
 _fmt = logging.Formatter(
     "%(asctime)s | %(levelname)-8s | %(message)s",
@@ -123,95 +115,134 @@ _fh.setFormatter(_fmt)
 logger.addHandler(_fh)
 
 
-def log_section(title: str):
+def log_section(title: str) -> None:
     logger.info("=" * 60)
     logger.info("  %s", title)
     logger.info("=" * 60)
 
 
-def log_api_call(api_name: str, url: str, params: dict,
-                 status: int, records: int, sample=None):
-    """
-    هر API call را با جزئیات کامل لاگ می‌کند.
-    status=-1 یعنی خطا قبل از دریافت response.
-    """
+def log_api_call(
+    api_name: str,
+    endpoint: str,
+    params: dict,
+    status: int,
+    records: int,
+    sample=None,
+) -> None:
+    safe = {
+        k: ("***" if any(s in k.lower()
+                         for s in ["key", "token", "api"])
+            else v)
+        for k, v in (params or {}).items()
+    }
     logger.info(
-        "API▶ %-18s | %s | status=%s | records=%d | params=%s",
+        "API▶ %-22s | status=%-3s | records=%-4d | %s",
         api_name,
-        url[:80],
-        status if status != -1 else "ERR",
+        str(status) if status != -1 else "ERR",
         records,
-        str(params)[:120],
+        str(safe)[:120],
     )
     if sample is not None:
-        logger.debug("API▶ %-18s | sample=%s", api_name,
-                     str(sample)[:200])
+        logger.debug(
+            "API▶ %-22s | sample=%s", api_name, str(sample)[:300]
+        )
 
 
-def log_check(label: str, value, warn_if_none: bool = True):
-    if value is None or value == {} or value == [] or value == "":
+def log_check(
+    label: str, value, warn_if_none: bool = True
+) -> None:
+    if value is None or value in ({}, [], ""):
         if warn_if_none:
             logger.warning("CHECK | %-42s | EMPTY/NONE", label)
         else:
             logger.info("CHECK | %-42s | EMPTY (ok)", label)
     else:
-        display = str(value)[:100]
-        logger.info("CHECK | %-42s | OK | %s", label, display)
+        logger.info(
+            "CHECK | %-42s | OK | %s", label, str(value)[:100]
+        )
 
 # =========================================================
 # 3. API KEYS
 # =========================================================
-ODDS_API_KEY           = os.getenv("ODDS_API_KEY")
-GROQ_API_KEY           = os.getenv("GROQ_API_KEY")
-RAPIDAPI_KEY           = os.getenv("RAPIDAPI_KEY")
-TELEGRAM_BOT_TOKEN     = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID       = os.getenv("TELEGRAM_CHAT_ID")
-FOOTBALL_DATA_API_KEY  = os.getenv("FOOTBALL_DATA_API_KEY")
-FORCE_BOOTSTRAP        = os.getenv("FORCE_BOOTSTRAP", "false").lower() == "true"
+GROQ_API_KEY          = os.getenv("GROQ_API_KEY", "").strip()
+RAPIDAPI_KEY          = os.getenv("RAPIDAPI_KEY", "").strip()
+TELEGRAM_BOT_TOKEN    = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_CHAT_ID      = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+FOOTBALL_DATA_API_KEY = os.getenv("FOOTBALL_DATA_API_KEY", "").strip()
+FORCE_BOOTSTRAP       = (
+    os.getenv("FORCE_BOOTSTRAP", "false").lower() == "true"
+)
 
-log_check("ODDS_API_KEY",          bool(ODDS_API_KEY))
-log_check("GROQ_API_KEY",          bool(GROQ_API_KEY))
-log_check("RAPIDAPI_KEY",          bool(RAPIDAPI_KEY))
-log_check("TELEGRAM_BOT_TOKEN",    bool(TELEGRAM_BOT_TOKEN))
-log_check("TELEGRAM_CHAT_ID",      bool(TELEGRAM_CHAT_ID))
-log_check("FOOTBALL_DATA_API_KEY", bool(FOOTBALL_DATA_API_KEY),
-          warn_if_none=False)
+_RAW_ODDS_KEYS: list[str] = [
+    os.getenv("ODDS_API_KEY",  "").strip(),
+    os.getenv("ODDS_API_KEY2", "").strip(),
+    os.getenv("ODDS_API_KEY3", "").strip(),
+]
+ODDS_API_KEYS: list[str] = [k for k in _RAW_ODDS_KEYS if k]
 
-if not all([ODDS_API_KEY, GROQ_API_KEY, RAPIDAPI_KEY,
-            TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
-    logger.critical("FATAL: Missing critical API Keys.")
+logger.info("━" * 60)
+logger.info("  KEY STATUS")
+logger.info("━" * 60)
+for _i, _raw in enumerate(_RAW_ODDS_KEYS, 1):
+    if _raw:
+        logger.info(
+            "KEY  | ODDS_API_KEY%-2d | SET  | len=%-3d | prefix=%s…",
+            _i, len(_raw), _raw[:6],
+        )
+    else:
+        logger.warning("KEY  | ODDS_API_KEY%-2d | MISSING", _i)
+
+for _name, _val in [
+    ("GROQ_API_KEY",          GROQ_API_KEY),
+    ("RAPIDAPI_KEY",          RAPIDAPI_KEY),
+    ("TELEGRAM_BOT_TOKEN",    TELEGRAM_BOT_TOKEN),
+    ("TELEGRAM_CHAT_ID",      TELEGRAM_CHAT_ID),
+    ("FOOTBALL_DATA_API_KEY", FOOTBALL_DATA_API_KEY),
+]:
+    if _val:
+        logger.info(
+            "KEY  | %-28s | SET  | len=%-3d | prefix=%s…",
+            _name, len(_val), _val[:4],
+        )
+    else:
+        logger.warning("KEY  | %-28s | MISSING", _name)
+
+if not ODDS_API_KEYS:
+    logger.critical(
+        "FATAL: No ODDS_API_KEY found! "
+        "Set at least ODDS_API_KEY in GitHub Secrets."
+    )
     sys.exit(1)
 
+if not all([GROQ_API_KEY, RAPIDAPI_KEY,
+            TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
+    logger.critical("FATAL: Missing critical API key(s).")
+    sys.exit(1)
+
+logger.info("Odds API keys available: %d/3", len(ODDS_API_KEYS))
 groq_client = Groq(api_key=GROQ_API_KEY, max_retries=3)
 
 # =========================================================
 # 4. NATIONALITY FLAGS
 # =========================================================
-NATIONALITY_FLAGS: dict = {
-    # Tennis
+NATIONALITY_FLAGS: dict[str, str] = {
     "bautista agut": "ES", "alcaraz": "ES", "nadal": "ES",
-    "munar": "ES", "davidovich": "ES", "carreno": "ES", "badosa": "ES",
+    "munar": "ES", "davidovich": "ES", "carreno": "ES",
     "djokovic": "RS", "kecmanovic": "RS",
     "sinner": "IT", "berrettini": "IT", "musetti": "IT",
-    "zverev": "DE", "struff": "DE", "koepfer": "DE",
-    "tiafoe": "US", "fritz": "US", "paul": "US", "nakashima": "US",
-    "sock": "US", "isner": "US", "korda": "US",
-    "gauff": "US", "keys": "US", "pegula": "US", "collins": "US",
+    "zverev": "DE", "struff": "DE",
+    "tiafoe": "US", "fritz": "US", "paul": "US", "korda": "US",
+    "gauff": "US", "keys": "US", "pegula": "US",
     "medvedev": "RU", "rublev": "RU", "khachanov": "RU",
     "tsitsipas": "GR", "ruud": "NO", "rune": "DK",
     "hurkacz": "PL", "swiatek": "PL",
-    "cilic": "HR",
-    "auger-aliassime": "CA", "shapovalov": "CA", "raonic": "CA",
-    "kyrgios": "AU", "de minaur": "AU", "thompson": "AU",
-    "sabalenka": "BY",
-    "kvitova": "CZ", "vondrousova": "CZ",
+    "auger-aliassime": "CA", "shapovalov": "CA",
+    "kyrgios": "AU", "de minaur": "AU",
+    "sabalenka": "BY", "kvitova": "CZ", "vondrousova": "CZ",
     "jabeur": "TN", "rybakina": "KZ", "bublik": "KZ",
     "norrie": "GB", "murray": "GB", "draper": "GB",
-    "thiem": "AT", "wawrinka": "CH",
-    "monfils": "FR", "gasquet": "FR",
-    "dimitrov": "BG",
-    "etcheverry": "AR", "cerundolo": "AR", "schwartzman": "AR",
-    # Football clubs
+    "wawrinka": "CH", "monfils": "FR",
+    "etcheverry": "AR", "cerundolo": "AR",
     "manchester united": "GB", "manchester city": "GB",
     "liverpool": "GB", "chelsea": "GB", "arsenal": "GB",
     "tottenham": "GB", "newcastle": "GB", "west ham": "GB",
@@ -228,12 +259,10 @@ NATIONALITY_FLAGS: dict = {
     "ajax": "NL", "psv": "NL", "feyenoord": "NL",
     "porto": "PT", "benfica": "PT", "sporting": "PT",
     "galatasaray": "TR", "fenerbahce": "TR", "besiktas": "TR",
-    "shakhtar": "UA", "dynamo kyiv": "UA",
-    "salzburg": "AT", "rapid wien": "AT",
+    "shakhtar": "UA", "salzburg": "AT",
     "anderlecht": "BE", "club brugge": "BE",
-    "copenhagen": "DK", "midtjylland": "DK", "brondby": "DK",
+    "copenhagen": "DK", "midtjylland": "DK",
     "malmo": "SE", "djurgarden": "SE",
-    "rosenborg": "NO", "brann": "NO",
 }
 
 
@@ -246,9 +275,9 @@ def _code_to_flag(code: str) -> str:
 
 
 def get_flag_from_name(name: str) -> str:
-    name_lower = name.lower()
-    for keyword, code in NATIONALITY_FLAGS.items():
-        if keyword in name_lower:
+    nl = name.lower()
+    for kw, code in NATIONALITY_FLAGS.items():
+        if kw in nl:
             return _code_to_flag(code)
     return "\U0001F3F3\uFE0F"
 
@@ -258,12 +287,14 @@ def validate_flag(flag: str, fallback_name: str) -> str:
         return get_flag_from_name(fallback_name)
     BAD = {"\U0001F3F3\uFE0F", "\U0001F3C1", "\U0001F6A9",
            "", "🏁", "🏳️", "🏳"}
-    if flag.strip() in BAD:
-        return get_flag_from_name(fallback_name)
-    return flag.strip()
+    return (
+        get_flag_from_name(fallback_name)
+        if flag.strip() in BAD
+        else flag.strip()
+    )
 
 # =========================================================
-# 5. CACHE MANAGER
+# 5. CACHE MANAGER  (sync — فایل‌ها کوچک هستند)
 # =========================================================
 class CacheManager:
     @staticmethod
@@ -273,7 +304,7 @@ class CacheManager:
                 with open(filepath, "r", encoding="utf-8") as f:
                     return json.load(f)
         except Exception as e:
-            logger.warning("Cache load error (%s): %s", filepath.name, e)
+            logger.warning("Cache load (%s): %s", filepath.name, e)
         return {}
 
     @staticmethod
@@ -285,19 +316,19 @@ class CacheManager:
                 json.dump(data, f, ensure_ascii=False, indent=2)
             tmp.replace(filepath)
         except Exception as e:
-            logger.warning("Cache save error (%s): %s", filepath.name, e)
+            logger.warning("Cache save (%s): %s", filepath.name, e)
 
     @staticmethod
     def is_valid(cache: dict, key: str, ttl_hours: float) -> bool:
-        if key not in cache:
-            return False
-        entry = cache[key]
+        entry = cache.get(key)
         if not isinstance(entry, dict) or "timestamp" not in entry:
             return False
         try:
-            cached_time = datetime.fromisoformat(entry["timestamp"])
-            return (datetime.now(timezone.utc) - cached_time
-                    < timedelta(hours=ttl_hours))
+            ct = datetime.fromisoformat(entry["timestamp"])
+            return (
+                datetime.now(timezone.utc) - ct
+                < timedelta(hours=ttl_hours)
+            )
         except Exception:
             return False
 
@@ -305,7 +336,7 @@ class CacheManager:
     def set(cache: dict, key: str, value) -> dict:
         cache[key] = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "data": value,
+            "data":      value,
         }
         return cache
 
@@ -314,39 +345,297 @@ class CacheManager:
         return cache.get(key, {}).get("data")
 
 # =========================================================
-# 6. SENT HISTORY
+# 6. ODDS API KEY MANAGER
+# =========================================================
+class OddsKeyManager:
+    STATUS_OK        = "ok"
+    STATUS_INVALID   = "invalid"
+    STATUS_EXHAUSTED = "exhausted"
+    STATUS_UNKNOWN   = "unknown"
+
+    def __init__(self, keys: list[str]) -> None:
+        self.keys    = keys
+        self._status = CacheManager.load(CFG.KEY_STATUS_FILE)
+        self._init_keys()
+        self._log_all()
+
+    # ── helpers ──────────────────────────────────────────
+    @staticmethod
+    def _kid(key: str) -> str:
+        return hashlib.md5(key.encode()).hexdigest()[:8]
+
+    def _save(self) -> None:
+        CacheManager.save(CFG.KEY_STATUS_FILE, self._status)
+
+    def _prefix(self, key: str) -> str:
+        return self._status.get(self._kid(key), {}).get(
+            "prefix", key[:8] + "…"
+        )
+
+    # ── init ─────────────────────────────────────────────
+    def _init_keys(self) -> None:
+        changed = False
+        for k in self.keys:
+            kid = self._kid(k)
+            if kid not in self._status:
+                self._status[kid] = {
+                    "prefix":     k[:8] + "…",
+                    "status":     self.STATUS_UNKNOWN,
+                    "remaining":  None,
+                    "used":       None,
+                    "last_used":  None,
+                    "last_error": None,
+                }
+                changed = True
+        if changed:
+            self._save()
+
+    def _log_all(self) -> None:
+        logger.info("OddsKeyManager status:")
+        for k in self.keys:
+            st = self._status.get(self._kid(k), {})
+            logger.info(
+                "  key=%-12s status=%-10s remaining=%-5s used=%s",
+                st.get("prefix", "?"),
+                st.get("status",  "?"),
+                st.get("remaining", "?"),
+                st.get("used",    "?"),
+            )
+
+    # ── public ───────────────────────────────────────────
+    def get_best_key(self) -> Optional[str]:
+        candidates: list[tuple[int, str]] = []
+        for k in self.keys:
+            kid = self._kid(k)
+            st  = self._status.get(kid, {})
+            status = st.get("status", self.STATUS_UNKNOWN)
+
+            if status == self.STATUS_INVALID:
+                continue
+
+            if status == self.STATUS_EXHAUSTED:
+                last = st.get("last_used", "")
+                try:
+                    lt = datetime.fromisoformat(last)
+                    if (datetime.now(timezone.utc).date()
+                            > lt.date()):
+                        self._status[kid]["status"] = \
+                            self.STATUS_UNKNOWN
+                        self._status[kid]["remaining"] = None
+                        self._save()
+                        logger.info(
+                            "Key %s: new day → reset to unknown",
+                            st.get("prefix", "?"),
+                        )
+                    else:
+                        continue
+                except Exception:
+                    continue
+
+            remaining = st.get("remaining")
+            priority  = remaining if remaining is not None else 999
+            candidates.append((priority, k))
+
+        if not candidates:
+            return None
+
+        candidates.sort(key=lambda x: x[0], reverse=True)
+        chosen = candidates[0][1]
+        kid    = self._kid(chosen)
+        logger.info(
+            "OddsKeyManager: selected key=%s "
+            "(status=%s remaining=%s)",
+            self._status[kid].get("prefix", "?"),
+            self._status[kid].get("status",  "?"),
+            self._status[kid].get("remaining", "?"),
+        )
+        return chosen
+
+    def mark_success(
+        self, key: str, remaining: str, used: str
+    ) -> None:
+        kid = self._kid(key)
+        if kid not in self._status:
+            return
+        try:
+            rem_int: Optional[int] = int(remaining)
+        except (ValueError, TypeError):
+            rem_int = None
+
+        self._status[kid].update({
+            "status": (
+                self.STATUS_EXHAUSTED
+                if (rem_int is not None and rem_int <= 0)
+                else self.STATUS_OK
+            ),
+            "remaining":  rem_int,
+            "used":       used,
+            "last_used":  datetime.now(timezone.utc).isoformat(),
+            "last_error": None,
+        })
+        self._save()
+        logger.info(
+            "Key %s updated: status=%s remaining=%s used=%s",
+            self._status[kid].get("prefix", "?"),
+            self._status[kid]["status"],
+            remaining, used,
+        )
+
+    def mark_invalid(self, key: str, reason: str) -> None:
+        kid = self._kid(key)
+        if kid not in self._status:
+            return
+        self._status[kid].update({
+            "status":     self.STATUS_INVALID,
+            "last_error": reason,
+            "last_used":  datetime.now(timezone.utc).isoformat(),
+        })
+        self._save()
+        logger.error(
+            "Key %s marked INVALID: %s",
+            self._status[kid].get("prefix", "?"), reason,
+        )
+
+    def mark_exhausted(self, key: str) -> None:
+        kid = self._kid(key)
+        if kid not in self._status:
+            return
+        self._status[kid].update({
+            "status":    self.STATUS_EXHAUSTED,
+            "remaining": 0,
+            "last_used": datetime.now(timezone.utc).isoformat(),
+        })
+        self._save()
+        logger.warning(
+            "Key %s marked EXHAUSTED",
+            self._status[kid].get("prefix", "?"),
+        )
+
+    def get_summary(self) -> str:
+        parts = []
+        for k in self.keys:
+            st = self._status.get(self._kid(k), {})
+            parts.append(
+                f"{st.get('prefix','?')}:"
+                f"{st.get('status','?')}/"
+                f"rem={st.get('remaining','?')}"
+            )
+        return " | ".join(parts)
+
+    async def validate_all_keys_async(
+        self, session: aiohttp.ClientSession
+    ) -> None:
+        """تست همه کلیدها با endpoint رایگان /sports (async)."""
+        log_section("VALIDATING ALL ODDS API KEYS")
+        for key in self.keys:
+            kid    = self._kid(key)
+            prefix = self._status[kid].get("prefix", "?")
+            if self._status[kid].get("status") == \
+                    self.STATUS_INVALID:
+                logger.info(
+                    "Key %s: already INVALID — skip", prefix
+                )
+                continue
+            try:
+                async with session.get(
+                    "https://api.the-odds-api.com/v4/sports",
+                    params={"apiKey": key},
+                    timeout=aiohttp.ClientTimeout(total=10),
+                ) as res:
+                    remaining = res.headers.get(
+                        "x-requests-remaining", "?"
+                    )
+                    used = res.headers.get(
+                        "x-requests-used", "?"
+                    )
+                    if res.status == 200:
+                        body = await res.json()
+                        self.mark_success(key, remaining, used)
+                        logger.info(
+                            "Key %s ✅ VALID | "
+                            "sports=%d remaining=%s used=%s",
+                            prefix, len(body),
+                            remaining, used,
+                        )
+                    elif res.status == 401:
+                        self.mark_invalid(key, "HTTP 401")
+                        logger.error(
+                            "Key %s ❌ INVALID (401)", prefix
+                        )
+                    elif res.status == 422:
+                        self.mark_invalid(
+                            key, "HTTP 422 format error"
+                        )
+                        logger.error(
+                            "Key %s ❌ FORMAT ERROR (422)", prefix
+                        )
+                    elif res.status == 429:
+                        self.mark_exhausted(key)
+                        logger.warning(
+                            "Key %s ⚠️  EXHAUSTED (429)", prefix
+                        )
+                    else:
+                        logger.warning(
+                            "Key %s: unexpected HTTP %d",
+                            prefix, res.status,
+                        )
+            except Exception as e:
+                logger.warning(
+                    "Key %s: validation error: %s", prefix, e
+                )
+        logger.info(
+            "Validation summary: %s", self.get_summary()
+        )
+
+# =========================================================
+# 7. SENT HISTORY
 # =========================================================
 class SentHistory:
-    def __init__(self):
+    def __init__(self) -> None:
         self.history = CacheManager.load(CFG.HISTORY_FILE)
         self._cleanup_old()
 
-    def _cleanup_old(self):
-        now = datetime.now(timezone.utc)
-        to_delete = []
+    def _cleanup_old(self) -> None:
+        now    = datetime.now(timezone.utc)
+        to_del = []
         for k, v in self.history.items():
             try:
-                sent_at = v.get("sent_at", "2000-01-01T00:00:00+00:00")
-                if (now - datetime.fromisoformat(sent_at)
+                sa = v.get("sent_at", "2000-01-01T00:00:00+00:00")
+                if (now - datetime.fromisoformat(sa)
                         > timedelta(hours=CFG.TTL_SENT_HISTORY)):
-                    to_delete.append(k)
+                    to_del.append(k)
             except Exception:
-                to_delete.append(k)
-        for k in to_delete:
+                to_del.append(k)
+        for k in to_del:
             del self.history[k]
+        if to_del:
+            logger.debug(
+                "SentHistory: cleaned %d old entries", len(to_del)
+            )
 
     @staticmethod
-    def _make_key(home: str, away: str, market: str) -> str:
-        raw = f"{home.lower()}|{away.lower()}|{market.lower()}"
-        return hashlib.md5(raw.encode()).hexdigest()
+    def _key(home: str, away: str, market: str) -> str:
+        return hashlib.md5(
+            f"{home.lower()}|{away.lower()}|"
+            f"{market.lower()}".encode()
+        ).hexdigest()
 
-    def was_sent(self, home: str, away: str, market: str) -> bool:
-        return self._make_key(home, away, market) in self.history
+    def was_sent(
+        self, home: str, away: str, market: str
+    ) -> bool:
+        return self._key(home, away, market) in self.history
 
-    def mark_sent(self, home: str, away: str, pick: str,
-                  market: str, odds: float, commence_time: str) -> None:
-        key = self._make_key(home, away, market)
-        self.history[key] = {
+    def mark_sent(
+        self,
+        home: str,
+        away: str,
+        pick: str,
+        market: str,
+        odds: float,
+        commence_time: str,
+    ) -> None:
+        k = self._key(home, away, market)
+        self.history[k] = {
             "match":          f"{home} vs {away}",
             "home":           home,
             "away":           away,
@@ -361,59 +650,77 @@ class SentHistory:
 
     def get_pending_results(self) -> list:
         now = datetime.now(timezone.utc)
-        pending = []
+        out = []
         for k, v in self.history.items():
             if v.get("result_checked"):
                 continue
             try:
-                ct = v.get("commence_time", "")
-                match_time = datetime.fromisoformat(
-                    ct.replace("Z", "+00:00"))
-                elapsed = (now - match_time).total_seconds() / 3600
-                if elapsed >= CFG.RESULT_CHECK_HOURS:
-                    pending.append((k, v))
+                mt = datetime.fromisoformat(
+                    v.get("commence_time", "")
+                    .replace("Z", "+00:00")
+                )
+                if (
+                    (now - mt).total_seconds() / 3600
+                    >= CFG.RESULT_CHECK_HOURS
+                ):
+                    out.append((k, v))
             except Exception:
                 continue
-        return pending
+        return out
 
-    def mark_result_checked(self, key: str, result: str,
-                             won: Optional[bool]) -> None:
+    def mark_result_checked(
+        self, key: str, result: str, won: Optional[bool]
+    ) -> None:
         if key in self.history:
-            self.history[key]["result_checked"] = True
-            self.history[key]["result"] = result
-            self.history[key]["won"]    = won
+            self.history[key].update({
+                "result_checked": True,
+                "result":         result,
+                "won":            won,
+            })
             CacheManager.save(CFG.HISTORY_FILE, self.history)
 
 # =========================================================
-# 7. ELO SYSTEM
+# 8. ELO SYSTEM
 # =========================================================
 class ELOSystem:
-    def __init__(self, sport: str = "football"):
+    def __init__(self, sport: str = "football") -> None:
         self.sport = sport
-        self.k = (CFG.ELO_K_FACTOR_FOOTBALL if sport == "football"
-                  else CFG.ELO_K_FACTOR_TENNIS)
-        self.ratings: dict     = {}
+        self.k = (
+            CFG.ELO_K_FACTOR_FOOTBALL
+            if sport == "football"
+            else CFG.ELO_K_FACTOR_TENNIS
+        )
+        self.ratings:     dict = {}
         self.match_count: dict = {}
-        filepath = (CFG.ELO_FOOTBALL_FILE if sport == "football"
-                    else CFG.ELO_TENNIS_FILE)
-        self._load(filepath)
+        fp = (
+            CFG.ELO_FOOTBALL_FILE
+            if sport == "football"
+            else CFG.ELO_TENNIS_FILE
+        )
+        self._load(fp)
 
-    def _load(self, filepath: Path):
-        data = CacheManager.load(filepath)
+    def _load(self, fp: Path) -> None:
+        data = CacheManager.load(fp)
         if data:
             self.ratings     = data.get("ratings", {})
             self.match_count = data.get("match_count", {})
-            log_check(f"ELO {self.sport} loaded",
-                      f"{len(self.ratings)} entities",
-                      warn_if_none=False)
+            log_check(
+                f"ELO {self.sport} loaded",
+                f"{len(self.ratings)} entities",
+                warn_if_none=False,
+            )
         else:
-            logger.info("ELO %s: no data yet (bootstrap needed)",
-                        self.sport)
+            logger.info(
+                "ELO %s: no data (bootstrap needed)", self.sport
+            )
 
-    def save(self):
-        filepath = (CFG.ELO_FOOTBALL_FILE if self.sport == "football"
-                    else CFG.ELO_TENNIS_FILE)
-        CacheManager.save(filepath, {
+    def save(self) -> None:
+        fp = (
+            CFG.ELO_FOOTBALL_FILE
+            if self.sport == "football"
+            else CFG.ELO_TENNIS_FILE
+        )
+        CacheManager.save(fp, {
             "ratings":     self.ratings,
             "match_count": self.match_count,
             "updated_at":  datetime.now(timezone.utc).isoformat(),
@@ -425,255 +732,277 @@ class ELOSystem:
     def expected_score(self, ra: float, rb: float) -> float:
         return 1.0 / (1.0 + 10 ** ((rb - ra) / 400))
 
-    def update(self, name_a: str, name_b: str,
-               score_a: float, is_home_a: bool = False):
-        key_a  = name_a.lower().strip()
-        key_b  = name_b.lower().strip()
-        ra     = self.get_rating(name_a)
-        rb     = self.get_rating(name_b)
-        ra_adj = ra + (CFG.ELO_HOME_ADVANTAGE if is_home_a else 0)
-        ea     = self.expected_score(ra_adj, rb)
-        score_b = 1.0 - score_a
-        n_a    = self.match_count.get(key_a, 0)
-        n_b    = self.match_count.get(key_b, 0)
-        k_a    = self.k * (1.5 if n_a < 20 else 1.0)
-        k_b    = self.k * (1.5 if n_b < 20 else 1.0)
-        self.ratings[key_a]     = ra + k_a * (score_a - ea)
-        self.ratings[key_b]     = rb + k_b * (score_b - (1.0 - ea))
-        self.match_count[key_a] = n_a + 1
-        self.match_count[key_b] = n_b + 1
+    def update(
+        self, a: str, b: str, sa: float, is_home_a: bool = False
+    ) -> None:
+        ka = a.lower().strip()
+        kb = b.lower().strip()
+        ra = self.get_rating(a)
+        rb = self.get_rating(b)
+        ea = self.expected_score(
+            ra + (CFG.ELO_HOME_ADVANTAGE if is_home_a else 0), rb
+        )
+        na = self.match_count.get(ka, 0)
+        nb = self.match_count.get(kb, 0)
+        kf_a = self.k * (1.5 if na < 20 else 1.0)
+        kf_b = self.k * (1.5 if nb < 20 else 1.0)
+        self.ratings[ka]     = ra + kf_a * (sa - ea)
+        self.ratings[kb]     = rb + kf_b * ((1 - sa) - (1 - ea))
+        self.match_count[ka] = na + 1
+        self.match_count[kb] = nb + 1
 
-    def predict(self, home: str, away: str,
-                apply_home_advantage: bool = True) -> dict:
-        ra     = self.get_rating(home)
-        rb     = self.get_rating(away)
-        ra_adj = ra + (CFG.ELO_HOME_ADVANTAGE
-                       if apply_home_advantage else 0)
-        home_prob = self.expected_score(ra_adj, rb)
-        away_prob = 1.0 - home_prob
-        draw_prob = 0.0
+    def predict(
+        self, home: str, away: str, apply_home: bool = True
+    ) -> dict:
+        ra = self.get_rating(home)
+        rb = self.get_rating(away)
+        hp = self.expected_score(
+            ra + (CFG.ELO_HOME_ADVANTAGE if apply_home else 0), rb
+        )
+        ap = 1.0 - hp
+        dp = 0.0
         if self.sport == "football":
-            draw_factor = 0.22
-            hp = home_prob * (1 - draw_factor)
-            ap = away_prob * (1 - draw_factor)
-            dp = draw_factor
-            total = hp + ap + dp
-            home_prob = hp / total
-            away_prob = ap / total
-            draw_prob = dp / total
+            df  = 0.22
+            hp2 = hp * (1 - df)
+            ap2 = ap * (1 - df)
+            dp2 = df
+            t   = hp2 + ap2 + dp2
+            hp, ap, dp = hp2 / t, ap2 / t, dp2 / t
         return {
-            "home_prob":    round(home_prob, 4),
-            "away_prob":    round(away_prob, 4),
-            "draw_prob":    round(draw_prob, 4),
+            "home_prob":    round(hp, 4),
+            "away_prob":    round(ap, 4),
+            "draw_prob":    round(dp, 4),
             "home_elo":     round(ra, 1),
             "away_elo":     round(rb, 1),
             "elo_diff":     round(ra - rb, 1),
-            "home_matches": self.match_count.get(home.lower().strip(), 0),
-            "away_matches": self.match_count.get(away.lower().strip(), 0),
+            "home_matches": self.match_count.get(
+                home.lower().strip(), 0
+            ),
+            "away_matches": self.match_count.get(
+                away.lower().strip(), 0
+            ),
         }
 
 # =========================================================
-# 8. BOOTSTRAP
+# 9. BOOTSTRAP
 # =========================================================
 class DataBootstrap:
     FOOTBALL_LEAGUES = [
-        ("E0",  "England Premier League"),
-        ("E1",  "England Championship"),
-        ("SP1", "Spain La Liga"),
-        ("D1",  "Germany Bundesliga"),
-        ("I1",  "Italy Serie A"),
-        ("F1",  "France Ligue 1"),
-        ("N1",  "Netherlands Eredivisie"),
-        ("P1",  "Portugal Primeira Liga"),
-        ("B1",  "Belgium Pro League"),
-        ("T1",  "Turkey Super Lig"),
-        ("G1",  "Greece Super League"),
-        ("SP2", "Spain La Liga 2"),
-        ("D2",  "Germany 2. Bundesliga"),
-        ("I2",  "Italy Serie B"),
-        ("F2",  "France Ligue 2"),
+        ("E0", "England PL"), ("E1", "England Championship"),
+        ("SP1", "La Liga"),   ("D1",  "Bundesliga"),
+        ("I1",  "Serie A"),   ("F1",  "Ligue 1"),
+        ("N1",  "Eredivisie"),("P1",  "Liga Portugal"),
+        ("B1",  "Belgium"),   ("T1",  "Turkey"),
+        ("G1",  "Greece"),    ("SP2", "La Liga 2"),
+        ("D2",  "Bundesliga 2"), ("I2", "Serie B"),
+        ("F2",  "Ligue 2"),
     ]
     TENNIS_FILES = [
-        "atp_matches_2021.csv", "atp_matches_2022.csv",
-        "atp_matches_2023.csv", "atp_matches_2024.csv",
-        "wta_matches_2021.csv", "wta_matches_2022.csv",
-        "wta_matches_2023.csv", "wta_matches_2024.csv",
+        "atp_matches_2022.csv", "atp_matches_2023.csv",
+        "atp_matches_2024.csv",
+        "wta_matches_2022.csv", "wta_matches_2023.csv",
+        "wta_matches_2024.csv",
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.elo_football = ELOSystem("football")
         self.elo_tennis   = ELOSystem("tennis")
 
     def should_run(self) -> bool:
         if FORCE_BOOTSTRAP:
-            logger.info("Bootstrap: forced via env")
             return True
         if not CFG.BOOTSTRAP_FLAG.exists():
-            logger.info("Bootstrap: first run")
             return True
         try:
-            flag_time = datetime.fromisoformat(
-                CFG.BOOTSTRAP_FLAG.read_text().strip())
-            age_days = (datetime.now(timezone.utc) - flag_time).days
-            if age_days >= 7:
-                logger.info("Bootstrap: %d days old — refreshing",
-                            age_days)
-                return True
+            ft = datetime.fromisoformat(
+                CFG.BOOTSTRAP_FLAG.read_text().strip()
+            )
+            return (datetime.now(timezone.utc) - ft).days >= 7
         except Exception:
             return True
-        logger.info("Bootstrap: data is fresh")
-        return False
 
-    def run(self):
+    def run(self) -> None:
         log_section("BOOTSTRAP — BUILDING ELO MODELS")
         self._build_football_elo()
         self._build_tennis_elo()
         self.elo_football.save()
         self.elo_tennis.save()
         CFG.BOOTSTRAP_FLAG.write_text(
-            datetime.now(timezone.utc).isoformat())
-        log_check("Bootstrap football teams",
-                  len(self.elo_football.ratings))
-        log_check("Bootstrap tennis players",
-                  len(self.elo_tennis.ratings))
+            datetime.now(timezone.utc).isoformat()
+        )
+        log_check("Football teams", len(self.elo_football.ratings))
+        log_check("Tennis players", len(self.elo_tennis.ratings))
 
     def _download_csv(self, url: str) -> Optional[pd.DataFrame]:
         try:
             res = requests.get(url, timeout=30)
-            log_api_call("Bootstrap-CSV", url, {}, res.status_code,
-                         0 if res.status_code != 200 else 1)
             if res.status_code == 200:
                 try:
                     return pd.read_csv(StringIO(res.text))
                 except Exception:
-                    return pd.read_csv(StringIO(res.text),
-                                       encoding="latin-1")
+                    return pd.read_csv(
+                        StringIO(res.text), encoding="latin-1"
+                    )
         except Exception as e:
-            logger.debug("Download error %s: %s", url, e)
+            logger.debug("CSV error %s: %s", url, e)
         return None
 
-    def _build_football_elo(self):
+    def _build_football_elo(self) -> None:
         log_section("Building Football ELO")
-        total   = 0
-        seasons = ["2122", "2223", "2324", "2425"]
+        total = 0
         for code, name in self.FOOTBALL_LEAGUES:
-            count = 0
-            for season in seasons:
-                url = (f"https://www.football-data.co.uk/mmz4281/"
-                       f"{season}/{code}.csv")
+            cnt = 0
+            for s in ["2223", "2324", "2425"]:
+                url = (
+                    f"https://www.football-data.co.uk/"
+                    f"mmz4281/{s}/{code}.csv"
+                )
                 df = self._download_csv(url)
                 if df is None or df.empty:
                     continue
                 if not {"HomeTeam", "AwayTeam", "FTR"}.issubset(
-                        df.columns):
+                    df.columns
+                ):
                     continue
-                df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTR"])
-                for _, row in df.iterrows():
+                df = df.dropna(
+                    subset=["HomeTeam", "AwayTeam", "FTR"]
+                )
+                for _, r in df.iterrows():
                     try:
-                        ftr   = str(row["FTR"]).strip().upper()
-                        score = (1.0 if ftr == "H"
-                                 else (0.0 if ftr == "A" else 0.5))
+                        ftr = str(r["FTR"]).strip().upper()
+                        sc  = (
+                            1.0 if ftr == "H"
+                            else (0.0 if ftr == "A" else 0.5)
+                        )
                         self.elo_football.update(
-                            str(row["HomeTeam"]).strip(),
-                            str(row["AwayTeam"]).strip(),
-                            score, is_home_a=True)
-                        count += 1
+                            str(r["HomeTeam"]).strip(),
+                            str(r["AwayTeam"]).strip(),
+                            sc,
+                            is_home_a=True,
+                        )
+                        cnt += 1
                     except Exception:
                         continue
-                time.sleep(0.15)
-            total += count
-            if count:
-                logger.info("Football ELO: %-30s -> %d matches",
-                            name, count)
-        log_check("Football ELO total matches", total)
+                # آزاد کردن حافظه
+                del df
+                time.sleep(0.1)
+            total += cnt
+            if cnt:
+                logger.info(
+                    "ELO football %-22s → %d", name, cnt
+                )
+        log_check("Football ELO matches", total)
 
-    def _build_tennis_elo(self):
+    def _build_tennis_elo(self) -> None:
         log_section("Building Tennis ELO")
         total = 0
-        for filename in self.TENNIS_FILES:
-            tour = "atp" if filename.startswith("atp") else "wta"
-            url  = (f"https://raw.githubusercontent.com/JeffSackmann/"
-                    f"tennis_{tour}/master/{filename}")
-            df   = self._download_csv(url)
+        for fn in self.TENNIS_FILES:
+            tour = "atp" if fn.startswith("atp") else "wta"
+            url  = (
+                f"https://raw.githubusercontent.com/"
+                f"JeffSackmann/tennis_{tour}/master/{fn}"
+            )
+            df = self._download_csv(url)
             if df is None or df.empty:
                 continue
-            if not {"winner_name", "loser_name"}.issubset(df.columns):
+            if not {"winner_name", "loser_name"}.issubset(
+                df.columns
+            ):
                 continue
-            df    = df.dropna(subset=["winner_name", "loser_name"])
-            count = 0
-            for _, row in df.iterrows():
+            df  = df.dropna(subset=["winner_name", "loser_name"])
+            cnt = 0
+            for _, r in df.iterrows():
                 try:
                     self.elo_tennis.update(
-                        str(row["winner_name"]).strip(),
-                        str(row["loser_name"]).strip(),
-                        score_a=1.0)
-                    count += 1
+                        str(r["winner_name"]).strip(),
+                        str(r["loser_name"]).strip(),
+                        1.0,
+                    )
+                    cnt += 1
                 except Exception:
                     continue
-            total += count
-            if count:
-                logger.info("Tennis ELO: %-30s -> %d matches",
-                            filename, count)
-            time.sleep(0.2)
-        log_check("Tennis ELO total matches", total)
+            total += cnt
+            del df
+            if cnt:
+                logger.info(
+                    "ELO tennis %-28s → %d", fn, cnt
+                )
+            time.sleep(0.15)
+        log_check("Tennis ELO matches", total)
 
 # =========================================================
-# 9. UTILS
+# 10. UTILS
 # =========================================================
-def retry_request(max_retries: int = 3, delay: float = 2,
-                  backoff: float = 2):
+def retry_sync(
+    max_retries: int = 3,
+    delay: float = 2,
+    backoff: float = 2,
+):
+    """Decorator برای توابع sync که با requests کار می‌کنند."""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            current_delay = delay
+            cd = delay
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
                 except requests.exceptions.HTTPError as e:
-                    status = (e.response.status_code
-                              if e.response is not None else 0)
-                    if status == 429:
-                        wait = int(e.response.headers.get(
-                            "Retry-After", current_delay * 3))
+                    st = (
+                        e.response.status_code
+                        if e.response is not None
+                        else 0
+                    )
+                    if st == 429:
+                        wait = int(
+                            e.response.headers.get(
+                                "Retry-After", cd * 3
+                            )
+                        )
                         logger.warning(
-                            "Rate limit 429 in %s, sleeping %ds",
-                            func.__name__, wait)
+                            "429 %s — sleep %ds",
+                            func.__name__, wait,
+                        )
                         time.sleep(wait)
-                    elif status in [401, 403]:
-                        logger.error("Auth error %d in %s",
-                                     status, func.__name__)
+                    elif st in [401, 403]:
+                        logger.error(
+                            "Auth %d in %s", st, func.__name__
+                        )
                         return None
                     else:
-                        logger.error("HTTP %d in %s (attempt %d/%d)",
-                                     status, func.__name__,
-                                     attempt + 1, max_retries)
+                        logger.warning(
+                            "HTTP %d in %s (attempt %d/%d)",
+                            st, func.__name__,
+                            attempt + 1, max_retries,
+                        )
                         if attempt == max_retries - 1:
                             return None
-                except requests.exceptions.Timeout:
-                    logger.warning("Timeout in %s (attempt %d/%d)",
-                                   func.__name__,
-                                   attempt + 1, max_retries)
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.RequestException,
+                ) as e:
+                    logger.warning(
+                        "%s in %s (attempt %d/%d): %s",
+                        type(e).__name__, func.__name__,
+                        attempt + 1, max_retries, e,
+                    )
                     if attempt == max_retries - 1:
                         return None
-                except requests.exceptions.RequestException as e:
-                    logger.warning("RequestException in %s: %s",
-                                   func.__name__, e)
-                    if attempt == max_retries - 1:
-                        return None
-                time.sleep(current_delay)
-                current_delay *= backoff
+                time.sleep(cd)
+                cd *= backoff
             return None
         return wrapper
     return decorator
 
 
-def robust_json_extractor(raw_text: str) -> Optional[dict]:
-    if not raw_text:
+def robust_json_extractor(raw: str) -> Optional[dict]:
+    if not raw:
         return None
-    clean = re.sub(r"<think>[\s\S]*?</think>", "",
-                   raw_text, flags=re.IGNORECASE)
-    clean = re.sub(r"<think>[\s\S]*", "",
-                   clean, flags=re.IGNORECASE).strip()
+    clean = re.sub(
+        r"<think>[\s\S]*?</think>", "", raw, flags=re.IGNORECASE
+    )
+    clean = re.sub(
+        r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE
+    ).strip()
     clean = re.sub(r"```(?:json)?", "", clean).strip()
     try:
         return json.loads(clean)
@@ -684,7 +1013,7 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
             r = json.loads(m.group(0))
             if isinstance(r, dict) and r:
                 return r
-        except json.JSONDecodeError:
+        except Exception:
             continue
     try:
         m = re.search(r"\{[\s\S]*\}", clean)
@@ -701,74 +1030,254 @@ def clean_team_name(name: str) -> str:
 
 def normalize_sport_key(sport_title: str) -> str:
     tl = sport_title.lower()
-    if any(kw in tl for kw in ["tennis", "atp", "wta",
-                                "wimbledon", "roland garros"]):
+    if any(
+        k in tl
+        for k in [
+            "tennis", "atp", "wta",
+            "wimbledon", "roland garros",
+            "us open", "australian open",
+        ]
+    ):
         return "tennis"
-    if any(kw in tl for kw in ["soccer", "football", "premier league",
-                                "la liga", "bundesliga", "serie a",
-                                "ligue 1", "champions league",
-                                "europa league", "mls", "eredivisie"]):
+    if any(
+        k in tl
+        for k in [
+            "soccer", "football", "premier",
+            "liga", "bundesliga", "serie",
+            "ligue", "champions", "europa",
+            "mls", "eredivisie", "fa cup",
+            "copa del rey",
+        ]
+    ):
         return "football"
     return "other"
 
 
-def get_countdown_str(commence_time_str: str,
-                      now_utc: datetime) -> str:
+def get_countdown_str(ct: str, now: datetime) -> str:
     try:
-        match_time = datetime.fromisoformat(
-            commence_time_str.replace("Z", "+00:00"))
-        diff_sec = (match_time - now_utc).total_seconds()
-        if diff_sec <= 0:
+        mt   = datetime.fromisoformat(ct.replace("Z", "+00:00"))
+        diff = (mt - now).total_seconds()
+        if diff <= 0:
             return "⚡ Starting now"
-        minutes_left = int(diff_sec / 60)
-        if minutes_left > 60:
-            h = minutes_left // 60
-            m = minutes_left % 60
-            return f"{h}h {m:02d}m"
-        return f"{minutes_left}m"
+        m = int(diff / 60)
+        return f"{m // 60}h {m % 60:02d}m" if m > 60 else f"{m}m"
     except Exception:
         return "N/A"
 
 
-def get_display_pick(raw_pick: str, market: str,
-                     home_team: str, away_team: str) -> str:
-    """
-    تبدیل pick خام به متن حرفه‌ای.
-    از نام واقعی تیم استفاده می‌شود نه home/away.
-    """
-    pick_lower = raw_pick.lower().strip()
-
+def get_display_pick(
+    raw: str, market: str, home: str, away: str
+) -> str:
+    pl = raw.lower().strip()
     if market == "h2h":
-        if "draw" in pick_lower or "tie" in pick_lower:
+        if "draw" in pl or "tie" in pl:
             return "Draw (X)"
-        # اگر نام تیم home در pick هست
-        if home_team.lower() in pick_lower:
-            return f"{home_team} to Win"
-        # اگر نام تیم away در pick هست
-        if away_team.lower() in pick_lower:
-            return f"{away_team} to Win"
-        # fallback: pick خودش اسم تیم است
-        return f"{raw_pick} to Win"
-
+        if home.lower() in pl:
+            return f"{home} to Win"
+        if away.lower() in pl:
+            return f"{away} to Win"
+        return f"{raw} to Win"
     if market == "totals":
-        m = re.match(r"(over|under)\s*([\d.]+)", pick_lower)
+        m = re.match(r"(over|under)\s*([\d.]+)", pl)
         if m:
-            direction = m.group(1).capitalize()
-            line      = m.group(2)
-            return f"{direction} {line} Goals"
-        return raw_pick.title()
+            return (
+                f"{m.group(1).capitalize()} {m.group(2)} Goals"
+            )
+        return raw.title()
+    return raw
 
-    return raw_pick
 
-
-def get_market_label(market_key: str) -> str:
-    return CFG.MARKET_DISPLAY.get(
-        market_key,
-        market_key.replace("_", " ").title()
-    )
+def get_market_label(mk: str) -> str:
+    return CFG.MARKET_DISPLAY.get(mk, mk.replace("_", " ").title())
 
 # =========================================================
-# 10. MATH ENGINE
+# 11. ODDS API — async با key rotation
+# =========================================================
+async def _try_one_key(
+    key: str,
+    km: OddsKeyManager,
+    now_utc: datetime,
+    session: aiohttp.ClientSession,
+) -> tuple[list, bool]:
+    """
+    یک کلید را امتحان می‌کند.
+    Returns: (events, should_try_next_key)
+    """
+    end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
+    url     = (
+        "https://api.the-odds-api.com/v4/sports/upcoming/odds"
+    )
+    params  = {
+        "apiKey":     key,
+        "regions":    CFG.ODDS_API_REGIONS,
+        "markets":    CFG.ODDS_API_MARKETS_STR,
+        "oddsFormat": "decimal",
+        "dateFormat": "iso",
+    }
+    try:
+        async with session.get(
+            url,
+            params=params,
+            timeout=aiohttp.ClientTimeout(total=25),
+        ) as res:
+            remaining = res.headers.get(
+                "x-requests-remaining", "?"
+            )
+            used = res.headers.get("x-requests-used", "?")
+            body = await res.text()
+
+            if res.status == 401:
+                km.mark_invalid(key, "HTTP 401")
+                logger.error("Key 401 → trying next key")
+                return [], True
+
+            if res.status == 422:
+                km.mark_invalid(key, "HTTP 422 format error")
+                logger.error("Key 422 → trying next key")
+                return [], True
+
+            if res.status == 429:
+                km.mark_exhausted(key)
+                logger.warning("Key 429 quota → trying next key")
+                return [], True
+
+            if res.status != 200:
+                logger.error(
+                    "OddsAPI HTTP %d: %s", res.status, body[:150]
+                )
+                return [], False
+
+            # ── موفق ─────────────────────────────────────
+            km.mark_success(key, remaining, used)
+            events_raw = json.loads(body)
+            collected: dict = {}
+
+            for e in events_raw:
+                try:
+                    ct = e.get("commence_time", "")
+                    mt = datetime.fromisoformat(
+                        ct.replace("Z", "+00:00")
+                    )
+                    if not (now_utc <= mt <= end_win):
+                        continue
+                    eid = e.get("id")
+                    if not eid:
+                        continue
+                    if eid not in collected:
+                        collected[eid] = {
+                            "id":            eid,
+                            "home_team":     e.get("home_team", ""),
+                            "away_team":     e.get("away_team", ""),
+                            "sport_title":   e.get("sport_title", ""),
+                            "commence_time": ct,
+                            "_markets_data": {},
+                            "_source":       "odds_api",
+                        }
+                    for bm in e.get("bookmakers", []):
+                        for m in bm.get("markets", []):
+                            mk = m["key"]
+                            md = collected[eid]["_markets_data"]
+                            if mk not in md:
+                                md[mk] = []
+                            md[mk].append({
+                                "bookmaker":     bm["title"],
+                                "bookmaker_key": bm["key"],
+                                "outcomes":      m.get("outcomes", []),
+                            })
+                except Exception:
+                    continue
+
+            result = list(collected.values())
+            log_api_call(
+                "OddsAPI",
+                url,
+                {
+                    "regions": CFG.ODDS_API_REGIONS,
+                    "markets": CFG.ODDS_API_MARKETS_STR,
+                },
+                res.status,
+                len(result),
+                f"remaining={remaining} used={used}",
+            )
+            logger.info(
+                "OddsAPI ✅ | key=%s | remaining=%s "
+                "used=%s | events=%d",
+                km._prefix(key),
+                remaining, used, len(result),
+            )
+            return result, False
+
+    except Exception as e:
+        logger.error("OddsAPI exception: %s", e)
+        return [], False
+
+
+async def fetch_all_odds_async(
+    now_utc: datetime,
+    km: OddsKeyManager,
+    session: aiohttp.ClientSession,
+) -> list:
+    log_section("ODDS API — KEY ROTATION SYSTEM")
+    logger.info("Key status: %s", km.get_summary())
+
+    tried_keys: set[str] = set()
+    max_attempts = len(ODDS_API_KEYS) + 1
+
+    for attempt in range(max_attempts):
+        key = km.get_best_key()
+
+        if key is None:
+            logger.critical(
+                "All Odds API keys exhausted/invalid!\n"
+                "  Status: %s\n"
+                "  Solutions:\n"
+                "  1. Renew key at the-odds-api.com\n"
+                "  2. Wait until tomorrow (quota resets)\n"
+                "  3. Add KEY2/KEY3 in GitHub Secrets",
+                km.get_summary(),
+            )
+            return []
+
+        kid = km._kid(key)
+        if kid in tried_keys:
+            logger.warning(
+                "Key %s already tried — stopping rotation",
+                km._prefix(key),
+            )
+            break
+        tried_keys.add(kid)
+
+        logger.info(
+            "Attempt %d/%d with key=%s",
+            attempt + 1, max_attempts, km._prefix(key),
+        )
+
+        events, try_next = await _try_one_key(
+            key, km, now_utc, session
+        )
+
+        if events:
+            logger.info(
+                "✅ Got %d events from key=%s",
+                len(events), km._prefix(key),
+            )
+            return events
+
+        if not try_next:
+            logger.warning("Temporary error — stopping")
+            break
+
+        logger.info("Rotating to next key...")
+        await asyncio.sleep(1)
+
+    logger.error(
+        "OddsAPI: no events from any key. Summary: %s",
+        km.get_summary(),
+    )
+    return []
+
+# =========================================================
+# 12. MATH ENGINE
 # =========================================================
 def calculate_combined_ev(
     markets_data: dict,
@@ -791,222 +1300,168 @@ def calculate_combined_ev(
             for o in entry.get("outcomes", []):
                 base  = o["name"]
                 point = o.get("point")
-                name  = f"{base} {point}" if point is not None else base
+                name  = (
+                    f"{base} {point}"
+                    if point is not None
+                    else base
+                )
                 price = float(o["price"])
                 if price <= 1.0:
                     continue
                 if bk in CFG.SHARP_BOOKMAKERS:
-                    if (name not in sharp_odds
-                            or price > sharp_odds[name]["price"]):
+                    if (
+                        name not in sharp_odds
+                        or price > sharp_odds[name]["price"]
+                    ):
                         sharp_odds[name] = {
                             "price":     price,
                             "bookmaker": entry["bookmaker"],
                         }
-                if (name not in best_odds
-                        or price > best_odds[name]["price"]):
+                if (
+                    name not in best_odds
+                    or price > best_odds[name]["price"]
+                ):
                     best_odds[name] = {
                         "price":     price,
                         "bookmaker": entry["bookmaker"],
                     }
 
         if not has_real_sharp:
-            logger.debug("No sharp line for %s — skipping", market_key)
+            logger.debug("No sharp line: %s", market_key)
             continue
         if not sharp_odds:
             continue
 
         try:
-            implied_sum = sum(1.0 / v["price"]
-                              for v in sharp_odds.values())
+            implied_sum = sum(
+                1.0 / v["price"] for v in sharp_odds.values()
+            )
         except ZeroDivisionError:
             continue
 
-        if not (CFG.MIN_VALID_IMPLIED_SUM <= implied_sum
-                <= CFG.MAX_VALID_IMPLIED_SUM):
-            logger.debug("Invalid implied_sum %.3f for %s",
-                         implied_sum, market_key)
+        if not (
+            CFG.MIN_VALID_IMPLIED_SUM
+            <= implied_sum
+            <= CFG.MAX_VALID_IMPLIED_SUM
+        ):
+            logger.debug(
+                "Invalid implied_sum %.3f for %s",
+                implied_sum, market_key,
+            )
             continue
 
-        expected = CFG.MARKET_EXPECTED_OUTCOMES.get(
-            market_key, {"min": 2})
-        if len(sharp_odds) < expected["min"]:
-            logger.debug("Not enough outcomes for %s", market_key)
+        exp = CFG.MARKET_EXPECTED_OUTCOMES.get(
+            market_key, {"min": 2}
+        )
+        if len(sharp_odds) < exp["min"]:
             continue
 
-        min_odds = (CFG.H2H_MIN_ODDS if market_key == "h2h"
-                    else CFG.TOTALS_MIN_ODDS)
-        min_ev   = (CFG.H2H_MIN_EV if market_key == "h2h"
-                    else CFG.TOTALS_MIN_EV)
+        min_odds = (
+            CFG.H2H_MIN_ODDS
+            if market_key == "h2h"
+            else CFG.TOTALS_MIN_ODDS
+        )
+        min_ev = (
+            CFG.H2H_MIN_EV
+            if market_key == "h2h"
+            else CFG.TOTALS_MIN_EV
+        )
 
         best_opp = None
-        for outcome_name, sharp_data in sharp_odds.items():
-            sharp_true_prob = (1.0 / sharp_data["price"]) / implied_sum
+        for oname, sd in sharp_odds.items():
+            stp = (1.0 / sd["price"]) / implied_sum
+            etp: Optional[float] = None
 
-            elo_true_prob = None
             if elo_prediction and market_key == "h2h":
-                name_l   = outcome_name.lower()
-                hm       = elo_prediction.get("home_matches", 0)
-                am       = elo_prediction.get("away_matches", 0)
-                elo_diff = elo_prediction.get("elo_diff", 0)
-                if "draw" in name_l or "tie" in name_l:
-                    elo_true_prob = elo_prediction.get("draw_prob")
+                nl = oname.lower()
+                hm = elo_prediction.get("home_matches", 0)
+                am = elo_prediction.get("away_matches", 0)
+                ed = elo_prediction.get("elo_diff", 0)
+                if "draw" in nl or "tie" in nl:
+                    etp = elo_prediction.get("draw_prob")
                 elif hm >= 5 and am >= 5:
-                    # تشخیص home/away از نام تیم
-                    if home_team.lower() in name_l:
-                        elo_true_prob = elo_prediction.get("home_prob")
-                    elif away_team.lower() in name_l:
-                        elo_true_prob = elo_prediction.get("away_prob")
-                    elif elo_diff > 0:
-                        elo_true_prob = elo_prediction.get("home_prob")
+                    if home_team.lower() in nl:
+                        etp = elo_prediction.get("home_prob")
+                    elif away_team.lower() in nl:
+                        etp = elo_prediction.get("away_prob")
+                    elif ed > 0:
+                        etp = elo_prediction.get("home_prob")
                     else:
-                        elo_true_prob = elo_prediction.get("away_prob")
+                        etp = elo_prediction.get("away_prob")
 
-            true_prob = (0.6 * sharp_true_prob + 0.4 * elo_true_prob
-                         if elo_true_prob is not None
-                         else sharp_true_prob)
+            tp = (
+                0.6 * stp + 0.4 * etp
+                if etp is not None
+                else stp
+            )
 
-            best       = best_odds.get(outcome_name, {})
-            best_price = best.get("price", 0.0)
-            best_bookie = best.get("bookmaker", "Unknown")
+            bd  = best_odds.get(oname, {})
+            bp  = bd.get("price", 0.0)
+            bbk = bd.get("bookmaker", "Unknown")
 
-            if best_price <= 1.0:
+            if bp <= 1.0:
                 continue
 
-            ev = (true_prob * best_price) - 1.0
+            ev = (tp * bp) - 1.0
 
             if ev > CFG.MAX_REALISTIC_EV:
                 logger.warning(
-                    "Rejected unrealistic EV=%.1f%% for %s",
-                    ev * 100, outcome_name)
+                    "Rejected EV=%.1f%% for %s",
+                    ev * 100, oname,
+                )
                 continue
 
-            if best_price >= min_odds and ev > min_ev:
+            if bp >= min_odds and ev > min_ev:
                 opp = {
-                    "pick":           outcome_name,
+                    "pick":           oname,
                     "market":         market_key,
                     "market_label":   get_market_label(market_key),
-                    "prob":           round(true_prob, 4),
-                    "odds":           round(best_price, 3),
-                    "bookmaker":      best_bookie,
+                    "prob":           round(tp, 4),
+                    "odds":           round(bp, 3),
+                    "bookmaker":      bbk,
                     "ev":             round(ev, 4),
                     "edge_pct":       round(ev * 100, 2),
                     "has_sharp_line": has_real_sharp,
-                    "elo_used":       elo_true_prob is not None,
+                    "elo_used":       etp is not None,
                 }
                 if best_opp is None or opp["ev"] > best_opp["ev"]:
                     best_opp = opp
 
         if best_opp:
             best_per_market[market_key] = best_opp
-            log_check(
-                f"EV opp [{market_key}]",
-                f"pick='{best_opp['pick']}' "
-                f"EV={best_opp['edge_pct']:.1f}% "
-                f"odds={best_opp['odds']} "
-                f"bookie={best_opp['bookmaker']} "
-                f"elo={best_opp['elo_used']}",
+            logger.info(
+                "EV [%s] pick='%s' ev=%.1f%% "
+                "odds=%.2f bookie=%s elo=%s",
+                market_key,
+                best_opp["pick"],
+                best_opp["edge_pct"],
+                best_opp["odds"],
+                best_opp["bookmaker"],
+                best_opp["elo_used"],
             )
 
-    all_opps = list(best_per_market.values())
-    all_opps.sort(key=lambda x: x["ev"], reverse=True)
-    return all_opps[:1]
+    return sorted(
+        best_per_market.values(),
+        key=lambda x: x["ev"],
+        reverse=True,
+    )[:1]
 
 # =========================================================
-# 11. ODDS API
-# =========================================================
-async def fetch_all_odds_async(now_utc: datetime) -> list:
-    end_window = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
-    url    = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
-    params = {
-        "apiKey":     ODDS_API_KEY,
-        "regions":    CFG.ODDS_API_REGIONS,
-        "markets":    CFG.ODDS_API_MARKETS_STR,
-        "oddsFormat": "decimal",
-        "dateFormat": "iso",
-    }
-    try:
-        connector = aiohttp.TCPConnector(ssl=False)
-        async with aiohttp.ClientSession(connector=connector) as session:
-            async with session.get(
-                url, params=params,
-                timeout=aiohttp.ClientTimeout(total=25),
-            ) as res:
-                remaining = res.headers.get(
-                    "x-requests-remaining", "?")
-                used = res.headers.get("x-requests-used", "?")
-
-                if res.status != 200:
-                    body = await res.text()
-                    log_api_call("OddsAPI", url, params,
-                                 res.status, 0, body[:200])
-                    logger.error("Odds API HTTP %d", res.status)
-                    return []
-
-                events      = await res.json()
-                all_events: dict = {}
-
-                for e in events:
-                    try:
-                        ct = e.get("commence_time", "")
-                        match_time = datetime.fromisoformat(
-                            ct.replace("Z", "+00:00"))
-                        if not (now_utc <= match_time <= end_window):
-                            continue
-                        eid = e.get("id")
-                        if not eid:
-                            continue
-                        if eid not in all_events:
-                            all_events[eid] = {
-                                **e, "_markets_data": {}}
-                        for bm in e.get("bookmakers", []):
-                            for m in bm.get("markets", []):
-                                mk = m["key"]
-                                if mk not in all_events[eid][
-                                        "_markets_data"]:
-                                    all_events[eid][
-                                        "_markets_data"][mk] = []
-                                all_events[eid][
-                                    "_markets_data"][mk].append({
-                                        "bookmaker":     bm["title"],
-                                        "bookmaker_key": bm["key"],
-                                        "outcomes":      m.get(
-                                            "outcomes", []),
-                                    })
-                    except Exception:
-                        continue
-
-                result = list(all_events.values())
-                log_api_call(
-                    "OddsAPI", url, params, res.status,
-                    len(result),
-                    f"remaining={remaining} used={used} "
-                    f"window_events={len(result)}",
-                )
-                log_check("Odds API requests remaining", remaining)
-                return result
-    except Exception as e:
-        logger.error("Odds API fetch error: %s", e)
-        return []
-
-# =========================================================
-# 12. SOFASCORE  — endpoint صحیح: /search?q=...&type=all
+# 13. SOFASCORE  (session پاس می‌شود)
 # =========================================================
 def _sofa_headers() -> dict:
     return {
-        "x-rapidapi-key":  RAPIDAPI_KEY or "",
+        "x-rapidapi-key":  RAPIDAPI_KEY,
         "x-rapidapi-host": "sofascore.p.rapidapi.com",
     }
 
 
-async def _sofa_get_async(
+async def _sofa_get(
     session: aiohttp.ClientSession,
     url: str,
     params: dict,
     label: str,
 ) -> Optional[dict]:
-    """
-    یک درخواست async به SofaScore با لاگ کامل.
-    """
     try:
         async with session.get(
             url,
@@ -1014,380 +1469,277 @@ async def _sofa_get_async(
             params=params,
             timeout=aiohttp.ClientTimeout(total=12),
         ) as res:
+            body = await res.text()
             if res.status == 200:
-                data = await res.json()
-                # لاگ تعداد رکوردهای دریافتی
-                record_count = (
-                    len(data) if isinstance(data, list)
-                    else sum(
-                        len(v) for v in data.values()
-                        if isinstance(v, list)
-                    ) if isinstance(data, dict) else 1
+                data = json.loads(body)
+                log_api_call(
+                    "SofaScore", url, params, 200, 1, body[:120]
                 )
-                log_api_call("SofaScore", url, params,
-                             res.status, record_count,
-                             str(data)[:150])
                 return data
-            else:
-                body = await res.text()
-                log_api_call("SofaScore", url, params,
-                             res.status, 0, body[:150])
-                logger.warning("SofaScore %s HTTP %d — %s",
-                               label, res.status, body[:100])
+            log_api_call(
+                "SofaScore", url, params,
+                res.status, 0, body[:100],
+            )
     except Exception as e:
         log_api_call("SofaScore", url, params, -1, 0, str(e))
-        logger.debug("SofaScore error [%s]: %s", label, e)
     return None
 
 
 async def search_sofascore_match_async(
-    home_team: str, away_team: str
+    home: str,
+    away: str,
+    session: aiohttp.ClientSession,
 ) -> Optional[int]:
-    """
-    جستجوی match_id با endpoint رسمی:
-    GET /search?q={query}&type=all&page=0
-    """
-    query = f"{clean_team_name(home_team)} {clean_team_name(away_team)}"
-    url   = "https://sofascore.p.rapidapi.com/search"
-    params = {"q": query, "type": "all", "page": "0"}
-
-    connector = aiohttp.TCPConnector(ssl=False)
-    async with aiohttp.ClientSession(connector=connector) as session:
-        data = await _sofa_get_async(
-            session, url, params,
-            f"search:{home_team} vs {away_team}")
-
+    q   = f"{clean_team_name(home)} {clean_team_name(away)}"
+    url = "https://sofascore.p.rapidapi.com/search"
+    par = {"q": q, "type": "all", "page": "0"}
+    data = await _sofa_get(session, url, par, f"{home} vs {away}")
     if not data:
         return None
-
-    # SofaScore search response: {"results": [{"type":"event","entity":{...}},..]}
-    results = data.get("results", [])
-    logger.debug("SofaScore search returned %d results for '%s'",
-                 len(results), query)
-
-    for item in results:
+    for item in data.get("results", []):
         if item.get("type") != "event":
             continue
-        entity = item.get("entity", {})
-        mid    = entity.get("id")
+        e   = item.get("entity", {})
+        mid = e.get("id")
         if not mid:
             continue
-        # تأیید که اسم تیم‌ها در event هست
-        h_name = (entity.get("homeTeam", {}).get("name", "")
-                  or entity.get("home_team", {}).get("name", "")).lower()
-        a_name = (entity.get("awayTeam", {}).get("name", "")
-                  or entity.get("away_team", {}).get("name", "")).lower()
-
-        home_lower = clean_team_name(home_team).lower()
-        away_lower = clean_team_name(away_team).lower()
-
-        name_match = (
-            (home_lower in h_name or h_name in home_lower) and
-            (away_lower in a_name or a_name in away_lower)
-        )
-        if name_match or not (h_name or a_name):
+        hn = (e.get("homeTeam", {}).get("name", "")).lower()
+        an = (e.get("awayTeam", {}).get("name", "")).lower()
+        hl = clean_team_name(home).lower()
+        al = clean_team_name(away).lower()
+        if (hl in hn or hn in hl) and (al in an or an in al):
             logger.info(
-                "SofaScore: '%s' vs '%s' → match_id=%s "
-                "(home_found='%s' away_found='%s')",
-                home_team, away_team, mid, h_name, a_name)
+                "SofaScore: %s vs %s → id=%s", home, away, mid
+            )
             return int(mid)
-
-    logger.info("SofaScore: no event match found for '%s' vs '%s'",
-                home_team, away_team)
+    logger.info(
+        "SofaScore: no match for '%s' vs '%s'", home, away
+    )
     return None
 
 
-async def fetch_sofascore_stats_async(match_id: int,
-                                      home_team: str,
-                                      away_team: str) -> dict:
-    """
-    دریافت آمار مسابقه از SofaScore.
-    endpoint های معتبر:
-      /matches/get-pregame-form?matchId=X
-      /matches/get-h2h?matchId=X
-      /matches/get-lineups?matchId=X
-    """
-    mid_str = str(match_id)
-    BASE    = "https://sofascore.p.rapidapi.com"
-    endpoints = {
-        "pregame_form": (f"{BASE}/matches/get-pregame-form",
-                         {"matchId": mid_str}),
-        "h2h":          (f"{BASE}/matches/get-h2h",
-                         {"matchId": mid_str}),
-        "lineups":      (f"{BASE}/matches/get-lineups",
-                         {"matchId": mid_str}),
+async def fetch_sofascore_stats_async(
+    match_id: int,
+    home: str,
+    away: str,
+    session: aiohttp.ClientSession,
+) -> dict:
+    mid = str(match_id)
+    B   = "https://sofascore.p.rapidapi.com"
+    eps = {
+        "pregame_form": (
+            f"{B}/matches/get-pregame-form",
+            {"matchId": mid},
+        ),
+        "h2h":     (f"{B}/matches/get-h2h",     {"matchId": mid}),
+        "lineups": (f"{B}/matches/get-lineups",  {"matchId": mid}),
     }
-
-    connector = aiohttp.TCPConnector(limit=3, ssl=False)
-    async with aiohttp.ClientSession(connector=connector) as session:
-        tasks = [
-            _sofa_get_async(session, url, params, label)
-            for label, (url, params) in endpoints.items()
-        ]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    data = {}
-    for label, result in zip(endpoints.keys(), results):
-        if isinstance(result, Exception):
-            logger.warning("SofaScore [%s] exception: %s",
-                           label, result)
-            continue
-        if result is not None:
-            data[label] = result
-
-    # خلاصه لاگ
-    log_check(
-        f"SofaScore match_id={match_id} "
-        f"({home_team[:10]} vs {away_team[:10]})",
-        f"sections_received={list(data.keys())}",
-        warn_if_none=False,
+    results = await asyncio.gather(
+        *[_sofa_get(session, u, p, lbl)
+          for lbl, (u, p) in eps.items()],
+        return_exceptions=True,
     )
+    raw: dict = {}
+    for lbl, r in zip(eps.keys(), results):
+        if not isinstance(r, Exception) and r is not None:
+            raw[lbl] = r
+    logger.info(
+        "SofaScore id=%d [%s vs %s] → sections=%s",
+        match_id, home, away, list(raw.keys()),
+    )
+    return _parse_sofascore(raw, home, away)
 
-    # استخراج فرم اخیر برای AI
-    summary = _parse_sofascore_summary(data, home_team, away_team)
-    if summary:
-        logger.info(
-            "SofaScore parsed | %s vs %s | %s",
-            home_team, away_team, str(summary)[:200])
-    return summary
 
-
-def _parse_sofascore_summary(data: dict,
-                              home_team: str,
-                              away_team: str) -> dict:
-    """
-    استخراج اطلاعات مفید از response SofaScore برای AI.
-    """
-    summary = {}
-
-    # ── pregame_form ──────────────────────────────────────
+def _parse_sofascore(data: dict, home: str, away: str) -> dict:
+    out: dict = {}
     pgf = data.get("pregame_form", {})
     if pgf:
-        for side, team_name in [("homeTeam", home_team),
-                                 ("awayTeam", away_team)]:
-            form_data = pgf.get(side, {})
-            if not form_data:
-                continue
-            value = form_data.get("value", "")   # e.g. "WWDLW"
-            avg_rating = form_data.get("avgRating", None)
-            position   = form_data.get("position", None)
-            key = "home_form" if side == "homeTeam" else "away_form"
-            summary[key] = {
-                "team":       team_name,
-                "form":       value,
-                "avg_rating": avg_rating,
-                "position":   position,
-            }
-            logger.debug("SofaScore pregame_form [%s]: %s",
-                         team_name, summary[key])
-
-    # ── h2h ──────────────────────────────────────────────
-    h2h_data = data.get("h2h", {})
-    if h2h_data:
-        home_wins  = h2h_data.get("homeTeamWins", 0)
-        away_wins  = h2h_data.get("awayTeamWins", 0)
-        draws      = h2h_data.get("draws", 0)
-        total      = home_wins + away_wins + draws
-        summary["h2h"] = {
-            f"{home_team}_wins": home_wins,
-            f"{away_team}_wins": away_wins,
-            "draws":             draws,
-            "total":             total,
+        for side, tname in [("homeTeam", home), ("awayTeam", away)]:
+            fd = pgf.get(side, {})
+            if fd:
+                k = (
+                    "home_form" if side == "homeTeam" else "away_form"
+                )
+                out[k] = {
+                    "team":       tname,
+                    "form":       fd.get("value", ""),
+                    "avg_rating": fd.get("avgRating"),
+                    "position":   fd.get("position"),
+                }
+    h2h = data.get("h2h", {})
+    if h2h:
+        hw = h2h.get("homeTeamWins", 0)
+        aw = h2h.get("awayTeamWins", 0)
+        d  = h2h.get("draws", 0)
+        out["h2h"] = {
+            f"{home}_wins": hw,
+            f"{away}_wins": aw,
+            "draws":        d,
+            "total":        hw + aw + d,
         }
-        logger.debug("SofaScore h2h: %s", summary["h2h"])
-
-    # ── lineups ──────────────────────────────────────────
-    lineups = data.get("lineups", {})
-    if lineups:
-        home_lu = lineups.get("home", {})
-        away_lu = lineups.get("away", {})
-        summary["lineups"] = {
-            "home_formation": home_lu.get("formation", "N/A"),
-            "away_formation": away_lu.get("formation", "N/A"),
-            "home_avg_age":   home_lu.get("avgAge", None),
-            "away_avg_age":   away_lu.get("avgAge", None),
+    lu = data.get("lineups", {})
+    if lu:
+        out["lineups"] = {
+            "home_formation": lu.get("home", {}).get(
+                "formation", "N/A"
+            ),
+            "away_formation": lu.get("away", {}).get(
+                "formation", "N/A"
+            ),
         }
-        logger.debug("SofaScore lineups: %s", summary["lineups"])
-
-    return summary
+    return out
 
 # =========================================================
-# 13. FOOTBALL-DATA ADAPTER  — endpoints صحیح
+# 14. FOOTBALL-DATA ADAPTER  (sync — در executor اجرا می‌شود)
 # =========================================================
 class FootballDataAdapter:
     BASE_URL = "https://api.football-data.org/v4"
-
-    # نگاشت competition_id به کد رشته‌ای
     COMP_MAP = {
-        2021: "PL",   # Premier League
-        2014: "PD",   # La Liga
-        2002: "BL1",  # Bundesliga
-        2019: "SA",   # Serie A
-        2015: "FL1",  # Ligue 1
-        2003: "DED",  # Eredivisie
-        2017: "PPL",  # Primeira Liga
-        2016: "ELC",  # Championship
-        2001: "CL",   # Champions League
-        2018: "EC",   # Euros
+        2021: "PL",  2014: "PD",  2002: "BL1",
+        2019: "SA",  2015: "FL1", 2003: "DED",
+        2017: "PPL", 2016: "ELC", 2001: "CL",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.headers = (
             {"X-Auth-Token": FOOTBALL_DATA_API_KEY}
-            if FOOTBALL_DATA_API_KEY else {}
+            if FOOTBALL_DATA_API_KEY
+            else {}
         )
         self.daily_cache = CacheManager.load(CFG.DAILY_STATS_CACHE_FILE)
         self.call_count  = 0
         entry = self.daily_cache.get("_call_count_today", {})
-        self.call_count = (entry.get("data", 0)
-                           if isinstance(entry.get("data"), int) else 0)
-        last_ts = entry.get("timestamp", "2000-01-01T00:00:00+00:00")
+        self.call_count = (
+            entry.get("data", 0)
+            if isinstance(entry.get("data"), int)
+            else 0
+        )
         try:
-            if (datetime.now(timezone.utc).date()
-                    > datetime.fromisoformat(last_ts).date()):
+            last = entry.get(
+                "timestamp", "2000-01-01T00:00:00+00:00"
+            )
+            if (
+                datetime.now(timezone.utc).date()
+                > datetime.fromisoformat(last).date()
+            ):
                 self.call_count = 0
-                logger.info("Football-Data call counter reset (new day)")
+                logger.info("FD call counter reset (new day)")
         except Exception:
             self.call_count = 0
-        log_check("Football-Data calls today",
-                  self.call_count, warn_if_none=False)
+        log_check(
+            "FD calls today", self.call_count, warn_if_none=False
+        )
 
     def _can_call(self) -> bool:
-        ok = (self.call_count < CFG.FOOTBALL_DATA_DAILY_LIMIT
-              and bool(FOOTBALL_DATA_API_KEY))
+        ok = (
+            self.call_count < CFG.FOOTBALL_DATA_DAILY_LIMIT
+            and bool(FOOTBALL_DATA_API_KEY)
+        )
         if not ok:
             logger.debug(
-                "Football-Data: cannot call "
-                "(count=%d limit=%d key=%s)",
-                self.call_count, CFG.FOOTBALL_DATA_DAILY_LIMIT,
-                bool(FOOTBALL_DATA_API_KEY))
+                "FD cannot call: count=%d limit=%d key=%s",
+                self.call_count,
+                CFG.FOOTBALL_DATA_DAILY_LIMIT,
+                bool(FOOTBALL_DATA_API_KEY),
+            )
         return ok
 
-    def _increment(self):
+    def _inc(self) -> None:
         self.call_count += 1
         self.daily_cache = CacheManager.set(
-            self.daily_cache, "_call_count_today", self.call_count)
-        CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
+            self.daily_cache, "_call_count_today", self.call_count
+        )
+        CacheManager.save(
+            CFG.DAILY_STATS_CACHE_FILE, self.daily_cache
+        )
 
-    @retry_request(max_retries=2, delay=3)
-    def _raw_get(self, endpoint: str,
-                 params: dict = None) -> Optional[dict]:
+    @retry_sync(max_retries=2, delay=3)
+    def _get(
+        self, ep: str, params: Optional[dict] = None
+    ) -> Optional[dict]:
         if not self._can_call():
             return None
-        url = f"{self.BASE_URL}{endpoint}"
+        url = f"{self.BASE_URL}{ep}"
         res = requests.get(
-            url, headers=self.headers,
-            params=params, timeout=12)
-        log_api_call(
-            "FootballData",
-            url, params or {},
-            res.status_code,
-            0,   # records اینجا نامشخص — بعد از parse مشخص می‌شود
+            url, headers=self.headers, params=params, timeout=12
         )
+        log_api_call("FootballData", ep, params or {}, res.status_code, 0)
         res.raise_for_status()
-        self._increment()
+        self._inc()
         data = res.json()
-        logger.debug("FootballData response keys: %s",
-                     list(data.keys()) if isinstance(data, dict)
-                     else type(data))
+        logger.debug(
+            "FD %s → keys=%s",
+            ep,
+            list(data.keys()) if isinstance(data, dict) else type(data),
+        )
         return data
 
-    # ── Team lookup ──────────────────────────────────────
     def find_team_id(self, team_name: str) -> Optional[int]:
-        """
-        پیدا کردن team_id از طریق:
-          GET /v4/competitions/{id}/teams
-        برای هر competition تا team پیدا شود.
-        """
         cache = CacheManager.load(CFG.TEAM_ID_CACHE_FILE)
         key   = team_name.lower().strip()
-
         if key in cache:
-            cached_id = cache[key]
-            logger.debug("FootballData team_id cache hit: "
-                         "'%s' -> %s", team_name, cached_id)
-            return cached_id
-
+            logger.debug(
+                "FD team_id cache hit: '%s' → %s",
+                team_name, cache[key],
+            )
+            return cache[key]
         if not self._can_call():
             return None
-
-        clean_name = clean_team_name(team_name).lower()
-        team_id    = None
-
-        for comp_id, comp_code in self.COMP_MAP.items():
-            # GET /v4/competitions/{id}/teams
-            data = self._raw_get(
-                f"/competitions/{comp_id}/teams",
-                {"season": "2024"},
+        clean = clean_team_name(team_name).lower()
+        tid: Optional[int] = None
+        for cid, ccode in self.COMP_MAP.items():
+            data = self._get(
+                f"/competitions/{cid}/teams", {"season": "2024"}
             )
             if not data or not data.get("teams"):
-                logger.debug(
-                    "FootballData /competitions/%d/teams: "
-                    "no teams returned", comp_id)
                 continue
-
             teams = data["teams"]
             log_api_call(
                 "FootballData",
-                f"/competitions/{comp_id}/teams",
+                f"/competitions/{cid}/teams",
                 {"season": "2024"},
                 200,
                 len(teams),
-                f"comp={comp_code} first={teams[0].get('name','?') if teams else 'N/A'}",
+                f"comp={ccode}",
             )
-
             for t in teams:
-                t_name  = t.get("name", "").lower()
-                t_short = t.get("shortName", "").lower()
-                t_tla   = t.get("tla", "").lower()
-
-                if (clean_name == t_name
-                        or clean_name == t_short
-                        or clean_name == t_tla
-                        or clean_name in t_name
-                        or t_name in clean_name
-                        or clean_name in t_short):
-                    team_id = t["id"]
+                tn = t.get("name", "").lower()
+                ts = t.get("shortName", "").lower()
+                tt = t.get("tla", "").lower()
+                if (
+                    clean == tn or clean == ts or clean == tt
+                    or clean in tn or tn in clean
+                    or clean in ts
+                ):
+                    tid = t["id"]
                     logger.info(
-                        "FootballData: '%s' found in comp=%s "
-                        "→ id=%d (matched='%s')",
-                        team_name, comp_code, team_id, t_name)
+                        "FD: '%s' → id=%d (comp=%s matched='%s')",
+                        team_name, tid, ccode, tn,
+                    )
                     break
-            if team_id:
+            if tid:
                 break
-
-        if team_id is None:
-            logger.warning(
-                "FootballData: team '%s' NOT found in any competition",
-                team_name)
-
-        cache[key] = team_id
+        if tid is None:
+            logger.warning("FD: team '%s' NOT found", team_name)
+        cache[key] = tid
         CacheManager.save(CFG.TEAM_ID_CACHE_FILE, cache)
-        return team_id
+        return tid
 
-    # ── Recent form ──────────────────────────────────────
-    def get_team_recent_form(self, team_id: int,
-                              team_name: str) -> dict:
-        cache_key = f"form_{team_id}"
-        if CacheManager.is_valid(self.daily_cache, cache_key,
-                                 CFG.TTL_TEAM_FORM):
-            cached = CacheManager.get(self.daily_cache, cache_key) or {}
+    def get_form(self, team_id: int, team_name: str) -> dict:
+        ck = f"form_{team_id}"
+        if CacheManager.is_valid(
+            self.daily_cache, ck, CFG.TTL_TEAM_FORM
+        ):
             logger.debug(
-                "FootballData form cache hit: '%s' (id=%d)",
-                team_name, team_id)
-            return cached
-
-        # GET /v4/teams/{id}/matches/?status=FINISHED&limit=5
-        data = self._raw_get(
+                "FD form cache hit: '%s'", team_name
+            )
+            return CacheManager.get(self.daily_cache, ck) or {}
+        data = self._get(
             f"/teams/{team_id}/matches/",
             {"status": "FINISHED", "limit": "5"},
         )
         if not data:
-            logger.warning(
-                "FootballData: no match data for team '%s' (id=%d)",
-                team_name, team_id)
             return {}
-
         matches = data.get("matches", [])
         log_api_call(
             "FootballData",
@@ -1395,213 +1747,220 @@ class FootballDataAdapter:
             {"status": "FINISHED", "limit": "5"},
             200,
             len(matches),
-            f"team='{team_name}'",
+            f"team={team_name}",
         )
-
         form = self._parse_form(matches, team_id, team_name)
         log_check(
-            f"FootballData form '{team_name[:20]}'",
+            f"FD form '{team_name[:18]}'",
             form.get("form_string"),
             warn_if_none=False,
         )
         self.daily_cache = CacheManager.set(
-            self.daily_cache, cache_key, form)
-        CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
+            self.daily_cache, ck, form
+        )
+        CacheManager.save(
+            CFG.DAILY_STATS_CACHE_FILE, self.daily_cache
+        )
         return form
 
-    def _parse_form(self, matches: list, team_id: int,
-                    team_name: str) -> dict:
-        results, gs, gc = [], [], []
+    def _parse_form(
+        self, matches: list, tid: int, tname: str
+    ) -> dict:
+        rs: list[str] = []
+        gs: list[int] = []
+        gc: list[int] = []
         for m in matches[-5:]:
-            home_id = m.get("homeTeam", {}).get("id")
-            away_id = m.get("awayTeam", {}).get("id")
-            score   = m.get("score", {}).get("fullTime", {})
-            hg      = int(score.get("home") or 0)
-            ag      = int(score.get("away") or 0)
-
-            if home_id == team_id:
+            hid = m.get("homeTeam", {}).get("id")
+            aid = m.get("awayTeam", {}).get("id")
+            sc  = m.get("score", {}).get("fullTime", {})
+            hg  = int(sc.get("home") or 0)
+            ag  = int(sc.get("away") or 0)
+            if hid == tid:
                 s, c = hg, ag
                 r = "W" if hg > ag else ("D" if hg == ag else "L")
-            elif away_id == team_id:
+            elif aid == tid:
                 s, c = ag, hg
                 r = "W" if ag > hg else ("D" if ag == hg else "L")
             else:
                 continue
-
-            results.append(r)
+            rs.append(r)
             gs.append(s)
             gc.append(c)
             logger.debug(
-                "FootballData form [%s]: %s vs %s → %d-%d (%s)",
-                team_name,
+                "FD form [%s]: %s %d-%d %s → %s",
+                tname,
                 m.get("homeTeam", {}).get("name", "?"),
+                hg, ag,
                 m.get("awayTeam", {}).get("name", "?"),
-                hg, ag, r)
-
-        total = len(results)
-        if total == 0:
+                r,
+            )
+        n = len(rs)
+        if n == 0:
             return {}
-
-        form_dict = {
-            "form_string":        "".join(results),
-            "win_rate":           round(results.count("W") / total, 2),
-            "draw_rate":          round(results.count("D") / total, 2),
-            "avg_goals_scored":   round(sum(gs) / total, 2),
-            "avg_goals_conceded": round(sum(gc) / total, 2),
+        f = {
+            "form_string":        "".join(rs),
+            "win_rate":           round(rs.count("W") / n, 2),
+            "draw_rate":          round(rs.count("D") / n, 2),
+            "avg_goals_scored":   round(sum(gs) / n, 2),
+            "avg_goals_conceded": round(sum(gc) / n, 2),
             "btts_rate":          round(
-                sum(1 for a, b in zip(gs, gc)
-                    if a > 0 and b > 0) / total, 2),
+                sum(1 for a, b in zip(gs, gc) if a > 0 and b > 0) / n,
+                2,
+            ),
             "over25_rate":        round(
-                sum(1 for a, b in zip(gs, gc)
-                    if a + b > 2.5) / total, 2),
-            "matches_analyzed":   total,
+                sum(1 for a, b in zip(gs, gc) if a + b > 2.5) / n,
+                2,
+            ),
+            "matches_analyzed": n,
         }
         logger.info(
-            "FootballData form parsed [%s]: %s | "
-            "WR=%.0f%% AvgGF=%.1f AvgGA=%.1f",
-            team_name,
-            form_dict["form_string"],
-            form_dict["win_rate"] * 100,
-            form_dict["avg_goals_scored"],
-            form_dict["avg_goals_conceded"],
+            "FD form [%s]: %s WR=%.0f%% GF=%.1f GA=%.1f",
+            tname,
+            f["form_string"],
+            f["win_rate"] * 100,
+            f["avg_goals_scored"],
+            f["avg_goals_conceded"],
         )
-        return form_dict
+        return f
 
-    # ── Head-to-Head ─────────────────────────────────────
-    def get_h2h(self, team1_id: int, team2_id: int,
-                team1_name: str, team2_name: str) -> dict:
-        cache_key = (f"h2h_{min(team1_id, team2_id)}_"
-                     f"{max(team1_id, team2_id)}")
-        if CacheManager.is_valid(self.daily_cache, cache_key,
-                                 CFG.TTL_H2H):
-            cached = CacheManager.get(self.daily_cache, cache_key) or {}
-            logger.debug("FootballData H2H cache hit: "
-                         "%s vs %s", team1_name, team2_name)
-            return cached
-
-        # GET /v4/teams/{id}/matches/?status=FINISHED&limit=20
-        data = self._raw_get(
-            f"/teams/{team1_id}/matches/",
+    def get_h2h(
+        self,
+        t1_id: int,
+        t2_id: int,
+        t1n: str,
+        t2n: str,
+    ) -> dict:
+        ck = f"h2h_{min(t1_id, t2_id)}_{max(t1_id, t2_id)}"
+        if CacheManager.is_valid(self.daily_cache, ck, CFG.TTL_H2H):
+            logger.debug("FD H2H cache hit: %s vs %s", t1n, t2n)
+            return CacheManager.get(self.daily_cache, ck) or {}
+        data = self._get(
+            f"/teams/{t1_id}/matches/",
             {"status": "FINISHED", "limit": "20"},
         )
         if not data:
             return {}
-
-        all_matches = data.get("matches", [])
-        h2h_matches = [
-            m for m in all_matches
-            if {m.get("homeTeam", {}).get("id"),
-                m.get("awayTeam", {}).get("id")}
-            == {team1_id, team2_id}
+        all_m  = data.get("matches", [])
+        h2h_m  = [
+            m for m in all_m
+            if {
+                m.get("homeTeam", {}).get("id"),
+                m.get("awayTeam", {}).get("id"),
+            } == {t1_id, t2_id}
         ]
         log_api_call(
             "FootballData",
-            f"/teams/{team1_id}/matches/ [H2H filter]",
+            f"/teams/{t1_id}/matches/ [H2H filter]",
             {"status": "FINISHED", "limit": "20"},
             200,
-            len(h2h_matches),
-            f"{team1_name} vs {team2_name}",
+            len(h2h_m),
+            f"{t1n} vs {t2n}",
         )
         logger.info(
-            "FootballData H2H: %s vs %s → %d encounters found",
-            team1_name, team2_name, len(h2h_matches))
-
-        result = self._parse_h2h(h2h_matches, team1_id,
-                                 team1_name, team2_name)
+            "FD H2H: %s vs %s → %d matches", t1n, t2n, len(h2h_m)
+        )
+        result = self._parse_h2h(h2h_m, t1_id, t1n, t2n)
         self.daily_cache = CacheManager.set(
-            self.daily_cache, cache_key, result)
-        CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
+            self.daily_cache, ck, result
+        )
+        CacheManager.save(
+            CFG.DAILY_STATS_CACHE_FILE, self.daily_cache
+        )
         return result
 
-    def _parse_h2h(self, matches: list, team1_id: int,
-                   team1_name: str, team2_name: str) -> dict:
-        t1 = t2 = draws = tg = btts = over25 = 0
-        total = len(matches)
+    def _parse_h2h(
+        self,
+        matches: list,
+        t1_id: int,
+        t1: str,
+        t2: str,
+    ) -> dict:
+        w1 = w2 = d = tg = bt = o25 = 0
+        n  = len(matches)
         for m in matches:
-            score = m.get("score", {}).get("fullTime", {})
-            hg    = int(score.get("home") or 0)
-            ag    = int(score.get("away") or 0)
-            hid   = m.get("homeTeam", {}).get("id")
+            sc  = m.get("score", {}).get("fullTime", {})
+            hg  = int(sc.get("home") or 0)
+            ag  = int(sc.get("away") or 0)
+            hid = m.get("homeTeam", {}).get("id")
             if hg > ag:
-                if hid == team1_id:
-                    t1 += 1
+                if hid == t1_id:
+                    w1 += 1
                 else:
-                    t2 += 1
+                    w2 += 1
             elif ag > hg:
-                if hid != team1_id:
-                    t1 += 1
+                if hid != t1_id:
+                    w1 += 1
                 else:
-                    t2 += 1
+                    w2 += 1
             else:
-                draws += 1
-            tg += hg + ag
-            if hg > 0 and ag > 0:
-                btts   += 1
-            if hg + ag > 2.5:
-                over25 += 1
-
-        if total == 0:
+                d += 1
+            tg  += hg + ag
+            bt  += 1 if hg > 0 and ag > 0 else 0
+            o25 += 1 if hg + ag > 2.5 else 0
+        if n == 0:
             return {}
-
-        h2h_dict = {
-            "total_h2h":          total,
-            f"{team1_name}_wins": t1,
-            f"{team2_name}_wins": t2,
-            "draws":              draws,
-            "avg_goals_per_game": round(tg / total, 2),
-            "btts_rate":          round(btts / total, 2),
-            "over25_rate":        round(over25 / total, 2),
+        h = {
+            "total_h2h":          n,
+            f"{t1}_wins":         w1,
+            f"{t2}_wins":         w2,
+            "draws":              d,
+            "avg_goals_per_game": round(tg / n, 2),
+            "btts_rate":          round(bt / n, 2),
+            "over25_rate":        round(o25 / n, 2),
         }
         logger.info(
-            "FootballData H2H parsed: %s %dW / %s %dW / D=%d "
-            "| AvgGoals=%.1f BTTS=%.0f%% O2.5=%.0f%%",
-            team1_name, t1, team2_name, t2, draws,
-            h2h_dict["avg_goals_per_game"],
-            h2h_dict["btts_rate"] * 100,
-            h2h_dict["over25_rate"] * 100,
+            "FD H2H: %s %dW / %s %dW / D=%d "
+            "avg=%.1f btts=%.0f%% o2.5=%.0f%%",
+            t1, w1, t2, w2, d,
+            h["avg_goals_per_game"],
+            h["btts_rate"] * 100,
+            h["over25_rate"] * 100,
         )
-        return h2h_dict
+        return h
 
 # =========================================================
-# 14. MATCH ID CACHE
+# 15. MATCH ID CACHE
 # =========================================================
 class MatchIDCache:
-    def __init__(self):
+    def __init__(self) -> None:
         self.cache = CacheManager.load(CFG.MATCH_ID_CACHE_FILE)
 
-    def get(self, home_team: str, away_team: str) -> Optional[int]:
-        key = self._key(home_team, away_team)
-        if CacheManager.is_valid(self.cache, key, CFG.TTL_MATCH_ID):
-            return CacheManager.get(self.cache, key)
-        return None
+    def get(self, home: str, away: str) -> Optional[int]:
+        k = self._key(home, away)
+        return (
+            CacheManager.get(self.cache, k)
+            if CacheManager.is_valid(self.cache, k, CFG.TTL_MATCH_ID)
+            else None
+        )
 
-    def set(self, home_team: str, away_team: str,
-            match_id: Optional[int]) -> None:
-        key        = self._key(home_team, away_team)
-        self.cache = CacheManager.set(self.cache, key, match_id)
+    def set(
+        self, home: str, away: str, mid: Optional[int]
+    ) -> None:
+        k          = self._key(home, away)
+        self.cache = CacheManager.set(self.cache, k, mid)
         CacheManager.save(CFG.MATCH_ID_CACHE_FILE, self.cache)
 
     @staticmethod
-    def _key(home_team: str, away_team: str) -> str:
+    def _key(home: str, away: str) -> str:
         return hashlib.md5(
-            f"{home_team.lower()}|{away_team.lower()}".encode()
+            f"{home.lower()}|{away.lower()}".encode()
         ).hexdigest()
 
 # =========================================================
-# 15. STATS AGGREGATOR
+# 16. STATS AGGREGATOR
 # =========================================================
 async def get_stats_async(
-    home_team: str,
-    away_team: str,
+    home: str,
+    away: str,
     sport_key: str,
-    football_adapter: FootballDataAdapter,
-    match_id_cache: MatchIDCache,
-    elo_football: ELOSystem,
-    elo_tennis: ELOSystem,
+    fd: FootballDataAdapter,
+    mic: MatchIDCache,
+    elo_f: ELOSystem,
+    elo_t: ELOSystem,
+    session: aiohttp.ClientSession,
 ) -> tuple:
-    log_section(f"STATS: {home_team} vs {away_team}")
-
-    stats = {
+    log_section(f"STATS: {home} vs {away}")
+    stats: dict = {
         "home_form":    {},
         "away_form":    {},
         "h2h":          {},
@@ -1611,22 +1970,21 @@ async def get_stats_async(
     }
 
     # ── ELO ──────────────────────────────────────────────
+    elo_pred: Optional[dict] = None
     if sport_key == "football":
-        elo_pred = elo_football.predict(
-            home_team, away_team, apply_home_advantage=True)
+        elo_pred = elo_f.predict(home, away, apply_home=True)
     elif sport_key == "tennis":
-        elo_pred = elo_tennis.predict(
-            home_team, away_team, apply_home_advantage=False)
-    else:
-        elo_pred = None
+        elo_pred = elo_t.predict(home, away, apply_home=False)
 
-    if elo_pred and (elo_pred.get("home_matches", 0) >= 3
-                     or elo_pred.get("away_matches", 0) >= 3):
+    if elo_pred and (
+        elo_pred.get("home_matches", 0) >= 3
+        or elo_pred.get("away_matches", 0) >= 3
+    ):
         stats["elo"] = elo_pred
         logger.info(
-            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%% "
-            "| hm=%d am=%d diff=%.0f",
-            home_team, away_team,
+            "ELO | %s vs %s | H=%.1f%% D=%.1f%% A=%.1f%%"
+            " | hm=%d am=%d diff=%.0f",
+            home, away,
             elo_pred["home_prob"] * 100,
             elo_pred["draw_prob"] * 100,
             elo_pred["away_prob"] * 100,
@@ -1636,118 +1994,103 @@ async def get_stats_async(
         )
     else:
         logger.warning(
-            "ELO insufficient data for %s vs %s "
-            "(hm=%d am=%d)",
-            home_team, away_team,
-            (elo_pred or {}).get("home_matches", 0),
-            (elo_pred or {}).get("away_matches", 0),
+            "ELO insufficient: %s(hm=%d) %s(am=%d)",
+            home, (elo_pred or {}).get("home_matches", 0),
+            away, (elo_pred or {}).get("away_matches", 0),
         )
 
     # ── SofaScore match ID ───────────────────────────────
-    cached_mid = match_id_cache.get(home_team, away_team)
+    cached_mid = mic.get(home, away)
     if cached_mid is not None:
         match_id = cached_mid if cached_mid != 0 else None
-        logger.debug("SofaScore match_id cache hit: %s", match_id)
+        logger.debug("SofaScore mid cache hit: %s", match_id)
     else:
         match_id = await search_sofascore_match_async(
-            home_team, away_team)
-        match_id_cache.set(
-            home_team, away_team,
-            match_id if match_id else 0)
+            home, away, session
+        )
+        mic.set(home, away, match_id if match_id else 0)
 
-    task_names: list = []
-    coros:      list = []
+    task_names: list[str]      = []
+    coros:      list           = []
 
-    # ── SofaScore stats ──────────────────────────────────
     if match_id:
         task_names.append("sofascore")
-        coros.append(fetch_sofascore_stats_async(
-            match_id, home_team, away_team))
+        coros.append(
+            fetch_sofascore_stats_async(
+                match_id, home, away, session
+            )
+        )
     else:
-        logger.info("SofaScore: no match_id for %s vs %s — skipping",
-                    home_team, away_team)
+        logger.info(
+            "SofaScore: no match_id for '%s' vs '%s'", home, away
+        )
 
-    # ── Football-Data ────────────────────────────────────
+    # ── Football-Data (sync در executor) ─────────────────
     if sport_key == "football":
         loop = asyncio.get_running_loop()
 
-        async def get_football_data():
-            log_section(
-                f"Football-Data: {home_team} vs {away_team}")
-            home_id = await loop.run_in_executor(
-                None, football_adapter.find_team_id, home_team)
-            away_id = await loop.run_in_executor(
-                None, football_adapter.find_team_id, away_team)
-
-            log_check(f"FD team_id '{home_team}'", home_id)
-            log_check(f"FD team_id '{away_team}'", away_id)
-
-            if not home_id or not away_id:
-                logger.warning(
-                    "Football-Data: could not resolve IDs "
-                    "for %s (id=%s) or %s (id=%s)",
-                    home_team, home_id, away_team, away_id)
+        async def get_fd() -> dict:
+            hid = await loop.run_in_executor(
+                None, fd.find_team_id, home
+            )
+            aid = await loop.run_in_executor(
+                None, fd.find_team_id, away
+            )
+            log_check(f"FD id '{home}'", hid)
+            log_check(f"FD id '{away}'", aid)
+            if not hid or not aid:
                 return {}
-
             hf, af, h2h = await asyncio.gather(
                 loop.run_in_executor(
-                    None,
-                    football_adapter.get_team_recent_form,
-                    home_id, home_team),
+                    None, fd.get_form, hid, home
+                ),
                 loop.run_in_executor(
-                    None,
-                    football_adapter.get_team_recent_form,
-                    away_id, away_team),
+                    None, fd.get_form, aid, away
+                ),
                 loop.run_in_executor(
-                    None,
-                    football_adapter.get_h2h,
-                    home_id, away_id, home_team, away_team),
+                    None, fd.get_h2h, hid, aid, home, away
+                ),
                 return_exceptions=True,
             )
-            out = {}
+            out: dict = {}
             if not isinstance(hf, Exception) and hf:
                 out["home_form"] = hf
-                log_check(f"FD home form '{home_team}'",
-                          hf.get("form_string"))
             else:
-                logger.warning("FD home form MISSING for '%s'",
-                               home_team)
-
+                logger.warning(
+                    "FD home form failed: '%s'", home
+                )
             if not isinstance(af, Exception) and af:
                 out["away_form"] = af
-                log_check(f"FD away form '{away_team}'",
-                          af.get("form_string"))
             else:
-                logger.warning("FD away form MISSING for '%s'",
-                               away_team)
-
+                logger.warning(
+                    "FD away form failed: '%s'", away
+                )
             if not isinstance(h2h, Exception) and h2h:
                 out["h2h"] = h2h
-                log_check(f"FD H2H '{home_team}' vs '{away_team}'",
-                          h2h.get("total_h2h", 0))
             else:
-                logger.warning("FD H2H MISSING for '%s' vs '%s'",
-                               home_team, away_team)
+                logger.warning(
+                    "FD H2H failed: '%s' vs '%s'", home, away
+                )
             return out
 
         task_names.append("football")
-        coros.append(get_football_data())
+        coros.append(get_fd())
 
-    # ── Gather all ───────────────────────────────────────
     if coros:
-        gathered = await asyncio.gather(*coros,
-                                        return_exceptions=True)
+        gathered = await asyncio.gather(
+            *coros, return_exceptions=True
+        )
         for name, result in zip(task_names, gathered):
             if isinstance(result, Exception):
-                logger.warning("Stats gather error [%s]: %s",
-                               name, result)
+                logger.warning(
+                    "Stats gather [%s] error: %s", name, result
+                )
                 continue
             if name == "sofascore" and result:
                 stats["sofascore"] = result
             elif name == "football" and isinstance(result, dict):
                 stats.update(result)
 
-    # ── Data quality ─────────────────────────────────────
     has_fb  = bool(stats.get("home_form") or stats.get("h2h"))
     has_ss  = bool(stats.get("sofascore"))
     has_elo = bool(stats.get("elo"))
@@ -1758,35 +2101,35 @@ async def get_stats_async(
         stats["data_quality"] = "medium"
 
     logger.info(
-        "DATA QUALITY | %s vs %s | quality=%s "
-        "(fb=%s ss=%s elo=%s)",
-        home_team, away_team,
-        stats["data_quality"],
+        "DATA QUALITY | %s vs %s | %s (fb=%s ss=%s elo=%s)",
+        home, away,
+        stats["data_quality"].upper(),
         has_fb, has_ss, has_elo,
     )
     return stats, elo_pred
 
 # =========================================================
-# 16. CONFIDENCE ENGINE
+# 17. CONFIDENCE ENGINE
 # =========================================================
 def calculate_confidence(
-    ev_edge: float, stats: dict,
-    market: str, has_sharp: bool
-) -> tuple:
+    ev: float,
+    stats: dict,
+    market: str,
+    has_sharp: bool,
+) -> tuple[int, str]:
     score = 50
     dq    = stats.get("data_quality", "none")
-
     if dq == "high":
         score += 15
     elif dq == "medium":
         score += 8
 
-    ev_pct = ev_edge * 100
-    if ev_pct > 5.0:
+    ep = ev * 100
+    if ep > 5.0:
         score += 12
-    elif ev_pct > 3.0:
+    elif ep > 3.0:
         score += 8
-    elif ev_pct > 1.5:
+    elif ep > 1.5:
         score += 4
 
     elo = stats.get("elo", {})
@@ -1810,180 +2153,172 @@ def calculate_confidence(
         if af["form_string"].count("L") >= 3:
             score += 3
 
-    # SofaScore bonus
     ss = stats.get("sofascore", {})
     if ss.get("home_form") and ss.get("away_form"):
         score += 4
 
     score = max(50, min(93, score))
-    risk  = ("Low" if score >= 75
-             else ("Medium" if score >= 60 else "High"))
-
+    risk  = (
+        "Low" if score >= 75 else ("Medium" if score >= 60 else "High")
+    )
     logger.info(
-        "Confidence score=%d risk=%s "
-        "(dq=%s ev=%.1f%% elo_hm=%d elo_am=%d sharp=%s)",
-        score, risk, dq, ev_pct, hm, am, has_sharp)
+        "Confidence=%d risk=%s "
+        "(dq=%s ev=%.1f%% hm=%d am=%d sharp=%s)",
+        score, risk, dq, ep, hm, am, has_sharp,
+    )
     return score, risk
 
 # =========================================================
-# 17. DUAL-AI ANALYSIS
+# 18. DUAL-AI ANALYSIS
 # =========================================================
-def build_stats_summary(stats: dict,
-                         home_team: str,
-                         away_team: str) -> str:
-    parts = []
-    elo   = stats.get("elo", {})
-    hf    = stats.get("home_form", {})
-    af    = stats.get("away_form", {})
-    h2h   = stats.get("h2h", {})
-    ss    = stats.get("sofascore", {})
+def build_stats_summary(
+    stats: dict, home: str, away: str
+) -> str:
+    parts: list[str] = []
+    elo = stats.get("elo", {})
+    hf  = stats.get("home_form", {})
+    af  = stats.get("away_form", {})
+    h2h = stats.get("h2h", {})
+    ss  = stats.get("sofascore", {})
 
     if elo and elo.get("home_matches", 0) >= 3:
         parts.append(
             f"[ELO MODEL]\n"
-            f"  {home_team} ELO={elo['home_elo']:.0f} "
+            f"  {home}: ELO={elo['home_elo']:.0f} "
             f"({elo['home_matches']} matches)\n"
-            f"  {away_team} ELO={elo['away_elo']:.0f} "
+            f"  {away}: ELO={elo['away_elo']:.0f} "
             f"({elo['away_matches']} matches)\n"
-            f"  ELO Diff={elo['elo_diff']:.0f}\n"
-            f"  Win probabilities: "
-            f"{home_team}={elo['home_prob']:.1%} | "
-            f"Draw={elo['draw_prob']:.1%} | "
-            f"{away_team}={elo['away_prob']:.1%}"
+            f"  Win probs: {home}={elo['home_prob']:.1%} "
+            f"Draw={elo['draw_prob']:.1%} "
+            f"{away}={elo['away_prob']:.1%}"
         )
-
     if hf:
         parts.append(
-            f"[RECENT FORM — {home_team}]\n"
-            f"  Last 5: {hf.get('form_string', 'N/A')}\n"
-            f"  Win rate: {hf.get('win_rate', 0):.0%} | "
-            f"Avg scored: {hf.get('avg_goals_scored', 0)} | "
-            f"Avg conceded: {hf.get('avg_goals_conceded', 0)}\n"
-            f"  BTTS: {hf.get('btts_rate', 0):.0%} | "
-            f"Over 2.5: {hf.get('over25_rate', 0):.0%}"
+            f"[FORM — {home}]\n"
+            f"  Last 5: {hf.get('form_string','N/A')} | "
+            f"WR={hf.get('win_rate',0):.0%} | "
+            f"GF={hf.get('avg_goals_scored',0)} | "
+            f"GA={hf.get('avg_goals_conceded',0)} | "
+            f"BTTS={hf.get('btts_rate',0):.0%} | "
+            f"O2.5={hf.get('over25_rate',0):.0%}"
         )
-
     if af:
         parts.append(
-            f"[RECENT FORM — {away_team}]\n"
-            f"  Last 5: {af.get('form_string', 'N/A')}\n"
-            f"  Win rate: {af.get('win_rate', 0):.0%} | "
-            f"Avg scored: {af.get('avg_goals_scored', 0)} | "
-            f"Avg conceded: {af.get('avg_goals_conceded', 0)}\n"
-            f"  BTTS: {af.get('btts_rate', 0):.0%} | "
-            f"Over 2.5: {af.get('over25_rate', 0):.0%}"
+            f"[FORM — {away}]\n"
+            f"  Last 5: {af.get('form_string','N/A')} | "
+            f"WR={af.get('win_rate',0):.0%} | "
+            f"GF={af.get('avg_goals_scored',0)} | "
+            f"GA={af.get('avg_goals_conceded',0)} | "
+            f"BTTS={af.get('btts_rate',0):.0%} | "
+            f"O2.5={af.get('over25_rate',0):.0%}"
         )
-
     if h2h and h2h.get("total_h2h", 0) > 0:
-        # کلیدهای داینامیک (نام تیم)
-        t1_w = h2h.get(f"{home_team}_wins",
-                        h2h.get("team1_wins", 0))
-        t2_w = h2h.get(f"{away_team}_wins",
-                        h2h.get("team2_wins", 0))
+        w1 = h2h.get(f"{home}_wins", h2h.get("team1_wins", 0))
+        w2 = h2h.get(f"{away}_wins", h2h.get("team2_wins", 0))
         parts.append(
-            f"[HEAD TO HEAD — last {h2h['total_h2h']} games]\n"
-            f"  {home_team} wins: {t1_w} | "
-            f"{away_team} wins: {t2_w} | "
-            f"Draws: {h2h.get('draws', 0)}\n"
-            f"  Avg goals/game: {h2h.get('avg_goals_per_game', 0)} | "
-            f"BTTS: {h2h.get('btts_rate', 0):.0%} | "
-            f"Over 2.5: {h2h.get('over25_rate', 0):.0%}"
+            f"[HEAD TO HEAD — {h2h['total_h2h']} games]\n"
+            f"  {home}: {w1}W | {away}: {w2}W | "
+            f"Draws: {h2h.get('draws',0)} | "
+            f"AvgGoals={h2h.get('avg_goals_per_game',0)} | "
+            f"BTTS={h2h.get('btts_rate',0):.0%} | "
+            f"O2.5={h2h.get('over25_rate',0):.0%}"
         )
-
     if ss:
-        # SofaScore pregame form
-        ss_hf = ss.get("home_form", {})
-        ss_af = ss.get("away_form", {})
-        if ss_hf or ss_af:
+        shf = ss.get("home_form", {})
+        saf = ss.get("away_form", {})
+        if shf or saf:
             parts.append("[SOFASCORE PREGAME FORM]")
-        if ss_hf:
+        if shf:
             parts.append(
-                f"  {home_team}: form={ss_hf.get('form', 'N/A')} | "
-                f"avg_rating={ss_hf.get('avg_rating', 'N/A')} | "
-                f"league_pos={ss_hf.get('position', 'N/A')}"
+                f"  {home}: form={shf.get('form','N/A')} "
+                f"rating={shf.get('avg_rating','N/A')} "
+                f"pos={shf.get('position','N/A')}"
             )
-        if ss_af:
+        if saf:
             parts.append(
-                f"  {away_team}: form={ss_af.get('form', 'N/A')} | "
-                f"avg_rating={ss_af.get('avg_rating', 'N/A')} | "
-                f"league_pos={ss_af.get('position', 'N/A')}"
+                f"  {away}: form={saf.get('form','N/A')} "
+                f"rating={saf.get('avg_rating','N/A')} "
+                f"pos={saf.get('position','N/A')}"
             )
-        ss_h2h = ss.get("h2h", {})
-        if ss_h2h and ss_h2h.get("total", 0) > 0:
+        sh2h = ss.get("h2h", {})
+        if sh2h and sh2h.get("total", 0) > 0:
             parts.append(
-                f"[SOFASCORE H2H — last {ss_h2h['total']}]\n"
-                f"  {home_team} wins: "
-                f"{ss_h2h.get(f'{home_team}_wins', 'N/A')} | "
-                f"{away_team} wins: "
-                f"{ss_h2h.get(f'{away_team}_wins', 'N/A')} | "
-                f"Draws: {ss_h2h.get('draws', 'N/A')}"
+                f"[SOFASCORE H2H — {sh2h['total']} games]\n"
+                f"  {home}: {sh2h.get(f'{home}_wins','N/A')}W | "
+                f"{away}: {sh2h.get(f'{away}_wins','N/A')}W | "
+                f"Draws: {sh2h.get('draws','N/A')}"
             )
         lu = ss.get("lineups", {})
         if lu:
             parts.append(
-                f"[LINEUPS]\n"
-                f"  {home_team} formation: "
-                f"{lu.get('home_formation', 'N/A')}\n"
-                f"  {away_team} formation: "
-                f"{lu.get('away_formation', 'N/A')}"
+                f"[LINEUPS] "
+                f"{home}={lu.get('home_formation','?')} "
+                f"{away}={lu.get('away_formation','?')}"
             )
 
     if not parts:
         return "NO STATISTICAL DATA AVAILABLE"
-
     summary = "\n\n".join(parts)
-    logger.debug("Stats summary for AI (%d chars):\n%s",
-                 len(summary), summary[:500])
+    logger.debug("Stats summary: %d chars", len(summary))
     return summary
 
 
 def call_groq_sdk(
-    model: str, messages: list, temperature: float = 0.1
+    model: str, messages: list, temp: float = 0.1
 ) -> Optional[str]:
-    SUPPORTS_JSON = ["llama-3", "llama3", "mixtral",
-                     "gemma", "llama-4", "scout"]
-    use_json = any(kw in model.lower() for kw in SUPPORTS_JSON)
-
+    SUPPORTS_JSON = [
+        "llama-3", "llama3", "mixtral",
+        "gemma", "llama-4", "scout",
+    ]
+    use_json = any(k in model.lower() for k in SUPPORTS_JSON)
     kwargs: dict = {
         "model":       model,
         "messages":    messages,
-        "temperature": temperature,
+        "temperature": temp,
         "max_tokens":  CFG.AI_MAX_TOKENS,
     }
     if use_json:
         kwargs["response_format"] = {"type": "json_object"}
-
     try:
         res     = groq_client.chat.completions.create(**kwargs)
         content = res.choices[0].message.content
-        logger.info("Groq %-35s | tokens_used=%s | preview=%s",
-                    model,
-                    getattr(res.usage, "total_tokens", "?"),
-                    (content or "")[:80])
+        logger.info(
+            "Groq %-32s | tokens=%s | out=%s",
+            model,
+            getattr(res.usage, "total_tokens", "?"),
+            (content or "")[:80],
+        )
         return content
     except Exception as e:
-        logger.error("Groq error model=%s: %s", model, e)
+        logger.error("Groq error %s: %s", model, e)
         return None
 
 
 def generate_dual_ai_analysis(
-    home_team: str, away_team: str, sport: str,
-    display_pick: str, market: str,
-    ev_edge: float, stats: dict,
-    confidence: int, risk: str,
+    home: str,
+    away: str,
+    sport: str,
+    display_pick: str,
+    market: str,
+    ev: float,
+    stats: dict,
+    confidence: int,
+    risk: str,
 ) -> dict:
-    stats_summary  = build_stats_summary(stats, home_team, away_team)
-    data_quality   = stats.get("data_quality", "none")
-    has_real_stats = data_quality in ["medium", "high"]
+    summary   = build_stats_summary(stats, home, away)
+    dq        = stats.get("data_quality", "none")
+    has_stats = dq in ["medium", "high"]
 
-    default_response = {
+    default: dict = {
         "sport_emoji": "\U0001F3C6",
-        "home_flag":   get_flag_from_name(home_team),
-        "away_flag":   get_flag_from_name(away_team),
+        "home_flag":   get_flag_from_name(home),
+        "away_flag":   get_flag_from_name(away),
         "risk_level":  risk,
         "confidence":  confidence,
-        "logic":       ("Sharp bookmaker lines show clear value "
-                        "on this selection."),
+        "logic":       (
+            "Sharp market lines show clear value "
+            "on this selection."
+        ),
     }
 
     sys1 = (
@@ -1991,192 +2326,211 @@ def generate_dual_ai_analysis(
         "Write EXACTLY 2 punchy professional sentences "
         "justifying the pick.\n"
         "RULES:\n"
-        "- Use ONLY statistics provided. Never invent numbers.\n"
-        "- Never mention EV, models, algorithms, data quality.\n"
-        "- If no stats: state pick is driven by sharp market line.\n"
-        "- Provide EXACT country flag emoji for home_flag, away_flag.\n"
-        "- Choose correct sport_emoji.\n"
+        "- Use ONLY provided stats. Never invent numbers.\n"
+        "- Never mention EV, models, algorithms, "
+        "data quality.\n"
+        "- If no stats: sharp market discrepancy "
+        "drives pick.\n"
+        "- Exact country flag emoji for home_flag, away_flag.\n"
+        "- Correct sport_emoji.\n"
         "OUTPUT: valid JSON only. No markdown.\n"
-        '{"sport_emoji":"...","home_flag":"...","away_flag":"...",'
-        '"logic":"sentence1. sentence2."}'
+        '{"sport_emoji":"...","home_flag":"...",'
+        '"away_flag":"...","logic":"s1. s2."}'
     )
     u1 = (
-        f"MATCH: {home_team} vs {away_team}\n"
+        f"MATCH: {home} vs {away}\n"
         f"SPORT: {sport}\n"
         f"PICK: {display_pick}\n"
         f"MARKET: {get_market_label(market)}\n"
-        f"DATA QUALITY: {data_quality}\n\n"
-        f"STATISTICS:\n{stats_summary}\n\n"
+        f"DATA QUALITY: {dq}\n\n"
+        f"STATISTICS:\n{summary}\n\n"
         "OUTPUT JSON ONLY:"
     )
 
-    analysis_1 = None
+    a1: Optional[dict] = None
     try:
-        raw1 = call_groq_sdk(
+        r1 = call_groq_sdk(
             CFG.AI_MODEL_ANALYST,
             [{"role": "system", "content": sys1},
              {"role": "user",   "content": u1}],
-            temperature=0.2,
+            temp=0.2,
         )
-        analysis_1 = robust_json_extractor(raw1)
-        log_check("AI Model 1 (analyst)",
-                  "OK" if analysis_1 else "FAILED")
-        if analysis_1:
-            logger.debug("Model 1 output: %s", analysis_1)
+        a1 = robust_json_extractor(r1)
+        log_check("AI analyst", "OK" if a1 else "FAILED")
     except Exception as e:
-        logger.warning("Model 1 error: %s", e)
+        logger.warning("AI analyst error: %s", e)
 
-    initial_logic = (
-        (analysis_1 or {}).get("logic") or default_response["logic"]
-    )
+    logic: str = (a1 or {}).get("logic") or default["logic"]
 
     sys2 = (
-        "You are a professional sports content editor.\n"
-        "Review and improve the analysis if needed.\n"
-        "Max 2 sentences. Professional tipster tone.\n"
-        "Do NOT fabricate stats if none provided.\n"
+        "Professional sports content editor.\n"
+        "Max 2 sentences. Tipster tone. No fabricated stats.\n"
         "OUTPUT: valid JSON only.\n"
         '{"validated_logic":"..."}'
     )
     try:
-        raw2 = call_groq_sdk(
+        r2 = call_groq_sdk(
             CFG.AI_MODEL_VALIDATOR,
-            [{"role": "system", "content": sys2},
-             {"role": "user", "content": (
-                 f"DRAFT: {initial_logic}\n"
-                 f"PICK: {display_pick}\n"
-                 f"HAS REAL STATS: {has_real_stats}\n"
-                 "OUTPUT JSON ONLY:"
-             )}],
-            temperature=0.15,
+            [
+                {"role": "system", "content": sys2},
+                {
+                    "role": "user",
+                    "content": (
+                        f"DRAFT: {logic}\n"
+                        f"PICK: {display_pick}\n"
+                        f"HAS STATS: {has_stats}\n"
+                        "OUTPUT JSON ONLY:"
+                    ),
+                },
+            ],
+            temp=0.15,
         )
-        analysis_2 = robust_json_extractor(raw2)
-        if analysis_2 and analysis_2.get("validated_logic"):
-            initial_logic = analysis_2["validated_logic"]
-        log_check("AI Model 2 (validator)",
-                  "OK" if analysis_2 else "FAILED")
+        a2 = robust_json_extractor(r2)
+        if a2 and a2.get("validated_logic"):
+            logic = a2["validated_logic"]
+        log_check("AI validator", "OK" if a2 else "FAILED")
     except Exception as e:
-        logger.warning("Model 2 error: %s", e)
+        logger.warning("AI validator error: %s", e)
 
-    result = dict(default_response)
-    if analysis_1:
-        if analysis_1.get("sport_emoji"):
-            result["sport_emoji"] = analysis_1["sport_emoji"]
-        if analysis_1.get("home_flag"):
+    result = dict(default)
+    if a1:
+        if a1.get("sport_emoji"):
+            result["sport_emoji"] = a1["sport_emoji"]
+        if a1.get("home_flag"):
             result["home_flag"] = validate_flag(
-                analysis_1["home_flag"], home_team)
-        if analysis_1.get("away_flag"):
+                a1["home_flag"], home
+            )
+        if a1.get("away_flag"):
             result["away_flag"] = validate_flag(
-                analysis_1["away_flag"], away_team)
+                a1["away_flag"], away
+            )
 
-    safe_logic      = str(initial_logic).strip()
-    result["logic"] = (safe_logic[:600] + "..."
-                       if len(safe_logic) > 600 else safe_logic)
-
+    sl = str(logic).strip()
+    result["logic"] = sl[:600] + "…" if len(sl) > 600 else sl
     logger.info(
-        "AI final | confidence=%d risk=%s | logic='%s'",
+        "AI final conf=%d risk=%s | '%s'",
         result["confidence"], result["risk_level"],
-        result["logic"][:80])
+        result["logic"][:80],
+    )
     return result
 
 # =========================================================
-# 18. RESULTS CHECKER
+# 19. RESULTS CHECKER  (async با aiohttp)
 # =========================================================
-@retry_request(max_retries=2)
-def fetch_event_result(home_team: str,
-                       away_team: str) -> Optional[dict]:
-    url    = "https://api.the-odds-api.com/v4/sports/upcoming/scores"
-    params = {
-        "apiKey":    ODDS_API_KEY,
-        "daysFrom":  3,
-        "dateFormat": "iso",
-    }
-    res = requests.get(url, params=params, timeout=15)
-    log_api_call("OddsAPI-Scores", url, params,
-                 res.status_code, 0)
-    if res.status_code != 200:
+async def fetch_event_result_async(
+    home: str,
+    away: str,
+    km: OddsKeyManager,
+    session: aiohttp.ClientSession,
+) -> Optional[dict]:
+    """نتایج مسابقه را با بهترین کلید موجود می‌گیرد."""
+    key = km.get_best_key()
+    if not key:
+        logger.warning("fetch_event_result: no valid key")
         return None
 
-    events = res.json()
-    log_api_call("OddsAPI-Scores", url, params,
-                 res.status_code, len(events))
-
-    for event in events:
-        ht = event.get("home_team", "")
-        at = event.get("away_team", "")
-        if (ht.lower() == home_team.lower()
-                and at.lower() == away_team.lower()
-                and event.get("completed")):
-            logger.info(
-                "Result found: %s vs %s | scores=%s",
-                home_team, away_team,
-                event.get("scores"))
-            return event
+    url    = "https://api.the-odds-api.com/v4/sports/upcoming/scores"
+    params = {
+        "apiKey":     key,
+        "daysFrom":   3,
+        "dateFormat": "iso",
+    }
+    try:
+        async with session.get(
+            url,
+            params=params,
+            timeout=aiohttp.ClientTimeout(total=15),
+        ) as res:
+            body = await res.text()
+            log_api_call(
+                "OddsAPI-Scores", url, {}, res.status, 0
+            )
+            if res.status != 200:
+                logger.warning(
+                    "Scores API HTTP %d: %s",
+                    res.status, body[:100],
+                )
+                return None
+            events = json.loads(body)
+            log_api_call(
+                "OddsAPI-Scores", url, {}, 200, len(events)
+            )
+            for ev in events:
+                if (
+                    ev.get("home_team", "").lower() == home.lower()
+                    and ev.get("away_team", "").lower()
+                    == away.lower()
+                    and ev.get("completed")
+                ):
+                    logger.info(
+                        "Result found: %s vs %s → %s",
+                        home, away, ev.get("scores"),
+                    )
+                    return ev
+    except Exception as e:
+        logger.warning("fetch_event_result_async error: %s", e)
     return None
 
 
 def _determine_win(
-    pick: str, market: str, scores,
-    home_team: str, away_team: str,
+    pick: str,
+    market: str,
+    scores,
+    home: str,
+    away: str,
 ) -> Optional[bool]:
     try:
-        # The-Odds-API v4: scores = [{"name":"Team","score":"2"},...]
-        if isinstance(scores, list):
-            score_map = {s["name"]: s.get("score")
-                         for s in scores}
-        else:
-            score_map = scores
-
-        home_sc = int(score_map.get(home_team, -1) or -1)
-        away_sc = int(score_map.get(away_team, -1) or -1)
-
+        sm = (
+            {s["name"]: s.get("score") for s in scores}
+            if isinstance(scores, list)
+            else scores
+        )
+        hs  = int(sm.get(home, -1) or -1)
+        as_ = int(sm.get(away, -1) or -1)
         logger.debug(
-            "Win check: pick='%s' market=%s "
-            "%s=%d %s=%d",
-            pick, market,
-            home_team, home_sc,
-            away_team, away_sc)
-
-        if home_sc < 0 or away_sc < 0:
+            "Win check: '%s' mkt=%s %s=%d %s=%d",
+            pick, market, home, hs, away, as_,
+        )
+        if hs < 0 or as_ < 0:
             logger.warning(
-                "Win check: scores not found in map=%s",
-                score_map)
+                "Win check: scores not found in map=%s", sm
+            )
             return None
-
-        pick_lower = pick.lower()
+        pl = pick.lower()
         if market == "h2h":
-            if home_team.lower() in pick_lower:
-                return home_sc > away_sc
-            if away_team.lower() in pick_lower:
-                return away_sc > home_sc
-            if "draw" in pick_lower or "tie" in pick_lower:
-                return home_sc == away_sc
-
+            if home.lower() in pl:
+                return hs > as_
+            if away.lower() in pl:
+                return as_ > hs
+            if "draw" in pl or "tie" in pl:
+                return hs == as_
         elif market == "totals":
-            total = home_sc + away_sc
-            m = re.search(r"(over|under)\s*([\d.]+)", pick_lower)
+            total = hs + as_
+            m = re.search(r"(over|under)\s*([\d.]+)", pl)
             if m:
-                direction = m.group(1)
-                line      = float(m.group(2))
-                won = (total > line if direction == "over"
-                       else total < line)
+                won = (
+                    total > float(m.group(2))
+                    if m.group(1) == "over"
+                    else total < float(m.group(2))
+                )
                 logger.debug(
-                    "Totals: total=%d line=%.1f dir=%s → won=%s",
-                    total, line, direction, won)
+                    "Totals: %d %s %.1f → %s",
+                    total, m.group(1), float(m.group(2)), won,
+                )
                 return won
     except Exception as e:
         logger.debug("Win check error: %s", e)
     return None
 
 
-def check_and_report_results(
-    sent_history: SentHistory
+async def check_and_report_results_async(
+    sent_history: SentHistory,
+    km: OddsKeyManager,
+    session: aiohttp.ClientSession,
 ) -> Optional[str]:
     log_section("PHASE 1 — RESULTS CHECK")
     pending = sent_history.get_pending_results()
-    log_check("Pending results to check",
-              len(pending), warn_if_none=False)
-
+    log_check("Pending results", len(pending), warn_if_none=False)
     if not pending:
         return None
 
@@ -2184,105 +2538,109 @@ def check_and_report_results(
     losses: list = []
 
     for key, entry in pending:
-        home_team = entry.get("home", "")
-        away_team = entry.get("away", "")
-        pick      = entry.get("pick", "")
-        market    = entry.get("market", "")
-        odds      = entry.get("odds", 1.0)
-
-        logger.info("Checking result: %s vs %s | pick=%s",
-                    home_team, away_team, pick)
-
-        result_event = fetch_event_result(home_team, away_team)
-        if not result_event:
-            logger.info("Result not found yet: %s vs %s",
-                        home_team, away_team)
+        ht     = entry.get("home", "")
+        at     = entry.get("away", "")
+        pick   = entry.get("pick", "")
+        market = entry.get("market", "")
+        logger.info(
+            "Checking: %s vs %s | %s", ht, at, pick
+        )
+        rev = await fetch_event_result_async(
+            ht, at, km, session
+        )
+        if not rev:
+            logger.info("No result yet: %s vs %s", ht, at)
             continue
 
-        scores = result_event.get("scores", [])
-        won    = _determine_win(pick, market, scores,
-                                home_team, away_team)
+        scores = rev.get("scores", [])
+        won    = _determine_win(pick, market, scores, ht, at)
 
         try:
-            if isinstance(scores, list):
-                sm  = {s["name"]: s.get("score", "?") for s in scores}
-                hs  = sm.get(home_team, "?")
-                aws = sm.get(away_team, "?")
-            else:
-                hs  = scores.get(home_team, {}).get("score", "?")
-                aws = scores.get(away_team, {}).get("score", "?")
-            result_str = f"{hs} - {aws}"
+            sm = (
+                {s["name"]: s.get("score", "?") for s in scores}
+                if isinstance(scores, list)
+                else scores
+            )
+            rs = f"{sm.get(ht,'?')} - {sm.get(at,'?')}"
         except Exception:
-            result_str = "? - ?"
+            rs = "? - ?"
 
-        sent_history.mark_result_checked(key, result_str, won)
+        sent_history.mark_result_checked(key, rs, won)
         logger.info(
-            "Result: %s vs %s | score=%s | won=%s",
-            home_team, away_team, result_str, won)
+            "Result: %s vs %s | %s | won=%s", ht, at, rs, won
+        )
 
         if won is True:
-            wins.append({**entry, "result": result_str})
+            wins.append({**entry, "result": rs})
         elif won is False:
-            losses.append({**entry, "result": result_str})
+            losses.append({**entry, "result": rs})
 
     if not wins and not losses:
         return None
 
-    total    = len(wins) + len(losses)
-    win_rate = len(wins) / total if total > 0 else 0
-    roi_vals = ([w.get("odds", 1.0) - 1.0 for w in wins]
-                + [-1.0] * len(losses))
-    roi      = sum(roi_vals) / len(roi_vals) if roi_vals else 0
+    total = len(wins) + len(losses)
+    wr    = len(wins) / total if total else 0
+    roi_v = [w.get("odds", 1.0) - 1.0 for w in wins] + (
+        [-1.0] * len(losses)
+    )
+    roi   = sum(roi_v) / len(roi_v) if roi_v else 0
 
-    lines = ["\U0001F4CA <b>RESULTS REPORT</b>\n"]
+    lines: list[str] = ["\U0001F4CA <b>RESULTS REPORT</b>\n"]
     for w in wins:
         lines.append(
-            f"\u2705 <b>{html_lib.escape(w['home'])} vs "
+            f"\u2705 <b>"
+            f"{html_lib.escape(w['home'])} vs "
             f"{html_lib.escape(w['away'])}</b>\n"
             f"   Pick: {html_lib.escape(w['pick'])} "
             f"@ <code>{w['odds']:.2f}</code>\n"
-            f"   Score: {w.get('result', '?')} — <b>WIN ✅</b>\n"
+            f"   Score: {w.get('result','?')} — WIN ✅\n"
         )
     for lo in losses:
         lines.append(
-            f"\u274C <b>{html_lib.escape(lo['home'])} vs "
+            f"\u274C <b>"
+            f"{html_lib.escape(lo['home'])} vs "
             f"{html_lib.escape(lo['away'])}</b>\n"
             f"   Pick: {html_lib.escape(lo['pick'])} "
             f"@ <code>{lo['odds']:.2f}</code>\n"
-            f"   Score: {lo.get('result', '?')} — <b>LOSS ❌</b>\n"
+            f"   Score: {lo.get('result','?')} — LOSS ❌\n"
         )
     lines.append(
-        f"\n\U0001F3AF <b>Session:</b> "
-        f"{len(wins)}W / {len(losses)}L | "
-        f"Win Rate: {win_rate:.0%} | ROI: {roi:+.1%}\n\n"
+        f"\n\U0001F3AF {len(wins)}W/{len(losses)}L | "
+        f"WR={wr:.0%} | ROI={roi:+.1%}\n\n"
         f"\U0001F194 {CFG.TELEGRAM_ID}"
     )
     return "\n".join(lines)
 
 # =========================================================
-# 19. TELEGRAM
+# 20. TELEGRAM  (async با aiohttp)
 # =========================================================
-def send_telegram(message_html: str) -> bool:
+async def send_telegram_async(
+    message_html: str,
+    session: aiohttp.ClientSession,
+) -> bool:
     MAX_LEN = 4000
     if len(message_html) <= MAX_LEN:
         chunks = [message_html]
     else:
-        chunks, current = [], ""
+        chunks: list[str] = []
+        cur = ""
         for line in message_html.split("\n"):
-            if len(current) + len(line) + 1 > MAX_LEN:
-                chunks.append(current.strip())
-                current = line + "\n"
+            if len(cur) + len(line) + 1 > MAX_LEN:
+                chunks.append(cur.strip())
+                cur = line + "\n"
             else:
-                current += line + "\n"
-        if current:
-            chunks.append(current.strip())
+                cur += line + "\n"
+        if cur:
+            chunks.append(cur.strip())
 
-    url     = (f"https://api.telegram.org/bot"
-               f"{TELEGRAM_BOT_TOKEN}/sendMessage")
-    success = True
+    url = (
+        f"https://api.telegram.org/bot"
+        f"{TELEGRAM_BOT_TOKEN}/sendMessage"
+    )
+    ok = True
     for i, chunk in enumerate(chunks):
         try:
-            res = requests.post(
+            async with session.post(
                 url,
                 json={
                     "chat_id":                  TELEGRAM_CHAT_ID,
@@ -2290,220 +2648,251 @@ def send_telegram(message_html: str) -> bool:
                     "parse_mode":               "HTML",
                     "disable_web_page_preview": True,
                 },
-                timeout=10,
-            )
-            log_api_call("Telegram", url,
-                         {"chunk": i + 1, "len": len(chunk)},
-                         res.status_code, 1 if res.ok else 0)
-            if not res.ok:
-                logger.error("Telegram error: %d — %s",
-                             res.status_code, res.text[:150])
-                success = False
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as res:
+                body = await res.text()
+                log_api_call(
+                    "Telegram", url,
+                    {"chunk": i + 1, "len": len(chunk)},
+                    res.status,
+                    1 if res.status == 200 else 0,
+                )
+                if res.status != 200:
+                    logger.error(
+                        "Telegram %d: %s", res.status, body[:150]
+                    )
+                    ok = False
         except Exception as e:
             logger.error("Telegram send error: %s", e)
-            success = False
-    return success
+            ok = False
+    return ok
 
 # =========================================================
-# 20. MESSAGE BUILDER
+# 21. MESSAGE BUILDER
 # =========================================================
 SEP = "━" * 28
 
+
 def build_telegram_message(
     sport: str,
-    home_team: str,
-    away_team: str,
-    commence_time: str,
+    home: str,
+    away: str,
+    ct: str,
     now_utc: datetime,
     opp: dict,
     display_pick: str,
-    confidence: int,
+    conf: int,
     risk: str,
-    ai_data: dict,
+    ai: dict,
 ) -> str:
-    conf_icon = (
-        "\U0001F525" if confidence >= 75
-        else ("\u2705" if confidence >= 60 else "\u26A1")
+    ci = (
+        "\U0001F525" if conf >= 75
+        else ("\u2705" if conf >= 60 else "\u26A1")
     )
-    risk_icon = {
+    ri = {
         "Low":    "\U0001F7E2",
         "Medium": "\U0001F7E0",
         "High":   "\U0001F534",
     }.get(risk, "\U0001F7E0")
 
-    sport_emoji = ai_data.get("sport_emoji", "\U0001F3C6")
-    home_flag   = ai_data.get("home_flag", "\U0001F3F3\uFE0F")
-    away_flag   = ai_data.get("away_flag", "\U0001F3F3\uFE0F")
-    logic       = str(ai_data.get("logic", "")).strip()
-    logic_esc   = html_lib.escape(
-        logic.replace("<", "").replace(">", ""))
-
-    market_label = get_market_label(opp["market"])
-    odds_display = f"{opp['odds']:.2f}"
-    bookie       = opp.get("bookmaker", "Best Available")
-    countdown    = get_countdown_str(commence_time, now_utc)
+    se = ai.get("sport_emoji", "\U0001F3C6")
+    hf = ai.get("home_flag",   "\U0001F3F3\uFE0F")
+    af = ai.get("away_flag",   "\U0001F3F3\uFE0F")
+    lo = html_lib.escape(
+        str(ai.get("logic", "")).strip()
+        .replace("<", "").replace(">", "")
+    )
+    ml = get_market_label(opp["market"])
+    bk = opp.get("bookmaker", "Best Available")
+    cd = get_countdown_str(ct, now_utc)
 
     return (
-        f"{sport_emoji} <b>{html_lib.escape(sport)}</b>\n"
+        f"{se} <b>{html_lib.escape(sport)}</b>\n"
         f"{SEP}\n"
-        f"{home_flag} <b>{html_lib.escape(home_team)}</b>"
+        f"{hf} <b>{html_lib.escape(home)}</b>"
         f"  vs  "
-        f"<b>{html_lib.escape(away_team)}</b> {away_flag}\n"
-        f"⏱ <b>Kick-off in:</b> {countdown}\n"
+        f"<b>{html_lib.escape(away)}</b> {af}\n"
+        f"⏱ <b>Kick-off in:</b> {cd}\n"
         f"{SEP}\n"
-        f"📌 <b>Market:</b> {html_lib.escape(market_label)}\n"
+        f"📌 <b>Market:</b> {html_lib.escape(ml)}\n"
         f"🎯 <b>Pick:</b> "
         f"<code>{html_lib.escape(display_pick)}</code>\n"
-        f"💰 <b>Best Odds:</b> "
-        f"<code>{odds_display}</code> "
-        f"<i>({html_lib.escape(bookie)})</i>\n"
+        f"💰 <b>Odds:</b> "
+        f"<code>{opp['odds']:.2f}</code> "
+        f"<i>({html_lib.escape(bk)})</i>\n"
         f"{SEP}\n"
-        f"{risk_icon} <b>Risk:</b> {risk}  "
-        f"{conf_icon} <b>Confidence:</b> {confidence}%\n"
+        f"{ri} <b>Risk:</b> {risk}  "
+        f"{ci} <b>Confidence:</b> {conf}%\n"
         f"{SEP}\n"
         f"💡 <b>Analysis:</b>\n"
-        f"<blockquote>{logic_esc}</blockquote>\n"
+        f"<blockquote>{lo}</blockquote>\n"
         f"{SEP}\n"
         f"🆔 {CFG.TELEGRAM_ID}"
     )
 
 # =========================================================
-# 21. MAIN PIPELINE
+# 22. MAIN PIPELINE
 # =========================================================
-async def async_main():
-    log_section("ZBET90 ENTERPRISE ENGINE v3.3 STARTING")
+async def async_main() -> None:
+    log_section("ZBET90 ENTERPRISE ENGINE v4.0 STARTING")
 
-    bootstrap = DataBootstrap()
-    if bootstrap.should_run():
-        bootstrap.run()
+    # ── یک ClientSession سراسری برای کل اجرا ────────────
+    connector = aiohttp.TCPConnector(
+        ssl=False, limit=20, limit_per_host=5
+    )
+    async with aiohttp.ClientSession(
+        connector=connector,
+        headers={"User-Agent": "ZBET90/4.0"},
+    ) as session:
 
-    elo_football = ELOSystem("football")
-    elo_tennis   = ELOSystem("tennis")
+        # ── Key Manager ──────────────────────────────────
+        km = OddsKeyManager(ODDS_API_KEYS)
+        await km.validate_all_keys_async(session)
 
-    log_check("ELO football teams", len(elo_football.ratings))
-    log_check("ELO tennis players", len(elo_tennis.ratings))
-
-    sent_history     = SentHistory()
-    football_adapter = FootballDataAdapter()
-    match_id_cache   = MatchIDCache()
-    now_utc          = datetime.now(timezone.utc)
-
-    # ── Phase 1: Results ─────────────────────────────────
-    results_msg = check_and_report_results(sent_history)
-    if results_msg:
-        if send_telegram(results_msg):
-            logger.info("Results report sent to Telegram")
-        await asyncio.sleep(2)
-
-    # ── Phase 2: Odds ────────────────────────────────────
-    log_section("PHASE 2 — FETCHING ODDS")
-    events = await fetch_all_odds_async(now_utc)
-
-    if not events:
-        logger.info("No events in %.0fh window — exiting",
-                    CFG.MATCH_WINDOW_HOURS)
-        return
-
-    log_check("Total events to analyse", len(events))
-
-    # ── Phase 3: Signals ─────────────────────────────────
-    log_section("PHASE 3 — ANALYSIS & SIGNALS")
-    total_sent = 0
-
-    for event in events:
-        home_team     = event.get("home_team", "")
-        away_team     = event.get("away_team", "")
-        sport         = event.get("sport_title", "Unknown")
-        sport_key     = normalize_sport_key(sport)
-        commence_time = event.get("commence_time", "")
-        markets_data  = event.get("_markets_data", {})
-
-        if not home_team or not away_team:
-            continue
-
-        logger.info(
-            "Processing: %s vs %s [%s]",
-            home_team, away_team, sport)
-
-        elo_pred = None
-        if sport_key == "football":
-            elo_pred = elo_football.predict(home_team, away_team)
-        elif sport_key == "tennis":
-            elo_pred = elo_tennis.predict(
-                home_team, away_team,
-                apply_home_advantage=False)
-
-        opportunities = calculate_combined_ev(
-            markets_data, elo_pred, sport_key,
-            home_team, away_team)
-
-        if not opportunities:
-            logger.debug("No EV opportunity: %s vs %s",
-                         home_team, away_team)
-            continue
-
-        opp = opportunities[0]
-
-        if sent_history.was_sent(home_team, away_team, opp["market"]):
-            logger.info("SKIP duplicate: %s vs %s [%s]",
-                        home_team, away_team, opp["market"])
-            continue
-
-        stats, _ = await get_stats_async(
-            home_team, away_team, sport_key,
-            football_adapter, match_id_cache,
-            elo_football, elo_tennis,
-        )
-
-        confidence, risk = calculate_confidence(
-            opp["ev"], stats,
-            opp["market"], opp["has_sharp_line"])
-
-        display_pick = get_display_pick(
-            opp["pick"], opp["market"], home_team, away_team)
-
-        ai_data = generate_dual_ai_analysis(
-            home_team, away_team, sport,
-            display_pick, opp["market"],
-            opp["ev"], stats, confidence, risk,
-        )
-
-        msg = build_telegram_message(
-            sport, home_team, away_team,
-            commence_time, now_utc,
-            opp, display_pick,
-            confidence, risk, ai_data,
-        )
-
-        logger.info(
-            "SIGNAL | %s vs %s | pick=%s | "
-            "odds=%.2f | ev=%.1f%% | conf=%d%%",
-            home_team, away_team,
-            display_pick, opp["odds"],
-            opp["edge_pct"], confidence)
-
-        if send_telegram(msg):
-            sent_history.mark_sent(
-                home_team, away_team,
-                opp["pick"], opp["market"],
-                opp["odds"], commence_time,
+        if not km.get_best_key():
+            logger.critical(
+                "NO VALID ODDS API KEY AVAILABLE!\n"
+                "  Check ODDS_API_KEY / KEY2 / KEY3 "
+                "in GitHub Secrets"
             )
-            total_sent += 1
-            logger.info("✅ Sent: %s vs %s", home_team, away_team)
-        else:
-            logger.error("❌ Telegram failed: %s vs %s",
-                         home_team, away_team)
+            sys.exit(1)
 
-        await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
+        # ── Bootstrap ────────────────────────────────────
+        bootstrap = DataBootstrap()
+        if bootstrap.should_run():
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, bootstrap.run)
+
+        elo_football = ELOSystem("football")
+        elo_tennis   = ELOSystem("tennis")
+        log_check("ELO football teams", len(elo_football.ratings))
+        log_check("ELO tennis players", len(elo_tennis.ratings))
+
+        sent_history = SentHistory()
+        fd           = FootballDataAdapter()
+        mic          = MatchIDCache()
+        now_utc      = datetime.now(timezone.utc)
+
+        # Phase 1: Results (async)
+        results_msg = await check_and_report_results_async(
+            sent_history, km, session
+        )
+        if results_msg:
+            if await send_telegram_async(results_msg, session):
+                logger.info("Results report sent")
+            await asyncio.sleep(2)
+
+        # Phase 2: Odds
+        log_section("PHASE 2 — FETCHING ODDS")
+        events = await fetch_all_odds_async(now_utc, km, session)
+
+        if not events:
+            logger.error(
+                "No events received. Key status: %s",
+                km.get_summary(),
+            )
+            return
+
+        log_check("Total events", len(events))
+
+        # Phase 3: Signals
+        log_section("PHASE 3 — ANALYSIS & SIGNALS")
+        total_sent = 0
+
+        for event in events:
+            home  = event.get("home_team", "")
+            away  = event.get("away_team", "")
+            sport = event.get("sport_title", "Unknown")
+            sk    = normalize_sport_key(sport)
+            ct    = event.get("commence_time", "")
+            md    = event.get("_markets_data", {})
+
+            if not home or not away:
+                continue
+
+            logger.info(
+                "Processing: %s vs %s [%s]", home, away, sport
+            )
+
+            elo_pred: Optional[dict] = None
+            if sk == "football":
+                elo_pred = elo_football.predict(home, away)
+            elif sk == "tennis":
+                elo_pred = elo_tennis.predict(
+                    home, away, apply_home=False
+                )
+
+            opps = calculate_combined_ev(
+                md, elo_pred, sk, home, away
+            )
+            if not opps:
+                continue
+
+            opp = opps[0]
+
+            if sent_history.was_sent(home, away, opp["market"]):
+                logger.info(
+                    "SKIP duplicate: %s vs %s", home, away
+                )
+                continue
+
+            stats, _ = await get_stats_async(
+                home, away, sk,
+                fd, mic, elo_football, elo_tennis,
+                session,
+            )
+
+            conf, risk = calculate_confidence(
+                opp["ev"], stats,
+                opp["market"], opp["has_sharp_line"],
+            )
+
+            dp = get_display_pick(
+                opp["pick"], opp["market"], home, away
+            )
+
+            ai = generate_dual_ai_analysis(
+                home, away, sport, dp, opp["market"],
+                opp["ev"], stats, conf, risk,
+            )
+
+            msg = build_telegram_message(
+                sport, home, away, ct, now_utc,
+                opp, dp, conf, risk, ai,
+            )
+
+            logger.info(
+                "SIGNAL | %s vs %s | pick=%s "
+                "odds=%.2f ev=%.1f%% conf=%d%%",
+                home, away, dp,
+                opp["odds"], opp["edge_pct"], conf,
+            )
+
+            if await send_telegram_async(msg, session):
+                sent_history.mark_sent(
+                    home, away,
+                    opp["pick"], opp["market"],
+                    opp["odds"], ct,
+                )
+                total_sent += 1
+                logger.info("✅ Sent: %s vs %s", home, away)
+            else:
+                logger.error(
+                    "❌ Failed: %s vs %s", home, away
+                )
+
+            await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
     log_section("RUN COMPLETE")
-    log_check("Signals sent this run", total_sent,
-              warn_if_none=False)
+    log_check("Signals sent", total_sent, warn_if_none=False)
+    logger.info("Final key status: %s", km.get_summary())
 
 
 if __name__ == "__main__":
     try:
         asyncio.run(async_main())
     except Exception as e:
-        logger.critical("SYSTEM FAILURE: %s", str(e), exc_info=True)
+        logger.critical(
+            "SYSTEM FAILURE: %s", str(e), exc_info=True
+        )
         sys.exit(1)
