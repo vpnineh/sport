@@ -1254,3 +1254,86 @@
 2026-05-29 19:53:16 | INFO     | =======================================================
 2026-05-29 19:53:16 | INFO     | CHECK | Total signals sent this run         | OK | 2
 2026-05-29 19:53:16 | INFO     | =======================================================
+2026-05-30 01:31:45 | INFO     | CHECK | ODDS_API_KEY                             | OK | True
+2026-05-30 01:31:45 | INFO     | CHECK | GROQ_API_KEY                             | OK | True
+2026-05-30 01:31:45 | INFO     | CHECK | RAPIDAPI_KEY                             | OK | True
+2026-05-30 01:31:45 | INFO     | CHECK | TELEGRAM_BOT_TOKEN                       | OK | True
+2026-05-30 01:31:45 | INFO     | CHECK | TELEGRAM_CHAT_ID                         | OK | True
+2026-05-30 01:31:45 | INFO     | CHECK | FOOTBALL_DATA_API_KEY                    | OK | True
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     |   ZBET90 ENTERPRISE ENGINE v3.1 STARTING
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-30 01:31:45 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-30 01:31:45 | INFO     | Bootstrap: data is fresh
+2026-05-30 01:31:45 | INFO     | CHECK | ELO football loaded                      | OK | 358 entities
+2026-05-30 01:31:45 | INFO     | CHECK | ELO tennis loaded                        | OK | 1494 entities
+2026-05-30 01:31:45 | INFO     | CHECK | ELO football teams                       | OK | 358
+2026-05-30 01:31:45 | INFO     | CHECK | ELO tennis players                       | OK | 1494
+2026-05-30 01:31:45 | INFO     | Football-Data call counter reset
+2026-05-30 01:31:45 | INFO     | CHECK | Football-Data calls today                | OK | 0
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     |   PHASE 1 - RESULTS CHECK
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     | CHECK | Pending results                          | OK | 0
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     |   PHASE 2 - FETCHING ODDS
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     | CHECK | Odds API requests remaining              | OK | 1
+2026-05-30 01:31:45 | INFO     | CHECK | Odds API requests used this month        | OK | 499
+2026-05-30 01:31:45 | INFO     | CHECK | Events in 2h window                      | OK | 8
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     |   PHASE 3 - ANALYSIS & SIGNALS
+2026-05-30 01:31:45 | INFO     | ============================================================
+2026-05-30 01:31:45 | INFO     | --- Reno Aces vs Sacramento River Cats [MiLB]
+2026-05-30 01:31:45 | INFO     | --- Ole Miss Rebels vs Arizona St Sun Devils [NCAA Baseball]
+2026-05-30 01:31:45 | INFO     | --- Athletics vs New York Yankees [MLB]
+2026-05-30 01:31:45 | INFO     | CHECK | EV opp h2h                               | OK | Athletics EV=1.8% odds=2.3 elo=False
+2026-05-30 01:31:45 | INFO     | CHECK | EV opp h2h_lay                           | OK | Athletics EV=2.7% odds=2.32 elo=False
+2026-05-30 01:31:45 | INFO     | CHECK | Data quality Athletics vs New York Yan   | OK | none
+2026-05-30 01:31:46 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "
+2026-05-30 01:31:46 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-30 01:31:46 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-30 01:31:46 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-30 01:31:46 | INFO     | CHECK | Final confidence                         | OK | 59
+2026-05-30 01:31:46 | INFO     | CHECK | Final risk                               | OK | High
+2026-05-30 01:31:46 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
+2026-05-30 01:31:46 | INFO     | Sent: Athletics vs New York Yankees | Athletics
+2026-05-30 01:31:49 | INFO     | --- Miami Hurricanes vs Troy Trojans [NCAA Baseball]
+2026-05-30 01:31:49 | INFO     | --- Jefferson Nascimento vs Gian Maurente [MMA]
+2026-05-30 01:31:49 | INFO     | --- Portland Fire vs Atlanta Dream [WNBA]
+2026-05-30 01:31:49 | INFO     | CHECK | EV opp h2h_lay                           | OK | Portland Fire EV=3.2% odds=4.6 elo=False
+2026-05-30 01:31:50 | INFO     | CHECK | Data quality Portland Fir vs Atlanta Drea | OK | none
+2026-05-30 01:31:50 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "🏀",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺
+2026-05-30 01:31:50 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-30 01:31:50 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-30 01:31:50 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-30 01:31:50 | INFO     | CHECK | Final confidence                         | OK | 63
+2026-05-30 01:31:50 | INFO     | CHECK | Final risk                               | OK | Medium
+2026-05-30 01:31:50 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
+2026-05-30 01:31:51 | INFO     | Sent: Portland Fire vs Atlanta Dream | Portland Fire
+2026-05-30 01:31:54 | INFO     | --- Tacoma Rainiers vs Las Vegas Aviators [MiLB]
+2026-05-30 01:31:54 | INFO     | --- Seattle Mariners vs Arizona Diamondbacks [MLB]
+2026-05-30 01:31:54 | INFO     | CHECK | EV opp h2h_lay                           | OK | Arizona Diamondbacks EV=2.1% odds=2.34 elo=False
+2026-05-30 01:31:54 | INFO     | CHECK | Data quality Seattle Mari vs Arizona Diam | OK | none
+2026-05-30 01:31:54 | INFO     | CHECK | Groq meta-llama/llama-4-scout-           | OK | {
+"sport_emoji": "⚾️",
+  "home_flag": "🇺🇸",
+  "away_flag": "
+2026-05-30 01:31:54 | INFO     | CHECK | Model 1 result                           | OK | OK
+2026-05-30 01:31:54 | INFO     | CHECK | Groq llama-3.1-8b-instant                | OK | {"validated_logic":"The pick is driven by a sharp market dis
+2026-05-30 01:31:54 | INFO     | CHECK | Model 2 result                           | OK | OK
+2026-05-30 01:31:54 | INFO     | CHECK | Final confidence                         | OK | 59
+2026-05-30 01:31:54 | INFO     | CHECK | Final risk                               | OK | High
+2026-05-30 01:31:54 | INFO     | CHECK | Logic preview                            | OK | The pick is driven by a sharp market discrepancy, but lacks 
+2026-05-30 01:31:54 | INFO     | Sent: Seattle Mariners vs Arizona Diamondbacks | Arizona Diamondbacks
+2026-05-30 01:31:57 | INFO     | ============================================================
+2026-05-30 01:31:57 | INFO     |   RUN COMPLETE
+2026-05-30 01:31:57 | INFO     | ============================================================
+2026-05-30 01:31:57 | INFO     | CHECK | Signals sent this run                    | OK | 3
