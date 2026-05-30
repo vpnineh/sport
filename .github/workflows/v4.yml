@@ -43,6 +43,7 @@ jobs:
           ODDS_API_KEY3: ${{ secrets.ODDS_API_KEY3 }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          RAPIDAPI_KEY2: ${{ secrets.RAPIDAPI_KEY2 }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
