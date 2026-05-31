@@ -5042,3 +5042,150 @@
 2026-05-31 19:51:42 | INFO     | CHECK | Signals sent                               | EMPTY (ok)
 2026-05-31 19:51:42 | INFO     | Keys: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=226 | 1275084d…:ok/rem=242
 2026-05-31 19:51:42 | INFO     | Direct requests: 75 | blocked=False
+2026-05-31 20:37:30 | INFO     | curl_cffi ✅ available
+2026-05-31 20:37:30 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 20:37:30 | INFO     |   KEY STATUS
+2026-05-31 20:37:30 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 20:37:30 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 20:37:30 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 20:37:30 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 20:37:30 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 20:37:30 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 20:37:30 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 20:37:30 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 20:37:30 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 20:37:30 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 20:37:30 | INFO     | Odds API: 3/3 | RapidAPI: 2/2 | curl_cffi: ✅
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     |   ZBET90 v6.3 STARTING
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     | OddsKeyManager status:
+2026-05-31 20:37:30 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 20:37:30 | INFO     |   key=4342465d…    status=ok         remaining=226   used=274
+2026-05-31 20:37:30 | INFO     |   key=1275084d…    status=ok         remaining=242   used=258
+2026-05-31 20:37:30 | INFO     | RapidKeyManager: 2 key(s) | primary=79035f8b…
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 20:37:30 | INFO     | Key 4342465d… ✅ VALID | sports=41 remaining=226 used=274
+2026-05-31 20:37:30 | INFO     | Key 1275084d… ✅ VALID | sports=41 remaining=242 used=258
+2026-05-31 20:37:30 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=226 | 1275084d…:ok/rem=242
+2026-05-31 20:37:30 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 20:37:30 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 20:37:30 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 20:37:30 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 20:37:30 | INFO     | CHECK | ELO football                               | OK | 358
+2026-05-31 20:37:30 | INFO     | CHECK | ELO tennis                                 | OK | 1494
+2026-05-31 20:37:30 | INFO     | CHECK | FD calls today                             | OK | 44
+2026-05-31 20:37:30 | INFO     | DailyCache HIT → daily_rapid_stats.json (saved=2026-05-31T18:17)
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 20:37:30 | INFO     | ============================================================
+2026-05-31 20:37:30 | INFO     | CHECK | Pending                                    | OK | 20
+2026-05-31 20:37:31 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:33 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:34 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:37:35 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:37:36 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:37:37 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:39 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:40 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:37:41 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:37:42 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:37:44 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:45 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:46 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:37:47 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:37:48 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:37:50 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:51 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:52 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:37:53 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:37:55 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:37:56 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:57 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:37:58 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:37:59 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:01 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:02 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:03 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:04 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:05 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:07 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:08 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:09 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:10 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:12 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:13 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:14 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:15 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:16 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:18 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:19 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:20 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:21 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:22 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:24 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:25 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:26 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:27 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:29 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:30 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:31 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:32 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:33 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:35 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:36 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:37 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:38 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:40 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:41 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:42 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:43 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:45 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:46 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:47 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:48 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:49 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:50 | INFO     | Result OddsAPI ✅ Almería vs Real Valladolid CF
+2026-05-31 20:38:50 | INFO     | Result [odds_api]: Almería vs Real Valladolid CF | 1 - 0 | won=False
+2026-05-31 20:38:50 | INFO     | Result OddsAPI ✅ CD Castellón vs SD Eibar
+2026-05-31 20:38:50 | INFO     | Result [odds_api]: CD Castellón vs SD Eibar | 2 - 1 | won=False
+2026-05-31 20:38:50 | INFO     | Result OddsAPI ✅ Real Racing Club de Santander vs Cádiz CF
+2026-05-31 20:38:50 | INFO     | Result [odds_api]: Real Racing Club de Santander vs Cádiz CF | 4 - 1 | won=False
+2026-05-31 20:38:51 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:52 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:53 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:38:55 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:38:56 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:38:57 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:38:58 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:39:00 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:39:01 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:39:02 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:39:02 | INFO     | Result OddsAPI ✅ Baltimore Orioles vs Toronto Blue Jays
+2026-05-31 20:39:02 | INFO     | Result [odds_api]: Baltimore Orioles vs Toronto Blue Jays | 1 - 2 | won=True
+2026-05-31 20:39:03 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:39:05 | WARNING  | [D-Search] HTTP 403: search/all
+2026-05-31 20:39:06 | WARNING  | [D-Sched] HTTP 403: sport/football/scheduled-events/2026-05-31
+2026-05-31 20:39:07 | WARNING  | [D-Sched] HTTP 403: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 20:39:08 | WARNING  | [D-Sched] HTTP 403: sport/basketball/scheduled-events/2026-05-31
+2026-05-31 20:39:09 | INFO     | Results sent ✅
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     |   ODDS API — DAILY FETCH
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     | DailyCache HIT → daily_odds.json (saved=2026-05-31T15:03)
+2026-05-31 20:39:11 | INFO     | OddsAPI cache HIT: total=318 | in_window=8
+2026-05-31 20:39:11 | INFO     | Sofascore cache fresh ✅ skip prefetch
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     | EV ✅ [h2h     ] pick='Columbus Aviators' ev=4.0% odds=2.20 bk=FanDuel w=N/A
+2026-05-31 20:39:11 | INFO     | SKIP dup: Columbus Aviators vs Louisville Kings
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     |   RUN COMPLETE
+2026-05-31 20:39:11 | INFO     | ============================================================
+2026-05-31 20:39:11 | INFO     | CHECK | Signals sent                               | EMPTY (ok)
+2026-05-31 20:39:11 | INFO     | Keys: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=216 | 1275084d…:ok/rem=236
+2026-05-31 20:39:11 | INFO     | Direct requests: 80 | blocked=False

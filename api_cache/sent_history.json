@@ -216,7 +216,9 @@
     "commence_time": "2026-05-31T16:30:00Z",
     "sport_key": "soccer_spain_segunda_division",
     "sent_at": "2026-05-31T14:17:32.229333+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "1 - 0",
+    "won": false
   },
   "68a83e6eca2845691c0fe35350405ff1": {
     "match": "CD Castellón vs SD Eibar",
@@ -228,7 +230,9 @@
     "commence_time": "2026-05-31T16:30:00Z",
     "sport_key": "soccer_spain_segunda_division",
     "sent_at": "2026-05-31T14:19:37.415448+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "2 - 1",
+    "won": false
   },
   "a8ecae0425aca1d8df4ffce71138be0f": {
     "match": "Real Racing Club de Santander vs Cádiz CF",
@@ -240,7 +244,9 @@
     "commence_time": "2026-05-31T16:30:00Z",
     "sport_key": "soccer_spain_segunda_division",
     "sent_at": "2026-05-31T14:20:55.658202+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "4 - 1",
+    "won": false
   },
   "16dd7c1fc64073251e2b343e033f8ddd": {
     "match": "Helsingborgs IF vs IFK Norrkoping",
@@ -290,7 +296,9 @@
     "sport_key": "baseball_mlb",
     "sport_title": "MLB",
     "sent_at": "2026-05-31T15:03:54.072269+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "1 - 2",
+    "won": true
   },
   "dacbc7b858a784ab19fbeb18077dcb5f": {
     "home": "Liberty Flames",
