@@ -2887,3 +2887,87 @@
 2026-05-31 02:30:56 | INFO     | CHECK | Signals sent                               | OK | 3
 2026-05-31 02:30:56 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=476
 2026-05-31 02:30:56 | INFO     | RapidAPI stats: key#1(79035f…):blocked/req=2 | key#2(817732…):ok/req=10
+2026-05-31 05:30:37 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 05:30:37 | INFO     |   KEY STATUS
+2026-05-31 05:30:37 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 05:30:37 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 05:30:37 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 05:30:37 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 05:30:37 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 05:30:37 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 05:30:37 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 05:30:37 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 05:30:37 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 05:30:37 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 05:30:37 | INFO     | Odds API keys: 3/3 | RapidAPI keys: 2/2
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     |   ZBET90 ENTERPRISE ENGINE v5.0 STARTING
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     | OddsKeyManager status:
+2026-05-31 05:30:37 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 05:30:37 | INFO     |   key=4342465d…    status=ok         remaining=468   used=32
+2026-05-31 05:30:37 | INFO     |   key=1275084d…    status=ok         remaining=476   used=24
+2026-05-31 05:30:37 | INFO     | RapidKeyManager: 2 key(s) loaded | primary=79035f8b…
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 05:30:37 | INFO     | Key 4342465d… ✅ VALID | sports=47 remaining=468 used=32
+2026-05-31 05:30:37 | INFO     | Key 1275084d… ✅ VALID | sports=47 remaining=476 used=24
+2026-05-31 05:30:37 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=476
+2026-05-31 05:30:37 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:37 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 05:30:37 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 05:30:37 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 05:30:37 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 05:30:37 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-31 05:30:37 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-31 05:30:37 | INFO     | FD call counter reset (new day)
+2026-05-31 05:30:37 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-31 05:30:37 | INFO     | DailyCache HIT: daily_rapid_stats.json (saved=2026-05-31T02:30)
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 05:30:37 | INFO     | ============================================================
+2026-05-31 05:30:37 | INFO     | CHECK | Pending results                            | OK | 11
+2026-05-31 05:30:37 | INFO     | Checking: Song Yadong vs Deiveson Figueiredo | Deiveson Figueiredo
+2026-05-31 05:30:37 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:37 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-31 05:30:37 | INFO     | Checking: Moise Kouame vs Alejandro Tabilo | Moise Kouame
+2026-05-31 05:30:37 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-31 05:30:38 | INFO     | Checking: Matteo Arnaldi vs Raphael Collignon | Matteo Arnaldi
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-31 05:30:38 | INFO     | Checking: Victoria Mboko vs Madison Keys | Madison Keys
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-31 05:30:38 | INFO     | Checking: Coco Gauff vs Anastasia Potapova | Anastasia Potapova
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-31 05:30:38 | INFO     | Checking: FC Lahti vs Ilves Tampere | FC Lahti
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-31 05:30:38 | INFO     | Checking: Molde vs Sandefjord | Molde
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-31 05:30:38 | INFO     | Checking: TPS Turku vs VPS Vaasa | VPS Vaasa
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-31 05:30:38 | INFO     | Checking: Felix Auger-Aliassime vs Brandon Nakashima | Brandon Nakashima
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:38 | INFO     | No result yet: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-31 05:30:38 | INFO     | Checking: Arizona St Sun Devils vs South Dakota St Jackrabbits | South Dakota St Jackrabbits
+2026-05-31 05:30:38 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:39 | INFO     | No result yet: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-31 05:30:39 | INFO     | Checking: NC State Wolfpack vs Auburn Tigers | NC State Wolfpack
+2026-05-31 05:30:39 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=476)
+2026-05-31 05:30:39 | INFO     | No result yet: NC State Wolfpack vs Auburn Tigers
+2026-05-31 05:30:39 | INFO     | ============================================================
+2026-05-31 05:30:39 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-31 05:30:39 | INFO     | ============================================================
+2026-05-31 05:30:39 | INFO     | ============================================================
+2026-05-31 05:30:39 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-31 05:30:39 | INFO     | ============================================================
+2026-05-31 05:30:39 | INFO     | DailyCache HIT: daily_odds.json (saved=2026-05-31T02:30)
+2026-05-31 05:30:39 | INFO     | OddsAPI DailyCache HIT: 8 total → 0 in window
+2026-05-31 05:30:39 | ERROR    | No events received. Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=476
