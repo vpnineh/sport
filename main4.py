@@ -1276,7 +1276,6 @@ class MLPredictionEngine:
         )
         lr = LogisticRegression(
             max_iter=1000, C=0.1,
-            multi_class="multinomial",
             random_state=42,
         )
 
