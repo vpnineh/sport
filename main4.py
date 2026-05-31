@@ -23,7 +23,6 @@ from typing import Optional
 # =========================================================
 @dataclass
 class Config:
-    # ── مسیرها ───────────────────────────────────────────
     CACHE_DIR:              Path = Path("api_cache")
     LOG_DIR:                Path = Path("log")
     MODELS_DIR:             Path = Path("api_cache/models")
@@ -33,41 +32,37 @@ class Config:
     DAILY_STATS_CACHE_FILE: Path = Path("api_cache/daily_stats_cache.json")
     DAILY_ODDS_CACHE_FILE:  Path = Path("api_cache/daily_odds.json")
     DAILY_RAPID_CACHE_FILE: Path = Path("api_cache/daily_rapid_stats.json")
+    CLV_FILE:               Path = Path("api_cache/clv_tracker.json")
+    PERFORMANCE_FILE:       Path = Path("api_cache/performance.json")
     LOG_FILE:               Path = Path("api_cache/execution_logs.log")
     ELO_FOOTBALL_FILE:      Path = Path("api_cache/models/elo_football.json")
     ELO_TENNIS_FILE:        Path = Path("api_cache/models/elo_tennis.json")
     BOOTSTRAP_FLAG:         Path = Path("api_cache/models/bootstrap_done.flag")
     KEY_STATUS_FILE:        Path = Path("api_cache/key_status.json")
 
-    # ── پنجره زمانی ──────────────────────────────────────
     MATCH_WINDOW_HOURS:     float = 4.0
     RESULT_CHECK_HOURS:     float = 4.0
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
-    # ── Odds API ─────────────────────────────────────────
     ODDS_API_MARKETS:      str = "h2h,totals"
     ODDS_API_REGIONS:      str = "eu,uk,us,au"
     ODDS_API_ODDS_FORMAT:  str = "decimal"
     ODDS_API_DATE_FORMAT:  str = "iso"
     MAX_SPORTS_PER_DAY:    int = 20
 
-    # ── TTL کش ───────────────────────────────────────────
     TTL_SENT_HISTORY: float = 72.0
     TTL_MATCH_ID:     float = 24.0
     TTL_TEAM_FORM:    float = 6.0
     TTL_H2H:          float = 24.0
 
-    # ── فیلترهای EV ──────────────────────────────────────
     H2H_MIN_ODDS:           float = 1.50
     H2H_MIN_EV:             float = 0.015
     TOTALS_MIN_ODDS:        float = 1.60
     TOTALS_MIN_EV:          float = 0.020
     MAX_REALISTIC_EV:       float = 0.12
-    # ← جدید: حداکثر EV قابل قبول بدون هیچ داده‌ای
     MAX_EV_WITHOUT_DATA:    float = 0.06
     MIN_CONFIDENCE_TO_SEND: int   = 62
 
-    # ── مارکت‌های معتبر ───────────────────────────────────
     VALID_MARKETS: tuple = field(default_factory=lambda: ("h2h", "totals"))
 
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
@@ -77,13 +72,11 @@ class Config:
     MAX_VALID_IMPLIED_SUM: float = 1.20
     MIN_VALID_IMPLIED_SUM: float = 0.80
 
-    # ── ELO ──────────────────────────────────────────────
     ELO_K_FACTOR_FOOTBALL: float = 32.0
     ELO_K_FACTOR_TENNIS:   float = 40.0
     ELO_HOME_ADVANTAGE:    float = 80.0
     ELO_DEFAULT:           float = 1500.0
 
-    # ── AI ───────────────────────────────────────────────
     AI_MODEL_ANALYST:   str = "meta-llama/llama-4-scout-17b-16e-instruct"
     AI_MODEL_VALIDATOR: str = "llama-3.1-8b-instant"
     AI_MAX_TOKENS:      int = 1024
@@ -108,7 +101,6 @@ class Config:
         "winner", "outrights", "futures", "specials",
     ])
 
-    # ← جدید: ورزش‌هایی که RapidAPI (SofaScore6) پشتیبانی میکنه
     RAPID_SUPPORTED_SPORTS: set = field(
         default_factory=lambda: {"football", "tennis"}
     )
@@ -183,7 +175,6 @@ _RAW_ODDS_KEYS: list[str] = [
 ]
 ODDS_API_KEYS: list[str] = [k for k in _RAW_ODDS_KEYS if k]
 
-# ── لاگ وضعیت کلیدها ─────────────────────────────────────
 logger.info("━" * 60)
 logger.info("  KEY STATUS")
 logger.info("━" * 60)
@@ -243,7 +234,6 @@ groq_client = AsyncGroq(api_key=GROQ_API_KEY, max_retries=3)
 # 4. NATIONALITY FLAGS
 # =========================================================
 NATIONALITY_FLAGS: dict[str, str] = {
-    # ── Tennis ATP ───────────────────────────────────────
     "djokovic": "RS", "kecmanovic": "RS", "lajovic": "RS",
     "sinner": "IT", "berrettini": "IT", "musetti": "IT",
     "arnaldi": "IT", "sonego": "IT", "cobolli": "IT",
@@ -253,10 +243,7 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "medvedev": "RU", "rublev": "RU", "khachanov": "RU",
     "safiullin": "RU", "karatsev": "RU",
     "zverev": "DE", "struff": "DE", "altmaier": "DE", "koepfer": "DE",
-    "tsitsipas": "GR",
-    "ruud": "NO",
-    "rune": "DK",
-    "hurkacz": "PL",
+    "tsitsipas": "GR", "ruud": "NO", "rune": "DK", "hurkacz": "PL",
     "de minaur": "AU", "kyrgios": "AU", "thompson": "AU",
     "popyrin": "AU", "purcell": "AU",
     "fritz": "US", "paul": "US", "tiafoe": "US", "shelton": "US",
@@ -272,7 +259,6 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "griekspoor": "NL", "brouwer": "NL",
     "lehecka": "CZ", "mensik": "CZ", "machac": "CZ",
     "wawrinka": "CH", "stricker": "CH",
-    # ── Tennis WTA ───────────────────────────────────────
     "swiatek": "PL", "linette": "PL", "frech": "PL",
     "sabalenka": "BY", "azarenka": "BY",
     "gauff": "US", "pegula": "US", "keys": "US",
@@ -280,14 +266,11 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "rybakina": "KZ", "putintseva": "KZ",
     "vondrousova": "CZ", "muchova": "CZ", "krejcikova": "CZ",
     "noskova": "CZ", "pliskova": "CZ", "bouzkova": "CZ",
-    # ← اصلاح: Zheng Qinwen چینیه نه روسی
     "zheng": "CN",
     "andreeva": "RU", "kasatkina": "RU", "samsonova": "RU",
     "alexandrova": "RU", "kudermetova": "RU",
     "potapova": "RU", "pavlyuchenkova": "RU",
-    "sakkari": "GR",
-    "jabeur": "TN",
-    "ostapenko": "LV",
+    "sakkari": "GR", "jabeur": "TN", "ostapenko": "LV",
     "garcia": "FR", "cornet": "FR",
     "svitolina": "UA", "yastremska": "UA",
     "kostyuk": "UA", "kalinina": "UA",
@@ -296,7 +279,6 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "teichmann": "CH", "bencic": "CH",
     "badosa": "ES", "sorribes": "ES",
     "boulter": "GB", "raducanu": "GB",
-    # ── Football: England ────────────────────────────────
     "manchester city": "GB", "manchester united": "GB",
     "arsenal": "GB", "liverpool": "GB", "chelsea": "GB",
     "tottenham": "GB", "newcastle": "GB", "aston villa": "GB",
@@ -304,7 +286,6 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "crystal palace": "GB", "bournemouth": "GB", "fulham": "GB",
     "brentford": "GB", "wolves": "GB", "nottingham": "GB",
     "leicester": "GB", "ipswich": "GB", "southampton": "GB",
-    # ── Football: Spain ──────────────────────────────────
     "real madrid": "ES", "barcelona": "ES", "atletico": "ES",
     "girona": "ES", "athletic bilbao": "ES", "real sociedad": "ES",
     "betis": "ES", "villarreal": "ES", "valencia": "ES",
@@ -312,31 +293,24 @@ NATIONALITY_FLAGS: dict[str, str] = {
     "mallorca": "ES", "las palmas": "ES", "rayo": "ES",
     "almeria": "ES", "almería": "ES", "granada": "ES",
     "cadiz": "ES", "cádiz": "ES", "valladolid": "ES",
-    # ── Football: Italy ──────────────────────────────────
     "inter": "IT", "milan": "IT", "juventus": "IT",
     "atalanta": "IT", "bologna": "IT", "roma": "IT",
     "lazio": "IT", "fiorentina": "IT", "napoli": "IT",
     "torino": "IT", "monza": "IT", "genoa": "IT",
     "udinese": "IT", "como": "IT", "parma": "IT", "venezia": "IT",
-    # ── Football: Germany ────────────────────────────────
     "leverkusen": "DE", "stuttgart": "DE", "bayern": "DE",
     "leipzig": "DE", "dortmund": "DE", "frankfurt": "DE",
     "hoffenheim": "DE", "freiburg": "DE", "bremen": "DE",
     "wolfsburg": "DE", "gladbach": "DE", "augsburg": "DE",
     "mainz": "DE", "union berlin": "DE", "bochum": "DE",
-    # ── Football: France ─────────────────────────────────
     "psg": "FR", "monaco": "FR", "brest": "FR", "lille": "FR",
     "nice": "FR", "lyon": "FR", "lens": "FR", "marseille": "FR",
     "rennes": "FR", "reims": "FR", "nantes": "FR",
-    # ── Football: Netherlands ────────────────────────────
     "psv": "NL", "feyenoord": "NL", "ajax": "NL",
     "twente": "NL", "az alkmaar": "NL",
-    # ── Football: Portugal ───────────────────────────────
     "sporting": "PT", "benfica": "PT", "porto": "PT", "braga": "PT",
-    # ── Football: Turkey ─────────────────────────────────
     "galatasaray": "TR", "fenerbahce": "TR",
     "besiktas": "TR", "trabzonspor": "TR",
-    # ── Football: Other ──────────────────────────────────
     "celtic": "GB", "rangers": "GB",
     "anderlecht": "BE", "club brugge": "BE",
     "salzburg": "AT", "sturm graz": "AT",
@@ -426,11 +400,6 @@ class CacheManager:
 # 6. DAILY CACHE
 # =========================================================
 class DailyCache:
-    """
-    کش روزانه — یکبار در روز پر میشه.
-    بقیه اجراهای همان روز فقط از فایل میخونن.
-    """
-
     @staticmethod
     def _today() -> str:
         return datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -483,7 +452,160 @@ class DailyCache:
             return None
 
 # =========================================================
-# 7. ODDS API KEY MANAGER
+# 7. PERFORMANCE TRACKER (رایگان — بدون API)
+# بر اساس نتایج واقعی: win rate، ROI، CLV
+# =========================================================
+class PerformanceTracker:
+    """
+    ردیابی عملکرد سیگنال‌ها بدون هیچ API اضافه‌ای.
+    CLV = Closing Line Value (مهم‌ترین KPI برای tipster)
+    """
+
+    def __init__(self) -> None:
+        self._data = CacheManager.load(CFG.PERFORMANCE_FILE)
+        if "bets" not in self._data:
+            self._data["bets"] = []
+        if "summary" not in self._data:
+            self._data["summary"] = {}
+
+    def record_bet(
+        self,
+        home:      str,
+        away:      str,
+        pick:      str,
+        market:    str,
+        our_odds:  float,
+        ev:        float,
+        conf:      int,
+        sport_key: str,
+    ) -> None:
+        self._data["bets"].append({
+            "id":          hashlib.md5(
+                f"{home}|{away}|{market}|{datetime.now().isoformat()}".encode()
+            ).hexdigest()[:8],
+            "home":        home,
+            "away":        away,
+            "pick":        pick,
+            "market":      market,
+            "our_odds":    our_odds,
+            "ev_at_bet":   round(ev * 100, 2),
+            "confidence":  conf,
+            "sport_key":   sport_key,
+            "bet_time":    datetime.now(timezone.utc).isoformat(),
+            "result":      None,
+            "won":         None,
+            "closing_odds": None,
+            "clv":         None,
+            "profit":      None,
+        })
+        self._save()
+
+    def record_result(
+        self,
+        home:         str,
+        away:         str,
+        market:       str,
+        won:          Optional[bool],
+        result_score: str,
+        closing_odds: Optional[float] = None,
+    ) -> None:
+        for bet in self._data["bets"]:
+            if (
+                bet["home"].lower() == home.lower()
+                and bet["away"].lower() == away.lower()
+                and bet["market"] == market
+                and bet["result"] is None
+            ):
+                bet["result"]  = result_score
+                bet["won"]     = won
+                bet["profit"]  = (
+                    round(bet["our_odds"] - 1, 3) if won
+                    else (-1.0 if won is False else 0.0)
+                )
+                if closing_odds and closing_odds > 1.0:
+                    bet["closing_odds"] = closing_odds
+                    bet["clv"] = round(
+                        (bet["our_odds"] / closing_odds - 1) * 100, 2
+                    )
+                break
+        self._update_summary()
+        self._save()
+
+    def _update_summary(self) -> None:
+        completed = [
+            b for b in self._data["bets"]
+            if b["won"] is not None
+        ]
+        if not completed:
+            return
+
+        total  = len(completed)
+        wins   = sum(1 for b in completed if b["won"])
+        profit = sum(b.get("profit", 0) or 0 for b in completed)
+
+        clv_bets = [b for b in completed if b.get("clv") is not None]
+        avg_clv  = (
+            round(sum(b["clv"] for b in clv_bets) / len(clv_bets), 2)
+            if clv_bets else None
+        )
+
+        self._data["summary"] = {
+            "total_bets":    total,
+            "wins":          wins,
+            "losses":        total - wins,
+            "win_rate":      round(wins / total * 100, 1) if total else 0,
+            "total_profit":  round(profit, 3),
+            "roi":           round(profit / total * 100, 2) if total else 0,
+            "avg_clv":       avg_clv,
+            "clv_bets":      len(clv_bets),
+            "updated_at":    datetime.now(timezone.utc).isoformat(),
+        }
+        logger.info(
+            "Performance: %dW/%dL WR=%.0f%% ROI=%.1f%% CLV=%s%%",
+            wins, total - wins,
+            self._data["summary"]["win_rate"],
+            self._data["summary"]["roi"],
+            avg_clv if avg_clv is not None else "N/A",
+        )
+
+    def _save(self) -> None:
+        CacheManager.save(CFG.PERFORMANCE_FILE, self._data)
+
+    def get_summary(self) -> dict:
+        return self._data.get("summary", {})
+
+    def get_recent_form(self, n: int = 10) -> str:
+        """آخرین N نتیجه به صورت W/L/P"""
+        completed = [
+            b for b in self._data["bets"]
+            if b["won"] is not None
+        ][-n:]
+        return "".join(
+            "W" if b["won"] else "L"
+            for b in completed
+        ) or "—"
+
+    def format_summary_message(self) -> str:
+        s = self.get_summary()
+        if not s:
+            return ""
+        form = self.get_recent_form(10)
+        clv_str = (
+            f"{s['avg_clv']:+.1f}%"
+            if s.get("avg_clv") is not None
+            else "N/A"
+        )
+        return (
+            f"📈 <b>Performance Stats</b>\n"
+            f"├ Record: {s.get('wins',0)}W / {s.get('losses',0)}L\n"
+            f"├ Win Rate: {s.get('win_rate',0):.1f}%\n"
+            f"├ ROI: {s.get('roi',0):+.1f}%\n"
+            f"├ Avg CLV: {clv_str}\n"
+            f"└ Last 10: {form}"
+        )
+
+# =========================================================
+# 8. ODDS API KEY MANAGER
 # =========================================================
 class OddsKeyManager:
     STATUS_OK        = "ok"
@@ -492,9 +614,9 @@ class OddsKeyManager:
     STATUS_UNKNOWN   = "unknown"
 
     def __init__(self, keys: list[str]) -> None:
-        self.keys     = keys
-        self._status  = CacheManager.load(CFG.KEY_STATUS_FILE)
-        self._rr_idx  = 0  # ← جدید: شمارنده round-robin
+        self.keys    = keys
+        self._status = CacheManager.load(CFG.KEY_STATUS_FILE)
+        self._rr_idx = 0
         self._init_keys()
         self._log_all()
 
@@ -533,20 +655,16 @@ class OddsKeyManager:
             )
 
     def _is_usable(self, key: str) -> bool:
-        """آیا این کلید قابل استفاده است؟"""
         kid    = self._kid(key)
         st     = self._status.get(kid, {})
         status = st.get("status", self.STATUS_UNKNOWN)
-
         if status == self.STATUS_INVALID:
             return False
-
         if status == self.STATUS_EXHAUSTED:
             last = st.get("last_used", "")
             try:
                 lt = datetime.fromisoformat(last)
                 if datetime.now(timezone.utc).date() > lt.date():
-                    # روز جدید → ریست
                     self._status[kid]["status"]    = self.STATUS_UNKNOWN
                     self._status[kid]["remaining"] = None
                     self._save()
@@ -554,44 +672,22 @@ class OddsKeyManager:
                 return False
             except Exception:
                 return False
-
         return True
 
     def get_best_key(self) -> Optional[str]:
-        """
-        Round-robin بین کلیدهای موجود.
-        کلیدهای invalid/exhausted رو رد میکنه.
-        """
         usable = [k for k in self.keys if self._is_usable(k)]
         if not usable:
             logger.warning("OddsKeyManager: no usable keys!")
             return None
-
-        # انتخاب round-robin
         key = usable[self._rr_idx % len(usable)]
         self._rr_idx += 1
-
         kid = self._kid(key)
         logger.debug(
-            "OddsKeyManager: key=%s (status=%s remaining=%s rr=%d)",
+            "OddsKeyManager: key=%s status=%s remaining=%s",
             self._status[kid].get("prefix", "?"),
             self._status[kid].get("status",    "?"),
             self._status[kid].get("remaining", "?"),
-            self._rr_idx,
         )
-        return key
-
-    def get_best_key_verbose(self) -> Optional[str]:
-        """نسخه پرجزئیات برای لاگ مهم (validate و fetch اول روز)."""
-        key = self.get_best_key()
-        if key:
-            kid = self._kid(key)
-            logger.info(
-                "OddsKeyManager: selected key=%s (status=%s remaining=%s)",
-                self._status[kid].get("prefix",    "?"),
-                self._status[kid].get("status",    "?"),
-                self._status[kid].get("remaining", "?"),
-            )
         return key
 
     def mark_success(self, key: str, remaining: str, used: str) -> None:
@@ -662,11 +758,9 @@ class OddsKeyManager:
         for key in self.keys:
             kid    = self._kid(key)
             prefix = self._status[kid].get("prefix", "?")
-
             if self._status[kid].get("status") == self.STATUS_INVALID:
                 logger.info("Key %s: already INVALID — skip", prefix)
                 continue
-
             try:
                 async with session.get(
                     "https://api.the-odds-api.com/v4/sports",
@@ -675,13 +769,11 @@ class OddsKeyManager:
                 ) as res:
                     remaining = res.headers.get("x-requests-remaining", "?")
                     used      = res.headers.get("x-requests-used",      "?")
-
                     if res.status == 200:
                         body = await res.json(content_type=None)
                         self.mark_success(key, remaining, used)
                         logger.info(
-                            "Key %s ✅ VALID | sports=%d "
-                            "remaining=%s used=%s",
+                            "Key %s ✅ VALID | sports=%d remaining=%s used=%s",
                             prefix, len(body), remaining, used,
                         )
                     elif res.status == 401:
@@ -691,21 +783,15 @@ class OddsKeyManager:
                     elif res.status == 429:
                         self.mark_exhausted(key)
                     else:
-                        logger.warning(
-                            "Key %s: unexpected HTTP %d",
-                            prefix, res.status,
-                        )
+                        logger.warning("Key %s: HTTP %d", prefix, res.status)
             except asyncio.TimeoutError:
-                logger.warning(
-                    "Key %s: timeout during validation", prefix
-                )
+                logger.warning("Key %s: timeout", prefix)
             except Exception as e:
                 logger.warning("Key %s: error: %s", prefix, e)
-
         logger.info("Validation summary: %s", self.get_summary())
 
 # =========================================================
-# 8. RAPID API KEY MANAGER
+# 9. RAPID API KEY MANAGER
 # =========================================================
 class RapidKeyManager:
     def __init__(self, keys: list[str]) -> None:
@@ -789,7 +875,7 @@ class RapidKeyManager:
         return " | ".join(parts)
 
 # =========================================================
-# 9. SENT HISTORY
+# 10. SENT HISTORY
 # =========================================================
 class SentHistory:
     def __init__(self) -> None:
@@ -879,10 +965,9 @@ class SentHistory:
                 CacheManager.save(CFG.HISTORY_FILE, self.history)
 
 # =========================================================
-# 10. ELO SYSTEM
+# 11. ELO SYSTEM
 # =========================================================
 def normalize_player_name(name: str) -> str:
-    """'Felix Auger-Aliassime' → 'auger-aliassime'"""
     parts = name.strip().split()
     if len(parts) >= 2:
         return " ".join(parts[1:]).lower().strip()
@@ -983,7 +1068,6 @@ class ELOSystem:
         )
         ap = 1.0 - hp
         dp = 0.0
-
         if self.sport == "football":
             df  = 0.22
             hp2 = hp * (1 - df)
@@ -991,7 +1075,6 @@ class ELOSystem:
             dp2 = df
             t   = hp2 + ap2 + dp2
             hp, ap, dp = hp2 / t, ap2 / t, dp2 / t
-
         hm = self.get_match_count(home)
         am = self.get_match_count(away)
         return {
@@ -1006,7 +1089,7 @@ class ELOSystem:
         }
 
 # =========================================================
-# 11. BOOTSTRAP
+# 12. BOOTSTRAP
 # =========================================================
 class DataBootstrap:
     FOOTBALL_LEAGUES = [
@@ -1059,9 +1142,7 @@ class DataBootstrap:
                 try:
                     return pd.read_csv(StringIO(res.text))
                 except Exception:
-                    return pd.read_csv(
-                        StringIO(res.text), encoding="latin-1"
-                    )
+                    return pd.read_csv(StringIO(res.text), encoding="latin-1")
         except Exception as e:
             logger.debug("CSV download error %s: %s", url, e)
         return None
@@ -1082,7 +1163,6 @@ class DataBootstrap:
                 if not {"HomeTeam", "AwayTeam", "FTR"}.issubset(df.columns):
                     continue
                 df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTR"])
-                # استفاده از itertuples به جای iterrows (سریع‌تر)
                 for row in df[["HomeTeam", "AwayTeam", "FTR"]].itertuples(
                     index=False
                 ):
@@ -1095,8 +1175,7 @@ class DataBootstrap:
                         self.elo_football.update(
                             str(row.HomeTeam).strip(),
                             str(row.AwayTeam).strip(),
-                            sc,
-                            is_home_a=True,
+                            sc, is_home_a=True,
                         )
                         cnt += 1
                     except Exception:
@@ -1131,7 +1210,6 @@ class DataBootstrap:
                     winner = str(row.winner_name).strip()
                     loser  = str(row.loser_name).strip()
                     self.elo_tennis.update(winner, loser, 1.0)
-                    # ذخیره اسم خانوادگی هم
                     wk = normalize_player_name(winner)
                     lk = normalize_player_name(loser)
                     if wk and wk not in self.elo_tennis.ratings:
@@ -1153,13 +1231,9 @@ class DataBootstrap:
         log_check("Tennis ELO total matches", total)
 
 # =========================================================
-# 12. UTILS
+# 13. UTILS
 # =========================================================
-def retry_sync(
-    max_retries: int = 3,
-    delay: float = 2.0,
-    backoff: float = 2.0,
-):
+def retry_sync(max_retries: int = 3, delay: float = 2.0, backoff: float = 2.0):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -1170,21 +1244,16 @@ def retry_sync(
                 except requests.exceptions.HTTPError as e:
                     st = (
                         e.response.status_code
-                        if e.response is not None
-                        else 0
+                        if e.response is not None else 0
                     )
                     if st == 429:
                         wait = int(
                             e.response.headers.get("Retry-After", cd * 3)
                         )
-                        logger.warning(
-                            "429 %s — sleep %ds", func.__name__, wait
-                        )
+                        logger.warning("429 %s — sleep %ds", func.__name__, wait)
                         time.sleep(wait)
                     elif st in [401, 403]:
-                        logger.error(
-                            "Auth %d in %s", st, func.__name__
-                        )
+                        logger.error("Auth %d in %s", st, func.__name__)
                         return None
                     else:
                         logger.warning(
@@ -1212,7 +1281,6 @@ def retry_sync(
 
 
 def _find_json_objects(text: str) -> list[str]:
-    """پیدا کردن تمام JSON object های nested از یک متن."""
     results = []
     depth   = 0
     start   = -1
@@ -1231,26 +1299,16 @@ def _find_json_objects(text: str) -> list[str]:
 def robust_json_extractor(raw: str) -> Optional[dict]:
     if not raw:
         return None
-    # حذف بلوک‌های think
-    clean = re.sub(
-        r"<think>[\s\S]*?</think>", "", raw, flags=re.IGNORECASE
-    )
-    clean = re.sub(
-        r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE
-    ).strip()
-    # حذف markdown code blocks
+    clean = re.sub(r"<think>[\s\S]*?</think>", "", raw, flags=re.IGNORECASE)
+    clean = re.sub(r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE).strip()
     clean = re.sub(r"```(?:json)?", "", clean).strip()
     clean = clean.replace("```", "").strip()
-
-    # سعی مستقیم
     try:
         result = json.loads(clean)
         if isinstance(result, dict) and result:
             return result
     except json.JSONDecodeError:
         pass
-
-    # پیدا کردن همه JSON objectهای nested (از آخر به اول)
     candidates = _find_json_objects(clean)
     for candidate in reversed(candidates):
         try:
@@ -1259,7 +1317,6 @@ def robust_json_extractor(raw: str) -> Optional[dict]:
                 return r
         except Exception:
             continue
-
     return None
 
 
@@ -1297,7 +1354,6 @@ def get_countdown_str(ct: str, now: datetime) -> str:
 
 
 def _flex_match(a: str, b: str) -> bool:
-    """تطابق انعطاف‌پذیر اسم تیم/بازیکن."""
     if not a or not b:
         return False
     a_clean = a.lower().strip()
@@ -1305,10 +1361,8 @@ def _flex_match(a: str, b: str) -> bool:
     if a_clean == b_clean:
         return True
     if a_clean in b_clean or b_clean in a_clean:
-        # جلوگیری از false positive: "city" در "manchester city"
-        # اگه یکی خیلی کوتاه‌تر بود، دقیق‌تر بررسی کن
-        shorter  = min(len(a_clean), len(b_clean))
-        longer   = max(len(a_clean), len(b_clean))
+        shorter = min(len(a_clean), len(b_clean))
+        longer  = max(len(a_clean), len(b_clean))
         if shorter < 4 and longer > shorter * 2:
             return False
         return True
@@ -1331,12 +1385,8 @@ def _flex_match(a: str, b: str) -> bool:
     return len(common) >= max(1, min(len(wa), len(wb)) // 2)
 
 
-def get_display_pick(
-    raw: str, market: str, home: str, away: str
-) -> str:
-    """تبدیل outcome نام خام به متن قابل‌فهم."""
+def get_display_pick(raw: str, market: str, home: str, away: str) -> str:
     pl = raw.lower().strip()
-
     if market == "h2h":
         if "draw" in pl or "tie" in pl:
             return "Match to end in a Draw (X)"
@@ -1344,24 +1394,21 @@ def get_display_pick(
             return f"{home} to Win (1)"
         if _flex_match(away, raw):
             return f"{away} to Win (2)"
-        # fallback: عین نام outcome رو نشون بده
         return f"{raw} to Win"
-
     if market == "totals":
         m = re.match(r"(over|under)\s*([\d.]+)", pl)
         if m:
             action = "Over" if m.group(1) == "over" else "Under"
             return f"{action} {m.group(2)} Total Goals"
         return raw.title()
-
     return raw.title()
 
 
 def get_market_label(mk: str) -> str:
     return CFG.MARKET_DISPLAY.get(mk, mk.replace("_", " ").title())
-
+    
 # =========================================================
-# 13. ODDS API — DAILY FETCH (یکبار در روز)
+# 14. ODDS API — DAILY FETCH
 # =========================================================
 async def _fetch_one_sport(
     sport_key: str,
@@ -1369,33 +1416,21 @@ async def _fetch_one_sport(
     km:        OddsKeyManager,
     session:   aiohttp.ClientSession,
 ) -> tuple[list, int, str, str]:
-    """
-    یک درخواست /odds برای یک sport_key.
-    بر اساس مستندات odds-api v4:
-      - هر درخواست = 1 کردیت
-      - markets: h2h,totals
-      - regions: eu,uk,us,au
-      - oddsFormat: decimal
-      - dateFormat: iso
-    """
     url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds"
     params = {
-        "apiKey":      api_key,
-        "regions":     CFG.ODDS_API_REGIONS,
-        "markets":     CFG.ODDS_API_MARKETS,
-        "oddsFormat":  CFG.ODDS_API_ODDS_FORMAT,
-        "dateFormat":  CFG.ODDS_API_DATE_FORMAT,
-        # بدون commenceTimeFrom/To تا همه مسابقات آینده رو بگیریم
+        "apiKey":     api_key,
+        "regions":    CFG.ODDS_API_REGIONS,
+        "markets":    CFG.ODDS_API_MARKETS,
+        "oddsFormat": CFG.ODDS_API_ODDS_FORMAT,
+        "dateFormat": CFG.ODDS_API_DATE_FORMAT,
     }
     try:
         async with session.get(
-            url,
-            params=params,
+            url, params=params,
             timeout=aiohttp.ClientTimeout(total=20),
         ) as res:
             remaining = res.headers.get("x-requests-remaining", "?")
             used      = res.headers.get("x-requests-used",      "?")
-
             if res.status == 200:
                 data = await res.json(content_type=None)
                 km.mark_success(api_key, remaining, used)
@@ -1404,13 +1439,11 @@ async def _fetch_one_sport(
                     sport_key, len(data), remaining,
                 )
                 return data, 200, remaining, used
-
             logger.warning(
                 "OddsAPI %-35s | HTTP %d | rem=%s",
                 sport_key, res.status, remaining,
             )
             return [], res.status, remaining, used
-
     except asyncio.TimeoutError:
         logger.warning("OddsAPI timeout: %s", sport_key)
         return [], 0, "?", "?"
@@ -1424,16 +1457,10 @@ async def fetch_all_odds_daily(
     km:      OddsKeyManager,
     session: aiohttp.ClientSession,
 ) -> list:
-    """
-    اجرای اول روز: همه مسابقات رو از odds-api دریافت و کش میکنه.
-    بقیه اجراها: فقط از کش میخونه و بر اساس پنجره زمانی فیلتر میکنه.
-    """
     log_section("ODDS API — DAILY FETCH")
 
-    # ── بررسی کش روزانه ──────────────────────────────────
     cached = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE)
     if cached is not None:
-        # فیلتر پنجره زمانی
         end_win  = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
         filtered = _filter_by_window(cached, now_utc, end_win)
         logger.info(
@@ -1442,26 +1469,22 @@ async def fetch_all_odds_daily(
         )
         return filtered
 
-    # ── اجرای اول روز: دریافت از API ─────────────────────
     api_key = km.get_best_key()
     if not api_key:
         logger.critical("All Odds API keys exhausted/invalid!")
         return []
 
-    # Step 1: لیست ورزش‌های فعال (رایگان — 0 کردیت)
     active_sports = await _get_active_sports(api_key, session)
     if not active_sports:
         logger.error("Failed to get active sports list!")
         return []
 
-    # Step 2: فیلتر و اولویت‌بندی
     target_sports = _select_priority_sports(active_sports)
     logger.info(
         "Sports: total=%d | selected=%d (max=%d)",
         len(active_sports), len(target_sports), CFG.MAX_SPORTS_PER_DAY,
     )
 
-    # Step 3: دریافت odds برای هر ورزش (هر کدام = 1 کردیت)
     all_events: dict[str, dict] = {}
     credits_used = 0
 
@@ -1478,7 +1501,6 @@ async def fetch_all_odds_daily(
 
         if status == 429:
             km.mark_exhausted(current_key)
-            # سعی با کلید بعدی
             next_key = km.get_best_key()
             if next_key and next_key != current_key:
                 data, status, remaining, _ = await _fetch_one_sport(
@@ -1487,19 +1509,15 @@ async def fetch_all_odds_daily(
                 credits_used += 1
             if status != 200:
                 continue
-
         elif status in [401, 403, 422]:
             km.mark_invalid(current_key, f"HTTP {status}")
             continue
-
         elif status != 200:
             continue
 
-        # پردازش events
         for e in data:
             _merge_event(all_events, e, sport_key)
 
-        # delay کوچک برای جلوگیری از rate limit
         await asyncio.sleep(0.3)
 
     result_list = list(all_events.values())
@@ -1508,11 +1526,9 @@ async def fetch_all_odds_daily(
         len(result_list), credits_used, km.get_summary(),
     )
 
-    # ذخیره در کش روزانه
     if result_list:
         DailyCache.save(CFG.DAILY_ODDS_CACHE_FILE, result_list)
 
-    # فیلتر پنجره زمانی
     end_win  = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
     filtered = _filter_by_window(result_list, now_utc, end_win)
     logger.info(
@@ -1525,10 +1541,6 @@ async def fetch_all_odds_daily(
 async def _get_active_sports(
     api_key: str, session: aiohttp.ClientSession
 ) -> list:
-    """
-    GET /v4/sports → رایگان (0 کردیت).
-    فقط ورزش‌هایی که active=True هستند.
-    """
     try:
         async with session.get(
             "https://api.the-odds-api.com/v4/sports",
@@ -1550,52 +1562,35 @@ async def _get_active_sports(
 
 
 def _select_priority_sports(sports: list) -> list[str]:
-    """
-    انتخاب ورزش‌های با اولویت و حذف outrights/futures.
-    حداکثر MAX_SPORTS_PER_DAY ورزش.
-    """
     excluded_kw = CFG.EXCLUDED_SPORT_KEYWORDS
     priority_kw = CFG.PRIORITY_SPORT_KEYWORDS
-
     excluded = []
     priority = []
     others   = []
-
     for s in sports:
         sk    = s.get("key",   "").lower()
         group = s.get("group", "").lower()
-
-        # حذف outrights و futures
         if any(kw in sk for kw in excluded_kw) or any(
             kw in group for kw in excluded_kw
         ):
             excluded.append(sk)
             continue
-
-        # اولویت‌بندی
         if any(kw in sk or kw in group for kw in priority_kw):
             priority.append(s["key"])
         else:
             others.append(s["key"])
-
     logger.info(
         "Sport selection: priority=%d others=%d excluded=%d",
         len(priority), len(others), len(excluded),
     )
-
-    # ابتدا priority، سپس بقیه تا به حد max برسیم
     selected = priority + others
     return selected[: CFG.MAX_SPORTS_PER_DAY]
 
 
-def _merge_event(
-    all_events: dict, e: dict, sport_key: str
-) -> None:
-    """ادغام event جدید با داده‌های موجود."""
+def _merge_event(all_events: dict, e: dict, sport_key: str) -> None:
     eid = e.get("id")
     if not eid:
         return
-
     if eid not in all_events:
         all_events[eid] = {
             "id":            eid,
@@ -1607,9 +1602,7 @@ def _merge_event(
             "_markets_data": {},
             "_source":       "odds_api",
         }
-
     md = all_events[eid]["_markets_data"]
-
     for bm in e.get("bookmakers", []):
         bm_title = bm.get("title", "")
         bm_key   = bm.get("key",   "")
@@ -1629,7 +1622,6 @@ def _merge_event(
 def _filter_by_window(
     events: list, now_utc: datetime, end_win: datetime
 ) -> list:
-    """فیلتر مسابقات بر اساس پنجره زمانی."""
     out = []
     for e in events:
         try:
@@ -1643,7 +1635,7 @@ def _filter_by_window(
     return out
 
 # =========================================================
-# 14. MATH ENGINE
+# 15. MATH ENGINE
 # =========================================================
 def calculate_combined_ev(
     markets_data:   dict,
@@ -1651,7 +1643,7 @@ def calculate_combined_ev(
     sport_key:      str,
     home_team:      str,
     away_team:      str,
-    data_quality:   str = "none",   # ← جدید
+    data_quality:   str = "none",
 ) -> list:
     best_per_market: dict = {}
 
@@ -1667,7 +1659,6 @@ def calculate_combined_ev(
             bk = entry.get("bookmaker_key", "")
             if bk in CFG.SHARP_BOOKMAKERS:
                 has_real_sharp = True
-
             for o in entry.get("outcomes", []):
                 base  = o.get("name",  "")
                 point = o.get("point")
@@ -1678,18 +1669,15 @@ def calculate_combined_ev(
                     continue
                 if price <= 1.0:
                     continue
-
                 if bk in CFG.SHARP_BOOKMAKERS:
                     if (name not in sharp_odds
                             or price > sharp_odds[name]["price"]):
                         sharp_odds[name] = {
-                            "price":    price,
-                            "bookmaker": entry["bookmaker"],
+                            "price": price, "bookmaker": entry["bookmaker"],
                         }
                 if name not in best_odds or price > best_odds[name]["price"]:
                     best_odds[name] = {
-                        "price":    price,
-                        "bookmaker": entry["bookmaker"],
+                        "price": price, "bookmaker": entry["bookmaker"],
                     }
 
         exp         = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
@@ -1705,9 +1693,7 @@ def calculate_combined_ev(
             continue
 
         if not (
-            CFG.MIN_VALID_IMPLIED_SUM
-            <= implied_sum
-            <= CFG.MAX_VALID_IMPLIED_SUM
+            CFG.MIN_VALID_IMPLIED_SUM <= implied_sum <= CFG.MAX_VALID_IMPLIED_SUM
         ):
             logger.debug(
                 "EV skip [%s]: implied_sum=%.3f out of range",
@@ -1716,15 +1702,49 @@ def calculate_combined_ev(
             continue
 
         min_odds = (
-            CFG.H2H_MIN_ODDS
-            if market_key == "h2h"
-            else CFG.TOTALS_MIN_ODDS
+            CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
         )
         min_ev = (
-            CFG.H2H_MIN_EV
-            if market_key == "h2h"
-            else CFG.TOTALS_MIN_EV
+            CFG.H2H_MIN_EV if market_key == "h2h" else CFG.TOTALS_MIN_EV
         )
+
+        # =====================================================
+        # DYNAMIC ELO WEIGHTING LOGIC
+        # حالت بکاپ و پیش‌فرض (همان روش قبلی)
+        # =====================================================
+        w_sharp = 0.60
+        w_elo   = 0.40
+        
+        if elo_prediction and market_key == "h2h":
+            hm = elo_prediction.get("home_matches", 0)
+            am = elo_prediction.get("away_matches", 0)
+            min_m = min(hm, am)
+            
+            # 1. تنظیم بر اساس قابلیت اطمینان مدل (تعداد مسابقات)
+            if min_m < 5:
+                # دیتای ناکافی: اعتماد حداکثری به مارکت شارپ
+                w_sharp, w_elo = 0.85, 0.15
+            elif min_m < 10:
+                # دیتای متوسط: کاهش جزئی تاثیر ELO
+                w_sharp, w_elo = 0.70, 0.30
+            elif min_m >= 30:
+                # دیتای بسیار غنی: مدل بالغ شده و هم‌تراز با مارکت است
+                w_sharp, w_elo = 0.50, 0.50
+
+            # 2. تنظیم بر اساس کیفیت سایر داده‌ها (تایید متقاطع با SofaScore/FootballData)
+            if data_quality == "high":
+                # وقتی سایر آمارها هم مدل را تایید می‌کنند، وزن ELO را بالاتر می‌بریم
+                w_elo += 0.05
+                w_sharp -= 0.05
+            elif data_quality == "none":
+                # وقتی هیچ دیتای دیگری جز ELO نداریم، احتیاط کرده و به مارکت تکیه می‌کنیم
+                w_elo -= 0.05
+                w_sharp += 0.05
+                
+            # کلمپ کردن (Clamp) محدوده‌ها برای جلوگیری از اعداد غیرمنطقی
+            w_sharp = max(0.50, min(0.95, w_sharp))
+            w_elo   = round(1.0 - w_sharp, 2)
+        # =====================================================
 
         best_opp = None
         for oname, sd in baseline.items():
@@ -1743,7 +1763,9 @@ def calculate_combined_ev(
                     elif _flex_match(away_team, oname):
                         etp = elo_prediction.get("away_prob")
 
-            tp  = 0.6 * stp + 0.4 * etp if etp is not None else stp
+            # اعمال وزن‌های داینامیک
+            tp  = (w_sharp * stp) + (w_elo * etp) if etp is not None else stp
+            
             bd  = best_odds.get(oname, {})
             bp  = float(bd.get("price", 0.0))
             bbk = bd.get("bookmaker", "Unknown")
@@ -1753,19 +1775,15 @@ def calculate_combined_ev(
 
             ev = (tp * bp) - 1.0
 
-            # ← فیلتر 1: EV غیرواقعی بالا
             if ev > CFG.MAX_REALISTIC_EV:
                 logger.warning(
-                    "EV rejected (too high=%.1f%%) for %s",
-                    ev * 100, oname,
+                    "EV rejected (too high=%.1f%%) for %s", ev * 100, oname,
                 )
                 continue
 
-            # ← فیلتر 2 (جدید): EV بالا بدون هیچ داده‌ای مشکوکه
             if data_quality == "none" and ev > CFG.MAX_EV_WITHOUT_DATA:
                 logger.warning(
-                    "EV rejected (%.1f%% > %.1f%% max_no_data) "
-                    "for %s — no supporting data",
+                    "EV rejected (%.1f%% > %.1f%% max_no_data) for %s",
                     ev * 100, CFG.MAX_EV_WITHOUT_DATA * 100, oname,
                 )
                 continue
@@ -1782,6 +1800,7 @@ def calculate_combined_ev(
                     "edge_pct":       round(ev * 100, 2),
                     "has_sharp_line": valid_sharp,
                     "elo_used":       etp is not None,
+                    "dyn_weight":     f"S:{w_sharp:.2f}/E:{w_elo:.2f}" if etp is not None else "N/A"
                 }
                 if best_opp is None or opp["ev"] > best_opp["ev"]:
                     best_opp = opp
@@ -1790,10 +1809,10 @@ def calculate_combined_ev(
             best_per_market[market_key] = best_opp
             logger.info(
                 "EV ✅ [%-8s] pick='%s' ev=%.1f%% odds=%.2f "
-                "bookie=%s elo=%s sharp=%s",
+                "bookie=%s elo=%s sharp=%s weights=%s",
                 market_key, best_opp["pick"], best_opp["edge_pct"],
                 best_opp["odds"], best_opp["bookmaker"],
-                best_opp["elo_used"], valid_sharp,
+                best_opp["elo_used"], valid_sharp, best_opp.get("dyn_weight", "N/A")
             )
 
     return sorted(
@@ -1801,7 +1820,7 @@ def calculate_combined_ev(
     )[:1]
 
 # =========================================================
-# 15. SOFASCORE6 RAPIDAPI
+# 16. SOFASCORE6 RAPIDAPI
 # =========================================================
 class SofaScoreRapidFetcher:
     BASE_URL = "https://sofascore6.p.rapidapi.com/api/sofascore/v1"
@@ -1821,21 +1840,16 @@ class SofaScoreRapidFetcher:
         headers = self.km.get_headers()
         if not headers:
             return None
-
         url = f"{self.BASE_URL}/{endpoint}"
         try:
             async with session.get(
-                url,
-                headers=headers,
-                params=params,
+                url, headers=headers, params=params,
                 timeout=aiohttp.ClientTimeout(total=12),
             ) as res:
                 self._total_requests += 1
                 self.km.mark_request()
-
                 if res.status == 200:
                     return await res.json(content_type=None)
-
                 if res.status == 429:
                     logger.warning(
                         "⚠️  RapidAPI 429 on key#%d",
@@ -1853,20 +1867,16 @@ class SofaScoreRapidFetcher:
                             if res2.status == 200:
                                 return await res2.json(content_type=None)
                     return None
-
                 if res.status in [401, 403]:
                     logger.error(
                         "❌ RapidAPI auth error %d on endpoint=%s",
                         res.status, endpoint[:40],
                     )
                     return None
-
                 logger.debug(
-                    "⚠️  [%s] HTTP %d: %s",
-                    label, res.status, endpoint[:50],
+                    "⚠️  [%s] HTTP %d: %s", label, res.status, endpoint[:50],
                 )
                 return None
-
         except asyncio.TimeoutError:
             logger.debug("⏱ [%s] timeout: %s", label, endpoint[:50])
         except Exception as e:
@@ -1882,9 +1892,7 @@ class SofaScoreRapidFetcher:
     def _get_from_cache(self, home: str, away: str) -> Optional[dict]:
         k = self._cache_key(home, away)
         if k in self._cache:
-            logger.debug(
-                "RapidAPI DailyCache HIT: %s vs %s", home, away
-            )
+            logger.debug("RapidAPI DailyCache HIT: %s vs %s", home, away)
             return self._cache[k]
         return None
 
@@ -1898,8 +1906,6 @@ class SofaScoreRapidFetcher:
     ) -> Optional[int]:
         hl = clean_team_name(home).lower()
         al = clean_team_name(away).lower()
-
-        # روش 1: جستجو
         for query in [
             f"{clean_team_name(home)} {clean_team_name(away)}",
             clean_team_name(home),
@@ -1928,7 +1934,6 @@ class SofaScoreRapidFetcher:
                     )
                     return int(mid)
 
-        # روش 2: مسابقات برنامه‌ریزی‌شده امروز
         await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         for sport in ["football", "tennis"]:
@@ -1957,17 +1962,9 @@ class SofaScoreRapidFetcher:
         home:      str,
         away:      str,
         session:   aiohttp.ClientSession,
-        sport_key: str = "",          # ← جدید
+        sport_key: str = "",
     ) -> dict:
-        """
-        اول کش چک میشه.
-        اگه sport_key پشتیبانی نمیشه → فوری {} برمیگردونه.
-        """
-        # ← جدید: فیلتر ورزش‌های پشتیبانی‌نشده
-        normalized_sk = normalize_sport_key(
-            sport_key
-        ) if sport_key else ""
-
+        normalized_sk = normalize_sport_key(sport_key) if sport_key else ""
         if normalized_sk and normalized_sk not in CFG.RAPID_SUPPORTED_SPORTS:
             logger.debug(
                 "RapidAPI skip (sport=%s not supported): %s vs %s",
@@ -1975,7 +1972,6 @@ class SofaScoreRapidFetcher:
             )
             return {}
 
-        # چک کش
         cached = self._get_from_cache(home, away)
         if cached is not None:
             return cached
@@ -1994,7 +1990,6 @@ class SofaScoreRapidFetcher:
 
         if event_id:
             await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
-
             form_d, h2h_d, lu_d, stats_d = await asyncio.gather(
                 self._get(session, f"event/{event_id}/pregame-form",
                           label="Rapid-Form"),
@@ -2007,7 +2002,6 @@ class SofaScoreRapidFetcher:
                 return_exceptions=True,
             )
 
-            # Form
             if isinstance(form_d, dict):
                 for side, key in [
                     ("homeTeam", "home_form"),
@@ -2023,7 +2017,6 @@ class SofaScoreRapidFetcher:
                             "position":   fd.get("position"),
                         }
 
-            # H2H
             events_list: list = []
             if isinstance(h2h_d, dict):
                 events_list = h2h_d.get("events", [])
@@ -2053,18 +2046,12 @@ class SofaScoreRapidFetcher:
                     "total":        hw + aw + d,
                 }
 
-            # Lineups
             if isinstance(lu_d, dict) and lu_d:
                 out["lineups"] = {
-                    "home_formation": lu_d.get("home", {}).get(
-                        "formation", "N/A"
-                    ),
-                    "away_formation": lu_d.get("away", {}).get(
-                        "formation", "N/A"
-                    ),
+                    "home_formation": lu_d.get("home", {}).get("formation", "N/A"),
+                    "away_formation": lu_d.get("away", {}).get("formation", "N/A"),
                 }
 
-            # Statistics
             if isinstance(stats_d, dict):
                 groups = stats_d.get("statistics", [])
                 if groups:
@@ -2100,13 +2087,12 @@ class SofaScoreRapidFetcher:
         to_fetch = [
             e for e in events
             if normalize_sport_key(e.get("sport_title", ""))
-               in CFG.RAPID_SUPPORTED_SPORTS  # ← فقط supported sports
+               in CFG.RAPID_SUPPORTED_SPORTS
                and e.get("home_team")
                and e.get("away_team")
         ]
         logger.info(
-            "Prefetching %d events (supported sports only)...",
-            len(to_fetch),
+            "Prefetching %d events (supported sports only)...", len(to_fetch),
         )
         already = fetched = 0
         for event in to_fetch:
@@ -2120,12 +2106,11 @@ class SofaScoreRapidFetcher:
             fetched += 1
         logger.info(
             "Prefetch done: fetched=%d cached=%d total_req=%d | %s",
-            fetched, already, self._total_requests,
-            self.km.get_stats(),
+            fetched, already, self._total_requests, self.km.get_stats(),
         )
 
 # =========================================================
-# 16. FOOTBALL-DATA ADAPTER
+# 17. FOOTBALL-DATA ADAPTER
 # =========================================================
 class FootballDataAdapter:
     BASE_URL = "https://api.football-data.org/v4"
@@ -2138,12 +2123,10 @@ class FootballDataAdapter:
     def __init__(self) -> None:
         self.headers = (
             {"X-Auth-Token": FOOTBALL_DATA_API_KEY}
-            if FOOTBALL_DATA_API_KEY
-            else {}
+            if FOOTBALL_DATA_API_KEY else {}
         )
         self.daily_cache = CacheManager.load(CFG.DAILY_STATS_CACHE_FILE)
         self.call_count  = 0
-
         entry = self.daily_cache.get("_call_count_today", {})
         if isinstance(entry.get("data"), int):
             self.call_count = entry["data"]
@@ -2157,7 +2140,6 @@ class FootballDataAdapter:
                 logger.info("FD call counter reset (new day)")
         except Exception:
             self.call_count = 0
-
         log_check("FD calls today", self.call_count, warn_if_none=False)
 
     def _can_call(self) -> bool:
@@ -2174,15 +2156,11 @@ class FootballDataAdapter:
         CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
 
     @retry_sync(max_retries=2, delay=3.0)
-    def _get(
-        self, ep: str, params: Optional[dict] = None
-    ) -> Optional[dict]:
+    def _get(self, ep: str, params: Optional[dict] = None) -> Optional[dict]:
         if not self._can_call():
             return None
         url = f"{self.BASE_URL}{ep}"
-        res = requests.get(
-            url, headers=self.headers, params=params, timeout=12
-        )
+        res = requests.get(url, headers=self.headers, params=params, timeout=12)
         res.raise_for_status()
         self._inc()
         return res.json()
@@ -2197,9 +2175,7 @@ class FootballDataAdapter:
         clean = clean_team_name(team_name).lower()
         tid: Optional[int] = None
         for cid in self.COMP_MAP:
-            data = self._get(
-                f"/competitions/{cid}/teams", {"season": "2024"}
-            )
+            data = self._get(f"/competitions/{cid}/teams", {"season": "2024"})
             if not data or not data.get("teams"):
                 continue
             for t in data["teams"]:
@@ -2207,13 +2183,10 @@ class FootballDataAdapter:
                 ts = t.get("shortName", "").lower()
                 if (
                     clean == tn or clean == ts
-                    or clean in tn or tn in clean
-                    or clean in ts
+                    or clean in tn or tn in clean or clean in ts
                 ):
                     tid = t["id"]
-                    logger.info(
-                        "FD: '%s' → id=%d", team_name, tid
-                    )
+                    logger.info("FD: '%s' → id=%d", team_name, tid)
                     break
             if tid:
                 break
@@ -2233,16 +2206,12 @@ class FootballDataAdapter:
         )
         if not data:
             return {}
-        form = self._parse_form(
-            data.get("matches", []), team_id, team_name
-        )
+        form = self._parse_form(data.get("matches", []), team_id, team_name)
         self.daily_cache = CacheManager.set(self.daily_cache, ck, form)
         CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
         return form
 
-    def _parse_form(
-        self, matches: list, tid: int, tname: str
-    ) -> dict:
+    def _parse_form(self, matches: list, tid: int, tname: str) -> dict:
         rs: list[str] = []
         gs: list[int] = []
         gc: list[int] = []
@@ -2260,9 +2229,7 @@ class FootballDataAdapter:
                 r = "W" if ag > hg else ("D" if ag == hg else "L")
             else:
                 continue
-            rs.append(r)
-            gs.append(s)
-            gc.append(c)
+            rs.append(r); gs.append(s); gc.append(c)
         n = len(rs)
         if n == 0:
             return {}
@@ -2281,9 +2248,7 @@ class FootballDataAdapter:
             "matches_analyzed": n,
         }
 
-    def get_h2h(
-        self, t1_id: int, t2_id: int, t1n: str, t2n: str
-    ) -> dict:
+    def get_h2h(self, t1_id: int, t2_id: int, t1n: str, t2n: str) -> dict:
         ck = f"h2h_{min(t1_id, t2_id)}_{max(t1_id, t2_id)}"
         if CacheManager.is_valid(self.daily_cache, ck, CFG.TTL_H2H):
             return CacheManager.get(self.daily_cache, ck) or {}
@@ -2293,8 +2258,8 @@ class FootballDataAdapter:
         )
         if not data:
             return {}
-        all_m = data.get("matches", [])
-        h2h_m = [
+        all_m  = data.get("matches", [])
+        h2h_m  = [
             m for m in all_m
             if {m.get("homeTeam", {}).get("id"),
                 m.get("awayTeam", {}).get("id")} == {t1_id, t2_id}
@@ -2304,9 +2269,7 @@ class FootballDataAdapter:
         CacheManager.save(CFG.DAILY_STATS_CACHE_FILE, self.daily_cache)
         return result
 
-    def _parse_h2h(
-        self, matches: list, t1_id: int, t1: str, t2: str
-    ) -> dict:
+    def _parse_h2h(self, matches: list, t1_id: int, t1: str, t2: str) -> dict:
         w1 = w2 = d = tg = bt = o25 = 0
         n  = len(matches)
         for m in matches:
@@ -2338,7 +2301,7 @@ class FootballDataAdapter:
         }
 
 # =========================================================
-# 17. MATCH ID CACHE
+# 18. MATCH ID CACHE
 # =========================================================
 class MatchIDCache:
     def __init__(self) -> None:
@@ -2364,7 +2327,7 @@ class MatchIDCache:
         ).hexdigest()
 
 # =========================================================
-# 18. STATS AGGREGATOR
+# 19. STATS AGGREGATOR
 # =========================================================
 async def get_stats_async(
     home:            str,
@@ -2376,7 +2339,7 @@ async def get_stats_async(
     elo_t:           ELOSystem,
     session:         aiohttp.ClientSession,
     rapid:           SofaScoreRapidFetcher,
-    rapid_sport_key: str = "",        # ← جدید: کلید دقیق ورزش از odds-api
+    rapid_sport_key: str = "",
 ) -> tuple:
     log_section(f"STATS: {home} vs {away}")
     stats: dict = {
@@ -2389,7 +2352,6 @@ async def get_stats_async(
         "_sources":     [],
     }
 
-    # ── ELO ──────────────────────────────────────────────
     elo_pred: Optional[dict] = None
     if sport_key == "football":
         elo_pred = elo_f.predict(home, away, apply_home=True)
@@ -2419,42 +2381,29 @@ async def get_stats_async(
             away, (elo_pred or {}).get("away_matches", 0),
         )
 
-    # ── SofaScore6 RapidAPI ───────────────────────────────
-    # sport_key دقیق رو پاس میدیم تا ورزش‌های پشتیبانی‌نشده فیلتر بشن
     rapid_data = await rapid.fetch_stats(
-        home, away, session,
-        sport_key=rapid_sport_key,    # ← جدید
+        home, away, session, sport_key=rapid_sport_key,
     )
 
     if rapid_data:
         for k in ["home_form", "away_form", "h2h", "lineups", "match_stats"]:
             if k in rapid_data and rapid_data[k]:
                 stats[k] = rapid_data[k]
-
         stats["sofascore"] = {
             k: rapid_data[k]
-            for k in [
-                "home_form", "away_form", "h2h",
-                "lineups", "match_stats",
-            ]
+            for k in ["home_form", "away_form", "h2h", "lineups", "match_stats"]
             if k in rapid_data and rapid_data[k]
         }
-
         if rapid_data.get("_event_id"):
             if "sofascore6_rapid" not in stats["_sources"]:
                 stats["_sources"].append("sofascore6_rapid")
 
-    # ── Football-Data.org ─────────────────────────────────
     if sport_key == "football":
         loop = asyncio.get_running_loop()
 
         async def _get_fd_data() -> dict:
-            hid = await loop.run_in_executor(
-                None, fd.find_team_id, home
-            )
-            aid = await loop.run_in_executor(
-                None, fd.find_team_id, away
-            )
+            hid = await loop.run_in_executor(None, fd.find_team_id, home)
+            aid = await loop.run_in_executor(None, fd.find_team_id, away)
             log_check(f"FD id '{home}'", hid)
             log_check(f"FD id '{away}'", aid)
             if not hid or not aid:
@@ -2462,19 +2411,14 @@ async def get_stats_async(
             results = await asyncio.gather(
                 loop.run_in_executor(None, fd.get_form, hid, home),
                 loop.run_in_executor(None, fd.get_form, aid, away),
-                loop.run_in_executor(
-                    None, fd.get_h2h, hid, aid, home, away
-                ),
+                loop.run_in_executor(None, fd.get_h2h, hid, aid, home, away),
                 return_exceptions=True,
             )
             hf, af, h2h = results
             out: dict = {}
-            if not isinstance(hf,  Exception) and hf:
-                out["home_form"] = hf
-            if not isinstance(af,  Exception) and af:
-                out["away_form"] = af
-            if not isinstance(h2h, Exception) and h2h:
-                out["h2h"] = h2h
+            if not isinstance(hf,  Exception) and hf:  out["home_form"] = hf
+            if not isinstance(af,  Exception) and af:  out["away_form"] = af
+            if not isinstance(h2h, Exception) and h2h: out["h2h"]       = h2h
             return out
 
         try:
@@ -2490,7 +2434,6 @@ async def get_stats_async(
         except Exception as e:
             logger.warning("FD gather error: %s", e)
 
-    # ── کیفیت نهایی ──────────────────────────────────────
     has_fb  = bool(stats.get("home_form") or stats.get("h2h"))
     has_ss  = bool(stats.get("sofascore"))
     has_elo = bool(stats.get("elo"))
@@ -2504,22 +2447,17 @@ async def get_stats_async(
         stats["data_quality"] = "none"
 
     logger.info(
-        "DATA QUALITY | %s vs %s | %s"
-        " (fb=%s ss=%s elo=%s src=%s)",
-        home, away,
-        stats["data_quality"].upper(),
+        "DATA QUALITY | %s vs %s | %s (fb=%s ss=%s elo=%s src=%s)",
+        home, away, stats["data_quality"].upper(),
         has_fb, has_ss, has_elo, sources,
     )
     return stats, elo_pred
 
 # =========================================================
-# 19. CONFIDENCE ENGINE
+# 20. CONFIDENCE ENGINE
 # =========================================================
 def calculate_confidence(
-    ev: float,
-    stats: dict,
-    market: str,
-    has_sharp: bool,
+    ev: float, stats: dict, market: str, has_sharp: bool,
 ) -> tuple[int, str]:
     score = 50
     dq    = stats.get("data_quality", "none")
@@ -2562,14 +2500,13 @@ def calculate_confidence(
         else "High")
     )
     logger.info(
-        "Confidence=%d risk=%s (dq=%s ev=%.1f%% "
-        "hm=%d am=%d sharp=%s src=%s)",
+        "Confidence=%d risk=%s (dq=%s ev=%.1f%% hm=%d am=%d sharp=%s src=%s)",
         score, risk, dq, ep, hm, am, has_sharp, sources,
     )
     return score, risk
-    
+
 # =========================================================
-# 20. DUAL-AI ANALYSIS
+# 21. DUAL-AI ANALYSIS
 # =========================================================
 def build_stats_summary(stats: dict, home: str, away: str) -> str:
     parts: list[str] = []
@@ -2582,13 +2519,10 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
     if elo and elo.get("home_matches", 0) >= 3:
         parts.append(
             f"[ELO MODEL]\n"
-            f"  {home}: ELO={elo['home_elo']:.0f}"
-            f" ({elo['home_matches']} matches)\n"
-            f"  {away}: ELO={elo['away_elo']:.0f}"
-            f" ({elo['away_matches']} matches)\n"
+            f"  {home}: ELO={elo['home_elo']:.0f} ({elo['home_matches']} matches)\n"
+            f"  {away}: ELO={elo['away_elo']:.0f} ({elo['away_matches']} matches)\n"
             f"  Win probs: {home}={elo['home_prob']:.1%} "
-            f"Draw={elo['draw_prob']:.1%} "
-            f"{away}={elo['away_prob']:.1%}"
+            f"Draw={elo['draw_prob']:.1%} {away}={elo['away_prob']:.1%}"
         )
     if hf:
         parts.append(
@@ -2644,8 +2578,7 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
             parts.append("[MATCH STATISTICS]")
             for sname, vals in ms.items():
                 parts.append(
-                    f"  {sname}: "
-                    f"{home}={vals.get('home','?')} | "
+                    f"  {sname}: {home}={vals.get('home','?')} | "
                     f"{away}={vals.get('away','?')}"
                 )
         sh2h = ss.get("h2h", {})
@@ -2659,8 +2592,7 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
         lu = ss.get("lineups", {})
         if lu:
             parts.append(
-                f"[LINEUPS] "
-                f"{home}={lu.get('home_formation','?')} "
+                f"[LINEUPS] {home}={lu.get('home_formation','?')} "
                 f"{away}={lu.get('away_formation','?')}"
             )
 
@@ -2670,10 +2602,7 @@ def build_stats_summary(stats: dict, home: str, away: str) -> str:
 async def call_groq_async(
     model: str, messages: list, temp: float = 0.1
 ) -> Optional[str]:
-    SUPPORTS_JSON = [
-        "llama-3", "llama3", "mixtral",
-        "gemma", "llama-4", "scout",
-    ]
+    SUPPORTS_JSON = ["llama-3", "llama3", "mixtral", "gemma", "llama-4", "scout"]
     use_json = any(k in model.lower() for k in SUPPORTS_JSON)
     kwargs: dict = {
         "model":       model,
@@ -2688,8 +2617,7 @@ async def call_groq_async(
         content = res.choices[0].message.content
         logger.info(
             "Groq %-32s | tokens=%s | out=%s",
-            model,
-            getattr(res.usage, "total_tokens", "?"),
+            model, getattr(res.usage, "total_tokens", "?"),
             (content or "")[:80],
         )
         return content
@@ -2742,8 +2670,7 @@ async def generate_dual_ai_analysis_async(
         f"PICK: {display_pick}\n"
         f"MARKET: {get_market_label(market)}\n"
         f"DATA QUALITY: {dq} | SOURCES: {sources}\n\n"
-        f"STATISTICS:\n{summary}\n\n"
-        f"OUTPUT JSON ONLY:"
+        f"STATISTICS:\n{summary}\n\nOUTPUT JSON ONLY:"
     )
 
     a1: Optional[dict] = None
@@ -2765,7 +2692,6 @@ async def generate_dual_ai_analysis_async(
         "You are a professional sports content editor.\n"
         "Review and polish the draft analysis to max 2 sentences.\n"
         "Maintain tipster tone. Remove any fabricated statistics.\n"
-        "If the draft is already good, keep it mostly unchanged.\n"
         "OUTPUT: valid JSON only.\n"
         '{"validated_logic":"..."}'
     )
@@ -2775,10 +2701,8 @@ async def generate_dual_ai_analysis_async(
             [
                 {"role": "system", "content": sys2},
                 {"role": "user",   "content": (
-                    f"DRAFT: {logic}\n"
-                    f"PICK: {display_pick}\n"
-                    f"HAS_STATS: {has_stats}\n"
-                    f"OUTPUT JSON ONLY:"
+                    f"DRAFT: {logic}\nPICK: {display_pick}\n"
+                    f"HAS_STATS: {has_stats}\nOUTPUT JSON ONLY:"
                 )},
             ],
             temp=0.15,
@@ -2792,16 +2716,12 @@ async def generate_dual_ai_analysis_async(
 
     result = dict(default)
     if a1:
-        if a1.get("sport_emoji"):
-            result["sport_emoji"] = a1["sport_emoji"]
-        if a1.get("home_flag"):
-            result["home_flag"] = validate_flag(a1["home_flag"], home)
-        if a1.get("away_flag"):
-            result["away_flag"] = validate_flag(a1["away_flag"], away)
+        if a1.get("sport_emoji"): result["sport_emoji"] = a1["sport_emoji"]
+        if a1.get("home_flag"):   result["home_flag"]   = validate_flag(a1["home_flag"], home)
+        if a1.get("away_flag"):   result["away_flag"]   = validate_flag(a1["away_flag"], away)
 
     sl = str(logic).strip()
     result["logic"] = sl[:600] + "…" if len(sl) > 600 else sl
-
     logger.info(
         "AI final conf=%d risk=%s | '%s'",
         result["confidence"], result["risk_level"], result["logic"][:80],
@@ -2809,7 +2729,7 @@ async def generate_dual_ai_analysis_async(
     return result
 
 # =========================================================
-# 21. RESULTS CHECKER
+# 22. RESULTS CHECKER
 # =========================================================
 async def fetch_event_result_async(
     home:      str,
@@ -2818,42 +2738,25 @@ async def fetch_event_result_async(
     km:        OddsKeyManager,
     session:   aiohttp.ClientSession,
 ) -> Optional[dict]:
-    """
-    بر اساس مستندات odds-api v4:
-    GET /v4/sports/{sport_key}/scores
-    params: daysFrom (1-3), dateFormat=iso
-    هر درخواست = 1 کردیت
-    """
     key = km.get_best_key()
     if not key:
         return None
 
-    # اگه sport_key معتبر نبود از soccer_epl به عنوان fallback استفاده نمیکنیم
-    # بلکه همه sport ها رو امتحان میکنیم
     sports_to_try = [sport_key] if sport_key else []
-
     for sk in sports_to_try:
         url    = f"https://api.the-odds-api.com/v4/sports/{sk}/scores"
-        params = {
-            "apiKey":     key,
-            "daysFrom":   "3",
-            "dateFormat": "iso",
-        }
+        params = {"apiKey": key, "daysFrom": "3", "dateFormat": "iso"}
         try:
             async with session.get(
-                url,
-                params=params,
+                url, params=params,
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as res:
                 remaining = res.headers.get("x-requests-remaining", "?")
                 used      = res.headers.get("x-requests-used",      "?")
-
                 if res.status == 200:
                     km.mark_success(key, remaining, used)
                     events = await res.json(content_type=None)
                     for ev in events:
-                        hn = ev.get("home_team", "").lower()
-                        an = ev.get("away_team", "").lower()
                         if (
                             _flex_match(home, ev.get("home_team", ""))
                             and _flex_match(away, ev.get("away_team", ""))
@@ -2865,24 +2768,18 @@ async def fetch_event_result_async(
                             )
                             return ev
                 elif res.status == 404:
-                    # sport_key اشتباه
                     continue
                 elif res.status == 429:
                     km.mark_exhausted(key)
                     return None
-
         except Exception as e:
             logger.warning("fetch_event_result_async (%s): %s", sk, e)
-
     return None
 
 
 def _determine_win(
     pick: str, market: str, scores, home: str, away: str,
 ) -> Optional[bool]:
-    """
-    تعیین برد/باخت با استفاده از _flex_match.
-    """
     try:
         if isinstance(scores, list):
             sm = {s["name"]: s.get("score") for s in scores}
@@ -2891,46 +2788,31 @@ def _determine_win(
         else:
             return None
 
-        # پیدا کردن نمرات
         hs  = None
         as_ = None
         for name, score in sm.items():
             if _flex_match(home, name):
-                try:
-                    hs = int(score)
-                except (TypeError, ValueError):
-                    pass
+                try:    hs = int(score)
+                except: pass
             elif _flex_match(away, name):
-                try:
-                    as_ = int(score)
-                except (TypeError, ValueError):
-                    pass
+                try:    as_ = int(score)
+                except: pass
 
         if hs is None or as_ is None:
             return None
 
         pl = pick.lower()
-
         if market == "h2h":
-            if "draw" in pl or "tie" in pl:
-                return hs == as_
-            if _flex_match(home, pick):
-                return hs > as_
-            if _flex_match(away, pick):
-                return as_ > hs
+            if "draw" in pl or "tie" in pl: return hs == as_
+            if _flex_match(home, pick):     return hs > as_
+            if _flex_match(away, pick):     return as_ > hs
             return None
-
         if market == "totals":
             total = hs + as_
             m     = re.search(r"(over|under)\s*([\d.]+)", pl)
             if m:
                 line = float(m.group(2))
-                return (
-                    total > line
-                    if m.group(1) == "over"
-                    else total < line
-                )
-
+                return total > line if m.group(1) == "over" else total < line
     except Exception as e:
         logger.debug("Win check error: %s", e)
     return None
@@ -2940,6 +2822,7 @@ async def check_and_report_results_async(
     sent_history: SentHistory,
     km:           OddsKeyManager,
     session:      aiohttp.ClientSession,
+    perf:         PerformanceTracker,
 ) -> Optional[str]:
     log_section("PHASE 1 — RESULTS CHECK")
     pending = sent_history.get_pending_results()
@@ -2967,7 +2850,6 @@ async def check_and_report_results_async(
         scores = rev.get("scores", [])
         won    = _determine_win(pick, market, scores, ht, at)
 
-        # نمره نمایشی
         try:
             if isinstance(scores, list):
                 sm = {s["name"]: s.get("score", "?") for s in scores}
@@ -2978,9 +2860,11 @@ async def check_and_report_results_async(
             rs = "? - ?"
 
         await sent_history.mark_result_checked_async(key, rs, won)
-        logger.info(
-            "Result: %s vs %s | %s | won=%s", ht, at, rs, won
-        )
+
+        # ← ثبت نتیجه در PerformanceTracker
+        perf.record_result(ht, at, market, won, rs)
+
+        logger.info("Result: %s vs %s | %s | won=%s", ht, at, rs, won)
 
         if won is True:
             wins.append({**entry, "result": rs})
@@ -3015,15 +2899,20 @@ async def check_and_report_results_async(
             f"@ <code>{lo['odds']:.2f}</code>\n"
             f"   Score: {lo.get('result','?')} — LOSS ❌\n"
         )
+
+    # ← اضافه کردن خلاصه performance
+    perf_summary = perf.format_summary_message()
     lines.append(
         f"\n🎯 {len(wins)}W/{len(losses)}L | "
-        f"WR={wr:.0%} | ROI={roi:+.1%}\n\n"
-        f"🆔 {CFG.TELEGRAM_ID}"
+        f"WR={wr:.0%} | ROI={roi:+.1%}\n"
     )
+    if perf_summary:
+        lines.append(f"\n{perf_summary}\n")
+    lines.append(f"\n🆔 {CFG.TELEGRAM_ID}")
     return "\n".join(lines)
 
 # =========================================================
-# 22. TELEGRAM
+# 23. TELEGRAM
 # =========================================================
 async def send_telegram_async(
     message_html: str,
@@ -3044,10 +2933,8 @@ async def send_telegram_async(
         if cur:
             chunks.append(cur.strip())
 
-    url = (
-        f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    )
-    ok = True
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    ok  = True
     for chunk in chunks:
         try:
             async with session.post(
@@ -3062,10 +2949,7 @@ async def send_telegram_async(
             ) as res:
                 if res.status != 200:
                     body = await res.text()
-                    logger.error(
-                        "Telegram HTTP %d: %s",
-                        res.status, body[:150],
-                    )
+                    logger.error("Telegram HTTP %d: %s", res.status, body[:150])
                     ok = False
         except Exception as e:
             logger.error("Telegram send error: %s", e)
@@ -3073,7 +2957,7 @@ async def send_telegram_async(
     return ok
 
 # =========================================================
-# 23. MESSAGE BUILDER
+# 24. MESSAGE BUILDER
 # =========================================================
 def build_telegram_message(
     sport:        str,
@@ -3086,17 +2970,10 @@ def build_telegram_message(
     conf:         int,
     risk:         str,
     ai:           dict,
+    perf:         PerformanceTracker,
 ) -> str:
-    ci = (
-        "🔥" if conf >= 75
-        else ("✅" if conf >= 60
-        else "⚡")
-    )
-    ri = {
-        "Low":    "🟢",
-        "Medium": "🟠",
-        "High":   "🔴",
-    }.get(risk, "🟠")
+    ci = "🔥" if conf >= 75 else ("✅" if conf >= 60 else "⚡")
+    ri = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(risk, "🟠")
 
     se  = ai.get("sport_emoji", "🏆")
     hf  = ai.get("home_flag",   "🏳️")
@@ -3108,6 +2985,10 @@ def build_telegram_message(
     ml  = get_market_label(opp["market"])
     bk  = opp.get("bookmaker", "Best Available")
     cd  = get_countdown_str(ct, now_utc)
+
+    # ← خلاصه فرم اخیر
+    form_str = perf.get_recent_form(5)
+    form_line = f"📋 <b>Recent:</b> {form_str}\n\n" if form_str else ""
 
     return (
         f"{se} <b>{html_lib.escape(sport)}</b>\n"
@@ -3128,25 +3009,25 @@ def build_telegram_message(
         f"💡 <b>Analysis:</b>\n"
         f"<blockquote>{lo}</blockquote>\n"
         f"\n"
+        f"{form_line}"
         f"🆔 {CFG.TELEGRAM_ID}"
     )
 
 # =========================================================
-# 24. MAIN PIPELINE
+# 25. MAIN PIPELINE
 # =========================================================
 async def async_main() -> None:
-    log_section("ZBET90 ENTERPRISE ENGINE v6.0 STARTING")
+    log_section("ZBET90 ENTERPRISE ENGINE v6.1 STARTING")
 
-    connector = aiohttp.TCPConnector(
-        ssl=False, limit=20, limit_per_host=5
-    )
+    connector = aiohttp.TCPConnector(ssl=False, limit=20, limit_per_host=5)
     async with aiohttp.ClientSession(
         connector=connector,
-        headers={"User-Agent": "ZBET90/6.0"},
+        headers={"User-Agent": "ZBET90/6.1"},
     ) as session:
 
         km       = OddsKeyManager(ODDS_API_KEYS)
         rapid_km = RapidKeyManager(RAPIDAPI_KEYS)
+        perf     = PerformanceTracker()
 
         await km.validate_all_async(session)
 
@@ -3172,14 +3053,14 @@ async def async_main() -> None:
 
         # ── فاز 1: بررسی نتایج ──────────────────────────
         results_msg = await check_and_report_results_async(
-            sent_history, km, session
+            sent_history, km, session, perf
         )
         if results_msg:
             if await send_telegram_async(results_msg, session):
                 logger.info("Results report sent ✅")
             await asyncio.sleep(2)
 
-        # ── فاز 2: دریافت odds (یکبار در روز) ───────────
+        # ── فاز 2: دریافت odds ───────────────────────────
         log_section("PHASE 2 — ODDS FETCH (daily cache)")
         events = await fetch_all_odds_daily(now_utc, km, session)
 
@@ -3191,13 +3072,11 @@ async def async_main() -> None:
 
         log_check("Events in window", len(events))
 
-        # ── فاز 2b: Prefetch RapidAPI (یکبار در روز) ────
+        # ── فاز 2b: Prefetch RapidAPI ────────────────────
         if RAPIDAPI_KEYS:
             if not DailyCache.is_fresh(CFG.DAILY_RAPID_CACHE_FILE):
                 log_section("RAPIDAPI — DAILY PREFETCH")
-                all_today = (
-                    DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE) or events
-                )
+                all_today = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE) or events
                 await rapid.prefetch_all(all_today, session)
             else:
                 logger.info(
@@ -3205,46 +3084,37 @@ async def async_main() -> None:
                     rapid_km.get_stats(),
                 )
         else:
-            logger.warning(
-                "No RapidAPI keys — stats from FootballData only"
-            )
+            logger.warning("No RapidAPI keys — stats from FootballData only")
 
-        # ── فاز 3: آنالیز و ارسال سیگنال ─────────────────
+        # ── فاز 3: آنالیز و ارسال ───────────────────────
         log_section("PHASE 3 — ANALYSIS & SIGNALS")
         total_sent = 0
 
         for event in events:
-            home       = event.get("home_team",     "")
-            away       = event.get("away_team",     "")
-            sport      = event.get("sport_title",   "Unknown")
-            sk         = normalize_sport_key(sport)
-            sport_key  = event.get("sport_key",     "")
-            ct         = event.get("commence_time", "")
-            md         = event.get("_markets_data", {})
+            home      = event.get("home_team",     "")
+            away      = event.get("away_team",     "")
+            sport     = event.get("sport_title",   "Unknown")
+            sk        = normalize_sport_key(sport)
+            sport_key = event.get("sport_key",     "")
+            ct        = event.get("commence_time", "")
+            md        = event.get("_markets_data", {})
 
             if not home or not away:
                 continue
 
             logger.info(
-                "Processing: %-30s vs %-30s [%s]",
-                home, away, sport,
+                "Processing: %-30s vs %-30s [%s]", home, away, sport,
             )
 
-            # ELO prediction اولیه
             elo_pred: Optional[dict] = None
             if sk == "football":
                 elo_pred = elo_football.predict(home, away)
             elif sk == "tennis":
-                elo_pred = elo_tennis.predict(
-                    home, away, apply_home=False
-                )
+                elo_pred = elo_tennis.predict(home, away, apply_home=False)
 
-            # ← جدید: EV calculation با data_quality اولیه
-            # در اولین پاس data_quality هنوز "none" است
-            # این از EV های غیرواقعی بدون داده جلوگیری میکنه
             opps = calculate_combined_ev(
                 md, elo_pred, sk, home, away,
-                data_quality="none",   # ← conservative در ابتدا
+                data_quality="none",
             )
             if not opps:
                 logger.info("SKIP no value: %s vs %s", home, away)
@@ -3252,21 +3122,17 @@ async def async_main() -> None:
 
             opp = opps[0]
 
-            # بررسی duplicate
             if sent_history.was_sent(home, away, opp["market"]):
                 logger.info("SKIP duplicate: %s vs %s", home, away)
                 continue
 
-            # آمار کامل — sport_key رو پاس بده
             stats, _ = await get_stats_async(
                 home, away, sk,
                 fd, mic, elo_football, elo_tennis,
                 session, rapid,
-                rapid_sport_key=sport_key,  # ← جدید
+                rapid_sport_key=sport_key,
             )
 
-            # ← جدید: EV محاسبه مجدد با data_quality واقعی
-            # اگه داده پیدا شد، EV رو دوباره چک کن
             real_dq = stats.get("data_quality", "none")
             if real_dq != "none":
                 opps_v2 = calculate_combined_ev(
@@ -3280,10 +3146,8 @@ async def async_main() -> None:
                     continue
                 opp = opps_v2[0]
 
-            # Confidence
             conf, risk = calculate_confidence(
-                opp["ev"], stats, opp["market"],
-                opp["has_sharp_line"],
+                opp["ev"], stats, opp["market"], opp["has_sharp_line"],
             )
 
             if conf < CFG.MIN_CONFIDENCE_TO_SEND:
@@ -3293,9 +3157,7 @@ async def async_main() -> None:
                 )
                 continue
 
-            dp = get_display_pick(
-                opp["pick"], opp["market"], home, away
-            )
+            dp = get_display_pick(opp["pick"], opp["market"], home, away)
 
             ai = await generate_dual_ai_analysis_async(
                 home, away, sport, dp, opp["market"],
@@ -3304,14 +3166,12 @@ async def async_main() -> None:
 
             msg = build_telegram_message(
                 sport, home, away, ct, now_utc,
-                opp, dp, conf, risk, ai,
+                opp, dp, conf, risk, ai, perf,
             )
 
             logger.info(
-                "SIGNAL | %s vs %s | pick=%s odds=%.2f "
-                "ev=%.1f%% conf=%d%%",
-                home, away, dp,
-                opp["odds"], opp["edge_pct"], conf,
+                "SIGNAL | %s vs %s | pick=%s odds=%.2f ev=%.1f%% conf=%d%%",
+                home, away, dp, opp["odds"], opp["edge_pct"], conf,
             )
 
             if await send_telegram_async(msg, session):
@@ -3324,6 +3184,17 @@ async def async_main() -> None:
                     commence_time = ct,
                     sport_key     = sport_key,
                     sport_title   = sport,
+                )
+                # ← ثبت bet در PerformanceTracker
+                perf.record_bet(
+                    home      = home,
+                    away      = away,
+                    pick      = opp["pick"],
+                    market    = opp["market"],
+                    our_odds  = opp["odds"],
+                    ev        = opp["ev"],
+                    conf      = conf,
+                    sport_key = sport_key,
                 )
                 total_sent += 1
                 logger.info("✅ Sent: %s vs %s", home, away)
@@ -3338,6 +3209,16 @@ async def async_main() -> None:
     if RAPIDAPI_KEYS:
         logger.info("RapidAPI stats: %s", rapid_km.get_stats())
 
+    # ← لاگ خلاصه performance نهایی
+    s = perf.get_summary()
+    if s:
+        logger.info(
+            "Performance: %dW/%dL WR=%.0f%% ROI=%.1f%% CLV=%s%%",
+            s.get("wins", 0), s.get("losses", 0),
+            s.get("win_rate", 0), s.get("roi", 0),
+            s.get("avg_clv", "N/A"),
+        )
+
 
 if __name__ == "__main__":
     try:
@@ -3345,7 +3226,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Interrupted by user.")
     except Exception as e:
-        logger.critical(
-            "SYSTEM FAILURE: %s", str(e), exc_info=True
-        )
+        logger.critical("SYSTEM FAILURE: %s", str(e), exc_info=True)
         sys.exit(1)
