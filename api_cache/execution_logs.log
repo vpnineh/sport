@@ -4123,3 +4123,191 @@
 2026-05-31 15:04:08 | INFO     | CHECK | Signals sent                               | OK | 3
 2026-05-31 15:04:08 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=244 | 1275084d…:ok/rem=244
 2026-05-31 15:04:08 | INFO     | RapidAPI stats: key#1(79035f…):blocked/req=2 | key#2(817732…):ok/req=14
+2026-05-31 15:25:20 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 15:25:20 | INFO     |   KEY STATUS
+2026-05-31 15:25:20 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 15:25:20 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 15:25:20 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 15:25:20 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 15:25:20 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 15:25:20 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 15:25:20 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 15:25:20 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 15:25:20 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 15:25:20 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 15:25:20 | INFO     | Odds API keys: 3/3 | RapidAPI keys: 2/2
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   ZBET90 ENTERPRISE ENGINE v6.0 STARTING
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | OddsKeyManager status:
+2026-05-31 15:25:20 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 15:25:20 | INFO     |   key=4342465d…    status=ok         remaining=244   used=256
+2026-05-31 15:25:20 | INFO     |   key=1275084d…    status=ok         remaining=244   used=256
+2026-05-31 15:25:20 | INFO     | RapidKeyManager: 2 key(s) | primary=79035f8b…
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 15:25:20 | INFO     | Key 4342465d… ✅ VALID | sports=43 remaining=242 used=258
+2026-05-31 15:25:20 | INFO     | Key 1275084d… ✅ VALID | sports=43 remaining=244 used=256
+2026-05-31 15:25:20 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=242 | 1275084d…:ok/rem=244
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=1)
+2026-05-31 15:25:20 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 15:25:20 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 15:25:20 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 15:25:20 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 15:25:20 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-31 15:25:20 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-31 15:25:20 | INFO     | CHECK | FD calls today                             | OK | 44
+2026-05-31 15:25:20 | INFO     | DailyCache HIT → daily_rapid_stats.json (saved=2026-05-31T15:04)
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | CHECK | Pending results                            | OK | 13
+2026-05-31 15:25:20 | INFO     | Checking result: Song Yadong vs Deiveson Figueiredo [Deiveson Figueiredo]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=2)
+2026-05-31 15:25:20 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-31 15:25:20 | INFO     | Checking result: Moise Kouame vs Alejandro Tabilo [Moise Kouame]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=3)
+2026-05-31 15:25:20 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-31 15:25:20 | INFO     | Checking result: Matteo Arnaldi vs Raphael Collignon [Matteo Arnaldi]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=4)
+2026-05-31 15:25:20 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-31 15:25:20 | INFO     | Checking result: Victoria Mboko vs Madison Keys [Madison Keys]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=5)
+2026-05-31 15:25:20 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-31 15:25:20 | INFO     | Checking result: Coco Gauff vs Anastasia Potapova [Anastasia Potapova]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=6)
+2026-05-31 15:25:20 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-31 15:25:20 | INFO     | Checking result: FC Lahti vs Ilves Tampere [FC Lahti]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=7)
+2026-05-31 15:25:20 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-31 15:25:20 | INFO     | Checking result: Molde vs Sandefjord [Molde]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=8)
+2026-05-31 15:25:20 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-31 15:25:20 | INFO     | Checking result: TPS Turku vs VPS Vaasa [VPS Vaasa]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=9)
+2026-05-31 15:25:20 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-31 15:25:20 | INFO     | Checking result: Felix Auger-Aliassime vs Brandon Nakashima [Brandon Nakashima]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=10)
+2026-05-31 15:25:20 | INFO     | No result yet: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-31 15:25:20 | INFO     | Checking result: Arizona St Sun Devils vs South Dakota St Jackrabbits [South Dakota St Jackrabbits]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=11)
+2026-05-31 15:25:20 | INFO     | No result yet: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-31 15:25:20 | INFO     | Checking result: NC State Wolfpack vs Auburn Tigers [NC State Wolfpack]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=12)
+2026-05-31 15:25:20 | INFO     | No result yet: NC State Wolfpack vs Auburn Tigers
+2026-05-31 15:25:20 | INFO     | Checking result: O'Shaquie Foster vs Raymond Ford [Draw]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=4342465d… (status=ok remaining=242 rr=13)
+2026-05-31 15:25:20 | INFO     | No result yet: O'Shaquie Foster vs Raymond Ford
+2026-05-31 15:25:20 | INFO     | Checking result: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants [Yomiuri Giants]
+2026-05-31 15:25:20 | DEBUG    | OddsKeyManager: key=1275084d… (status=ok remaining=244 rr=14)
+2026-05-31 15:25:20 | INFO     | No result yet: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   PHASE 2 — ODDS FETCH (daily cache)
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   ODDS API — DAILY FETCH
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | DailyCache HIT → daily_odds.json (saved=2026-05-31T15:03)
+2026-05-31 15:25:20 | INFO     | OddsAPI DailyCache HIT: total=318 | in_window=30
+2026-05-31 15:25:20 | INFO     | CHECK | Events in window                           | OK | 30
+2026-05-31 15:25:20 | INFO     | RapidAPI DailyCache fresh ✅ — skip prefetch | key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | Processing: DC Defenders                   vs Orlando Storm                  [UFL]
+2026-05-31 15:25:20 | INFO     | SKIP no value: DC Defenders vs Orlando Storm
+2026-05-31 15:25:20 | INFO     | Processing: Buffalo Bisons                 vs Lehigh Valley IronPigs         [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Buffalo Bisons vs Lehigh Valley IronPigs
+2026-05-31 15:25:20 | INFO     | Processing: Charlotte Knights              vs Jacksonville Jumbo Shrimp      [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Charlotte Knights vs Jacksonville Jumbo Shrimp
+2026-05-31 15:25:20 | INFO     | Processing: Norfolk Tides                  vs Durham Bulls                   [MiLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=3.206 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Norfolk Tides vs Durham Bulls
+2026-05-31 15:25:20 | INFO     | Processing: Louisville Bats                vs St. Paul Saints                [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Louisville Bats vs St. Paul Saints
+2026-05-31 15:25:20 | INFO     | Processing: Rochester Red Wings            vs Syracuse Mets                  [MiLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.044 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Rochester Red Wings vs Syracuse Mets
+2026-05-31 15:25:20 | INFO     | Processing: Indianapolis Indians           vs Iowa Cubs                      [MiLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.140 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Indianapolis Indians vs Iowa Cubs
+2026-05-31 15:25:20 | INFO     | Processing: Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox              [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Scranton/Wilkes-Barre RailRiders vs Worcester Red Sox
+2026-05-31 15:25:20 | INFO     | Processing: Toledo Mud Hens                vs Columbus Clippers              [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Toledo Mud Hens vs Columbus Clippers
+2026-05-31 15:25:20 | INFO     | Processing: Nashville Sounds               vs Gwinnett Stripers              [MiLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Nashville Sounds vs Gwinnett Stripers
+2026-05-31 15:25:20 | INFO     | Processing: Round Rock Express             vs Salt Lake Bees                 [MiLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.138 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Round Rock Express vs Salt Lake Bees
+2026-05-31 15:25:20 | INFO     | Processing: Baltimore Orioles              vs Toronto Blue Jays              [MLB]
+2026-05-31 15:25:20 | INFO     | EV ✅ [h2h     ] pick='Toronto Blue Jays' ev=3.5% odds=2.25 bookie=GTbets elo=False sharp=True
+2026-05-31 15:25:20 | INFO     | SKIP duplicate: Baltimore Orioles vs Toronto Blue Jays
+2026-05-31 15:25:20 | INFO     | Processing: Pittsburgh Pirates             vs Minnesota Twins                [MLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Pittsburgh Pirates vs Minnesota Twins
+2026-05-31 15:25:20 | INFO     | Processing: Washington Nationals           vs San Diego Padres               [MLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.041 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Washington Nationals vs San Diego Padres
+2026-05-31 15:25:20 | INFO     | Processing: Cincinnati Reds                vs Atlanta Braves                 [MLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.033 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Cincinnati Reds vs Atlanta Braves
+2026-05-31 15:25:20 | INFO     | Processing: Cleveland Guardians            vs Boston Red Sox                 [MLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.044 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Cleveland Guardians vs Boston Red Sox
+2026-05-31 15:25:20 | INFO     | Processing: Tampa Bay Rays                 vs Los Angeles Angels             [MLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.038 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Tampa Bay Rays vs Los Angeles Angels
+2026-05-31 15:25:20 | INFO     | Processing: New York Mets                  vs Miami Marlins                  [MLB]
+2026-05-31 15:25:20 | INFO     | EV ✅ [h2h     ] pick='Miami Marlins' ev=2.0% odds=2.44 bookie=FanDuel elo=False sharp=True
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   STATS: New York Mets vs Miami Marlins
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | WARNING  | ELO insufficient: New York Mets(hm=0) Miami Marlins(am=0)
+2026-05-31 15:25:20 | DEBUG    | RapidAPI skip (sport=other not supported): New York Mets vs Miami Marlins
+2026-05-31 15:25:20 | INFO     | DATA QUALITY | New York Mets vs Miami Marlins | NONE (fb=False ss=False elo=False src=[])
+2026-05-31 15:25:20 | INFO     | Confidence=59 risk=High (dq=none ev=2.0% hm=0 am=0 sharp=True src=[])
+2026-05-31 15:25:20 | INFO     | SKIP low conf: New York Mets vs Miami Marlins conf=59% min=62%
+2026-05-31 15:25:20 | INFO     | Processing: Chicago White Sox              vs Detroit Tigers                 [MLB]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.048 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Chicago White Sox vs Detroit Tigers
+2026-05-31 15:25:20 | INFO     | Processing: Houston Astros                 vs Milwaukee Brewers              [MLB]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Houston Astros vs Milwaukee Brewers
+2026-05-31 15:25:20 | INFO     | Processing: Liberty Flames                 vs Boston College Eagles          [NCAA Baseball]
+2026-05-31 15:25:20 | WARNING  | EV rejected (7.3% > 6.0% max_no_data) for Liberty Flames — no supporting data
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=4.205 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Liberty Flames vs Boston College Eagles
+2026-05-31 15:25:20 | INFO     | Processing: East Carolina Pirates          vs VCU Rams                       [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.105 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: East Carolina Pirates vs VCU Rams
+2026-05-31 15:25:20 | INFO     | Processing: Troy Trojans                   vs Miami Hurricanes               [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=4.176 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Troy Trojans vs Miami Hurricanes
+2026-05-31 15:25:20 | INFO     | Processing: West Virginia Mountaineers     vs Wake Forest Demon Deacons      [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=3.171 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: West Virginia Mountaineers vs Wake Forest Demon Deacons
+2026-05-31 15:25:20 | INFO     | Processing: Northeastern Huskies           vs Arkansas Razorbacks            [NCAA Baseball]
+2026-05-31 15:25:20 | INFO     | EV ✅ [h2h     ] pick='Northeastern Huskies' ev=3.7% odds=3.85 bookie=FanDuel elo=False sharp=True
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.076 out of range
+2026-05-31 15:25:20 | INFO     | SKIP duplicate: Northeastern Huskies vs Arkansas Razorbacks
+2026-05-31 15:25:20 | INFO     | Processing: The Citadel Bulldogs           vs Oklahoma Sooners               [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=4.213 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: The Citadel Bulldogs vs Oklahoma Sooners
+2026-05-31 15:25:20 | INFO     | Processing: Tarleton State Texans          vs UC Santa Barbara Gauchos       [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=3.128 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Tarleton State Texans vs UC Santa Barbara Gauchos
+2026-05-31 15:25:20 | INFO     | Processing: Northern Illinois Huskies      vs St. John's Red Storm           [NCAA Baseball]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=3.184 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Northern Illinois Huskies vs St. John's Red Storm
+2026-05-31 15:25:20 | INFO     | Processing: Gent                           vs Genk                           [Belgium First Div]
+2026-05-31 15:25:20 | DEBUG    | EV skip [totals]: implied_sum=2.037 out of range
+2026-05-31 15:25:20 | INFO     | SKIP no value: Gent vs Genk
+2026-05-31 15:25:20 | INFO     | Processing: Deportes Limache               vs Coquimbo Unido                 [Primera División - Chile]
+2026-05-31 15:25:20 | INFO     | SKIP no value: Deportes Limache vs Coquimbo Unido
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     |   RUN COMPLETE
+2026-05-31 15:25:20 | INFO     | ============================================================
+2026-05-31 15:25:20 | INFO     | CHECK | Signals sent                               | EMPTY (ok)
+2026-05-31 15:25:20 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=240 | 1275084d…:ok/rem=244
+2026-05-31 15:25:20 | INFO     | RapidAPI stats: key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
