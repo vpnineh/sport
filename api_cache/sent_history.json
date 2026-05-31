@@ -185,5 +185,41 @@
     "commence_time": "2026-05-30T19:00:00Z",
     "sent_at": "2026-05-30T18:30:24.838689+00:00",
     "result_checked": false
+  },
+  "ada4b1fe1c49e3d02bbeaa886de941cb": {
+    "match": "O'Shaquie Foster vs Raymond Ford",
+    "home": "O'Shaquie Foster",
+    "away": "Raymond Ford",
+    "pick": "Draw",
+    "market": "h2h",
+    "odds": 17.0,
+    "commence_time": "2026-05-31T03:00:00Z",
+    "sport_key": "boxing_boxing",
+    "sent_at": "2026-05-31T02:30:42.678719+00:00",
+    "result_checked": false
+  },
+  "7a9bf55b7a15cbb7865f792ea2f55d35": {
+    "match": "Brisbane Broncos vs St George Illawarra Dragons",
+    "home": "Brisbane Broncos",
+    "away": "St George Illawarra Dragons",
+    "pick": "St George Illawarra Dragons",
+    "market": "h2h",
+    "odds": 8.0,
+    "commence_time": "2026-05-31T04:00:00Z",
+    "sport_key": "rugbyleague_nrl",
+    "sent_at": "2026-05-31T02:30:48.068917+00:00",
+    "result_checked": false
+  },
+  "3dda6bacd3dabc98e30ed38973e67b9b": {
+    "match": "Hokkaido Nippon-Ham Fighters vs Yomiuri Giants",
+    "home": "Hokkaido Nippon-Ham Fighters",
+    "away": "Yomiuri Giants",
+    "pick": "Yomiuri Giants",
+    "market": "h2h",
+    "odds": 2.74,
+    "commence_time": "2026-05-31T04:00:00Z",
+    "sport_key": "baseball_npb",
+    "sent_at": "2026-05-31T02:30:53.086891+00:00",
+    "result_checked": false
   }
 }

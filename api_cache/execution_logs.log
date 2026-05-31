@@ -2683,3 +2683,207 @@
 2026-05-30 23:30:34 | INFO     | DailyCache HIT: daily_odds.json (saved=2026-05-30T20:55)
 2026-05-30 23:30:34 | INFO     | OddsAPI DailyCache HIT: 8 total → 0 in window
 2026-05-30 23:30:34 | ERROR    | No events received. Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=476 | 1275084d…:ok/rem=476
+2026-05-31 02:30:38 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 02:30:38 | INFO     |   KEY STATUS
+2026-05-31 02:30:38 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 02:30:38 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 02:30:38 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 02:30:38 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 02:30:38 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 02:30:38 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 02:30:38 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 02:30:38 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 02:30:38 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 02:30:38 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 02:30:38 | INFO     | Odds API keys: 3/3 | RapidAPI keys: 2/2
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   ZBET90 ENTERPRISE ENGINE v5.0 STARTING
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | OddsKeyManager status:
+2026-05-31 02:30:38 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 02:30:38 | INFO     |   key=4342465d…    status=ok         remaining=476   used=24
+2026-05-31 02:30:38 | INFO     |   key=1275084d…    status=ok         remaining=476   used=24
+2026-05-31 02:30:38 | INFO     | RapidKeyManager: 2 key(s) loaded | primary=79035f8b…
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 02:30:38 | INFO     | Key 4342465d… ✅ VALID | sports=47 remaining=476 used=24
+2026-05-31 02:30:38 | INFO     | Key 1275084d… ✅ VALID | sports=47 remaining=476 used=24
+2026-05-31 02:30:38 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=476 | 1275084d…:ok/rem=476
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 02:30:38 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 02:30:38 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 02:30:38 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 02:30:38 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-31 02:30:38 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-31 02:30:38 | INFO     | FD call counter reset (new day)
+2026-05-31 02:30:38 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-31 02:30:38 | INFO     | DailyCache expired: daily_rapid_stats.json
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | CHECK | Pending results                            | OK | 11
+2026-05-31 02:30:38 | INFO     | Checking: Song Yadong vs Deiveson Figueiredo | Deiveson Figueiredo
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-31 02:30:38 | INFO     | Checking: Moise Kouame vs Alejandro Tabilo | Moise Kouame
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-31 02:30:38 | INFO     | Checking: Matteo Arnaldi vs Raphael Collignon | Matteo Arnaldi
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-31 02:30:38 | INFO     | Checking: Victoria Mboko vs Madison Keys | Madison Keys
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-31 02:30:38 | INFO     | Checking: Coco Gauff vs Anastasia Potapova | Anastasia Potapova
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-31 02:30:38 | INFO     | Checking: FC Lahti vs Ilves Tampere | FC Lahti
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-31 02:30:38 | INFO     | Checking: Molde vs Sandefjord | Molde
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-31 02:30:38 | INFO     | Checking: TPS Turku vs VPS Vaasa | VPS Vaasa
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-31 02:30:38 | INFO     | Checking: Felix Auger-Aliassime vs Brandon Nakashima | Brandon Nakashima
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-31 02:30:38 | INFO     | Checking: Arizona St Sun Devils vs South Dakota St Jackrabbits | South Dakota St Jackrabbits
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-31 02:30:38 | INFO     | Checking: NC State Wolfpack vs Auburn Tigers | NC State Wolfpack
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | No result yet: NC State Wolfpack vs Auburn Tigers
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   ODDS API — KEY ROTATION SYSTEM
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | DailyCache expired: daily_odds.json
+2026-05-31 02:30:38 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=476 | 1275084d…:ok/rem=476
+2026-05-31 02:30:38 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=476)
+2026-05-31 02:30:38 | INFO     | Attempt 1/4 with key=4342465d…
+2026-05-31 02:30:38 | INFO     | API▶ OddsAPI                | status=200 | records=8    | {'regions': 'eu,us,uk,au', 'markets': 'h2h,totals'}
+2026-05-31 02:30:38 | DEBUG    | API▶ OddsAPI                | sample=remaining=468 used=32
+2026-05-31 02:30:38 | INFO     | OddsAPI ✅ | key=4342465d… | remaining=468 used=32 | events=8
+2026-05-31 02:30:38 | INFO     | DailyCache saved: daily_odds.json
+2026-05-31 02:30:38 | INFO     | ✅ Got 8 events → cached for today
+2026-05-31 02:30:38 | INFO     | Events in window: 8/8
+2026-05-31 02:30:38 | INFO     | CHECK | Total events in window                     | OK | 8
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   RAPIDAPI — DAILY PREFETCH (first run of day)
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | DailyCache HIT: daily_odds.json (saved=2026-05-31T02:30)
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   RAPIDAPI — DAILY PREFETCH
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | Prefetching 0 events (football+tennis)...
+2026-05-31 02:30:38 | INFO     | Prefetch done: fetched=0 cached=0 total_req=0 | key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     | Processing: Amanda Serrano vs Cheyenne Hanson [Boxing]
+2026-05-31 02:30:38 | WARNING  | Rejected EV=16.2% for Draw
+2026-05-31 02:30:38 | INFO     | SKIP no value/odds: Amanda Serrano vs Cheyenne Hanson (Odds < 1.50 or EV < 1.5%)
+2026-05-31 02:30:38 | INFO     | Processing: O'Shaquie Foster vs Raymond Ford [Boxing]
+2026-05-31 02:30:38 | INFO     | EV [h2h] pick='Draw' ev=9.6% odds=17.00 bookie=Paddy Power elo=False
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | INFO     |   STATS: O'Shaquie Foster vs Raymond Ford
+2026-05-31 02:30:38 | INFO     | ============================================================
+2026-05-31 02:30:38 | WARNING  | ELO insufficient: O'Shaquie Foster(hm=0) Raymond Ford(am=0)
+2026-05-31 02:30:38 | INFO     | RapidAPI fetching: O'Shaquie Foster vs Raymond Ford (total_req=0)
+2026-05-31 02:30:39 | ERROR    | ❌ RapidAPI auth error 403 on key#1
+2026-05-31 02:30:40 | WARNING  | ⚠️  RapidAPI 429 on key#1 — switching
+2026-05-31 02:30:40 | WARNING  | RapidAPI key#1 rate-limited → paused 3 min
+2026-05-31 02:30:40 | INFO     | RapidAPI switched to key#2
+2026-05-31 02:30:41 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 02:30:41 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 02:30:41 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 02:30:41 | INFO     | RapidAPI cached: O'Shaquie Foster vs Raymond Ford | keys=[] | total_req=5
+2026-05-31 02:30:41 | INFO     | DATA QUALITY | O'Shaquie Foster vs Raymond Ford | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 02:30:41 | INFO     | Confidence=67 risk=Medium (dq=none ev=9.6% hm=0 am=0 sharp=True sources=[])
+2026-05-31 02:30:42 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=274 | out={
+"sport_emoji": "🥊",
+  "home_flag": "",
+  "away_flag": "",
+  "logic": "A sharp 
+2026-05-31 02:30:42 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 02:30:42 | INFO     | Groq llama-3.1-8b-instant             | tokens=165 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick, odds imply a m
+2026-05-31 02:30:42 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 02:30:42 | INFO     | AI final conf=67 risk=Medium | 'Sharp market discrepancy drives the pick, odds imply a more one-sided contest th'
+2026-05-31 02:30:42 | INFO     | SIGNAL | O'Shaquie Foster vs Raymond Ford | pick=Match to end in a Draw (X) odds=17.00 ev=9.6% conf=67%
+2026-05-31 02:30:42 | INFO     | ✅ Sent: O'Shaquie Foster vs Raymond Ford
+2026-05-31 02:30:45 | INFO     | Processing: Stephanie Han vs Holly Holm [Boxing]
+2026-05-31 02:30:45 | INFO     | SKIP no value/odds: Stephanie Han vs Holly Holm (Odds < 1.50 or EV < 1.5%)
+2026-05-31 02:30:45 | INFO     | Processing: Brisbane Broncos vs St George Illawarra Dragons [NRL]
+2026-05-31 02:30:45 | INFO     | EV [h2h] pick='St George Illawarra Dragons' ev=8.6% odds=8.00 bookie=Betfair elo=False
+2026-05-31 02:30:45 | INFO     | ============================================================
+2026-05-31 02:30:45 | INFO     |   STATS: Brisbane Broncos vs St George Illawarra Dragons
+2026-05-31 02:30:45 | INFO     | ============================================================
+2026-05-31 02:30:45 | WARNING  | ELO insufficient: Brisbane Broncos(hm=0) St George Illawarra Dragons(am=0)
+2026-05-31 02:30:45 | INFO     | RapidAPI fetching: Brisbane Broncos vs St George Illawarra Dragons (total_req=5)
+2026-05-31 02:30:46 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 02:30:46 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 02:30:46 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 02:30:46 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 02:30:46 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 02:30:46 | INFO     | RapidAPI cached: Brisbane Broncos vs St George Illawarra Dragons | keys=[] | total_req=9
+2026-05-31 02:30:46 | INFO     | DATA QUALITY | Brisbane Broncos vs St George Illawarra Dragons | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 02:30:46 | INFO     | Confidence=67 risk=Medium (dq=none ev=8.6% hm=0 am=0 sharp=True sources=[])
+2026-05-31 02:30:47 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=293 | out={
+"sport_emoji": "🏉",
+  "home_flag": "🇦🇺",
+  "away_flag": "🇦🇺",
+  "logic": "Shar
+2026-05-31 02:30:47 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 02:30:47 | INFO     | Groq llama-3.1-8b-instant             | tokens=166 | out={
+  "validated_logic": "Contrarian approach supports backing the Dragons for a w
+2026-05-31 02:30:47 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 02:30:47 | INFO     | AI final conf=67 risk=Medium | 'Contrarian approach supports backing the Dragons for a win due to market underes'
+2026-05-31 02:30:47 | INFO     | SIGNAL | Brisbane Broncos vs St George Illawarra Dragons | pick=St George Illawarra Dragons to Win (2) odds=8.00 ev=8.6% conf=67%
+2026-05-31 02:30:48 | INFO     | ✅ Sent: Brisbane Broncos vs St George Illawarra Dragons
+2026-05-31 02:30:51 | INFO     | Processing: Chiba Lotte Marines vs Hanshin Tigers [NPB]
+2026-05-31 02:30:51 | INFO     | SKIP no value/odds: Chiba Lotte Marines vs Hanshin Tigers (Odds < 1.50 or EV < 1.5%)
+2026-05-31 02:30:51 | INFO     | Processing: Orix Buffaloes vs Chunichi Dragons [NPB]
+2026-05-31 02:30:51 | INFO     | SKIP no value/odds: Orix Buffaloes vs Chunichi Dragons (Odds < 1.50 or EV < 1.5%)
+2026-05-31 02:30:51 | INFO     | Processing: Fukuoka SoftBank Hawks vs Hiroshima Toyo Carp [NPB]
+2026-05-31 02:30:51 | INFO     | SKIP no value/odds: Fukuoka SoftBank Hawks vs Hiroshima Toyo Carp (Odds < 1.50 or EV < 1.5%)
+2026-05-31 02:30:51 | INFO     | Processing: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants [NPB]
+2026-05-31 02:30:51 | INFO     | EV [h2h] pick='Yomiuri Giants' ev=2.3% odds=2.74 bookie=LowVig.ag elo=False
+2026-05-31 02:30:51 | INFO     | ============================================================
+2026-05-31 02:30:51 | INFO     |   STATS: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants
+2026-05-31 02:30:51 | INFO     | ============================================================
+2026-05-31 02:30:51 | WARNING  | ELO insufficient: Hokkaido Nippon-Ham Fighters(hm=0) Yomiuri Giants(am=0)
+2026-05-31 02:30:51 | INFO     | RapidAPI fetching: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants (total_req=9)
+2026-05-31 02:30:51 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 02:30:51 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 02:30:52 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 02:30:52 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 02:30:52 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 02:30:52 | INFO     | RapidAPI cached: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants | keys=[] | total_req=13
+2026-05-31 02:30:52 | INFO     | DATA QUALITY | Hokkaido Nippon-Ham Fighters vs Yomiuri Giants | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 02:30:52 | INFO     | Confidence=59 risk=High (dq=none ev=2.3% hm=0 am=0 sharp=True sources=[])
+2026-05-31 02:30:52 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=283 | out={
+"sport_emoji": "⚾",
+  "home_flag": "🇯🇵",
+  "away_flag": "🇯🇵",
+  "logic": "Shar
+2026-05-31 02:30:52 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 02:30:52 | INFO     | Groq llama-3.1-8b-instant             | tokens=155 | out={
+  "validated_logic": "Sharp market discrepancy indicates value on Yomiuri Gian
+2026-05-31 02:30:52 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 02:30:52 | INFO     | AI final conf=59 risk=High | 'Sharp market discrepancy indicates value on Yomiuri Giants, who are being underp'
+2026-05-31 02:30:52 | INFO     | SIGNAL | Hokkaido Nippon-Ham Fighters vs Yomiuri Giants | pick=Yomiuri Giants to Win (2) odds=2.74 ev=2.3% conf=59%
+2026-05-31 02:30:53 | INFO     | ✅ Sent: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants
+2026-05-31 02:30:56 | INFO     | ============================================================
+2026-05-31 02:30:56 | INFO     |   RUN COMPLETE
+2026-05-31 02:30:56 | INFO     | ============================================================
+2026-05-31 02:30:56 | INFO     | CHECK | Signals sent                               | OK | 3
+2026-05-31 02:30:56 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=476
+2026-05-31 02:30:56 | INFO     | RapidAPI stats: key#1(79035f…):blocked/req=2 | key#2(817732…):ok/req=10
