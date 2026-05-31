@@ -1085,19 +1085,9 @@ class FreeDataEngine:
 
 
 # =========================================================
-# 9. ML PREDICTION ENGINE  ← COMPLETELY REBUILT
+# 9. ML PREDICTION ENGINE (WITH CACHING & BALANCED TENNIS)
 # =========================================================
 class MLPredictionEngine:
-    """
-    ML Engine با:
-    - جداسازی صحیح train/test (TimeSeriesSplit)
-    - Feature engineering پیشرفته
-    - Ensemble با stacking
-    - Calibration با isotonic regression
-    - Feature importance ردیابی
-    - بدون data leakage
-    """
-
     def __init__(self, data_engine: FreeDataEngine):
         self.data_engine = data_engine
         self.football_pipeline: Optional[Pipeline] = None
@@ -1105,603 +1095,248 @@ class MLPredictionEngine:
         self.is_football_trained = False
         self.is_tennis_trained = False
         self._football_team_stats: dict = {}
-        self._football_feature_importances: dict = {}
         self._football_metrics: dict = {}
         self._tennis_metrics: dict = {}
 
     # ─────────────────────────────────────────────────────
-    # Football Model
+    # Football Logic
     # ─────────────────────────────────────────────────────
+    def load_or_train_football_model(self):
+        path = CFG.ML_DIR / "football_model_v6.pkl"
+        if path.exists():
+            age_hours = (time.time() - path.stat().st_mtime) / 3600
+            if age_hours < 24.0:
+                try:
+                    with open(path, "rb") as f:
+                        data = pickle.load(f)
+                        self.football_pipeline = data["pipeline"]
+                        self._football_team_stats = data["stats"]
+                        self.is_football_trained = True
+                    logger.info("⚡ [ML FOOTBALL] Loaded pre-trained model from cache!")
+                    return
+                except Exception:
+                    pass
+        
+        self.train_football_model()
+        if self.is_football_trained:
+            with open(path, "wb") as f:
+                pickle.dump({"pipeline": self.football_pipeline, "stats": self._football_team_stats}, f)
+            logger.info("💾 [ML FOOTBALL] Model saved to cache.")
+
     def _build_team_stats_rolling(self, df: pd.DataFrame) -> dict:
-        """
-        ساخت آمار rolling برای تیم‌ها بدون data leakage.
-        هر بازی فقط از بازی‌های قبل از خودش استفاده میکنه.
-        """
         team_stats: Dict[str, deque] = defaultdict(lambda: deque(maxlen=10))
         result_lookup: Dict[str, dict] = {}
-
         for idx, row in df.iterrows():
-            ht = row.get("HomeTeam", "")
-            at = row.get("AwayTeam", "")
-            ftr = row.get("FTR", "")
-            hg = float(row.get("FTHG", 0) or 0)
-            ag = float(row.get("FTAG", 0) or 0)
+            ht, at, ftr = row.get("HomeTeam", ""), row.get("AwayTeam", ""), row.get("FTR", "")
+            hg, ag = float(row.get("FTHG", 0) or 0), float(row.get("FTAG", 0) or 0)
+            if not ht or not at or ftr not in ["H", "D", "A"]: continue
 
-            if not ht or not at or ftr not in ["H", "D", "A"]:
-                continue
-
-            # آمار فعلی قبل از این بازی
-            def get_team_stats_snapshot(team: str) -> dict:
+            def get_stats(team: str) -> dict:
                 hist = list(team_stats[team])
-                if len(hist) < 3:
-                    return {}
-                goals_scored = [h["gs"] for h in hist]
-                goals_conceded = [h["gc"] for h in hist]
-                results = [h["pts"] for h in hist]
-                # weighted (آخری‌ها مهم‌ترن)
-                w = np.array([1 / (i + 1) for i in range(len(hist))][::-1])
-                w /= w.sum()
+                if len(hist) < 3: return {}
+                w = np.array([1 / (i + 1) for i in range(len(hist))][::-1]); w /= w.sum()
                 return {
-                    "avg_gs": float(np.dot(w, goals_scored)),
-                    "avg_gc": float(np.dot(w, goals_conceded)),
-                    "form_pts": float(np.dot(w, results)),
-                    "win_rate": sum(1 for r in results if r == 3) / len(results),
-                    "draw_rate": sum(1 for r in results if r == 1) / len(results),
-                    "btts_rate": sum(1 for h in hist if h["btts"]) / len(hist),
-                    "over25_rate": sum(1 for h in hist if h["o25"]) / len(hist),
-                    "n": len(hist),
+                    "avg_gs": float(np.dot(w, [h["gs"] for h in hist])),
+                    "avg_gc": float(np.dot(w, [h["gc"] for h in hist])),
+                    "form_pts": float(np.dot(w, [h["pts"] for h in hist])),
+                    "win_rate": sum(1 for h in hist if h["pts"]==3) / len(hist),
                 }
 
-            hs = get_team_stats_snapshot(ht)
-            aws = get_team_stats_snapshot(at)
-
-            result_lookup[idx] = {
-                "home_stats": hs,
-                "away_stats": aws,
-                "label": {"H": 0, "D": 1, "A": 2}[ftr],
-                "home_odds": float(row.get("B365H", 0) or 0),
-                "draw_odds": float(row.get("B365D", 0) or 0),
-                "away_odds": float(row.get("B365A", 0) or 0),
-            }
-
-            # آپدیت آمار بعد از بازی
-            h_pts = 3 if ftr == "H" else (1 if ftr == "D" else 0)
-            a_pts = 3 if ftr == "A" else (1 if ftr == "D" else 0)
-            btts = hg > 0 and ag > 0
-            o25 = hg + ag > 2.5
-
-            team_stats[ht].appendleft({
-                "gs": hg, "gc": ag, "pts": h_pts, "btts": btts, "o25": o25
-            })
-            team_stats[at].appendleft({
-                "gs": ag, "gc": hg, "pts": a_pts, "btts": btts, "o25": o25
-            })
-
+            hs, aws = get_stats(ht), get_stats(at)
+            result_lookup[idx] = {"home_stats": hs, "away_stats": aws, "label": {"H": 0, "D": 1, "A": 2}[ftr]}
+            
+            team_stats[ht].appendleft({"gs": hg, "gc": ag, "pts": 3 if ftr == "H" else (1 if ftr == "D" else 0)})
+            team_stats[at].appendleft({"gs": ag, "gc": hg, "pts": 3 if ftr == "A" else (1 if ftr == "D" else 0)})
         return result_lookup, dict(team_stats)
 
     def _build_football_features(self, result_lookup: dict) -> Tuple[np.ndarray, np.ndarray]:
         features, labels = [], []
-
         for idx, data in result_lookup.items():
-            hs = data["home_stats"]
-            aws = data["away_stats"]
-
-            if not hs or not aws:
-                continue
-
-            # ─── Feature Vector (21 features) ───────────
-            fv = [
-                # آمار خانگی
-                hs.get("avg_gs", 0),
-                hs.get("avg_gc", 0),
-                hs.get("form_pts", 0),
-                hs.get("win_rate", 0),
-                hs.get("draw_rate", 0),
-                hs.get("btts_rate", 0),
-                hs.get("over25_rate", 0),
-                # آمار مهمانی
-                aws.get("avg_gs", 0),
-                aws.get("avg_gc", 0),
-                aws.get("form_pts", 0),
-                aws.get("win_rate", 0),
-                aws.get("draw_rate", 0),
-                aws.get("btts_rate", 0),
-                aws.get("over25_rate", 0),
-                # تفاوت‌ها (interaction features)
-                hs.get("avg_gs", 0) - aws.get("avg_gc", 0),     # attack vs defense
-                aws.get("avg_gs", 0) - hs.get("avg_gc", 0),
-                hs.get("form_pts", 0) - aws.get("form_pts", 0),
-                hs.get("win_rate", 0) - aws.get("win_rate", 0),
-                # odds (اطلاعات بازار)
-                data["home_odds"],
-                data["draw_odds"],
-                data["away_odds"],
-            ]
-
-            # implied probs از odds
-            if all(data[k] > 1.0 for k in ["home_odds", "draw_odds", "away_odds"]):
-                ih = 1 / data["home_odds"]
-                id_ = 1 / data["draw_odds"]
-                ia = 1 / data["away_odds"]
-                vig = ih + id_ + ia
-                fv.extend([ih / vig, id_ / vig, ia / vig])
-            else:
-                fv.extend([0.0, 0.0, 0.0])
-
-            features.append(fv)
+            hs, aws = data["home_stats"], data["away_stats"]
+            if not hs or not aws: continue
+            features.append([
+                hs.get("avg_gs", 0), hs.get("avg_gc", 0), hs.get("form_pts", 0), hs.get("win_rate", 0),
+                aws.get("avg_gs", 0), aws.get("avg_gc", 0), aws.get("form_pts", 0), aws.get("win_rate", 0),
+                hs.get("avg_gs", 0) - aws.get("avg_gc", 0), aws.get("avg_gs", 0) - hs.get("avg_gc", 0)
+            ])
             labels.append(data["label"])
-
-        if not features:
-            return np.array([]), np.array([])
-
-        X = np.nan_to_num(np.array(features, dtype=np.float64), nan=0.0, posinf=0.0, neginf=0.0)
-        y = np.array(labels)
-        return X, y
+        if not features: return np.array([]), np.array([])
+        return np.nan_to_num(np.array(features, dtype=np.float64)), np.array(labels)
 
     def train_football_model(self):
         df = self.data_engine.football_data.get("all")
-        if df is None or len(df) < 300:
-            logger.warning(
-                "[ML FOOTBALL] Not enough data (%s rows)",
-                len(df) if df is not None else 0
-            )
-            return
-
-        logger.info("[ML FOOTBALL] Building rolling features for %d matches...", len(df))
-
-        # ─── بدون data leakage ──────────────────────────
+        if df is None or len(df) < 300: return
         result_lookup, self._football_team_stats = self._build_team_stats_rolling(df)
         X, y = self._build_football_features(result_lookup)
+        if len(X) < 200: return
 
-        if len(X) < 200:
-            logger.warning("[ML FOOTBALL] Too few valid samples: %d", len(X))
-            return
-
-        logger.info("[ML FOOTBALL] Training on %d valid samples...", len(X))
-
-        # ─── TimeSeriesSplit (برای داده‌های ترتیبی) ────
-        tscv = TimeSeriesSplit(n_splits=5)
-
-        # ─── Ensemble Model ──────────────────────────────
-        gb = GradientBoostingClassifier(
-            n_estimators=300, max_depth=3,
-            learning_rate=0.05, subsample=0.8,
-            min_samples_leaf=10,
-            random_state=42,
-        )
-        rf = RandomForestClassifier(
-            n_estimators=200, max_depth=5,
-            min_samples_leaf=10,
-            random_state=42, n_jobs=-1,
-        )
-        lr = LogisticRegression(
-            max_iter=1000, C=0.1,
-            random_state=42,
-        )
-
-        # Stacking
-        stacking = StackingClassifier(
-            estimators=[("gb", gb), ("rf", rf)],
-            final_estimator=LogisticRegression(C=0.5, max_iter=500),
-            cv=3,
-            passthrough=False,
-        )
-
-        scaler = RobustScaler()   # مقاوم‌تر در برابر outlier
+        gb = GradientBoostingClassifier(n_estimators=200, max_depth=3, learning_rate=0.05, random_state=42)
+        rf = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+        stacking = StackingClassifier(estimators=[("gb", gb), ("rf", rf)], final_estimator=LogisticRegression(max_iter=1000, C=0.1, random_state=42), cv=3)
+        
+        scaler = RobustScaler()
         X_scaled = scaler.fit_transform(X)
-
-        # Cross-validation با TimeSeriesSplit
-        cv_scores = []
-        brier_scores = []
-
-        for train_idx, val_idx in tscv.split(X_scaled):
-            X_tr, X_val = X_scaled[train_idx], X_scaled[val_idx]
-            y_tr, y_val = y[train_idx], y[val_idx]
-            if len(np.unique(y_tr)) < 2:
-                continue
-            stacking.fit(X_tr, y_tr)
-            preds = stacking.predict(X_val)
-            proba = stacking.predict_proba(X_val)
-            acc = (preds == y_val).mean()
-            cv_scores.append(acc)
-            # Brier score (multi-class)
-            try:
-                from sklearn.preprocessing import label_binarize
-                yb = label_binarize(y_val, classes=[0, 1, 2])
-                bs = np.mean([brier_score_loss(yb[:, i], proba[:, i]) for i in range(3)])
-                brier_scores.append(bs)
-            except Exception:
-                pass
-
-        mean_acc = np.mean(cv_scores) if cv_scores else 0
-        mean_brier = np.mean(brier_scores) if brier_scores else 0
-
-        logger.info(
-            "✅ [ML FOOTBALL] TimeSeriesCV Accuracy: %.3f ± %.3f | Brier: %.3f",
-            mean_acc, np.std(cv_scores) if cv_scores else 0, mean_brier
-        )
-
-        self._football_metrics = {
-            "accuracy": round(float(mean_acc), 4),
-            "brier_score": round(float(mean_brier), 4),
-            "n_samples": len(X),
-        }
-
-        # Final training روی همه داده‌ها
-        # با Calibration
+        
         final_model = CalibratedClassifierCV(stacking, cv=3, method="isotonic")
         final_model.fit(X_scaled, y)
-
-        # ذخیره pipeline
-        self.football_pipeline = {
-            "model": final_model,
-            "scaler": scaler,
-            "metrics": self._football_metrics,
-        }
+        self.football_pipeline = {"model": final_model, "scaler": scaler}
         self.is_football_trained = True
 
-        try:
-            with open(CFG.ML_DIR / "football_model.pkl", "wb") as f:
-                pickle.dump(self.football_pipeline, f)
-            logger.info("✅ [ML FOOTBALL] Model saved | Accuracy: %.1f%%", mean_acc * 100)
-        except Exception as e:
-            logger.warning("[ML FOOTBALL] Save error: %s", e)
-
     def predict_football(self, home_team: str, away_team: str) -> Optional[dict]:
-        # بارگذاری مدل اگه ترین نشده
-        if not self.is_football_trained:
-            path = CFG.ML_DIR / "football_model.pkl"
-            if path.exists():
-                try:
-                    with open(path, "rb") as f:
-                        self.football_pipeline = pickle.load(f)
-                    self.is_football_trained = True
-                except Exception:
-                    return None
-            else:
-                return None
-
-        if not self.football_pipeline:
-            return None
-
+        if not self.is_football_trained or not self.football_pipeline: return None
         def find_team(team: str) -> Optional[dict]:
             clean = team.lower().strip()
-            best_match = None
-            for key in self._football_team_stats:
-                if clean in key.lower() or key.lower() in clean:
-                    best_match = key
-                    break
-            if not best_match:
-                for part in clean.split():
-                    if len(part) > 3:
-                        for key in self._football_team_stats:
-                            if part in key.lower():
-                                best_match = key
-                                break
+            best_match = next((k for k in self._football_team_stats if clean in k.lower() or k.lower() in clean), None)
             if best_match:
                 hist = list(self._football_team_stats[best_match])
-                if len(hist) < 3:
-                    return None
-                goals_scored = [h["gs"] for h in hist]
-                goals_conceded = [h["gc"] for h in hist]
-                results = [h["pts"] for h in hist]
-                w = np.array([1 / (i + 1) for i in range(len(hist))][::-1])
-                w /= w.sum()
+                if len(hist) < 3: return None
+                w = np.array([1 / (i + 1) for i in range(len(hist))][::-1]); w /= w.sum()
                 return {
-                    "avg_gs": float(np.dot(w, goals_scored)),
-                    "avg_gc": float(np.dot(w, goals_conceded)),
-                    "form_pts": float(np.dot(w, results)),
-                    "win_rate": sum(1 for r in results if r == 3) / len(results),
-                    "draw_rate": sum(1 for r in results if r == 1) / len(results),
-                    "btts_rate": sum(1 for h in hist if h["btts"]) / len(hist),
-                    "over25_rate": sum(1 for h in hist if h["o25"]) / len(hist),
-                    "n": len(hist),
+                    "avg_gs": float(np.dot(w, [h["gs"] for h in hist])), "avg_gc": float(np.dot(w, [h["gc"] for h in hist])),
+                    "form_pts": float(np.dot(w, [h["pts"] for h in hist])), "win_rate": sum(1 for h in hist if h["pts"]==3) / len(hist),
                 }
             return None
 
-        hs = find_team(home_team)
-        aws = find_team(away_team)
-
-        # اگه تیم در دیتاست نبود → fallback به هیچی
-        if not hs or not aws:
-            return None
-
-        fv = [
-            hs["avg_gs"], hs["avg_gc"], hs["form_pts"],
-            hs["win_rate"], hs["draw_rate"], hs["btts_rate"], hs["over25_rate"],
-            aws["avg_gs"], aws["avg_gc"], aws["form_pts"],
-            aws["win_rate"], aws["draw_rate"], aws["btts_rate"], aws["over25_rate"],
-            hs["avg_gs"] - aws["avg_gc"],
-            aws["avg_gs"] - hs["avg_gc"],
-            hs["form_pts"] - aws["form_pts"],
-            hs["win_rate"] - aws["win_rate"],
-            0.0, 0.0, 0.0,  # odds not available at prediction
-            0.0, 0.0, 0.0,  # implied probs
-        ]
-
-        X = np.nan_to_num(
-            np.array([fv], dtype=np.float64), nan=0.0, posinf=0.0, neginf=0.0
-        )
+        hs, aws = find_team(home_team), find_team(away_team)
+        if not hs or not aws: return None
+        fv = [hs["avg_gs"], hs["avg_gc"], hs["form_pts"], hs["win_rate"], aws["avg_gs"], aws["avg_gc"], aws["form_pts"], aws["win_rate"], hs["avg_gs"] - aws["avg_gc"], aws["avg_gs"] - hs["avg_gc"]]
+        X = np.nan_to_num(np.array([fv], dtype=np.float64))
         X_scaled = self.football_pipeline["scaler"].transform(X)
-        model = self.football_pipeline["model"]
-        probs = model.predict_proba(X_scaled)[0]
-        classes = model.classes_
-
+        probs = self.football_pipeline["model"].predict_proba(X_scaled)[0]
+        classes = self.football_pipeline["model"].classes_
         label_map = {0: "home_win", 1: "draw", 2: "away_win"}
-        result = {label_map.get(int(c), f"class_{c}"): round(float(p), 4)
-                  for c, p in zip(classes, probs)}
-        result["model_type"] = "StackedEnsemble_TimeSeries_Calibrated"
-        result["model_accuracy"] = self._football_metrics.get("accuracy", 0)
-        result["model_brier"] = self._football_metrics.get("brier_score", 0)
-        return result
+        return {label_map.get(int(c), f"class_{c}"): round(float(p), 4) for c, p in zip(classes, probs)}
 
     # ─────────────────────────────────────────────────────
-    # Tennis Model  ← بدون Flipped Data (حذف overfitting)
+    # Tennis Logic (Fixed 1-Class Error & Added Caching)
     # ─────────────────────────────────────────────────────
-    def _build_tennis_features(
-        self, df: pd.DataFrame
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Feature engineering صحیح برای تنیس.
-        هر بازی یک نمونه (نه flipped duplicate).
-        label: آیا بازیکن با rank بهتر (کمتر) برنده شد؟
-        """
+    def load_or_train_tennis_model(self, is_wta=False):
+        tour = "wta" if is_wta else "atp"
+        path = CFG.ML_DIR / f"tennis_model_{tour}_v6.pkl"
+        if path.exists():
+            age_hours = (time.time() - path.stat().st_mtime) / 3600
+            if age_hours < 24.0:
+                try:
+                    with open(path, "rb") as f:
+                        data = pickle.load(f)
+                        self.tennis_pipeline = data["pipeline"]
+                        self._tennis_metrics = data["metrics"]
+                        self.is_tennis_trained = True
+                    logger.info(f"⚡ [ML TENNIS {tour.upper()}] Loaded pre-trained model from cache!")
+                    return
+                except Exception:
+                    pass
+        
+        self.train_tennis_model(is_wta)
+        if self.is_tennis_trained:
+            with open(path, "wb") as f:
+                pickle.dump({"pipeline": self.tennis_pipeline, "metrics": self._tennis_metrics}, f)
+            logger.info(f"💾 [ML TENNIS {tour.upper()}] Model saved to cache.")
+
+    def _build_tennis_features(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         features, labels, weights = [], [], []
+        np.random.seed(42) # برای تکرارپذیری
 
         for _, row in df.iterrows():
-            wr = row.get("winner_rank", 0)
-            lr = row.get("loser_rank", 0)
-
-            # skip اگه rank نداریم
-            try:
-                wr = float(wr) if pd.notna(wr) and wr > 0 else 0.0
-                lr = float(lr) if pd.notna(lr) and lr > 0 else 0.0
-            except (ValueError, TypeError):
-                continue
-
-            if wr <= 0 or lr <= 0:
-                continue
+            wr = float(row.get("winner_rank", 0) or 0)
+            lr = float(row.get("loser_rank", 0) or 0)
+            if wr <= 0 or lr <= 0: continue
 
             surface = str(row.get("surface", "Hard")).lower()
             best_of = float(row.get("best_of", 3) or 3)
 
-            # آمار سرویس winner
             w_stats = [
-                float(row.get("w_ace", 0) or 0),
-                float(row.get("w_df", 0) or 0),
-                float(row.get("w_svpt", 0) or 0),
-                float(row.get("w_1stIn", 0) or 0),
-                float(row.get("w_1stWon", 0) or 0),
-                float(row.get("w_2ndWon", 0) or 0),
-                float(row.get("w_bpSaved", 0) or 0),
-                float(row.get("w_bpFaced", 0) or 0),
+                float(row.get("w_ace", 0) or 0), float(row.get("w_df", 0) or 0), float(row.get("w_svpt", 0) or 0),
+                float(row.get("w_1stIn", 0) or 0), float(row.get("w_1stWon", 0) or 0), float(row.get("w_2ndWon", 0) or 0),
+                float(row.get("w_bpSaved", 0) or 0), float(row.get("w_bpFaced", 0) or 0),
             ]
-            # آمار سرویس loser
             l_stats = [
-                float(row.get("l_ace", 0) or 0),
-                float(row.get("l_df", 0) or 0),
-                float(row.get("l_svpt", 0) or 0),
-                float(row.get("l_1stIn", 0) or 0),
-                float(row.get("l_1stWon", 0) or 0),
-                float(row.get("l_2ndWon", 0) or 0),
-                float(row.get("l_bpSaved", 0) or 0),
-                float(row.get("l_bpFaced", 0) or 0),
+                float(row.get("l_ace", 0) or 0), float(row.get("l_df", 0) or 0), float(row.get("l_svpt", 0) or 0),
+                float(row.get("l_1stIn", 0) or 0), float(row.get("l_1stWon", 0) or 0), float(row.get("l_2ndWon", 0) or 0),
+                float(row.get("l_bpSaved", 0) or 0), float(row.get("l_bpFaced", 0) or 0),
             ]
 
-            # نرمال‌سازی stats به نسبت (per svpt)
             def normalize_serve(stats):
                 svpt = stats[2]
-                if svpt > 0:
-                    return [
-                        stats[0] / svpt,  # ace rate
-                        stats[1] / svpt,  # df rate
-                        stats[3] / svpt if svpt > 0 else 0,   # 1st in
-                        stats[4] / max(stats[3], 1),           # 1st won
-                        stats[5] / max(svpt - stats[3], 1),    # 2nd won
-                        stats[6] / max(stats[7], 1),           # bp saved
-                    ]
+                if svpt > 0: return [stats[0]/svpt, stats[1]/svpt, stats[3]/svpt, stats[4]/max(stats[3],1), stats[5]/max(svpt-stats[3],1), stats[6]/max(stats[7],1)]
                 return [0.0] * 6
 
-            wn = normalize_serve(w_stats)
-            ln = normalize_serve(l_stats)
+            wn, ln = normalize_serve(w_stats), normalize_serve(l_stats)
+            w_age, l_age = float(row.get("winner_age", 25) or 25), float(row.get("loser_age", 25) or 25)
 
-            # فیچر: "آیا winner رنک بهتری داشت؟"
-            rank_diff = lr - wr     # مثبت = winner رنک بهتر
-            rank_ratio = lr / max(wr, 1)
+            # بالانس کردن دیتا (۵۰٪ مواقع بازیکن اول برنده است، ۵۰٪ مواقع بازنده)
+            is_p1_winner = np.random.rand() > 0.5
+            
+            if is_p1_winner:
+                p1_rank, p2_rank = wr, lr
+                p1_age, p2_age = w_age, l_age
+                p1_stats, p2_stats = wn, ln
+                label = 1
+            else:
+                p1_rank, p2_rank = lr, wr
+                p1_age, p2_age = l_age, w_age
+                p1_stats, p2_stats = ln, wn
+                label = 0
+
+            rank_diff = p2_rank - p1_rank
+            rank_ratio = p2_rank / max(p1_rank, 1)
 
             fv = [
-                wr, lr, rank_diff, rank_ratio,
-                float(row.get("winner_age", 25) or 25),
-                float(row.get("loser_age", 25) or 25),
-                # surface one-hot
-                1.0 if surface == "hard" else 0.0,
-                1.0 if surface == "clay" else 0.0,
-                1.0 if surface == "grass" else 0.0,
-                best_of,
-                # serve stats winner
-                *wn,
-                # serve stats loser
-                *ln,
-                # تفاوت‌ها
-                wn[0] - ln[0],    # ace rate diff
-                wn[3] - ln[3],    # 1st serve won diff
-                wn[5] - ln[5],    # bp saved diff
+                p1_rank, p2_rank, rank_diff, rank_ratio, p1_age, p2_age,
+                1.0 if surface == "hard" else 0.0, 1.0 if surface == "clay" else 0.0, 1.0 if surface == "grass" else 0.0,
+                best_of, *p1_stats, *p2_stats,
+                p1_stats[0] - p2_stats[0], p1_stats[3] - p2_stats[3], p1_stats[5] - p2_stats[5],
             ]
 
             features.append(fv)
-            labels.append(1)   # winner همیشه label=1 (بدون flipping)
+            labels.append(label)
+            
+            td = float(row.get("tourney_date", 20200101) or 20200101)
+            weights.append(float(np.clip(0.5 + 0.5 * (td - 20200101) / max(20260101 - 20200101, 1), 0.5, 1.0)))
 
-            # weight بیشتر به بازی‌های اخیر
-            tourney_date = row.get("tourney_date", 20200101)
-            try:
-                td = float(tourney_date) if pd.notna(tourney_date) else 20200101.0
-                # normalize به [0.5, 1.0]
-                w = 0.5 + 0.5 * (td - 20200101) / max(20260101 - 20200101, 1)
-                w = float(np.clip(w, 0.5, 1.0))
-            except Exception:
-                w = 0.7
-            weights.append(w)
-
-        if not features:
-            return np.array([]), np.array([]), np.array([])
-
-        X = np.nan_to_num(
-            np.array(features, dtype=np.float64), nan=0.0, posinf=1.0, neginf=0.0
-        )
-        return X, np.array(labels), np.array(weights)
+        if not features: return np.array([]), np.array([]), np.array([])
+        return np.nan_to_num(np.array(features, dtype=np.float64)), np.array(labels), np.array(weights)
 
     def train_tennis_model(self, is_wta: bool = False):
         df = self.data_engine.wta_matches if is_wta else self.data_engine.atp_matches
         tour = "WTA" if is_wta else "ATP"
-
-        if df is None or len(df) < 500:
-            logger.warning("[ML TENNIS %s] Not enough data (%s rows)", tour, len(df) if df is not None else 0)
-            return
-
-        logger.info("[ML TENNIS %s] Building features for %d matches...", tour, len(df))
-
+        if df is None or len(df) < 500: return
+        
         X, y, sample_weights = self._build_tennis_features(df)
-
-        if len(X) < 200:
-            logger.warning("[ML TENNIS %s] Too few valid samples: %d", tour, len(X))
-            return
-
-        logger.info("[ML TENNIS %s] Training on %d samples...", tour, len(X))
+        if len(X) < 200: return
 
         scaler = RobustScaler()
         X_scaled = scaler.fit_transform(X)
 
-        # ─── TimeSeriesSplit ────────────────────────────
-        tscv = TimeSeriesSplit(n_splits=5)
-
-        gb = GradientBoostingClassifier(
-            n_estimators=200, max_depth=3,
-            learning_rate=0.05, subsample=0.8,
-            min_samples_leaf=20,
-            random_state=42,
-        )
-
-        cv_scores, roc_scores = [], []
-        for train_idx, val_idx in tscv.split(X_scaled):
-            X_tr, X_val = X_scaled[train_idx], X_scaled[val_idx]
-            y_tr, y_val = y[train_idx], y[val_idx]
-            w_tr = sample_weights[train_idx]
-
-            if len(np.unique(y_tr)) < 2:
-                continue
-
-            gb.fit(X_tr, y_tr, sample_weight=w_tr)
-            preds = gb.predict(X_val)
-            proba = gb.predict_proba(X_val)[:, 1]
-            acc = (preds == y_val).mean()
-            cv_scores.append(acc)
-            try:
-                roc = roc_auc_score(y_val, proba)
-                roc_scores.append(roc)
-            except Exception:
-                pass
-
-        mean_acc = np.mean(cv_scores) if cv_scores else 0
-        mean_roc = np.mean(roc_scores) if roc_scores else 0
-
-        logger.info(
-            "✅ [ML TENNIS %s] TimeSeriesCV Accuracy: %.3f | ROC-AUC: %.3f",
-            tour, mean_acc, mean_roc
-        )
-
-        self._tennis_metrics = {
-            "accuracy": round(float(mean_acc), 4),
-            "roc_auc": round(float(mean_roc), 4),
-            "n_samples": len(X),
-        }
-
-        # Final training با calibration
+        gb = GradientBoostingClassifier(n_estimators=200, max_depth=3, learning_rate=0.05, random_state=42)
         final_model = CalibratedClassifierCV(gb, cv=3, method="isotonic")
-        final_model.fit(X_scaled, y, **{"sample_weight": sample_weights} if False else {})
+        
+        # Train model
+        final_model.fit(X_scaled, y)
 
-        self.tennis_pipeline = {
-            "model": final_model,
-            "scaler": scaler,
-            "metrics": self._tennis_metrics,
-            "tour": tour,
-        }
+        self.tennis_pipeline = {"model": final_model, "scaler": scaler}
         self.is_tennis_trained = True
-        logger.info("✅ [ML TENNIS %s] Model trained | Acc: %.1f%% | AUC: %.3f",
-                    tour, mean_acc * 100, mean_roc)
 
-    def predict_tennis(
-        self, player_a: str, player_b: str, stats: dict, surface: str = "hard"
-    ) -> Optional[dict]:
-        if not self.is_tennis_trained:
-            self.train_tennis_model()
-            if not self.is_tennis_trained:
-                return None
-
-        if not self.tennis_pipeline:
-            return None
-
-        pa_stats = stats.get("player_a", {})
-        pb_stats = stats.get("player_b", {})
-        rank_a = float(pa_stats.get("current_ranking", 100) or 100)
-        rank_b = float(pb_stats.get("current_ranking", 100) or 100)
-
-        rank_diff = rank_b - rank_a
-        rank_ratio = rank_b / max(rank_a, 1)
-
-        surface_lower = surface.lower()
-
-        # آمار سرویس
-        def get_serve_features(p_stats: dict) -> list:
-            ace_r = p_stats.get("aces_per_match", 5) / max(p_stats.get("svpt_per_match", 50), 1)
-            df_r = p_stats.get("df_per_match", 2) / max(p_stats.get("svpt_per_match", 50), 1)
-            f1_in = p_stats.get("first_serve_in_pct", 0.6)
-            f1_won = p_stats.get("first_serve_win_pct", 0.7)
-            bp_saved = p_stats.get("bp_saved_pct", 0.6)
-            return [ace_r, df_r, f1_in, f1_won, 0.5, bp_saved]
-
-        wa = get_serve_features(pa_stats)
-        wb = get_serve_features(pb_stats)
-
+    def predict_tennis(self, player_a: str, player_b: str, stats: dict, surface: str = "hard") -> Optional[dict]:
+        if not self.is_tennis_trained or not self.tennis_pipeline: return None
+        pa_stats, pb_stats = stats.get("player_a", {}), stats.get("player_b", {})
+        rank_a, rank_b = float(pa_stats.get("current_ranking", 100) or 100), float(pb_stats.get("current_ranking", 100) or 100)
+        
+        def get_serve(p): return [p.get("aces_per_match", 5)/max(p.get("svpt_per_match", 50), 1), p.get("df_per_match", 2)/max(p.get("svpt_per_match", 50), 1), p.get("first_serve_in_pct", 0.6), p.get("first_serve_win_pct", 0.7), 0.5, p.get("bp_saved_pct", 0.6)]
+        wa, wb = get_serve(pa_stats), get_serve(pb_stats)
+        
         fv = [
-            rank_a, rank_b, rank_diff, rank_ratio,
-            25.0, 25.0,  # ages (not available at prediction)
-            1.0 if surface_lower == "hard" else 0.0,
-            1.0 if surface_lower == "clay" else 0.0,
-            1.0 if surface_lower == "grass" else 0.0,
-            3.0,
-            *wa, *wb,
-            wa[0] - wb[0],
-            wa[3] - wb[3],
-            wa[5] - wb[5],
+            rank_a, rank_b, rank_b - rank_a, rank_b / max(rank_a, 1), 25.0, 25.0,
+            1.0 if surface == "hard" else 0.0, 1.0 if surface == "clay" else 0.0, 1.0 if surface == "grass" else 0.0,
+            3.0, *wa, *wb, wa[0] - wb[0], wa[3] - wb[3], wa[5] - wb[5],
         ]
-
-        X = np.nan_to_num(
-            np.array([fv], dtype=np.float64), nan=0.0, posinf=1.0, neginf=0.0
-        )
+        
+        X = np.nan_to_num(np.array([fv], dtype=np.float64))
         X_scaled = self.tennis_pipeline["scaler"].transform(X)
         probs = self.tennis_pipeline["model"].predict_proba(X_scaled)[0]
-
-        # prob[1] = احتمال برنده شدن player_a (winner role)
+        
         prob_a = float(probs[1])
-        prob_b = 1 - prob_a
-
-        # تعدیل بر اساس surface stats
-        surf_adj = 0.0
-        if pa_stats.get("surface_stats", {}).get(surface.capitalize(), {}).get("win_rate"):
-            sw_a = pa_stats["surface_stats"][surface.capitalize()]["win_rate"]
-            sw_b = pb_stats.get("surface_stats", {}).get(surface.capitalize(), {}).get("win_rate", 0.5)
-            surf_adj = (sw_a - sw_b) * 0.1
-            prob_a = float(np.clip(prob_a + surf_adj, 0.05, 0.95))
-            prob_b = 1 - prob_a
-
-        return {
-            f"{player_a}_win_prob": round(prob_a, 4),
-            f"{player_b}_win_prob": round(prob_b, 4),
-            "model_type": "GradientBoosting_TimeSeries_Calibrated",
-            "model_accuracy": self._tennis_metrics.get("accuracy", 0),
-            "model_roc_auc": self._tennis_metrics.get("roc_auc", 0),
-            "surface_adjusted": abs(surf_adj) > 0.01,
-        }
+        return {f"{player_a}_win_prob": round(prob_a, 4), f"{player_b}_win_prob": round(1 - prob_a, 4)}
 
 # =========================================================
 # 9.5 POISSON EXPECTED GOALS ENGINE (DUAL CONFIRMATION)
@@ -2512,7 +2147,7 @@ def send_telegram(message_html: str) -> bool:
 # =========================================================
 async def async_main():
     logger.info("=" * 65)
-    logger.info("  ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation")
+    logger.info("  ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation | Caching")
     logger.info("=" * 65)
     logger.info("🔑 [KEYS STATUS] %s", odds_key_manager.get_usage_summary())
 
@@ -2525,11 +2160,11 @@ async def async_main():
     data_engine.load_tennis_data()
     data_engine.load_football_data()
 
-    # ── Phase 2: Train ML ────────────────────────────────
-    logger.info("🧠 [PHASE 2] Training ML models (no data leakage)...")
+    # ── Phase 2: Train/Load ML ───────────────────────────
+    logger.info("🧠 [PHASE 2] Initializing ML models (Using Cache if available)...")
     ml_engine = MLPredictionEngine(data_engine)
-    ml_engine.train_football_model()
-    ml_engine.train_tennis_model(is_wta=False)
+    ml_engine.load_or_train_football_model() # <--- استفاده از کش
+    ml_engine.load_or_train_tennis_model(is_wta=False) # <--- استفاده از کش
 
     # ── Phase 3: Fetch Odds ──────────────────────────────
     logger.info("📡 [PHASE 3] Fetching odds (window=%.1fh)...", CFG.MATCH_WINDOW_HOURS)
