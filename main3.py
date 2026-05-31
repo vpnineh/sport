@@ -1173,105 +1173,38 @@ def _flex_match(a: str, b: str) -> bool:
 # =========================================================
 # 13. ODDS API
 # =========================================================
-async def _try_one_key(
-    key: str, km: OddsKeyManager,
+async def _fetch_sport_odds(
+    sport_key: str, key: str, km: OddsKeyManager,
     now_utc: datetime, session: aiohttp.ClientSession,
-) -> tuple[list, bool]:
-    url     = "https://api.the-odds-api.com/v4/sports/upcoming/odds"
-    params  = {
-        "apiKey":     key,
-        "regions":    CFG.ODDS_API_REGIONS,
-        "markets":    CFG.ODDS_API_MARKETS_STR,
+) -> tuple[list, int, str, str]:
+    url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds"
+    params = {
+        "apiKey": key,
+        "regions": CFG.ODDS_API_REGIONS,
+        "markets": CFG.ODDS_API_MARKETS_STR,
         "oddsFormat": "decimal",
         "dateFormat": "iso",
     }
     try:
-        async with session.get(
-            url, params=params,
-            timeout=aiohttp.ClientTimeout(total=25),
-        ) as res:
+        async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=20)) as res:
             remaining = res.headers.get("x-requests-remaining", "?")
             used      = res.headers.get("x-requests-used", "?")
-            body      = await res.text()
-
-            if res.status == 401:
-                km.mark_invalid(key, "HTTP 401")
-                return [], True
-            if res.status == 422:
-                km.mark_invalid(key, "HTTP 422")
-                return [], True
-            if res.status == 429:
-                km.mark_exhausted(key)
-                return [], True
-            if res.status != 200:
-                logger.error("OddsAPI HTTP %d: %s", res.status, body[:150])
-                return [], False
-
-            km.mark_success(key, remaining, used)
-            events_raw = json.loads(body)
-            collected: dict = {}
-
-            for e in events_raw:
-                try:
-                    ct = e.get("commence_time", "")
-                    mt = datetime.fromisoformat(ct.replace("Z", "+00:00"))
-                    
-                    if mt < now_utc:
-                        continue
-                        
-                    eid = e.get("id")
-                    if not eid:
-                        continue
-                    if eid not in collected:
-                        collected[eid] = {
-                            "id":            eid,
-                            "home_team":     e.get("home_team", ""),
-                            "away_team":     e.get("away_team", ""),
-                            "sport_title":   e.get("sport_title", ""),
-                            "sport_key":     e.get("sport_key", ""),  # <-- کلید اضافه شد
-                            "commence_time": ct,
-                            "_markets_data": {},
-                            "_source":       "odds_api",
-                        }
-                    for bm in e.get("bookmakers", []):
-                        for m in bm.get("markets", []):
-                            mk = m["key"]
-                            if mk not in CFG.VALID_MARKETS:
-                                continue
-                            md = collected[eid]["_markets_data"]
-                            if mk not in md:
-                                md[mk] = []
-                            md[mk].append({
-                                "bookmaker":     bm["title"],
-                                "bookmaker_key": bm["key"],
-                                "outcomes":      m.get("outcomes", []),
-                            })
-                except Exception:
-                    continue
-
-            result = list(collected.values())
-            log_api_call(
-                "OddsAPI", url,
-                {"regions": CFG.ODDS_API_REGIONS, "markets": CFG.ODDS_API_MARKETS_STR},
-                res.status, len(result),
-                f"remaining={remaining} used={used}",
-            )
-            logger.info(
-                "OddsAPI ✅ | key=%s | remaining=%s used=%s | events=%d",
-                km._prefix(key), remaining, used, len(result),
-            )
-            return result, False
-
+            
+            if res.status == 200:
+                data = await res.json()
+                km.mark_success(key, remaining, used)
+                return data, 200, remaining, used
+            else:
+                return [], res.status, remaining, used
     except Exception as e:
-        logger.error("OddsAPI exception: %s", e)
-        return [], False
-
+        logger.debug("OddsAPI error on %s: %s", sport_key, e)
+        return [], 0, "?", "?"
 
 async def fetch_all_odds_async(
     now_utc: datetime, km: OddsKeyManager,
     session: aiohttp.ClientSession,
 ) -> list:
-    log_section("ODDS API — KEY ROTATION SYSTEM")
+    log_section("ODDS API — FETCHING ALL LEAGUES")
 
     cached = DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE)
     end_win = now_utc + timedelta(hours=CFG.MATCH_WINDOW_HOURS)
@@ -1280,60 +1213,116 @@ async def fetch_all_odds_async(
         filtered = []
         for e in cached:
             try:
-                mt = datetime.fromisoformat(
-                    e.get("commence_time", "").replace("Z", "+00:00")
-                )
+                mt = datetime.fromisoformat(e.get("commence_time", "").replace("Z", "+00:00"))
                 if now_utc <= mt <= end_win:
                     filtered.append(e)
             except Exception:
                 continue
-        logger.info(
-            "OddsAPI DailyCache HIT: %d total → %d in window",
-            len(cached), len(filtered),
-        )
+        logger.info("OddsAPI DailyCache HIT: %d total → %d in window", len(cached), len(filtered))
         return filtered
 
     logger.info("Key status: %s", km.get_summary())
-    tried_keys:  set[str] = set()
-    max_attempts = len(ODDS_API_KEYS) + 1
+    
+    key = km.get_best_key()
+    if not key:
+        logger.critical("All Odds API keys exhausted!")
+        return []
 
-    for attempt in range(max_attempts):
-        key = km.get_best_key()
-        if key is None:
-            logger.critical("All Odds API keys exhausted! Status: %s", km.get_summary())
-            return []
+    # 1. گرفتن لیست تمام ورزش‌های فعال امروز
+    try:
+        async with session.get(
+            "https://api.the-odds-api.com/v4/sports", 
+            params={"apiKey": key}, 
+            timeout=15
+        ) as res:
+            if res.status != 200:
+                logger.error("Failed to fetch sports list. HTTP %d", res.status)
+                return []
+            sports_list = await res.json()
+    except Exception as e:
+        logger.error("Error fetching sports list: %s", e)
+        return []
 
-        kid = km._kid(key)
-        if kid in tried_keys:
+    # 2. استخراج کلید تمام ورزش‌ها
+    target_sports = [
+        s["key"] for s in sports_list 
+        # حذف مارکت‌های قهرمانی طولانی‌مدت چون مسابقه رو در رو نیستند
+        if "winner" not in s["key"].lower() and "outrights" not in s["key"].lower()
+    ]
+    
+    logger.info("Found %d active sports/leagues. Fetching...", len(target_sports))
+    
+    all_events = {}
+    
+    # 3. دانلود ضرایب تک‌تک لیگ‌ها به صورت مجزا
+    for sk in target_sports:
+        current_key = km.get_best_key()
+        if not current_key:
+            logger.warning("Keys exhausted during fetching!")
             break
-        tried_keys.add(kid)
+            
+        data, status, remaining, used = await _fetch_sport_odds(sk, current_key, km, now_utc, session)
+        
+        if status == 429:
+            km.mark_exhausted(current_key)
+            continue 
+        elif status in [401, 403, 422]:
+            km.mark_invalid(current_key, f"HTTP {status}")
+            continue
+        elif status != 200:
+            continue
 
-        logger.info("Attempt %d/%d with key=%s", attempt + 1, max_attempts, km._prefix(key))
-        events, try_next = await _try_one_key(key, km, now_utc, session)
+        for e in data:
+            try:
+                eid = e.get("id")
+                if not eid: continue
+                
+                if eid not in all_events:
+                    all_events[eid] = {
+                        "id":            eid,
+                        "home_team":     e.get("home_team", ""),
+                        "away_team":     e.get("away_team", ""),
+                        "sport_title":   e.get("sport_title", ""),
+                        "sport_key":     e.get("sport_key", sk),
+                        "commence_time": e.get("commence_time", ""),
+                        "_markets_data": {},
+                        "_source":       "odds_api",
+                    }
+                
+                for bm in e.get("bookmakers", []):
+                    for m in bm.get("markets", []):
+                        mk = m["key"]
+                        if mk not in CFG.VALID_MARKETS: continue
+                        md = all_events[eid]["_markets_data"]
+                        if mk not in md: md[mk] = []
+                        md[mk].append({
+                            "bookmaker":     bm["title"],
+                            "bookmaker_key": bm["key"],
+                            "outcomes":      m.get("outcomes", []),
+                        })
+            except Exception:
+                continue
+        
+        # توقف کوتاه برای جلوگیری از مسدود شدن توسط API
+        await asyncio.sleep(0.4)
 
-        if events:
-            DailyCache.save(CFG.DAILY_ODDS_CACHE_FILE, events)
-            logger.info("✅ Got %d events → cached for today", len(events))
+    result_list = list(all_events.values())
+    logger.info("✅ Fetched %d TOTAL events across %d leagues. Caching...", len(result_list), len(target_sports))
+    
+    if result_list:
+        DailyCache.save(CFG.DAILY_ODDS_CACHE_FILE, result_list)
 
-            filtered = []
-            for e in events:
-                try:
-                    mt = datetime.fromisoformat(
-                        e.get("commence_time", "").replace("Z", "+00:00")
-                    )
-                    if now_utc <= mt <= end_win:
-                        filtered.append(e)
-                except Exception:
-                    continue
-            logger.info("Events in window: %d/%d", len(filtered), len(events))
-            return filtered
-
-        if not try_next:
-            break
-        await asyncio.sleep(1)
-
-    logger.error("OddsAPI: no events. Summary: %s", km.get_summary())
-    return []
+    filtered = []
+    for e in result_list:
+        try:
+            mt = datetime.fromisoformat(e.get("commence_time", "").replace("Z", "+00:00"))
+            if now_utc <= mt <= end_win:
+                filtered.append(e)
+        except Exception:
+            continue
+            
+    logger.info("Events in window: %d/%d", len(filtered), len(result_list))
+    return filtered
 
 # =========================================================
 # 14. MATH ENGINE
