@@ -45,15 +45,10 @@ class Config:
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
     # ── Odds API ─────────────────────────────────────────
-    # بر اساس مستندات جدید odds-api v4:
-    # هر درخواست /odds = 1 کردیت
-    # هر درخواست /scores = 1 کردیت
-    # هر درخواست /sports = 0 کردیت (رایگان)
     ODDS_API_MARKETS:      str = "h2h,totals"
     ODDS_API_REGIONS:      str = "eu,uk,us,au"
     ODDS_API_ODDS_FORMAT:  str = "decimal"
     ODDS_API_DATE_FORMAT:  str = "iso"
-    # حداکثر ورزش‌هایی که در یک روز fetch میشه
     MAX_SPORTS_PER_DAY:    int = 20
 
     # ── TTL کش ───────────────────────────────────────────
@@ -63,12 +58,14 @@ class Config:
     TTL_H2H:          float = 24.0
 
     # ── فیلترهای EV ──────────────────────────────────────
-    H2H_MIN_ODDS:        float = 1.50
-    H2H_MIN_EV:          float = 0.015
-    TOTALS_MIN_ODDS:     float = 1.60
-    TOTALS_MIN_EV:       float = 0.020
-    MAX_REALISTIC_EV:    float = 0.12
-    MIN_CONFIDENCE_TO_SEND: int = 62
+    H2H_MIN_ODDS:           float = 1.50
+    H2H_MIN_EV:             float = 0.015
+    TOTALS_MIN_ODDS:        float = 1.60
+    TOTALS_MIN_EV:          float = 0.020
+    MAX_REALISTIC_EV:       float = 0.12
+    # ← جدید: حداکثر EV قابل قبول بدون هیچ داده‌ای
+    MAX_EV_WITHOUT_DATA:    float = 0.06
+    MIN_CONFIDENCE_TO_SEND: int   = 62
 
     # ── مارکت‌های معتبر ───────────────────────────────────
     VALID_MARKETS: tuple = field(default_factory=lambda: ("h2h", "totals"))
@@ -102,26 +99,26 @@ class Config:
         "totals": "Over / Under Goals",
     })
 
-    # ── اولویت‌بندی ورزش‌ها برای odds-api ────────────────
-    # بر اساس مستندات: کلیدهای sport_key معتبر
     PRIORITY_SPORT_KEYWORDS: list = field(default_factory=lambda: [
         "soccer", "tennis", "basketball", "baseball",
         "hockey", "football", "mma", "boxing",
     ])
 
-    # ── ورزش‌هایی که باید حذف بشن (outrights/futures) ────
     EXCLUDED_SPORT_KEYWORDS: list = field(default_factory=lambda: [
         "winner", "outrights", "futures", "specials",
     ])
 
-    # ── Football-Data.org ─────────────────────────────────
+    # ← جدید: ورزش‌هایی که RapidAPI (SofaScore6) پشتیبانی میکنه
+    RAPID_SUPPORTED_SPORTS: set = field(
+        default_factory=lambda: {"football", "tennis"}
+    )
+
     FOOTBALL_DATA_DAILY_LIMIT: int = 80
     FD_COMPETITION_IDS: list = field(default_factory=lambda: [
         2021, 2014, 2002, 2019, 2015,
         2003, 2017, 2016, 2001,
     ])
 
-    # ── RapidAPI ─────────────────────────────────────────
     RAPID_REQUEST_DELAY:    float = 0.4
     RAPID_RATE_LIMIT_PAUSE: int   = 3
 
@@ -495,8 +492,9 @@ class OddsKeyManager:
     STATUS_UNKNOWN   = "unknown"
 
     def __init__(self, keys: list[str]) -> None:
-        self.keys    = keys
-        self._status = CacheManager.load(CFG.KEY_STATUS_FILE)
+        self.keys     = keys
+        self._status  = CacheManager.load(CFG.KEY_STATUS_FILE)
+        self._rr_idx  = 0  # ← جدید: شمارنده round-robin
         self._init_keys()
         self._log_all()
 
@@ -534,47 +532,67 @@ class OddsKeyManager:
                 st.get("remaining", "?"), st.get("used", "?"),
             )
 
+    def _is_usable(self, key: str) -> bool:
+        """آیا این کلید قابل استفاده است؟"""
+        kid    = self._kid(key)
+        st     = self._status.get(kid, {})
+        status = st.get("status", self.STATUS_UNKNOWN)
+
+        if status == self.STATUS_INVALID:
+            return False
+
+        if status == self.STATUS_EXHAUSTED:
+            last = st.get("last_used", "")
+            try:
+                lt = datetime.fromisoformat(last)
+                if datetime.now(timezone.utc).date() > lt.date():
+                    # روز جدید → ریست
+                    self._status[kid]["status"]    = self.STATUS_UNKNOWN
+                    self._status[kid]["remaining"] = None
+                    self._save()
+                    return True
+                return False
+            except Exception:
+                return False
+
+        return True
+
     def get_best_key(self) -> Optional[str]:
-        candidates: list[tuple] = []
-        for k in self.keys:
-            kid    = self._kid(k)
-            st     = self._status.get(kid, {})
-            status = st.get("status", self.STATUS_UNKNOWN)
-
-            if status == self.STATUS_INVALID:
-                continue
-
-            if status == self.STATUS_EXHAUSTED:
-                last = st.get("last_used", "")
-                try:
-                    lt = datetime.fromisoformat(last)
-                    if datetime.now(timezone.utc).date() > lt.date():
-                        # روز جدید → ریست
-                        self._status[kid]["status"]    = self.STATUS_UNKNOWN
-                        self._status[kid]["remaining"] = None
-                        self._save()
-                    else:
-                        continue
-                except Exception:
-                    continue
-
-            remaining = st.get("remaining")
-            priority  = remaining if remaining is not None else 999
-            candidates.append((priority, k))
-
-        if not candidates:
+        """
+        Round-robin بین کلیدهای موجود.
+        کلیدهای invalid/exhausted رو رد میکنه.
+        """
+        usable = [k for k in self.keys if self._is_usable(k)]
+        if not usable:
+            logger.warning("OddsKeyManager: no usable keys!")
             return None
 
-        candidates.sort(key=lambda x: x[0], reverse=True)
-        chosen = candidates[0][1]
-        kid    = self._kid(chosen)
-        logger.info(
-            "OddsKeyManager: selected key=%s (status=%s remaining=%s)",
+        # انتخاب round-robin
+        key = usable[self._rr_idx % len(usable)]
+        self._rr_idx += 1
+
+        kid = self._kid(key)
+        logger.debug(
+            "OddsKeyManager: key=%s (status=%s remaining=%s rr=%d)",
             self._status[kid].get("prefix", "?"),
-            self._status[kid].get("status",  "?"),
+            self._status[kid].get("status",    "?"),
             self._status[kid].get("remaining", "?"),
+            self._rr_idx,
         )
-        return chosen
+        return key
+
+    def get_best_key_verbose(self) -> Optional[str]:
+        """نسخه پرجزئیات برای لاگ مهم (validate و fetch اول روز)."""
+        key = self.get_best_key()
+        if key:
+            kid = self._kid(key)
+            logger.info(
+                "OddsKeyManager: selected key=%s (status=%s remaining=%s)",
+                self._status[kid].get("prefix",    "?"),
+                self._status[kid].get("status",    "?"),
+                self._status[kid].get("remaining", "?"),
+            )
+        return key
 
     def mark_success(self, key: str, remaining: str, used: str) -> None:
         kid = self._kid(key)
@@ -637,11 +655,9 @@ class OddsKeyManager:
             )
         return " | ".join(parts)
 
-    async def validate_all_async(self, session: aiohttp.ClientSession) -> None:
-        """
-        بر اساس مستندات odds-api:
-        GET /v4/sports → رایگان (0 کردیت) برای validate کردن کلید
-        """
+    async def validate_all_async(
+        self, session: aiohttp.ClientSession
+    ) -> None:
         log_section("VALIDATING ALL ODDS API KEYS")
         for key in self.keys:
             kid    = self._kid(key)
@@ -680,7 +696,9 @@ class OddsKeyManager:
                             prefix, res.status,
                         )
             except asyncio.TimeoutError:
-                logger.warning("Key %s: timeout during validation", prefix)
+                logger.warning(
+                    "Key %s: timeout during validation", prefix
+                )
             except Exception as e:
                 logger.warning("Key %s: error: %s", prefix, e)
 
@@ -1628,11 +1646,12 @@ def _filter_by_window(
 # 14. MATH ENGINE
 # =========================================================
 def calculate_combined_ev(
-    markets_data: dict,
+    markets_data:   dict,
     elo_prediction: Optional[dict],
-    sport_key: str,
-    home_team: str,
-    away_team: str,
+    sport_key:      str,
+    home_team:      str,
+    away_team:      str,
+    data_quality:   str = "none",   # ← جدید
 ) -> list:
     best_per_market: dict = {}
 
@@ -1664,16 +1683,18 @@ def calculate_combined_ev(
                     if (name not in sharp_odds
                             or price > sharp_odds[name]["price"]):
                         sharp_odds[name] = {
-                            "price": price, "bookmaker": entry["bookmaker"]
+                            "price":    price,
+                            "bookmaker": entry["bookmaker"],
                         }
                 if name not in best_odds or price > best_odds[name]["price"]:
                     best_odds[name] = {
-                        "price": price, "bookmaker": entry["bookmaker"]
+                        "price":    price,
+                        "bookmaker": entry["bookmaker"],
                     }
 
-        exp        = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
+        exp         = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {"min": 2})
         valid_sharp = has_real_sharp and len(sharp_odds) >= exp["min"]
-        baseline   = sharp_odds if valid_sharp else best_odds
+        baseline    = sharp_odds if valid_sharp else best_odds
 
         if not baseline or len(baseline) < exp["min"]:
             continue
@@ -1695,18 +1716,20 @@ def calculate_combined_ev(
             continue
 
         min_odds = (
-            CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
+            CFG.H2H_MIN_ODDS
+            if market_key == "h2h"
+            else CFG.TOTALS_MIN_ODDS
         )
         min_ev = (
-            CFG.H2H_MIN_EV if market_key == "h2h" else CFG.TOTALS_MIN_EV
+            CFG.H2H_MIN_EV
+            if market_key == "h2h"
+            else CFG.TOTALS_MIN_EV
         )
 
         best_opp = None
         for oname, sd in baseline.items():
-            # احتمال بر اساس sharp/best baseline (بدون vig)
             stp = (1.0 / sd["price"]) / implied_sum
 
-            # ترکیب با ELO
             etp: Optional[float] = None
             if elo_prediction and market_key == "h2h":
                 hm = elo_prediction.get("home_matches", 0)
@@ -1720,9 +1743,7 @@ def calculate_combined_ev(
                     elif _flex_match(away_team, oname):
                         etp = elo_prediction.get("away_prob")
 
-            tp = 0.6 * stp + 0.4 * etp if etp is not None else stp
-
-            # بهترین قیمت بازار (از best_odds نه baseline)
+            tp  = 0.6 * stp + 0.4 * etp if etp is not None else stp
             bd  = best_odds.get(oname, {})
             bp  = float(bd.get("price", 0.0))
             bbk = bd.get("bookmaker", "Unknown")
@@ -1732,10 +1753,20 @@ def calculate_combined_ev(
 
             ev = (tp * bp) - 1.0
 
+            # ← فیلتر 1: EV غیرواقعی بالا
             if ev > CFG.MAX_REALISTIC_EV:
                 logger.warning(
                     "EV rejected (too high=%.1f%%) for %s",
                     ev * 100, oname,
+                )
+                continue
+
+            # ← فیلتر 2 (جدید): EV بالا بدون هیچ داده‌ای مشکوکه
+            if data_quality == "none" and ev > CFG.MAX_EV_WITHOUT_DATA:
+                logger.warning(
+                    "EV rejected (%.1f%% > %.1f%% max_no_data) "
+                    "for %s — no supporting data",
+                    ev * 100, CFG.MAX_EV_WITHOUT_DATA * 100, oname,
                 )
                 continue
 
@@ -1825,7 +1856,8 @@ class SofaScoreRapidFetcher:
 
                 if res.status in [401, 403]:
                     logger.error(
-                        "❌ RapidAPI auth error %d", res.status
+                        "❌ RapidAPI auth error %d on endpoint=%s",
+                        res.status, endpoint[:40],
                     )
                     return None
 
@@ -1850,7 +1882,9 @@ class SofaScoreRapidFetcher:
     def _get_from_cache(self, home: str, away: str) -> Optional[dict]:
         k = self._cache_key(home, away)
         if k in self._cache:
-            logger.debug("RapidAPI DailyCache HIT: %s vs %s", home, away)
+            logger.debug(
+                "RapidAPI DailyCache HIT: %s vs %s", home, away
+            )
             return self._cache[k]
         return None
 
@@ -1919,8 +1953,29 @@ class SofaScoreRapidFetcher:
         return None
 
     async def fetch_stats(
-        self, home: str, away: str, session: aiohttp.ClientSession
+        self,
+        home:      str,
+        away:      str,
+        session:   aiohttp.ClientSession,
+        sport_key: str = "",          # ← جدید
     ) -> dict:
+        """
+        اول کش چک میشه.
+        اگه sport_key پشتیبانی نمیشه → فوری {} برمیگردونه.
+        """
+        # ← جدید: فیلتر ورزش‌های پشتیبانی‌نشده
+        normalized_sk = normalize_sport_key(
+            sport_key
+        ) if sport_key else ""
+
+        if normalized_sk and normalized_sk not in CFG.RAPID_SUPPORTED_SPORTS:
+            logger.debug(
+                "RapidAPI skip (sport=%s not supported): %s vs %s",
+                normalized_sk, home, away,
+            )
+            return {}
+
+        # چک کش
         cached = self._get_from_cache(home, away)
         if cached is not None:
             return cached
@@ -1929,12 +1984,12 @@ class SofaScoreRapidFetcher:
             return {}
 
         logger.info(
-            "RapidAPI fetch: %s vs %s (req#%d)",
-            home, away, self._total_requests,
+            "RapidAPI fetch: %s vs %s (sport=%s req#%d)",
+            home, away, normalized_sk, self._total_requests,
         )
 
-        out: dict = {"_source": "sofascore6_rapidapi"}
-        event_id  = await self._find_event_id(home, away, session)
+        out: dict    = {"_source": "sofascore6_rapidapi"}
+        event_id     = await self._find_event_id(home, away, session)
         out["_event_id"] = event_id
 
         if event_id:
@@ -1994,8 +2049,8 @@ class SofaScoreRapidFetcher:
                 out["h2h"] = {
                     f"{home}_wins": hw,
                     f"{away}_wins": aw,
-                    "draws": d,
-                    "total": hw + aw + d,
+                    "draws":        d,
+                    "total":        hw + aw + d,
                 }
 
             # Lineups
@@ -2041,28 +2096,32 @@ class SofaScoreRapidFetcher:
     async def prefetch_all(
         self, events: list, session: aiohttp.ClientSession
     ) -> None:
-        """Prefetch روزانه — اجرای اول روز."""
         log_section("RAPIDAPI — DAILY PREFETCH")
         to_fetch = [
             e for e in events
             if normalize_sport_key(e.get("sport_title", ""))
-               in ("football", "tennis")
+               in CFG.RAPID_SUPPORTED_SPORTS  # ← فقط supported sports
                and e.get("home_team")
                and e.get("away_team")
         ]
-        logger.info("Prefetching %d events...", len(to_fetch))
+        logger.info(
+            "Prefetching %d events (supported sports only)...",
+            len(to_fetch),
+        )
         already = fetched = 0
         for event in to_fetch:
             home = event["home_team"]
             away = event["away_team"]
+            sk   = event.get("sport_key", "")
             if self._get_from_cache(home, away) is not None:
                 already += 1
                 continue
-            await self.fetch_stats(home, away, session)
+            await self.fetch_stats(home, away, session, sport_key=sk)
             fetched += 1
         logger.info(
             "Prefetch done: fetched=%d cached=%d total_req=%d | %s",
-            fetched, already, self._total_requests, self.km.get_stats(),
+            fetched, already, self._total_requests,
+            self.km.get_stats(),
         )
 
 # =========================================================
@@ -2308,16 +2367,18 @@ class MatchIDCache:
 # 18. STATS AGGREGATOR
 # =========================================================
 async def get_stats_async(
-    home:      str,
-    away:      str,
-    sport_key: str,
-    fd:        FootballDataAdapter,
-    mic:       MatchIDCache,
-    elo_f:     ELOSystem,
-    elo_t:     ELOSystem,
-    session:   aiohttp.ClientSession,
-    rapid:     SofaScoreRapidFetcher,
+    home:            str,
+    away:            str,
+    sport_key:       str,
+    fd:              FootballDataAdapter,
+    mic:             MatchIDCache,
+    elo_f:           ELOSystem,
+    elo_t:           ELOSystem,
+    session:         aiohttp.ClientSession,
+    rapid:           SofaScoreRapidFetcher,
+    rapid_sport_key: str = "",        # ← جدید: کلید دقیق ورزش از odds-api
 ) -> tuple:
+    log_section(f"STATS: {home} vs {away}")
     stats: dict = {
         "home_form":    {},
         "away_form":    {},
@@ -2359,26 +2420,41 @@ async def get_stats_async(
         )
 
     # ── SofaScore6 RapidAPI ───────────────────────────────
-    rapid_data = await rapid.fetch_stats(home, away, session)
+    # sport_key دقیق رو پاس میدیم تا ورزش‌های پشتیبانی‌نشده فیلتر بشن
+    rapid_data = await rapid.fetch_stats(
+        home, away, session,
+        sport_key=rapid_sport_key,    # ← جدید
+    )
+
     if rapid_data:
         for k in ["home_form", "away_form", "h2h", "lineups", "match_stats"]:
             if k in rapid_data and rapid_data[k]:
                 stats[k] = rapid_data[k]
+
         stats["sofascore"] = {
             k: rapid_data[k]
-            for k in ["home_form", "away_form", "h2h", "lineups", "match_stats"]
+            for k in [
+                "home_form", "away_form", "h2h",
+                "lineups", "match_stats",
+            ]
             if k in rapid_data and rapid_data[k]
         }
+
         if rapid_data.get("_event_id"):
-            stats["_sources"].append("sofascore6_rapid")
+            if "sofascore6_rapid" not in stats["_sources"]:
+                stats["_sources"].append("sofascore6_rapid")
 
     # ── Football-Data.org ─────────────────────────────────
     if sport_key == "football":
         loop = asyncio.get_running_loop()
 
         async def _get_fd_data() -> dict:
-            hid = await loop.run_in_executor(None, fd.find_team_id, home)
-            aid = await loop.run_in_executor(None, fd.find_team_id, away)
+            hid = await loop.run_in_executor(
+                None, fd.find_team_id, home
+            )
+            aid = await loop.run_in_executor(
+                None, fd.find_team_id, away
+            )
             log_check(f"FD id '{home}'", hid)
             log_check(f"FD id '{away}'", aid)
             if not hid or not aid:
@@ -2386,14 +2462,19 @@ async def get_stats_async(
             results = await asyncio.gather(
                 loop.run_in_executor(None, fd.get_form, hid, home),
                 loop.run_in_executor(None, fd.get_form, aid, away),
-                loop.run_in_executor(None, fd.get_h2h,  hid, aid, home, away),
+                loop.run_in_executor(
+                    None, fd.get_h2h, hid, aid, home, away
+                ),
                 return_exceptions=True,
             )
             hf, af, h2h = results
             out: dict = {}
-            if not isinstance(hf,  Exception) and hf:  out["home_form"] = hf
-            if not isinstance(af,  Exception) and af:  out["away_form"] = af
-            if not isinstance(h2h, Exception) and h2h: out["h2h"]       = h2h
+            if not isinstance(hf,  Exception) and hf:
+                out["home_form"] = hf
+            if not isinstance(af,  Exception) and af:
+                out["away_form"] = af
+            if not isinstance(h2h, Exception) and h2h:
+                out["h2h"] = h2h
             return out
 
         try:
@@ -2419,69 +2500,17 @@ async def get_stats_async(
         stats["data_quality"] = "high"
     elif has_fb or has_ss or has_elo:
         stats["data_quality"] = "medium"
+    else:
+        stats["data_quality"] = "none"
 
     logger.info(
-        "DATA QUALITY | %s vs %s | %s (fb=%s ss=%s elo=%s src=%s)",
-        home, away, stats["data_quality"].upper(),
+        "DATA QUALITY | %s vs %s | %s"
+        " (fb=%s ss=%s elo=%s src=%s)",
+        home, away,
+        stats["data_quality"].upper(),
         has_fb, has_ss, has_elo, sources,
     )
     return stats, elo_pred
-
-# =========================================================
-# 19. CONFIDENCE ENGINE
-# =========================================================
-def calculate_confidence(
-    ev: float,
-    stats: dict,
-    market: str,
-    has_sharp: bool,
-) -> tuple[int, str]:
-    score = 50
-    dq    = stats.get("data_quality", "none")
-
-    if dq == "high":     score += 15
-    elif dq == "medium": score += 8
-
-    ep = ev * 100
-    if ep > 5.0:   score += 12
-    elif ep > 3.0: score += 8
-    elif ep > 1.5: score += 4
-
-    elo = stats.get("elo", {})
-    hm  = elo.get("home_matches", 0)
-    am  = elo.get("away_matches", 0)
-    if hm >= 10 and am >= 10: score += 10
-    elif hm >= 5  and am >= 5:  score += 6
-    elif hm >= 3  or  am >= 3:  score += 3
-
-    if has_sharp:          score += 5
-    if market == "totals": score += 3
-
-    hf = stats.get("home_form", {})
-    af = stats.get("away_form", {})
-    if hf.get("form_string") and af.get("form_string"):
-        if hf["form_string"].count("W") >= 3: score += 5
-        if af["form_string"].count("L") >= 3: score += 3
-
-    ss = stats.get("sofascore", {})
-    if ss.get("home_form") and ss.get("away_form"): score += 4
-
-    sources = stats.get("_sources", [])
-    if len(sources) >= 2: score += 4
-    elif len(sources) == 1: score += 2
-
-    score = max(50, min(93, score))
-    risk  = (
-        "Low"    if score >= 75
-        else ("Medium" if score >= 60
-        else "High")
-    )
-    logger.info(
-        "Confidence=%d risk=%s (dq=%s ev=%.1f%% "
-        "hm=%d am=%d sharp=%s src=%s)",
-        score, risk, dq, ep, hm, am, has_sharp, sources,
-    )
-    return score, risk
 
 # =========================================================
 # 20. DUAL-AI ANALYSIS
@@ -3060,18 +3089,15 @@ async def async_main() -> None:
         headers={"User-Agent": "ZBET90/6.0"},
     ) as session:
 
-        # ── راه‌اندازی ──────────────────────────────────
         km       = OddsKeyManager(ODDS_API_KEYS)
         rapid_km = RapidKeyManager(RAPIDAPI_KEYS)
 
-        # Validate کلیدها (رایگان — 0 کردیت)
         await km.validate_all_async(session)
 
         if not km.get_best_key():
             logger.critical("NO VALID ODDS API KEY AVAILABLE!")
             sys.exit(1)
 
-        # Bootstrap ELO (هفته‌ای یکبار)
         bootstrap = DataBootstrap()
         if bootstrap.should_run():
             loop = asyncio.get_running_loop()
@@ -3113,7 +3139,6 @@ async def async_main() -> None:
         if RAPIDAPI_KEYS:
             if not DailyCache.is_fresh(CFG.DAILY_RAPID_CACHE_FILE):
                 log_section("RAPIDAPI — DAILY PREFETCH")
-                # همه مسابقات امروز رو prefetch کن (نه فقط پنجره)
                 all_today = (
                     DailyCache.load(CFG.DAILY_ODDS_CACHE_FILE) or events
                 )
@@ -3133,12 +3158,13 @@ async def async_main() -> None:
         total_sent = 0
 
         for event in events:
-            home  = event.get("home_team",     "")
-            away  = event.get("away_team",     "")
-            sport = event.get("sport_title",   "Unknown")
-            sk    = normalize_sport_key(sport)
-            ct    = event.get("commence_time", "")
-            md    = event.get("_markets_data", {})
+            home       = event.get("home_team",     "")
+            away       = event.get("away_team",     "")
+            sport      = event.get("sport_title",   "Unknown")
+            sk         = normalize_sport_key(sport)
+            sport_key  = event.get("sport_key",     "")
+            ct         = event.get("commence_time", "")
+            md         = event.get("_markets_data", {})
 
             if not home or not away:
                 continue
@@ -3148,19 +3174,24 @@ async def async_main() -> None:
                 home, away, sport,
             )
 
-            # ELO prediction اولیه (برای EV calc)
+            # ELO prediction اولیه
             elo_pred: Optional[dict] = None
             if sk == "football":
                 elo_pred = elo_football.predict(home, away)
             elif sk == "tennis":
-                elo_pred = elo_tennis.predict(home, away, apply_home=False)
-
-            # EV calculation
-            opps = calculate_combined_ev(md, elo_pred, sk, home, away)
-            if not opps:
-                logger.info(
-                    "SKIP no value: %s vs %s", home, away
+                elo_pred = elo_tennis.predict(
+                    home, away, apply_home=False
                 )
+
+            # ← جدید: EV calculation با data_quality اولیه
+            # در اولین پاس data_quality هنوز "none" است
+            # این از EV های غیرواقعی بدون داده جلوگیری میکنه
+            opps = calculate_combined_ev(
+                md, elo_pred, sk, home, away,
+                data_quality="none",   # ← conservative در ابتدا
+            )
+            if not opps:
+                logger.info("SKIP no value: %s vs %s", home, away)
                 continue
 
             opp = opps[0]
@@ -3170,16 +3201,33 @@ async def async_main() -> None:
                 logger.info("SKIP duplicate: %s vs %s", home, away)
                 continue
 
-            # آمار کامل
+            # آمار کامل — sport_key رو پاس بده
             stats, _ = await get_stats_async(
                 home, away, sk,
                 fd, mic, elo_football, elo_tennis,
                 session, rapid,
+                rapid_sport_key=sport_key,  # ← جدید
             )
+
+            # ← جدید: EV محاسبه مجدد با data_quality واقعی
+            # اگه داده پیدا شد، EV رو دوباره چک کن
+            real_dq = stats.get("data_quality", "none")
+            if real_dq != "none":
+                opps_v2 = calculate_combined_ev(
+                    md, elo_pred, sk, home, away,
+                    data_quality=real_dq,
+                )
+                if not opps_v2:
+                    logger.info(
+                        "SKIP after data check: %s vs %s", home, away
+                    )
+                    continue
+                opp = opps_v2[0]
 
             # Confidence
             conf, risk = calculate_confidence(
-                opp["ev"], stats, opp["market"], opp["has_sharp_line"],
+                opp["ev"], stats, opp["market"],
+                opp["has_sharp_line"],
             )
 
             if conf < CFG.MIN_CONFIDENCE_TO_SEND:
@@ -3189,16 +3237,15 @@ async def async_main() -> None:
                 )
                 continue
 
-            # Display pick
-            dp = get_display_pick(opp["pick"], opp["market"], home, away)
+            dp = get_display_pick(
+                opp["pick"], opp["market"], home, away
+            )
 
-            # AI analysis
             ai = await generate_dual_ai_analysis_async(
                 home, away, sport, dp, opp["market"],
                 opp["ev"], stats, conf, risk,
             )
 
-            # Build message
             msg = build_telegram_message(
                 sport, home, away, ct, now_utc,
                 opp, dp, conf, risk, ai,
@@ -3211,17 +3258,16 @@ async def async_main() -> None:
                 opp["odds"], opp["edge_pct"], conf,
             )
 
-            # ارسال به تلگرام
             if await send_telegram_async(msg, session):
                 await sent_history.mark_sent_async(
-                    home         = home,
-                    away         = away,
-                    pick         = opp["pick"],
-                    market       = opp["market"],
-                    odds         = opp["odds"],
-                    commence_time= ct,
-                    sport_key    = event.get("sport_key", ""),
-                    sport_title  = sport,
+                    home          = home,
+                    away          = away,
+                    pick          = opp["pick"],
+                    market        = opp["market"],
+                    odds          = opp["odds"],
+                    commence_time = ct,
+                    sport_key     = sport_key,
+                    sport_title   = sport,
                 )
                 total_sent += 1
                 logger.info("✅ Sent: %s vs %s", home, away)
@@ -3230,7 +3276,6 @@ async def async_main() -> None:
 
             await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
-    # ── پایان ────────────────────────────────────────────
     log_section("RUN COMPLETE")
     log_check("Signals sent", total_sent, warn_if_none=False)
     logger.info("Final key status: %s", km.get_summary())
@@ -3244,5 +3289,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Interrupted by user.")
     except Exception as e:
-        logger.critical("SYSTEM FAILURE: %s", str(e), exc_info=True)
+        logger.critical(
+            "SYSTEM FAILURE: %s", str(e), exc_info=True
+        )
         sys.exit(1)
