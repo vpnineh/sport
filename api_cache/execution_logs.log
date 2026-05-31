@@ -5189,3 +5189,79 @@
 2026-05-31 20:39:11 | INFO     | CHECK | Signals sent                               | EMPTY (ok)
 2026-05-31 20:39:11 | INFO     | Keys: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=216 | 1275084d…:ok/rem=236
 2026-05-31 20:39:11 | INFO     | Direct requests: 80 | blocked=False
+2026-05-31 23:10:52 | INFO     | 🔑 [API KEY] primary (ODDS_API_KEY): Loaded ✓
+2026-05-31 23:10:52 | INFO     | 🔑 [API KEY] backup_1 (ODDS_API_KEY2): Loaded ✓
+2026-05-31 23:10:52 | INFO     | 🔑 [API KEY] backup_2 (ODDS_API_KEY3): Loaded ✓
+2026-05-31 23:10:52 | INFO     | 🔑 [API KEYS] 3 key(s) available for fallback
+2026-05-31 23:10:52 | INFO     | =================================================================
+2026-05-31 23:10:52 | INFO     |   ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation | Caching
+2026-05-31 23:10:52 | INFO     | =================================================================
+2026-05-31 23:10:52 | INFO     | 🔑 [KEYS STATUS] ✅ primary: 0 calls (rem: ?) | ✅ backup_1: 2 calls (rem: 208) | ✅ backup_2: 0 calls (rem: ?)
+2026-05-31 23:10:52 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-05-31 23:10:52 | INFO     | [FREE DATA] Downloading: atp_matches_2022.csv
+2026-05-31 23:10:53 | INFO     | [FREE DATA] Downloading: wta_matches_2022.csv
+2026-05-31 23:10:53 | INFO     | [FREE DATA] Downloading: atp_matches_2023.csv
+2026-05-31 23:10:53 | INFO     | [FREE DATA] Downloading: wta_matches_2023.csv
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: atp_matches_2024.csv
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: wta_matches_2024.csv
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: atp_matches_2025.csv
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: wta_matches_2025.csv
+2026-05-31 23:10:54 | INFO     | ✅ [TENNIS] ATP loaded: 11923 matches
+2026-05-31 23:10:54 | INFO     | ✅ [TENNIS] WTA loaded: 10888 matches
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: atp_rankings_current.csv
+2026-05-31 23:10:54 | INFO     | ✅ [RANKINGS] ATP loaded: 34203 entries
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: wta_rankings_current.csv
+2026-05-31 23:10:54 | INFO     | ✅ [RANKINGS] WTA loaded: 32060 entries
+2026-05-31 23:10:54 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-05-31 23:10:56 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-05-31 23:10:57 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-05-31 23:10:58 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-05-31 23:10:59 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-05-31 23:11:00 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-05-31 23:11:02 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-05-31 23:11:03 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-05-31 23:11:04 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-05-31 23:11:05 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-05-31 23:11:07 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-05-31 23:11:08 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-05-31 23:11:09 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-05-31 23:11:10 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-05-31 23:11:11 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-05-31 23:11:13 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-05-31 23:11:14 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-05-31 23:11:15 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-05-31 23:11:16 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-05-31 23:11:17 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-05-31 23:11:18 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-05-31 23:11:19 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-05-31 23:11:20 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-05-31 23:11:21 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-05-31 23:11:22 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-05-31 23:11:23 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-05-31 23:11:24 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-05-31 23:11:25 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-05-31 23:11:26 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-05-31 23:11:28 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-05-31 23:11:29 | INFO     | ✅ [FOOTBALL] Loaded 10816 matches from 10 leagues × 3 seasons
+2026-05-31 23:11:29 | INFO     | 🧠 [PHASE 2] Initializing ML models (Using Cache if available)...
+2026-05-31 23:13:16 | INFO     | 💾 [ML FOOTBALL] Model saved to cache.
+2026-05-31 23:13:38 | INFO     | 💾 [ML TENNIS ATP] Model saved to cache.
+2026-05-31 23:13:38 | INFO     | 📡 [PHASE 3] Fetching odds (window=6.0h)...
+2026-05-31 23:13:38 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-05-31 23:13:38 | INFO     | 🔑 [TRYING] primary...
+2026-05-31 23:13:38 | WARNING  | 🔑⚠️ [primary] h2h: Invalid API key
+2026-05-31 23:13:38 | WARNING  | 🔑⚠️ [primary] totals: Invalid API key
+2026-05-31 23:13:38 | WARNING  | 🔑❌ [API KEY] primary marked FAILED: HTTP 401
+2026-05-31 23:13:38 | WARNING  | 🔑🔄 [primary] Failed → trying next key
+2026-05-31 23:13:38 | INFO     | 🔑 [TRYING] backup_1...
+2026-05-31 23:13:38 | INFO     | 🔑 [backup_1] OK | Remaining: 204 | Market: totals | Events: 26
+2026-05-31 23:13:38 | INFO     | 🔑 [backup_1] OK | Remaining: 200 | Market: h2h | Events: 26
+2026-05-31 23:13:38 | INFO     | ✅ [backup_1] Fetched 8 events
+2026-05-31 23:13:38 | INFO     | 💾 [ODDS CACHE] SAVED 8 events
+2026-05-31 23:13:38 | INFO     | 📊 [API USAGE] ❌ primary: 0 calls (rem: ?) | ✅ backup_1: 4 calls (rem: 200) | ✅ backup_2: 0 calls (rem: ?)
+2026-05-31 23:13:38 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-05-31 23:13:39 | INFO     | 📤 SENT: St. Louis Cardinals vs Chicago Cubs | St. Louis Cardinals | EV=2.03% | Conf=62%
+2026-05-31 23:13:43 | INFO     | 📤 SENT: Remo vs Sao Paulo | Sao Paulo | EV=3.22% | Conf=66%
+2026-05-31 23:13:46 | INFO     | =================================================================
+2026-05-31 23:13:46 | INFO     | 📊 SUMMARY | Analyzed: 4 | Sent: 2 | Skipped(conf): 0
+2026-05-31 23:13:46 | INFO     | 📊 [FINAL API USAGE] ❌ primary: 0 calls (rem: ?) | ✅ backup_1: 4 calls (rem: 200) | ✅ backup_2: 0 calls (rem: ?)

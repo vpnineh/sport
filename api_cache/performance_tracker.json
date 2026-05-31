@@ -1,0 +1,33 @@
+{
+  "signals": [
+    {
+      "id": "67771601",
+      "timestamp": "2026-05-31T23:13:39.500517+00:00",
+      "home": "St. Louis Cardinals",
+      "away": "Chicago Cubs",
+      "pick": "St. Louis Cardinals",
+      "market": "h2h_lay",
+      "odds": 1.95,
+      "ev": 0.0203,
+      "confidence": 62,
+      "implied_prob": 0.5233,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "e021a56c",
+      "timestamp": "2026-05-31T23:13:43.204633+00:00",
+      "home": "Remo",
+      "away": "Sao Paulo",
+      "pick": "Sao Paulo",
+      "market": "h2h",
+      "odds": 2.56,
+      "ev": 0.0322,
+      "confidence": 66,
+      "implied_prob": 0.4032,
+      "outcome": null,
+      "profit_loss": null
+    }
+  ],
+  "summary": {}
+}
