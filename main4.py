@@ -9,6 +9,11 @@ import hashlib
 import asyncio
 import aiohttp
 import requests
+try:
+    from curl_cffi import requests as cffi_requests
+except ImportError:
+    cffi_requests = None
+    logger.warning("curl_cffi not installed! Direct Sofascore scraping disabled.")
 import pandas as pd
 from io import StringIO
 from groq import AsyncGroq
@@ -1820,280 +1825,303 @@ def calculate_combined_ev(
     )[:1]
 
 # =========================================================
-# 16. SOFASCORE6 RAPIDAPI
+# 16. SOFASCORE UNIFIED ENGINE (DIRECT + RAPID BACKUP)
 # =========================================================
-class SofaScoreRapidFetcher:
-    BASE_URL = "https://sofascore6.p.rapidapi.com/api/sofascore/v1"
 
-    def __init__(self, key_manager: RapidKeyManager) -> None:
-        self.km              = key_manager
-        self._cache: dict    = DailyCache.load(CFG.DAILY_RAPID_CACHE_FILE) or {}
+class SofascoreDirectFetcher:
+    """گزینه اصلی: استخراج مستقیم، رایگان و بدون محدودیت با شبیه‌سازی مرورگر"""
+    BASE_URL = "https://api.sofascore.com/api/v1"
+
+    def __init__(self) -> None:
         self._total_requests = 0
 
-    async def _get(
-        self,
-        session:  aiohttp.ClientSession,
-        endpoint: str,
-        params:   Optional[dict] = None,
-        label:    str = "Rapid",
-    ) -> Optional[dict]:
-        headers = self.km.get_headers()
-        if not headers:
-            return None
+    async def _get(self, session, endpoint: str, params: Optional[dict] = None, label: str = "Direct") -> Optional[dict]:
         url = f"{self.BASE_URL}/{endpoint}"
+        headers = {
+            "Origin": "https://www.sofascore.com",
+            "Referer": "https://www.sofascore.com/",
+            "Accept": "application/json, text/plain, */*",
+            "Cache-Control": "no-cache",
+        }
         try:
-            async with session.get(
-                url, headers=headers, params=params,
-                timeout=aiohttp.ClientTimeout(total=12),
-            ) as res:
-                self._total_requests += 1
-                self.km.mark_request()
-                if res.status == 200:
-                    return await res.json(content_type=None)
-                if res.status == 429:
-                    logger.warning(
-                        "⚠️  RapidAPI 429 on key#%d",
-                        self.km._current_idx + 1,
-                    )
-                    self.km.mark_rate_limited()
-                    headers2 = self.km.get_headers()
-                    if headers2:
-                        await asyncio.sleep(1.5)
-                        async with session.get(
-                            url, headers=headers2, params=params,
-                            timeout=aiohttp.ClientTimeout(total=12),
-                        ) as res2:
-                            self._total_requests += 1
-                            if res2.status == 200:
-                                return await res2.json(content_type=None)
-                    return None
-                if res.status in [401, 403]:
-                    logger.error(
-                        "❌ RapidAPI auth error %d on endpoint=%s",
-                        res.status, endpoint[:40],
-                    )
-                    return None
-                logger.debug(
-                    "⚠️  [%s] HTTP %d: %s", label, res.status, endpoint[:50],
-                )
+            # استفاده از متدهای curl_cffi که json() را همگام برمی‌گرداند
+            res = await session.get(url, params=params, headers=headers, timeout=15)
+            self._total_requests += 1
+            if res.status_code == 200:
+                return res.json()
+            if res.status_code in [403, 429]:
+                logger.warning("⚠️  [%s] Blocked HTTP %d: %s", label, res.status_code, endpoint[:40])
                 return None
-        except asyncio.TimeoutError:
-            logger.debug("⏱ [%s] timeout: %s", label, endpoint[:50])
+            logger.debug("⚠️  [%s] HTTP %d: %s", label, res.status_code, endpoint[:40])
+            return None
         except Exception as e:
-            logger.debug("❓ [%s] %s", label, e)
-        return None
+            logger.debug("❓ [%s] Error: %s", label, e)
+            return None
 
-    @staticmethod
-    def _cache_key(home: str, away: str) -> str:
-        return hashlib.md5(
-            f"{home.lower()}|{away.lower()}".encode()
-        ).hexdigest()
-
-    def _get_from_cache(self, home: str, away: str) -> Optional[dict]:
-        k = self._cache_key(home, away)
-        if k in self._cache:
-            logger.debug("RapidAPI DailyCache HIT: %s vs %s", home, away)
-            return self._cache[k]
-        return None
-
-    def _save_to_cache(self, home: str, away: str, stats: dict) -> None:
-        k              = self._cache_key(home, away)
-        self._cache[k] = stats
-        DailyCache.save(CFG.DAILY_RAPID_CACHE_FILE, self._cache)
-
-    async def _find_event_id(
-        self, home: str, away: str, session: aiohttp.ClientSession
-    ) -> Optional[int]:
+    async def find_event_id(self, home: str, away: str, session) -> Optional[int]:
         hl = clean_team_name(home).lower()
         al = clean_team_name(away).lower()
-        for query in [
-            f"{clean_team_name(home)} {clean_team_name(away)}",
-            clean_team_name(home),
-        ]:
-            await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
-            data = await self._get(
-                session, "search/multi-search",
-                params={"query": query},
-                label="Rapid-Search",
-            )
-            if not data:
-                continue
+        
+        # 1. جستجوی مستقیم
+        for query in [f"{clean_team_name(home)} {clean_team_name(away)}", clean_team_name(home)]:
+            await asyncio.sleep(1.0) # تاخیر برای جلوگیری از حساس شدن کلودفلر
+            data = await self._get(session, "search/all", params={"q": query}, label="Direct-Search")
+            if not data: continue
+            
             for item in data.get("results", []):
-                if item.get("type") != "event":
-                    continue
-                e   = item.get("entity", {})
+                if item.get("type") != "event": continue
+                e = item.get("entity", {})
                 mid = e.get("id")
-                if not mid:
-                    continue
+                if not mid: continue
                 hn = e.get("homeTeam", {}).get("name", "").lower()
                 an = e.get("awayTeam", {}).get("name", "").lower()
                 if _flex_match(hl, hn) and _flex_match(al, an):
-                    logger.info(
-                        "SofaScore6 found: %s vs %s → id=%d",
-                        home, away, mid,
-                    )
+                    logger.info("Direct Sofascore found: %s vs %s → id=%d", home, away, mid)
                     return int(mid)
 
-        await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
+        # 2. جستجو در برنامه‌های امروز
+        await asyncio.sleep(1.0)
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         for sport in ["football", "tennis"]:
-            data = await self._get(
-                session,
-                f"sport/{sport}/scheduled-events/{today}",
-                label=f"Rapid-Scheduled-{sport}",
-            )
-            if not data:
-                continue
+            data = await self._get(session, f"sport/{sport}/scheduled-events/{today}", label=f"Direct-Sched-{sport}")
+            if not data: continue
             for e in data.get("events", []):
                 hn = e.get("homeTeam", {}).get("name", "").lower()
                 an = e.get("awayTeam", {}).get("name", "").lower()
                 if _flex_match(hl, hn) and _flex_match(al, an):
                     mid = e.get("id")
                     if mid:
-                        logger.info(
-                            "SofaScore6 scheduled: %s vs %s → id=%d",
-                            home, away, mid,
-                        )
+                        logger.info("Direct Sofascore scheduled: %s vs %s → id=%d", home, away, mid)
                         return int(mid)
         return None
 
-    async def fetch_stats(
-        self,
-        home:      str,
-        away:      str,
-        session:   aiohttp.ClientSession,
-        sport_key: str = "",
-    ) -> dict:
-        normalized_sk = normalize_sport_key(sport_key) if sport_key else ""
-        if normalized_sk and normalized_sk not in CFG.RAPID_SUPPORTED_SPORTS:
-            logger.debug(
-                "RapidAPI skip (sport=%s not supported): %s vs %s",
-                normalized_sk, home, away,
-            )
-            return {}
+    async def fetch_stats(self, home: str, away: str) -> dict:
+        if not cffi_requests:
+            return {} # اگر پکیج نصب نبود، خروجی خالی بده تا سوییچ بشه رو بکاپ
+            
+        out: dict = {"_source": "sofascore_direct"}
+        
+        # باز کردن یک تونل امن با هویت کروم 120
+        async with cffi_requests.AsyncSession(impersonate="chrome120") as session:
+            event_id = await self.find_event_id(home, away, session)
+            out["_event_id"] = event_id
 
-        cached = self._get_from_cache(home, away)
-        if cached is not None:
-            return cached
+            if event_id:
+                await asyncio.sleep(1.0)
+                # دریافت موازی داده‌ها
+                form_d, h2h_d, lu_d, stats_d = await asyncio.gather(
+                    self._get(session, f"event/{event_id}/pregame-form", label="Direct-Form"),
+                    self._get(session, f"event/{event_id}/h2h/events", label="Direct-H2H"),
+                    self._get(session, f"event/{event_id}/lineups", label="Direct-Lineups"),
+                    self._get(session, f"event/{event_id}/statistics", label="Direct-Stats"),
+                    return_exceptions=True,
+                )
 
-        if not self.km.get_current_key():
-            return {}
+                # پارس کردن Form
+                if isinstance(form_d, dict):
+                    for side, key in [("homeTeam", "home_form"), ("awayTeam", "away_form")]:
+                        fd = form_d.get(side, {})
+                        if fd:
+                            out[key] = {
+                                "team": home if side == "homeTeam" else away,
+                                "form": fd.get("value", ""),
+                                "avg_rating": fd.get("avgRating"),
+                                "position": fd.get("position"),
+                            }
 
-        logger.info(
-            "RapidAPI fetch: %s vs %s (sport=%s req#%d)",
-            home, away, normalized_sk, self._total_requests,
-        )
+                # پارس کردن H2H
+                events_list: list = []
+                if isinstance(h2h_d, dict): events_list = h2h_d.get("events", [])
+                elif isinstance(h2h_d, list): events_list = h2h_d
 
-        out: dict    = {"_source": "sofascore6_rapidapi"}
-        event_id     = await self._find_event_id(home, away, session)
+                if events_list:
+                    hw = aw = d = 0
+                    for m in events_list:
+                        hs = m.get("homeScore", {}).get("current")
+                        as_ = m.get("awayScore", {}).get("current")
+                        if hs is None or as_ is None: continue
+                        h_name = m.get("homeTeam", {}).get("name", "").lower()
+                        if _flex_match(clean_team_name(home).lower(), h_name):
+                            if hs > as_: hw += 1
+                            elif as_ > hs: aw += 1
+                            else: d += 1
+                        else:
+                            if as_ > hs: hw += 1
+                            elif hs > as_: aw += 1
+                            else: d += 1
+                    out["h2h"] = {f"{home}_wins": hw, f"{away}_wins": aw, "draws": d, "total": hw + aw + d}
+
+                # پارس کردن Lineups
+                if isinstance(lu_d, dict) and lu_d:
+                    out["lineups"] = {
+                        "home_formation": lu_d.get("home", {}).get("formation", "N/A"),
+                        "away_formation": lu_d.get("away", {}).get("formation", "N/A"),
+                    }
+
+                # پارس کردن Stats
+                if isinstance(stats_d, dict):
+                    groups = stats_d.get("statistics", [])
+                    if groups:
+                        wanted = {"Ball possession", "Total shots", "Shots on target", "Corner kicks", "Fouls", "Expected goals", "Big chances"}
+                        match_stats: dict = {}
+                        for group in groups:
+                            for item in group.get("statisticsItems", []):
+                                name = item.get("name", "")
+                                if name in wanted:
+                                    match_stats[name] = {"home": item.get("home"), "away": item.get("away")}
+                        if match_stats: out["match_stats"] = match_stats
+
+        return out if out.get("_event_id") else {}
+
+
+class SofaScoreRapidFetcher:
+    """گزینه بکاپ (کد قبلی شما): استفاده از RapidAPI در صورت مسدود شدن مستقیم"""
+    BASE_URL = "https://sofascore6.p.rapidapi.com/api/sofascore/v1"
+
+    def __init__(self, key_manager: RapidKeyManager) -> None:
+        self.km = key_manager
+        self._total_requests = 0
+
+    async def _get(self, session: aiohttp.ClientSession, endpoint: str, params: Optional[dict] = None, label: str = "Rapid") -> Optional[dict]:
+        headers = self.km.get_headers()
+        if not headers: return None
+        url = f"{self.BASE_URL}/{endpoint}"
+        try:
+            async with session.get(url, headers=headers, params=params, timeout=aiohttp.ClientTimeout(total=12)) as res:
+                self._total_requests += 1
+                self.km.mark_request()
+                if res.status == 200: return await res.json(content_type=None)
+                if res.status == 429:
+                    self.km.mark_rate_limited()
+                    headers2 = self.km.get_headers()
+                    if headers2:
+                        await asyncio.sleep(1.5)
+                        async with session.get(url, headers=headers2, params=params, timeout=12) as res2:
+                            self._total_requests += 1
+                            if res2.status == 200: return await res2.json(content_type=None)
+                    return None
+                if res.status in [401, 403]: return None
+                return None
+        except Exception: return None
+
+    async def _find_event_id(self, home: str, away: str, session: aiohttp.ClientSession) -> Optional[int]:
+        hl = clean_team_name(home).lower()
+        al = clean_team_name(away).lower()
+        for query in [f"{clean_team_name(home)} {clean_team_name(away)}", clean_team_name(home)]:
+            await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
+            data = await self._get(session, "search/multi-search", params={"query": query}, label="Rapid-Search")
+            if not data: continue
+            for item in data.get("results", []):
+                if item.get("type") != "event": continue
+                e = item.get("entity", {})
+                mid = e.get("id")
+                if not mid: continue
+                hn = e.get("homeTeam", {}).get("name", "").lower()
+                an = e.get("awayTeam", {}).get("name", "").lower()
+                if _flex_match(hl, hn) and _flex_match(al, an):
+                    return int(mid)
+        return None
+
+    async def fetch_stats(self, home: str, away: str, session: aiohttp.ClientSession) -> dict:
+        if not self.km.get_current_key(): return {}
+        out: dict = {"_source": "sofascore6_rapidapi"}
+        event_id = await self._find_event_id(home, away, session)
         out["_event_id"] = event_id
 
         if event_id:
             await asyncio.sleep(CFG.RAPID_REQUEST_DELAY)
             form_d, h2h_d, lu_d, stats_d = await asyncio.gather(
-                self._get(session, f"event/{event_id}/pregame-form",
-                          label="Rapid-Form"),
-                self._get(session, f"event/{event_id}/h2h/events",
-                          label="Rapid-H2H"),
-                self._get(session, f"event/{event_id}/lineups",
-                          label="Rapid-Lineups"),
-                self._get(session, f"event/{event_id}/statistics",
-                          label="Rapid-Stats"),
+                self._get(session, f"event/{event_id}/pregame-form"),
+                self._get(session, f"event/{event_id}/h2h/events"),
+                self._get(session, f"event/{event_id}/lineups"),
+                self._get(session, f"event/{event_id}/statistics"),
                 return_exceptions=True,
             )
-
+            # استخراج دیتا (مشابه مستقیم)
             if isinstance(form_d, dict):
-                for side, key in [
-                    ("homeTeam", "home_form"),
-                    ("awayTeam", "away_form"),
-                ]:
+                for side, key in [("homeTeam", "home_form"), ("awayTeam", "away_form")]:
                     fd = form_d.get(side, {})
-                    if fd:
-                        tname = home if side == "homeTeam" else away
-                        out[key] = {
-                            "team":       tname,
-                            "form":       fd.get("value", ""),
-                            "avg_rating": fd.get("avgRating"),
-                            "position":   fd.get("position"),
-                        }
-
+                    if fd: out[key] = {"team": home if side == "homeTeam" else away, "form": fd.get("value", "")}
             events_list: list = []
-            if isinstance(h2h_d, dict):
-                events_list = h2h_d.get("events", [])
-            elif isinstance(h2h_d, list):
-                events_list = h2h_d
-
+            if isinstance(h2h_d, dict): events_list = h2h_d.get("events", [])
+            elif isinstance(h2h_d, list): events_list = h2h_d
             if events_list:
                 hw = aw = d = 0
                 for m in events_list:
-                    hs  = m.get("homeScore", {}).get("current")
+                    hs = m.get("homeScore", {}).get("current")
                     as_ = m.get("awayScore", {}).get("current")
-                    if hs is None or as_ is None:
-                        continue
+                    if hs is None or as_ is None: continue
                     h_name = m.get("homeTeam", {}).get("name", "").lower()
                     if _flex_match(clean_team_name(home).lower(), h_name):
-                        if hs > as_:   hw += 1
+                        if hs > as_: hw += 1
                         elif as_ > hs: aw += 1
-                        else:          d  += 1
+                        else: d += 1
                     else:
-                        if as_ > hs:   hw += 1
+                        if as_ > hs: hw += 1
                         elif hs > as_: aw += 1
-                        else:          d  += 1
-                out["h2h"] = {
-                    f"{home}_wins": hw,
-                    f"{away}_wins": aw,
-                    "draws":        d,
-                    "total":        hw + aw + d,
-                }
-
+                        else: d += 1
+                out["h2h"] = {f"{home}_wins": hw, f"{away}_wins": aw, "draws": d, "total": hw + aw + d}
             if isinstance(lu_d, dict) and lu_d:
-                out["lineups"] = {
-                    "home_formation": lu_d.get("home", {}).get("formation", "N/A"),
-                    "away_formation": lu_d.get("away", {}).get("formation", "N/A"),
-                }
+                out["lineups"] = {"home_formation": lu_d.get("home", {}).get("formation", "N/A"), "away_formation": lu_d.get("away", {}).get("formation", "N/A")}
+            if isinstance(stats_d, dict) and stats_d.get("statistics"):
+                match_stats = {}
+                for group in stats_d["statistics"]:
+                    for item in group.get("statisticsItems", []):
+                        if item.get("name") in {"Ball possession", "Total shots", "Shots on target", "Corner kicks", "Fouls", "Expected goals", "Big chances"}:
+                            match_stats[item["name"]] = {"home": item.get("home"), "away": item.get("away")}
+                if match_stats: out["match_stats"] = match_stats
+        return out if out.get("_event_id") else {}
 
-            if isinstance(stats_d, dict):
-                groups = stats_d.get("statistics", [])
-                if groups:
-                    wanted = {
-                        "Ball possession", "Total shots",
-                        "Shots on target", "Corner kicks",
-                        "Fouls", "Expected goals", "Big chances",
-                    }
-                    match_stats: dict = {}
-                    for group in groups:
-                        for item in group.get("statisticsItems", []):
-                            name = item.get("name", "")
-                            if name in wanted:
-                                match_stats[name] = {
-                                    "home": item.get("home"),
-                                    "away": item.get("away"),
-                                }
-                    if match_stats:
-                        out["match_stats"] = match_stats
 
-        self._save_to_cache(home, away, out)
-        logger.info(
-            "RapidAPI cached: %s vs %s | fields=%s",
-            home, away,
-            [k for k in out if not k.startswith("_")],
-        )
-        return out
+class SofaScoreUnifiedFetcher:
+    """این کلاس تصمیم می‌گیرد که از روش مستقیم استفاده کند یا در صورت شکست به RapidAPI سوییچ کند"""
+    
+    def __init__(self, rapid_km: RapidKeyManager) -> None:
+        self.direct = SofascoreDirectFetcher()
+        self.rapid = SofaScoreRapidFetcher(rapid_km)
+        self._cache: dict = DailyCache.load(CFG.DAILY_RAPID_CACHE_FILE) or {}
+        
+    def _get_from_cache(self, home: str, away: str) -> Optional[dict]:
+        k = hashlib.md5(f"{home.lower()}|{away.lower()}".encode()).hexdigest()
+        if k in self._cache:
+            logger.debug("Sofascore DailyCache HIT: %s vs %s", home, away)
+            return self._cache[k]
+        return None
 
-    async def prefetch_all(
-        self, events: list, session: aiohttp.ClientSession
-    ) -> None:
-        log_section("RAPIDAPI — DAILY PREFETCH")
-        to_fetch = [
-            e for e in events
-            if normalize_sport_key(e.get("sport_title", ""))
-               in CFG.RAPID_SUPPORTED_SPORTS
-               and e.get("home_team")
-               and e.get("away_team")
-        ]
-        logger.info(
-            "Prefetching %d events (supported sports only)...", len(to_fetch),
-        )
+    def _save_to_cache(self, home: str, away: str, stats: dict) -> None:
+        k = hashlib.md5(f"{home.lower()}|{away.lower()}".encode()).hexdigest()
+        self._cache[k] = stats
+        DailyCache.save(CFG.DAILY_RAPID_CACHE_FILE, self._cache)
+
+    async def fetch_stats(self, home: str, away: str, session: aiohttp.ClientSession, sport_key: str = "") -> dict:
+        normalized_sk = normalize_sport_key(sport_key) if sport_key else ""
+        if normalized_sk and normalized_sk not in CFG.RAPID_SUPPORTED_SPORTS:
+            return {}
+
+        cached = self._get_from_cache(home, away)
+        if cached is not None: return cached
+
+        logger.info("Sofascore Fetching: %s vs %s (Trying Direct First...)", home, away)
+        
+        # تلاش برای استخراج مستقیم و رایگان
+        data = await self.direct.fetch_stats(home, away)
+        
+        # اگر مستقیم شکست خورد (خطای 403 یا پیدا نشدن)، سوییچ به بکاپ
+        if not data or not data.get("_event_id"):
+            logger.warning("Direct fetch failed for %s vs %s. Falling back to RapidAPI Backup!", home, away)
+            data = await self.rapid.fetch_stats(home, away, session)
+            
+        if data:
+            self._save_to_cache(home, away, data)
+            logger.info("Sofascore cached: %s vs %s | src=%s", home, away, data.get("_source", "unknown"))
+            
+        return data
+
+    async def prefetch_all(self, events: list, session: aiohttp.ClientSession) -> None:
+        log_section("SOFASCORE — DAILY PREFETCH")
+        to_fetch = [e for e in events if normalize_sport_key(e.get("sport_title", "")) in CFG.RAPID_SUPPORTED_SPORTS and e.get("home_team") and e.get("away_team")]
+        logger.info("Prefetching %d events...", len(to_fetch))
+        
         already = fetched = 0
         for event in to_fetch:
             home = event["home_team"]
@@ -2104,10 +2132,8 @@ class SofaScoreRapidFetcher:
                 continue
             await self.fetch_stats(home, away, session, sport_key=sk)
             fetched += 1
-        logger.info(
-            "Prefetch done: fetched=%d cached=%d total_req=%d | %s",
-            fetched, already, self._total_requests, self.km.get_stats(),
-        )
+            
+        logger.info("Prefetch done: fetched=%d cached=%d", fetched, already)
 
 # =========================================================
 # 17. FOOTBALL-DATA ADAPTER
@@ -2338,7 +2364,7 @@ async def get_stats_async(
     elo_f:           ELOSystem,
     elo_t:           ELOSystem,
     session:         aiohttp.ClientSession,
-    rapid:           SofaScoreRapidFetcher,
+    rapid:           SofaScoreUnifiedFetcher,
     rapid_sport_key: str = "",
 ) -> tuple:
     log_section(f"STATS: {home} vs {away}")
@@ -3048,7 +3074,7 @@ async def async_main() -> None:
         sent_history = SentHistory()
         fd           = FootballDataAdapter()
         mic          = MatchIDCache()
-        rapid        = SofaScoreRapidFetcher(rapid_km)
+        rapid        = SofaScoreUnifiedFetcher(rapid_km) 
         now_utc      = datetime.now(timezone.utc)
 
         # ── فاز 1: بررسی نتایج ──────────────────────────
