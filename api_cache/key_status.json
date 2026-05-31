@@ -10,9 +10,9 @@
   "25ec0718": {
     "prefix": "4342465d…",
     "status": "ok",
-    "remaining": 240,
-    "used": "260",
-    "last_used": "2026-05-31T15:25:20.590273+00:00",
+    "remaining": 238,
+    "used": "262",
+    "last_used": "2026-05-31T16:37:28.410149+00:00",
     "last_error": null
   },
   "d8d7ed06": {
@@ -20,7 +20,7 @@
     "status": "ok",
     "remaining": 244,
     "used": "256",
-    "last_used": "2026-05-31T15:25:20.629535+00:00",
+    "last_used": "2026-05-31T16:37:28.504882+00:00",
     "last_error": null
   }
 }

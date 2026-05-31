@@ -313,5 +313,17 @@
     "sport_title": "NCAA Baseball",
     "sent_at": "2026-05-31T15:04:05.819048+00:00",
     "result_checked": false
+  },
+  "844a9b9ac80696dd0006e6046b2ee4d5": {
+    "home": "Washington St Cougars",
+    "away": "Oregon St Beavers",
+    "pick": "Washington St Cougars",
+    "market": "h2h",
+    "odds": 3.55,
+    "commence_time": "2026-05-31T20:00:00Z",
+    "sport_key": "baseball_ncaa",
+    "sport_title": "NCAA Baseball",
+    "sent_at": "2026-05-31T16:37:29.702314+00:00",
+    "result_checked": false
   }
 }
