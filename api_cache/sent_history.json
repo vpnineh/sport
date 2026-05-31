@@ -252,7 +252,9 @@
     "commence_time": "2026-05-31T15:00:00Z",
     "sport_key": "soccer_sweden_superettan",
     "sent_at": "2026-05-31T14:21:00.914185+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "0 - 2",
+    "won": false
   },
   "466647f9b2b91763fb2f61a73ff7bddb": {
     "match": "Jakub Mensik vs Andrey Rublev",
