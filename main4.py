@@ -560,6 +560,7 @@ class FreeDataEngine:
         self.wta_rankings: Optional[pd.DataFrame] = None
         self.football_data: Dict[str, pd.DataFrame] = {}
         self.elo_cache: dict = CacheManager.load(CFG.CACHE_DIR / "elo_cache.json")
+        self.american_sports_cache: dict = CacheManager.load(CFG.CACHE_DIR / "us_sports_cache.json")
         self.years_to_fetch = [2022, 2023, 2024, 2025]  # یک سال بیشتر
 
     def _download_csv(self, url: str, filepath: Path, timeout: int = 25) -> bool:
@@ -1082,6 +1083,48 @@ class FreeDataEngine:
                 ),
             }
         return None
+
+    def get_us_sports_stats(self, sport: str, team: str) -> dict:
+        """استخراج رایگان آمار بیسبال و بسکتبال (آمریکا)"""
+        cache_key = f"{sport}_{team.lower().replace(' ', '')}"
+        if CacheManager.is_valid(self.american_sports_cache, cache_key, 12.0):
+            return CacheManager.get(self.american_sports_cache, cache_key)
+
+        stats = {}
+        try:
+            import statsapi
+            if "baseball" in sport.lower() or "mlb" in sport.lower():
+                teams = statsapi.lookup_team(team)
+                if teams:
+                    team_id = teams[0]['id']
+                    start_d = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
+                    end_d = datetime.now().strftime("%Y-%m-%d")
+                    sched = statsapi.schedule(team=team_id, start_date=start_d, end_date=end_d)
+                    
+                    wins, losses, runs_scored, runs_allowed = 0, 0, 0, 0
+                    for game in sched[-5:]: 
+                        is_home = game['home_id'] == team_id
+                        if game['status'] == 'Final':
+                            if (is_home and game['home_score'] > game['away_score']) or (not is_home and game['away_score'] > game['home_score']): 
+                                wins += 1
+                            else: 
+                                losses += 1
+                            runs_scored += game['home_score'] if is_home else game['away_score']
+                            runs_allowed += game['away_score'] if is_home else game['home_score']
+                    
+                    stats = {
+                        "recent_form": f"{wins}W-{losses}L",
+                        "avg_runs_scored": round(runs_scored/5, 1) if (wins+losses) > 0 else 0,
+                        "avg_runs_allowed": round(runs_allowed/5, 1) if (wins+losses) > 0 else 0
+                    }
+        except Exception as e: 
+            pass
+        
+        if stats:
+            self.american_sports_cache = CacheManager.set(self.american_sports_cache, cache_key, stats)
+            CacheManager.save(CFG.CACHE_DIR / "us_sports_cache.json", self.american_sports_cache)
+            
+        return stats
 
 
 # =========================================================
@@ -2023,14 +2066,14 @@ def call_groq_sdk(model: str, messages: list, temperature: float = 0.1) -> Optio
         logger.error("Groq SDK error model=%s: %s", model, e)
         return None
 
+
 def generate_dual_ai_analysis(
     home: str, away: str, sport: str, pick: str, market: str,
     opp: dict, stats: dict, has_real_stats: bool,
-    ml_prediction: Optional[dict] = None, 
-    poisson_prediction: Optional[dict] = None, 
+    ml_prediction: Optional[dict] = None,
+    poisson_prediction: Optional[dict] = None,
     sport_key: str = "other",
 ) -> dict:
-    
     conf, risk = ConfidenceEngine.calculate(opp, stats, market, ml_prediction, poisson_prediction, sport_key)
 
     default_response = {
@@ -2040,59 +2083,142 @@ def generate_dual_ai_analysis(
         "logic": "Sharp market analysis reveals significant value on this selection based on quantitative edge detection.",
     }
 
+    # ساخت context از داده‌های واقعی (دقیقاً نسخه کامل خودت)
     context_parts = []
     if stats.get("historical_data"):
         hd = stats["historical_data"]
         pa = hd.get("player_a", {})
         pb = hd.get("player_b", {})
         context_parts.append(
-            f"PLAYER STATS: {home} (WR {pa.get('recent_win_rate', 0):.0%}) vs {away} (WR {pb.get('recent_win_rate', 0):.0%})"
+            f"PLAYER STATS: {home} (rank {pa.get('current_ranking', '?')}, "
+            f"form {pa.get('recent_form', 'N/A')}, WR {pa.get('recent_win_rate', 0):.0%}) "
+            f"vs {away} (rank {pb.get('current_ranking', '?')}, "
+            f"form {pb.get('recent_form', 'N/A')}, WR {pb.get('recent_win_rate', 0):.0%})"
         )
+        h2h = hd.get("h2h", {})
+        if h2h.get("total", 0) > 0:
+            context_parts.append(
+                f"H2H: {h2h.get(home + '_wins', 0)}-{h2h.get(away + '_wins', 0)} "
+                f"({h2h.get('dominance', 'balanced')})"
+            )
 
     if stats.get("football_stats"):
         fb = stats["football_stats"]
-        hm, aw = fb.get("home", {}), fb.get("away", {})
-        if hm: context_parts.append(f"{home}: form={hm.get('form_string', 'N/A')} scored={hm.get('avg_scored', 0):.1f} conceded={hm.get('avg_conceded', 0):.1f}")
-        if aw: context_parts.append(f"{away}: form={aw.get('form_string', 'N/A')} scored={aw.get('avg_scored', 0):.1f} conceded={aw.get('avg_conceded', 0):.1f}")
-    
+        hm = fb.get("home", {})
+        aw = fb.get("away", {})
+        if hm:
+            context_parts.append(
+                f"{home}: form={hm.get('form_string', 'N/A')} "
+                f"scored={hm.get('avg_scored', 0):.1f} conceded={hm.get('avg_conceded', 0):.1f} "
+                f"over25={hm.get('over25_rate', 0):.0%}"
+            )
+        if aw:
+            context_parts.append(
+                f"{away}: form={aw.get('form_string', 'N/A')} "
+                f"scored={aw.get('avg_scored', 0):.1f} conceded={aw.get('avg_conceded', 0):.1f}"
+            )
+        h2h = fb.get("h2h", {})
+        if h2h.get("total_matches", 0) > 0:
+            context_parts.append(
+                f"H2H avg goals: {h2h.get('avg_goals', 0):.1f} | "
+                f"BTTS: {h2h.get('btts_rate', 0):.0%} | Over2.5: {h2h.get('over25_rate', 0):.0%}"
+            )
+
     if stats.get("elo_data"):
         elo = stats["elo_data"]
-        context_parts.append(f"ELO Delta: {elo.get('delta', 0):+.0f}")
-        
+        context_parts.append(
+            f"ELO: {home}={elo.get('home_elo', 0)} vs {away}={elo.get('away_elo', 0)} "
+            f"(delta={elo.get('delta', 0):+.0f}, confidence={elo.get('elo_confidence', 'low')})"
+        )
+
+    # اطلاعات جدید بسکتبال و بیسبال
+    if stats.get("us_sports"):
+        us = stats["us_sports"]
+        hm_us, aw_us = us.get("home", {}), us.get("away", {})
+        if hm_us: context_parts.append(f"US SPORTS {home}: Form {hm_us.get('recent_form','N/A')}, AvgRuns {hm_us.get('avg_runs_scored',0)}")
+        if aw_us: context_parts.append(f"US SPORTS {away}: Form {aw_us.get('recent_form','N/A')}, AvgRuns {aw_us.get('avg_runs_scored',0)}")
+
     if ml_prediction:
-        context_parts.append("ML Probs: " + " | ".join(f"{k}={v:.2f}" for k, v in ml_prediction.items() if isinstance(v, float)))
-    
+        acc = ml_prediction.get("model_accuracy", 0)
+        context_parts.append(
+            f"ML Model ({ml_prediction.get('model_type', 'N/A')}, acc={acc:.1%}): "
+            + " | ".join(f"{k}={v:.1%}" for k, v in ml_prediction.items()
+                         if isinstance(v, float) and v <= 1.0 and "model" not in k)
+        )
+        
     if poisson_prediction:
         context_parts.append(f"Poisson xG: {home}={poisson_prediction.get('home_xg',0)} vs {away}={poisson_prediction.get('away_xg',0)}")
 
-    context_parts.append(f"EV Edge: {opp.get('edge_pct', 0):.2f}% | Sharp: {'Yes' if opp.get('has_sharp_line') else 'No'}")
+    context_parts.append(
+        f"EV Edge: {opp.get('edge_pct', 0):.2f}% | "
+        f"Kelly: {opp.get('kelly_pct', 0):.1f}% | "
+        f"Sharp: {'Yes' if opp.get('has_sharp_line') else 'No'}"
+    )
+
+    stats_str = "\n".join(context_parts) if context_parts else "No external data."
 
     sys_analyst = (
         "You are an elite sports betting analyst for a professional syndicate.\n"
         "Write EXACTLY 2 punchy, professional sentences (max 80 words total) justifying the pick.\n"
         "RULES:\n"
         "1. NEVER mention 'Expected Value', 'EV', 'Kelly', 'model', 'algorithm', 'data quality'.\n"
-        "2. Use ONLY provided statistics. Do NOT invent statistics.\n"
-        f'OUTPUT FORMAT: {{"logic": "..."}}'
+        "2. Choose the correct sport emoji (⚽🎾🏀🏈⚾🎱🏒 etc).\n"
+        "3. Use ONLY provided statistics. Do NOT invent statistics. Do NOT mention flags or nationalities.\n"
+        "4. Be specific: mention form, rankings, or H2H if available.\n"
+        f'OUTPUT FORMAT: {{"logic": "...", "sport_emoji": "..."}}'
     )
 
-    user_msg = f"MATCH: {home} vs {away}\nPICK: {pick}\nDATA:\n{chr(10).join(context_parts)}\nOUTPUT JSON ONLY:"
-    
+    user_msg = (
+        f"MATCH: {home} vs {away}\n"
+        f"SPORT: {sport}\n"
+        f"PICK: {pick}\n"
+        f"MARKET: {get_market_label(market)}\n\n"
+        f"DATA:\n{stats_str}\n\n"
+        "OUTPUT JSON ONLY:"
+    )
+
     analysis_1 = None
     try:
         raw1 = call_groq_sdk(
             CFG.AI_MODEL_ANALYST,
-            [{"role": "system", "content": sys_analyst}, {"role": "user", "content": user_msg}],
+            [{"role": "system", "content": sys_analyst},
+             {"role": "user", "content": user_msg}],
             temperature=0.25,
         )
         analysis_1 = robust_json_extractor(raw1)
     except Exception as e:
         logger.warning("Analyst model failed: %s", e)
 
-    if analysis_1 and analysis_1.get("logic"):
-        default_response["logic"] = str(analysis_1["logic"]).strip()[:600]
+    initial_logic = (analysis_1 or {}).get("logic", default_response["logic"])
 
-    return default_response
+    # Validator
+    sys_editor = (
+        "You are the Chief Editor for a VIP sports platform. "
+        "Review this analysis and rewrite ONLY if it: hallucinated stats, "
+        "sounds robotic, or violates rules. Keep 2 sentences max.\n"
+        'OUTPUT JSON ONLY: {"validated_logic": "..."}'
+    )
+    try:
+        raw2 = call_groq_sdk(
+            CFG.AI_MODEL_VALIDATOR,
+            [{"role": "system", "content": sys_editor},
+             {"role": "user", "content": f"DRAFT: {initial_logic}\nPICK: {pick}\nOUTPUT JSON ONLY:"}],
+            temperature=0.15,
+        )
+        analysis_2 = robust_json_extractor(raw2)
+        if analysis_2 and analysis_2.get("validated_logic"):
+            initial_logic = analysis_2["validated_logic"]
+    except Exception:
+        pass
+
+    result = dict(default_response)
+    if analysis_1:
+        result["sport_emoji"] = analysis_1.get("sport_emoji") or _get_sport_emoji(sport_key)
+
+    safe_logic = str(initial_logic).strip()
+    result["logic"] = safe_logic[:597] + "..." if len(safe_logic) > 600 else safe_logic
+    return result
+
 
 def _get_sport_emoji(sport_key: str) -> str:
     return {
@@ -2147,7 +2273,7 @@ def send_telegram(message_html: str) -> bool:
 # =========================================================
 async def async_main():
     logger.info("=" * 65)
-    logger.info("  ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation | Caching")
+    logger.info("  ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation")
     logger.info("=" * 65)
     logger.info("🔑 [KEYS STATUS] %s", odds_key_manager.get_usage_summary())
 
@@ -2160,14 +2286,17 @@ async def async_main():
     data_engine.load_tennis_data()
     data_engine.load_football_data()
 
-    # ── Phase 2: Train/Load ML ───────────────────────────
+    # ── Phase 2: Train ML ────────────────────────────────
     logger.info("🧠 [PHASE 2] Initializing ML models (Using Cache if available)...")
     ml_engine = MLPredictionEngine(data_engine)
-    ml_engine.load_or_train_football_model() # <--- استفاده از کش
-    ml_engine.load_or_train_tennis_model(is_wta=False) # <--- استفاده از کش
+    ml_engine.load_or_train_football_model()
+    ml_engine.load_or_train_tennis_model(is_wta=False)
 
     # ── Phase 3: Fetch Odds ──────────────────────────────
-    logger.info("📡 [PHASE 3] Fetching odds (window=%.1fh)...", CFG.MATCH_WINDOW_HOURS)
+    logger.info(
+        "📡 [PHASE 3] Fetching odds (window=%.1fh)...",
+        CFG.MATCH_WINDOW_HOURS
+    )
     events = await fetch_all_odds_async()
 
     if not events:
@@ -2189,6 +2318,7 @@ async def async_main():
         if not home or not away:
             continue
 
+        # EV Calculation
         opportunities = calculate_sharp_ev_advanced(
             event.get("_markets_data", {}),
             event.get("bookmakers", [])
@@ -2213,8 +2343,10 @@ async def async_main():
             if tennis_stats and (tennis_stats.get("player_a") or tennis_stats.get("player_b")):
                 stats["historical_data"] = tennis_stats
             if ml_engine.is_tennis_trained and tennis_stats:
-                ml_prediction = ml_engine.predict_tennis(home, away, tennis_stats, "hard")
-                if ml_prediction: stats["ml_prediction"] = ml_prediction
+                surface = "hard"   # default
+                ml_prediction = ml_engine.predict_tennis(home, away, tennis_stats, surface)
+                if ml_prediction:
+                    stats["ml_prediction"] = ml_prediction
 
         elif sport_key == "football":
             fb_stats = data_engine.get_football_stats(home, away)
@@ -2223,16 +2355,17 @@ async def async_main():
             elo_data = data_engine.get_elo_delta(home, away)
             if elo_data:
                 stats["elo_data"] = elo_data
-            
+                
             # --- DUAL CONFIRMATION LOGIC ---
             if ml_engine.is_football_trained:
                 ml_prediction = ml_engine.predict_football(home, away)
-                if ml_prediction: stats["ml_prediction"] = ml_prediction
-                
+                if ml_prediction:
+                    stats["ml_prediction"] = ml_prediction
+            
             poisson_prediction = PoissonEngine.calculate_match_probabilities(home, away, data_engine.football_data.get("all"))
-            if poisson_prediction: stats["poisson_prediction"] = poisson_prediction
+            if poisson_prediction:
+                stats["poisson_prediction"] = poisson_prediction
 
-            # Product-Level Strict Filter
             if ml_prediction and poisson_prediction and opp["market"] == "h2h":
                 pick_target = opp["pick"].lower()
                 is_home_pick = home.lower() in pick_target
@@ -2245,15 +2378,50 @@ async def async_main():
                     logger.info("⏭️ SKIP (Dual Confirmation Failed): %s vs %s | ML: %.2f | Poisson: %.2f", home, away, ml_prob, poisson_prob)
                     continue
 
+        elif sport_key in ["baseball", "basketball"]:
+            us_stats = {
+                "home": data_engine.get_us_sports_stats(sport, home),
+                "away": data_engine.get_us_sports_stats(sport, away)
+            }
+            if us_stats["home"] or us_stats["away"]:
+                stats["us_sports"] = us_stats
+
         # ── Confidence Check ─────────────────────────────
-        conf, risk = ConfidenceEngine.calculate(opp, stats, opp["market"], ml_prediction, poisson_prediction, sport_key)
+        conf, risk = ConfidenceEngine.calculate(
+            opp, stats, opp["market"], ml_prediction, poisson_prediction, sport_key
+        )
 
         if conf < CFG.MIN_CONFIDENCE_TO_SEND:
             skipped_confidence += 1
-            logger.info("⏭️ SKIP (confidence=%d < %d): %s vs %s | %s", conf, CFG.MIN_CONFIDENCE_TO_SEND, home, away, opp["pick"])
+            logger.info(
+                "⏭️ SKIP (confidence=%d < %d): %s vs %s | %s",
+                conf, CFG.MIN_CONFIDENCE_TO_SEND, home, away, opp["pick"]
+            )
             continue
 
-        has_real_stats = bool(stats.get("historical_data") or stats.get("football_stats") or stats.get("elo_data") or ml_prediction)
+        # ── Data Quality Log ──────────────────────────────
+        has_historical = bool(stats.get("historical_data"))
+        has_football = bool(stats.get("football_stats", {}) and (
+            stats.get("football_stats", {}).get("home")
+            or stats.get("football_stats", {}).get("away")
+        ))
+        has_elo = bool(stats.get("elo_data"))
+        has_ml = bool(ml_prediction)
+        has_us = bool(stats.get("us_sports"))
+        has_real_stats = has_historical or has_football or has_elo or has_ml or has_us
+
+        if has_real_stats:
+            sources = []
+            if has_historical: sources.append("Tennis-Historical")
+            if has_football:   sources.append("Football-Data")
+            if has_elo:        sources.append("ClubElo")
+            if has_ml:         sources.append("ML-Model")
+            if has_us:         sources.append("US-Sports")
+            logger.info(
+                "✅ [DATA] %s | EV=%.2f%% | Kelly=%.1f%% | Conf=%d%%",
+                " + ".join(sources),
+                opp["edge_pct"], opp.get("kelly_pct", 0), conf,
+            )
 
         # ── AI Analysis ──────────────────────────────────
         ai_data = generate_dual_ai_analysis(
@@ -2262,24 +2430,51 @@ async def async_main():
         )
 
         # ── Build Message ─────────────────────────────────
-        conf_icon = "🔥" if ai_data["confidence"] >= CFG.HIGH_CONFIDENCE else ("✅" if ai_data["confidence"] >= CFG.MEDIUM_CONFIDENCE else "⚡")
-        risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(ai_data["risk_level"], "🟠")
+        conf_icon = (
+            "🔥" if ai_data["confidence"] >= CFG.HIGH_CONFIDENCE
+            else ("✅" if ai_data["confidence"] >= CFG.MEDIUM_CONFIDENCE
+                  else "⚡")
+        )
+        risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(
+            ai_data["risk_level"], "🟠"
+        )
 
+        # EV line
         ev_line = f"📈 <b>Edge:</b> {opp['edge_pct']:.2f}%"
-        kelly_line = f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}%"
-        clv_line = f" | 📊 <b>CLV:</b> {opp.get('clv_pct', 0):+.1f}%" if abs(opp.get("clv_pct", 0)) > 0.5 else ""
-        ml_line = f"\n🧠 <b>ML/Poisson:</b> Verified" if (ml_prediction or poisson_prediction) else ""
+        kelly_line = f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
+        clv_line = (
+            f" | 📊 <b>CLV:</b> {opp.get('clv_pct', 0):+.1f}%"
+            if abs(opp.get("clv_pct", 0)) > 0.5 else ""
+        )
+
+        ml_line = ""
+        if ml_prediction or poisson_prediction:
+            ml_line = f"\n🧠 <b>Math Models:</b> Verified"
+
+        data_badge = ""
+        if has_real_stats:
+            badges = []
+            if has_historical: badges.append("📚 Historical")
+            if has_football:   badges.append("⚽ Match Data")
+            if has_elo:        badges.append("📊 Elo")
+            if has_ml:         badges.append("🧠 ML")
+            if has_us:         badges.append("🇺🇸 US Stats")
+            data_badge = "\n📋 <b>Sources:</b> " + " | ".join(badges)
+
         sharp_badge = "🎯 <i>Sharp Line Confirmed</i>" if opp.get("has_sharp_line") else ""
 
         msg = (
             f"{ai_data.get('sport_emoji', '🏆')} <b>{html_lib.escape(sport)}</b>\n\n"
             f"⚔️ <b>{html_lib.escape(home)}</b> vs <b>{html_lib.escape(away)}</b>\n"
-            f"⏳ <b>Starts in:</b> {get_countdown_str(event.get('commence_time', ''), now_utc)}\n\n"
-            f"🎯 <b>PICK:</b> <code>{html_lib.escape(opp['pick'])}</code> @ <b>{opp['odds']}</b>\n"
+            f"⏳ <b>Starts in:</b> "
+            f"{get_countdown_str(event.get('commence_time', ''), now_utc)}\n\n"
+            f"🎯 <b>PICK:</b> <code>{html_lib.escape(opp['pick'])}</code> "
+            f"@ <b>{opp['odds']}</b>\n"
             f"📊 <b>Market:</b> {html_lib.escape(opp['market_label'])}\n\n"
             f"{ev_line}{kelly_line}{clv_line}\n"
-            f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  {conf_icon} <b>Confidence: {ai_data['confidence']}%</b>"
-            f"{ml_line}\n"
+            f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  "
+            f"{conf_icon} <b>Confidence: {ai_data['confidence']}%</b>"
+            f"{ml_line}{data_badge}\n"
             f"{sharp_badge}\n\n"
             f"💡 <b>EXPERT ANALYSIS:</b>\n"
             f"<blockquote>{html_lib.escape(ai_data['logic'])}</blockquote>\n\n"
@@ -2288,9 +2483,16 @@ async def async_main():
 
         if send_telegram(msg):
             sent_history.mark_sent(home, away, opp["pick"], opp["market"])
-            performance_tracker.record_signal(home, away, opp["pick"], opp["market"], opp["odds"], opp["ev"], ai_data["confidence"], opp["prob"])
+            performance_tracker.record_signal(
+                home, away, opp["pick"], opp["market"],
+                opp["odds"], opp["ev"], ai_data["confidence"], opp["prob"],
+            )
             total_sent += 1
-            logger.info("📤 SENT: %s vs %s | %s | EV=%.2f%% | Conf=%d%%", home, away, opp["pick"], opp["edge_pct"], ai_data["confidence"])
+            logger.info(
+                "📤 SENT: %s vs %s | %s | EV=%.2f%% | Kelly=%.1f%% | Conf=%d%%",
+                home, away, opp["pick"],
+                opp["edge_pct"], opp.get("kelly_pct", 0), ai_data["confidence"],
+            )
         else:
             logger.error("❌ Telegram failed: %s vs %s", home, away)
 
@@ -2298,8 +2500,29 @@ async def async_main():
 
     # ── Summary ───────────────────────────────────────────
     logger.info("=" * 65)
-    logger.info("📊 SUMMARY | Analyzed: %d | Sent: %d | Skipped(conf): %d", total_analyzed, total_sent, skipped_confidence)
+    logger.info(
+        "📊 SUMMARY | Analyzed: %d | Sent: %d | Skipped(conf): %d",
+        total_analyzed, total_sent, skipped_confidence
+    )
+    if total_sent == 0 and total_analyzed == 0:
+        logger.info("ℹ️  No qualifying +EV opportunities in current window.")
+    elif total_sent == 0:
+        logger.info(
+            "ℹ️  %d opportunities found but filtered by confidence threshold (%d).",
+            total_analyzed, CFG.MIN_CONFIDENCE_TO_SEND
+        )
     logger.info("📊 [FINAL API USAGE] %s", odds_key_manager.get_usage_summary())
+
+    perf = performance_tracker.data.get("summary", {})
+    if perf.get("resolved", 0) > 0:
+        logger.info(
+            "📈 [PERFORMANCE] WR=%.1f%% | ROI=%.1f%% | Signals=%d",
+            perf["win_rate"] * 100,
+            perf["roi_pct"],
+            perf["total_signals"],
+        )
+    logger.info("=" * 65)
+
 
 if __name__ == "__main__":
     try:
