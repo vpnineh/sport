@@ -208,7 +208,9 @@
     "commence_time": "2026-05-31T04:00:00Z",
     "sport_key": "rugbyleague_nrl",
     "sent_at": "2026-05-31T02:30:48.068917+00:00",
-    "result_checked": false
+    "result_checked": true,
+    "result": "26 - 30",
+    "won": true
   },
   "3dda6bacd3dabc98e30ed38973e67b9b": {
     "match": "Hokkaido Nippon-Ham Fighters vs Yomiuri Giants",
