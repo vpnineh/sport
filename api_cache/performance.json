@@ -1,0 +1,22 @@
+{
+  "bets": [
+    {
+      "id": "91804f0c",
+      "home": "Columbus Aviators",
+      "away": "Louisville Kings",
+      "pick": "Columbus Aviators",
+      "market": "h2h",
+      "our_odds": 2.2,
+      "ev_at_bet": 3.97,
+      "confidence": 63,
+      "sport_key": "americanfootball_ufl",
+      "bet_time": "2026-05-31T18:17:06.977236+00:00",
+      "result": null,
+      "won": null,
+      "closing_odds": null,
+      "clv": null,
+      "profit": null
+    }
+  ],
+  "summary": {}
+}

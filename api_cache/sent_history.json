@@ -325,5 +325,17 @@
     "sport_title": "NCAA Baseball",
     "sent_at": "2026-05-31T16:37:29.702314+00:00",
     "result_checked": false
+  },
+  "10de6feafda9574439c1767e366642ed": {
+    "home": "Columbus Aviators",
+    "away": "Louisville Kings",
+    "pick": "Columbus Aviators",
+    "market": "h2h",
+    "odds": 2.2,
+    "commence_time": "2026-05-31T22:00:00Z",
+    "sport_key": "americanfootball_ufl",
+    "sport_title": "UFL",
+    "sent_at": "2026-05-31T18:17:06.976526+00:00",
+    "result_checked": false
   }
 }

@@ -4550,3 +4550,192 @@
 2026-05-31 16:37:32 | INFO     | CHECK | Signals sent                               | OK | 1
 2026-05-31 16:37:32 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=238 | 1275084d…:ok/rem=244
 2026-05-31 16:37:32 | INFO     | RapidAPI stats: key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
+2026-05-31 18:17:01 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 18:17:01 | INFO     |   KEY STATUS
+2026-05-31 18:17:01 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 18:17:01 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 18:17:01 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 18:17:01 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 18:17:01 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 18:17:01 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 18:17:01 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 18:17:01 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 18:17:01 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 18:17:01 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 18:17:01 | INFO     | Odds API keys: 3/3 | RapidAPI keys: 2/2
+2026-05-31 18:17:01 | INFO     | ============================================================
+2026-05-31 18:17:01 | INFO     |   ZBET90 ENTERPRISE ENGINE v6.1 STARTING
+2026-05-31 18:17:01 | INFO     | ============================================================
+2026-05-31 18:17:01 | INFO     | OddsKeyManager status:
+2026-05-31 18:17:01 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 18:17:01 | INFO     |   key=4342465d…    status=ok         remaining=238   used=262
+2026-05-31 18:17:01 | INFO     |   key=1275084d…    status=ok         remaining=244   used=256
+2026-05-31 18:17:01 | INFO     | RapidKeyManager: 2 key(s) | primary=79035f8b…
+2026-05-31 18:17:01 | INFO     | ============================================================
+2026-05-31 18:17:01 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 18:17:01 | INFO     | ============================================================
+2026-05-31 18:17:01 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 18:17:02 | INFO     | Key 4342465d… ✅ VALID | sports=41 remaining=238 used=262
+2026-05-31 18:17:02 | INFO     | Key 1275084d… ✅ VALID | sports=41 remaining=244 used=256
+2026-05-31 18:17:02 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=238 | 1275084d…:ok/rem=244
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 18:17:02 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 18:17:02 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 18:17:02 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 18:17:02 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-31 18:17:02 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-31 18:17:02 | INFO     | CHECK | FD calls today                             | OK | 44
+2026-05-31 18:17:02 | INFO     | DailyCache HIT → daily_rapid_stats.json (saved=2026-05-31T15:04)
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     | CHECK | Pending results                            | OK | 13
+2026-05-31 18:17:02 | INFO     | Checking result: Song Yadong vs Deiveson Figueiredo [Deiveson Figueiredo]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-31 18:17:02 | INFO     | Checking result: Moise Kouame vs Alejandro Tabilo [Moise Kouame]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-31 18:17:02 | INFO     | Checking result: Matteo Arnaldi vs Raphael Collignon [Matteo Arnaldi]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-31 18:17:02 | INFO     | Checking result: Victoria Mboko vs Madison Keys [Madison Keys]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-31 18:17:02 | INFO     | Checking result: Coco Gauff vs Anastasia Potapova [Anastasia Potapova]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-31 18:17:02 | INFO     | Checking result: FC Lahti vs Ilves Tampere [FC Lahti]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-31 18:17:02 | INFO     | Checking result: Molde vs Sandefjord [Molde]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-31 18:17:02 | INFO     | Checking result: TPS Turku vs VPS Vaasa [VPS Vaasa]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-31 18:17:02 | INFO     | Checking result: Felix Auger-Aliassime vs Brandon Nakashima [Brandon Nakashima]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-31 18:17:02 | INFO     | Checking result: Arizona St Sun Devils vs South Dakota St Jackrabbits [South Dakota St Jackrabbits]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-31 18:17:02 | INFO     | Checking result: NC State Wolfpack vs Auburn Tigers [NC State Wolfpack]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: NC State Wolfpack vs Auburn Tigers
+2026-05-31 18:17:02 | INFO     | Checking result: O'Shaquie Foster vs Raymond Ford [Draw]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=4342465d… status=ok remaining=238
+2026-05-31 18:17:02 | INFO     | No result yet: O'Shaquie Foster vs Raymond Ford
+2026-05-31 18:17:02 | INFO     | Checking result: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants [Yomiuri Giants]
+2026-05-31 18:17:02 | DEBUG    | OddsKeyManager: key=1275084d… status=ok remaining=244
+2026-05-31 18:17:02 | INFO     | No result yet: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     |   PHASE 2 — ODDS FETCH (daily cache)
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     |   ODDS API — DAILY FETCH
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     | DailyCache HIT → daily_odds.json (saved=2026-05-31T15:03)
+2026-05-31 18:17:02 | INFO     | OddsAPI DailyCache HIT: total=318 | in_window=24
+2026-05-31 18:17:02 | INFO     | CHECK | Events in window                           | OK | 24
+2026-05-31 18:17:02 | INFO     | RapidAPI DailyCache fresh ✅ — skip prefetch | key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     | Processing: Columbus Aviators              vs Louisville Kings               [UFL]
+2026-05-31 18:17:02 | INFO     | EV ✅ [h2h     ] pick='Columbus Aviators' ev=4.0% odds=2.20 bookie=FanDuel elo=False sharp=True weights=N/A
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | INFO     |   STATS: Columbus Aviators vs Louisville Kings
+2026-05-31 18:17:02 | INFO     | ============================================================
+2026-05-31 18:17:02 | WARNING  | ELO insufficient: Columbus Aviators(hm=0) Louisville Kings(am=0)
+2026-05-31 18:17:02 | INFO     | RapidAPI fetch: Columbus Aviators vs Louisville Kings (sport=football req#0)
+2026-05-31 18:17:03 | ERROR    | ❌ RapidAPI auth error 403 on endpoint=search/multi-search
+2026-05-31 18:17:03 | WARNING  | ⚠️  RapidAPI 429 on key#1
+2026-05-31 18:17:03 | WARNING  | RapidAPI key#1 rate-limited → paused 3m
+2026-05-31 18:17:03 | INFO     | RapidAPI switched to key#2
+2026-05-31 18:17:05 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 18:17:05 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 18:17:05 | INFO     | DailyCache saved → daily_rapid_stats.json
+2026-05-31 18:17:05 | INFO     | RapidAPI cached: Columbus Aviators vs Louisville Kings | fields=[]
+2026-05-31 18:17:05 | INFO     | DATA QUALITY | Columbus Aviators vs Louisville Kings | NONE (fb=False ss=False elo=False src=[])
+2026-05-31 18:17:05 | INFO     | Confidence=63 risk=Medium (dq=none ev=4.0% hm=0 am=0 sharp=True src=[])
+2026-05-31 18:17:06 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=310 | out={
+"sport_emoji": "🏈",
+  "home_flag": "🇺🇸",
+  "away_flag": "🇺🇸",
+  "logic": "The 
+2026-05-31 18:17:06 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 18:17:06 | INFO     | Groq llama-3.1-8b-instant             | tokens=201 | out={
+  "validated_logic": "The market has moved in favor of Columbus Aviators, indi
+2026-05-31 18:17:06 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 18:17:06 | INFO     | AI final conf=63 risk=Medium | 'The market has moved in favor of Columbus Aviators, indicating a strong confiden'
+2026-05-31 18:17:06 | INFO     | SIGNAL | Columbus Aviators vs Louisville Kings | pick=Columbus Aviators to Win (1) odds=2.20 ev=4.0% conf=63%
+2026-05-31 18:17:06 | INFO     | ✅ Sent: Columbus Aviators vs Louisville Kings
+2026-05-31 18:17:09 | INFO     | Processing: Sugar Land Space Cowboys       vs Oklahoma City Comets           [MiLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Sugar Land Space Cowboys vs Oklahoma City Comets
+2026-05-31 18:17:09 | INFO     | Processing: Albuquerque Isotopes           vs El Paso Chihuahuas             [MiLB]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.137 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Albuquerque Isotopes vs El Paso Chihuahuas
+2026-05-31 18:17:09 | INFO     | Processing: Reno Aces                      vs Sacramento River Cats          [MiLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Reno Aces vs Sacramento River Cats
+2026-05-31 18:17:09 | INFO     | Processing: Tacoma Rainiers                vs Las Vegas Aviators             [MiLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Tacoma Rainiers vs Las Vegas Aviators
+2026-05-31 18:17:09 | INFO     | Processing: Omaha Storm Chasers            vs Memphis Redbirds               [MiLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Omaha Storm Chasers vs Memphis Redbirds
+2026-05-31 18:17:09 | INFO     | Processing: Texas Rangers                  vs Kansas City Royals             [MLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Texas Rangers vs Kansas City Royals
+2026-05-31 18:17:09 | INFO     | Processing: Colorado Rockies               vs San Francisco Giants           [MLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Colorado Rockies vs San Francisco Giants
+2026-05-31 18:17:09 | INFO     | Processing: Athletics                      vs New York Yankees               [MLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Athletics vs New York Yankees
+2026-05-31 18:17:09 | INFO     | Processing: Seattle Mariners               vs Arizona Diamondbacks           [MLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Seattle Mariners vs Arizona Diamondbacks
+2026-05-31 18:17:09 | INFO     | Processing: Los Angeles Dodgers            vs Philadelphia Phillies          [MLB]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Los Angeles Dodgers vs Philadelphia Phillies
+2026-05-31 18:17:09 | INFO     | Processing: Auburn Tigers                  vs UCF Knights                    [NCAA Baseball]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.072 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Auburn Tigers vs UCF Knights
+2026-05-31 18:17:09 | INFO     | Processing: Louisiana Ragin' Cajuns        vs Cincinnati Bearcats            [NCAA Baseball]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.120 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Louisiana Ragin' Cajuns vs Cincinnati Bearcats
+2026-05-31 18:17:09 | INFO     | Processing: South Carolina Upstate Spartans vs Oklahoma St Cowboys            [NCAA Baseball]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.089 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: South Carolina Upstate Spartans vs Oklahoma St Cowboys
+2026-05-31 18:17:09 | INFO     | Processing: Jacksonville St Gamecocks      vs Virginia Cavaliers             [NCAA Baseball]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.130 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Jacksonville St Gamecocks vs Virginia Cavaliers
+2026-05-31 18:17:09 | INFO     | Processing: Washington St Cougars          vs Oregon St Beavers              [NCAA Baseball]
+2026-05-31 18:17:09 | INFO     | EV ✅ [h2h     ] pick='Washington St Cougars' ev=4.5% odds=3.55 bookie=FanDuel elo=False sharp=True weights=N/A
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.102 out of range
+2026-05-31 18:17:09 | INFO     | SKIP duplicate: Washington St Cougars vs Oregon St Beavers
+2026-05-31 18:17:09 | INFO     | Processing: Saint Mary's Gaels             vs UCLA Bruins                    [NCAA Baseball]
+2026-05-31 18:17:09 | WARNING  | EV rejected (too high=12.2%) for Saint Mary's Gaels
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.179 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Saint Mary's Gaels vs UCLA Bruins
+2026-05-31 18:17:09 | INFO     | Processing: Texas State Bobcats            vs USC Trojans                    [NCAA Baseball]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=3.022 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Texas State Bobcats vs USC Trojans
+2026-05-31 18:17:09 | INFO     | Processing: Golden State Valkyries         vs Las Vegas Aces                 [WNBA]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.074 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Golden State Valkyries vs Las Vegas Aces
+2026-05-31 18:17:09 | INFO     | Processing: Vasco da Gama                  vs Atletico Mineiro               [Brazil Série A]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.036 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Vasco da Gama vs Atletico Mineiro
+2026-05-31 18:17:09 | INFO     | Processing: Palmeiras                      vs Chapecoense                    [Brazil Série A]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.041 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Palmeiras vs Chapecoense
+2026-05-31 18:17:09 | INFO     | Processing: Ceará                          vs Operario PR                    [Brazil Série B]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.040 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: Ceará vs Operario PR
+2026-05-31 18:17:09 | INFO     | Processing: Huachipato                     vs Universidad Católica (CHI)     [Primera División - Chile]
+2026-05-31 18:17:09 | INFO     | SKIP no value: Huachipato vs Universidad Católica (CHI)
+2026-05-31 18:17:09 | INFO     | Processing: O'Higgins                      vs Everton de Viña del Mar        [Primera División - Chile]
+2026-05-31 18:17:09 | DEBUG    | EV skip [totals]: implied_sum=2.049 out of range
+2026-05-31 18:17:09 | INFO     | SKIP no value: O'Higgins vs Everton de Viña del Mar
+2026-05-31 18:17:09 | INFO     | ============================================================
+2026-05-31 18:17:09 | INFO     |   RUN COMPLETE
+2026-05-31 18:17:09 | INFO     | ============================================================
+2026-05-31 18:17:09 | INFO     | CHECK | Signals sent                               | OK | 1
+2026-05-31 18:17:09 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=236 | 1275084d…:ok/rem=244
+2026-05-31 18:17:09 | INFO     | RapidAPI stats: key#1(79035f…):blocked/req=2 | key#2(817732…):ok/req=2
