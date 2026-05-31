@@ -3246,3 +3246,428 @@
 2026-05-31 14:12:09 | INFO     | DailyCache HIT: daily_odds.json (saved=2026-05-31T02:30)
 2026-05-31 14:12:09 | INFO     | OddsAPI DailyCache HIT: 8 total → 0 in window
 2026-05-31 14:12:09 | ERROR    | No events received. Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=470
+2026-05-31 14:16:47 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 14:16:47 | INFO     |   KEY STATUS
+2026-05-31 14:16:47 | INFO     | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-31 14:16:47 | INFO     | KEY  | ODDS_API_KEY1  | SET  | len=32  | prefix=b99dc2…
+2026-05-31 14:16:47 | INFO     | KEY  | ODDS_API_KEY2  | SET  | len=32  | prefix=434246…
+2026-05-31 14:16:47 | INFO     | KEY  | ODDS_API_KEY3  | SET  | len=32  | prefix=127508…
+2026-05-31 14:16:47 | INFO     | KEY  | RAPIDAPI_KEY                 | SET  | len=50  | prefix=79035f…
+2026-05-31 14:16:47 | INFO     | KEY  | RAPIDAPI_KEY2                | SET  | len=50  | prefix=817732…
+2026-05-31 14:16:47 | INFO     | KEY  | GROQ_API_KEY                 | SET  | len=56  | prefix=gsk_…
+2026-05-31 14:16:47 | INFO     | KEY  | TELEGRAM_BOT_TOKEN           | SET  | len=46  | prefix=8854…
+2026-05-31 14:16:47 | INFO     | KEY  | TELEGRAM_CHAT_ID             | SET  | len=7   | prefix=@zbe…
+2026-05-31 14:16:47 | INFO     | KEY  | FOOTBALL_DATA_API_KEY        | SET  | len=32  | prefix=874a…
+2026-05-31 14:16:47 | INFO     | Odds API keys: 3/3 | RapidAPI keys: 2/2
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     |   ZBET90 ENTERPRISE ENGINE v5.0 STARTING
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     | OddsKeyManager status:
+2026-05-31 14:16:47 | INFO     |   key=b99dc2cf…    status=invalid    remaining=1     used=499
+2026-05-31 14:16:47 | INFO     |   key=4342465d…    status=ok         remaining=468   used=32
+2026-05-31 14:16:47 | INFO     |   key=1275084d…    status=ok         remaining=470   used=30
+2026-05-31 14:16:47 | INFO     | RapidKeyManager: 2 key(s) loaded | primary=79035f8b…
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     |   VALIDATING ALL ODDS API KEYS
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     | Key b99dc2cf…: already INVALID — skip
+2026-05-31 14:16:47 | INFO     | Key 4342465d… ✅ VALID | sports=45 remaining=468 used=32
+2026-05-31 14:16:47 | INFO     | Key 1275084d… ✅ VALID | sports=45 remaining=468 used=32
+2026-05-31 14:16:47 | INFO     | Validation summary: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=468
+2026-05-31 14:16:47 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:47 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 14:16:47 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 14:16:47 | INFO     | CHECK | ELO football loaded                        | OK | 358 entities
+2026-05-31 14:16:47 | INFO     | CHECK | ELO tennis loaded                          | OK | 1494 entities
+2026-05-31 14:16:47 | INFO     | CHECK | ELO football teams                         | OK | 358
+2026-05-31 14:16:47 | INFO     | CHECK | ELO tennis players                         | OK | 1494
+2026-05-31 14:16:47 | DEBUG    | SentHistory: cleaned 3 old entries
+2026-05-31 14:16:47 | INFO     | FD call counter reset (new day)
+2026-05-31 14:16:47 | INFO     | CHECK | FD calls today                             | OK | 0
+2026-05-31 14:16:47 | INFO     | DailyCache HIT: daily_rapid_stats.json (saved=2026-05-31T02:30)
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     |   PHASE 1 — RESULTS CHECK
+2026-05-31 14:16:47 | INFO     | ============================================================
+2026-05-31 14:16:47 | INFO     | CHECK | Pending results                            | OK | 13
+2026-05-31 14:16:47 | INFO     | Checking: Song Yadong vs Deiveson Figueiredo | Deiveson Figueiredo
+2026-05-31 14:16:47 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:47 | INFO     | No result yet: Song Yadong vs Deiveson Figueiredo
+2026-05-31 14:16:47 | INFO     | Checking: Moise Kouame vs Alejandro Tabilo | Moise Kouame
+2026-05-31 14:16:47 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:47 | INFO     | No result yet: Moise Kouame vs Alejandro Tabilo
+2026-05-31 14:16:47 | INFO     | Checking: Matteo Arnaldi vs Raphael Collignon | Matteo Arnaldi
+2026-05-31 14:16:47 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:48 | INFO     | No result yet: Matteo Arnaldi vs Raphael Collignon
+2026-05-31 14:16:48 | INFO     | Checking: Victoria Mboko vs Madison Keys | Madison Keys
+2026-05-31 14:16:48 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:48 | INFO     | No result yet: Victoria Mboko vs Madison Keys
+2026-05-31 14:16:48 | INFO     | Checking: Coco Gauff vs Anastasia Potapova | Anastasia Potapova
+2026-05-31 14:16:48 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:48 | INFO     | No result yet: Coco Gauff vs Anastasia Potapova
+2026-05-31 14:16:48 | INFO     | Checking: FC Lahti vs Ilves Tampere | FC Lahti
+2026-05-31 14:16:48 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:48 | INFO     | No result yet: FC Lahti vs Ilves Tampere
+2026-05-31 14:16:48 | INFO     | Checking: Molde vs Sandefjord | Molde
+2026-05-31 14:16:48 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:48 | INFO     | No result yet: Molde vs Sandefjord
+2026-05-31 14:16:48 | INFO     | Checking: TPS Turku vs VPS Vaasa | VPS Vaasa
+2026-05-31 14:16:48 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: TPS Turku vs VPS Vaasa
+2026-05-31 14:16:49 | INFO     | Checking: Felix Auger-Aliassime vs Brandon Nakashima | Brandon Nakashima
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: Felix Auger-Aliassime vs Brandon Nakashima
+2026-05-31 14:16:49 | INFO     | Checking: Arizona St Sun Devils vs South Dakota St Jackrabbits | South Dakota St Jackrabbits
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: Arizona St Sun Devils vs South Dakota St Jackrabbits
+2026-05-31 14:16:49 | INFO     | Checking: NC State Wolfpack vs Auburn Tigers | NC State Wolfpack
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: NC State Wolfpack vs Auburn Tigers
+2026-05-31 14:16:49 | INFO     | Checking: O'Shaquie Foster vs Raymond Ford | Draw
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: O'Shaquie Foster vs Raymond Ford
+2026-05-31 14:16:49 | INFO     | Checking: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants | Yomiuri Giants
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:49 | INFO     | No result yet: Hokkaido Nippon-Ham Fighters vs Yomiuri Giants
+2026-05-31 14:16:49 | INFO     | ============================================================
+2026-05-31 14:16:49 | INFO     |   PHASE 2 — FETCHING ODDS
+2026-05-31 14:16:49 | INFO     | ============================================================
+2026-05-31 14:16:49 | INFO     | ============================================================
+2026-05-31 14:16:49 | INFO     |   ODDS API — FETCHING ALL LEAGUES
+2026-05-31 14:16:49 | INFO     | ============================================================
+2026-05-31 14:16:49 | INFO     | Key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=468 | 1275084d…:ok/rem=468
+2026-05-31 14:16:49 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:50 | INFO     | Found 36 active sports/leagues. Fetching...
+2026-05-31 14:16:50 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=468)
+2026-05-31 14:16:50 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=468)
+2026-05-31 14:16:51 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=460)
+2026-05-31 14:16:52 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=458)
+2026-05-31 14:16:52 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=452)
+2026-05-31 14:16:53 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=450)
+2026-05-31 14:16:53 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=444)
+2026-05-31 14:16:54 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=442)
+2026-05-31 14:16:55 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=436)
+2026-05-31 14:16:55 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=434)
+2026-05-31 14:16:56 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=428)
+2026-05-31 14:16:57 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=426)
+2026-05-31 14:16:57 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=420)
+2026-05-31 14:16:58 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=418)
+2026-05-31 14:16:58 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=412)
+2026-05-31 14:16:59 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=410)
+2026-05-31 14:17:00 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=404)
+2026-05-31 14:17:00 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=402)
+2026-05-31 14:17:01 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=396)
+2026-05-31 14:17:02 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=394)
+2026-05-31 14:17:02 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=388)
+2026-05-31 14:17:03 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=386)
+2026-05-31 14:17:03 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=380)
+2026-05-31 14:17:04 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=378)
+2026-05-31 14:17:05 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=372)
+2026-05-31 14:17:05 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=370)
+2026-05-31 14:17:06 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=364)
+2026-05-31 14:17:06 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=362)
+2026-05-31 14:17:08 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=356)
+2026-05-31 14:17:08 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=354)
+2026-05-31 14:17:09 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=348)
+2026-05-31 14:17:09 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=346)
+2026-05-31 14:17:10 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=340)
+2026-05-31 14:17:10 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=340)
+2026-05-31 14:17:11 | INFO     | OddsKeyManager: selected key=4342465d… (status=ok remaining=338)
+2026-05-31 14:17:11 | INFO     | OddsKeyManager: selected key=1275084d… (status=ok remaining=332)
+2026-05-31 14:17:12 | INFO     | ✅ Fetched 448 TOTAL events across 36 leagues. Caching...
+2026-05-31 14:17:12 | INFO     | DailyCache saved: daily_odds.json
+2026-05-31 14:17:12 | INFO     | Events in window: 28/448
+2026-05-31 14:17:12 | INFO     | CHECK | Total events in window                     | OK | 28
+2026-05-31 14:17:12 | INFO     | RapidAPI DailyCache fresh ✅ — skipping prefetch | key#1(79035f…):ok/req=0 | key#2(817732…):ok/req=0
+2026-05-31 14:17:12 | INFO     | ============================================================
+2026-05-31 14:17:12 | INFO     |   PHASE 3 — ANALYSIS & SIGNALS
+2026-05-31 14:17:12 | INFO     | ============================================================
+2026-05-31 14:17:12 | INFO     | Processing: DC Defenders vs Orlando Storm [UFL]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: DC Defenders vs Orlando Storm (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Buffalo Bisons vs Lehigh Valley IronPigs [MiLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Buffalo Bisons vs Lehigh Valley IronPigs (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Charlotte Knights vs Jacksonville Jumbo Shrimp [MiLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Charlotte Knights vs Jacksonville Jumbo Shrimp (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Norfolk Tides vs Durham Bulls [MiLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Norfolk Tides vs Durham Bulls (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Louisville Bats vs St. Paul Saints [MiLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Louisville Bats vs St. Paul Saints (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Rochester Red Wings vs Syracuse Mets [MiLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Rochester Red Wings vs Syracuse Mets (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Baltimore Orioles vs Toronto Blue Jays [MLB]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Baltimore Orioles vs Toronto Blue Jays (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Liberty Flames vs Boston College Eagles [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Liberty Flames vs Boston College Eagles (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: East Carolina Pirates vs VCU Rams [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: East Carolina Pirates vs VCU Rams (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Troy Trojans vs Miami Hurricanes [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Troy Trojans vs Miami Hurricanes (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: West Virginia Mountaineers vs Wake Forest Demon Deacons [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: West Virginia Mountaineers vs Wake Forest Demon Deacons (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Northeastern Huskies vs Arkansas Razorbacks [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Northeastern Huskies vs Arkansas Razorbacks (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: The Citadel Bulldogs vs Oklahoma Sooners [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: The Citadel Bulldogs vs Oklahoma Sooners (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Tarleton State Texans vs UC Santa Barbara Gauchos [NCAA Baseball]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Tarleton State Texans vs UC Santa Barbara Gauchos (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Essex vs Derbyshire [T20 Blast]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Essex vs Derbyshire (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Surrey vs Kent [T20 Blast]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Surrey vs Kent (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Gent vs Genk [Belgium First Div]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Gent vs Genk (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Deportes Limache vs Coquimbo Unido [Primera División - Chile]
+2026-05-31 14:17:12 | INFO     | SKIP no value/odds: Deportes Limache vs Coquimbo Unido (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:12 | INFO     | Processing: Almería vs Real Valladolid CF [La Liga 2 - Spain]
+2026-05-31 14:17:12 | INFO     | EV [h2h] pick='Draw' ev=8.0% odds=5.50 bookie=Smarkets elo=True
+2026-05-31 14:17:12 | INFO     | ============================================================
+2026-05-31 14:17:12 | INFO     |   STATS: Almería vs Real Valladolid CF
+2026-05-31 14:17:12 | INFO     | ============================================================
+2026-05-31 14:17:12 | WARNING  | ELO insufficient: Almería(hm=0) Real Valladolid CF(am=0)
+2026-05-31 14:17:12 | INFO     | RapidAPI fetching: Almería vs Real Valladolid CF (total_req=0)
+2026-05-31 14:17:13 | ERROR    | ❌ RapidAPI auth error 403 on key#1
+2026-05-31 14:17:14 | WARNING  | ⚠️  RapidAPI 429 on key#1 — switching
+2026-05-31 14:17:14 | WARNING  | RapidAPI key#1 rate-limited → paused 3 min
+2026-05-31 14:17:14 | INFO     | RapidAPI switched to key#2
+2026-05-31 14:17:16 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:17:16 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:17:16 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:17:16 | INFO     | RapidAPI cached: Almería vs Real Valladolid CF | keys=[] | total_req=5
+2026-05-31 14:17:17 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:19 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:20 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:21 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:22 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:24 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:25 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:27 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:28 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:28 | WARNING  | FD: team 'Almería' NOT found
+2026-05-31 14:17:29 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:31 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:17:31 | INFO     | FD: 'Real Valladolid CF' → id=250 (comp=PD)
+2026-05-31 14:17:31 | WARNING  | CHECK | FD id 'Almería'                            | EMPTY/NONE
+2026-05-31 14:17:31 | INFO     | CHECK | FD id 'Real Valladolid CF'                 | OK | 250
+2026-05-31 14:17:31 | INFO     | DATA QUALITY | Almería vs Real Valladolid CF | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 14:17:31 | INFO     | Confidence=67 risk=Medium (dq=none ev=8.0% hm=0 am=0 sharp=True sources=[])
+2026-05-31 14:17:31 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=286 | out={
+"sport_emoji": "⚽",
+  "home_flag": "🇪🇸",
+  "away_flag": "🇪🇸",
+  "logic": "Shar
+2026-05-31 14:17:31 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:17:31 | INFO     | Groq llama-3.1-8b-instant             | tokens=181 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick. The odds imply
+2026-05-31 14:17:31 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:17:31 | INFO     | AI final conf=67 risk=Medium | 'Sharp market discrepancy drives the pick. The odds imply a significant bias towa'
+2026-05-31 14:17:31 | INFO     | SIGNAL | Almería vs Real Valladolid CF | pick=Match to end in a Draw (X) odds=5.50 ev=8.0% conf=67%
+2026-05-31 14:17:32 | INFO     | ✅ Sent: Almería vs Real Valladolid CF
+2026-05-31 14:17:35 | INFO     | Processing: Burgos CF vs Andorra CF [La Liga 2 - Spain]
+2026-05-31 14:17:35 | INFO     | SKIP no value/odds: Burgos CF vs Andorra CF (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:17:35 | INFO     | Processing: CD Castellón vs SD Eibar [La Liga 2 - Spain]
+2026-05-31 14:17:35 | INFO     | EV [h2h] pick='Draw' ev=3.5% odds=5.00 bookie=Betfair elo=True
+2026-05-31 14:17:35 | INFO     | ============================================================
+2026-05-31 14:17:35 | INFO     |   STATS: CD Castellón vs SD Eibar
+2026-05-31 14:17:35 | INFO     | ============================================================
+2026-05-31 14:17:35 | WARNING  | ELO insufficient: CD Castellón(hm=0) SD Eibar(am=0)
+2026-05-31 14:17:35 | INFO     | RapidAPI fetching: CD Castellón vs SD Eibar (total_req=5)
+2026-05-31 14:17:35 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:17:36 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:17:36 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:17:36 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:17:36 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:17:36 | INFO     | RapidAPI cached: CD Castellón vs SD Eibar | keys=[] | total_req=9
+2026-05-31 14:17:37 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:17:37 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:17:49 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:17:49 | WARNING  | 429 _get — sleep 18s
+2026-05-31 14:18:14 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:18:14 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:18:28 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:29 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:30 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:31 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:32 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:34 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:35 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:36 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:36 | WARNING  | FD: team 'CD Castellón' NOT found
+2026-05-31 14:18:37 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:38 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:40 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:18:40 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:18:40 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:18:53 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:18:53 | WARNING  | 429 _get — sleep 18s
+2026-05-31 14:19:18 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:19:18 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:19:31 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:32 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:33 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:34 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:36 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:36 | WARNING  | FD: team 'SD Eibar' NOT found
+2026-05-31 14:19:36 | WARNING  | CHECK | FD id 'CD Castellón'                       | EMPTY/NONE
+2026-05-31 14:19:36 | WARNING  | CHECK | FD id 'SD Eibar'                           | EMPTY/NONE
+2026-05-31 14:19:36 | INFO     | DATA QUALITY | CD Castellón vs SD Eibar | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 14:19:36 | INFO     | Confidence=63 risk=Medium (dq=none ev=3.5% hm=0 am=0 sharp=True sources=[])
+2026-05-31 14:19:36 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=284 | out={
+"sport_emoji": "⚽",
+  "home_flag": "🇪🇸",
+  "away_flag": "🇪🇸",
+  "logic": "Shar
+2026-05-31 14:19:36 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:19:36 | INFO     | Groq llama-3.1-8b-instant             | tokens=161 | out={
+  "validated_logic": "Sharp money indicates a more even contest despite odds i
+2026-05-31 14:19:36 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:19:36 | INFO     | AI final conf=63 risk=Medium | 'Sharp money indicates a more even contest despite odds implying a significant di'
+2026-05-31 14:19:36 | INFO     | SIGNAL | CD Castellón vs SD Eibar | pick=Match to end in a Draw (X) odds=5.00 ev=3.5% conf=63%
+2026-05-31 14:19:37 | INFO     | ✅ Sent: CD Castellón vs SD Eibar
+2026-05-31 14:19:40 | INFO     | Processing: Real Racing Club de Santander vs Cádiz CF [La Liga 2 - Spain]
+2026-05-31 14:19:40 | INFO     | EV [h2h] pick='Draw' ev=9.7% odds=5.70 bookie=Betfair elo=True
+2026-05-31 14:19:40 | INFO     | ============================================================
+2026-05-31 14:19:40 | INFO     |   STATS: Real Racing Club de Santander vs Cádiz CF
+2026-05-31 14:19:40 | INFO     | ============================================================
+2026-05-31 14:19:40 | WARNING  | ELO insufficient: Real Racing Club de Santander(hm=0) Cádiz CF(am=0)
+2026-05-31 14:19:40 | INFO     | RapidAPI fetching: Real Racing Club de Santander vs Cádiz CF (total_req=9)
+2026-05-31 14:19:40 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:19:41 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:19:41 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:19:41 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:19:41 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:19:41 | INFO     | RapidAPI cached: Real Racing Club de Santander vs Cádiz CF | keys=[] | total_req=13
+2026-05-31 14:19:43 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:44 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:45 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:46 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:47 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:48 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:19:50 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:19:50 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:20:02 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:20:02 | WARNING  | 429 _get — sleep 18s
+2026-05-31 14:20:27 | INFO     | API▶ FootballData           | status=429 | records=0    | {'season': '2024'}
+2026-05-31 14:20:27 | WARNING  | 429 _get — sleep 9s
+2026-05-31 14:20:41 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:42 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:42 | WARNING  | FD: team 'Real Racing Club de Santander' NOT found
+2026-05-31 14:20:44 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:45 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:46 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:48 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:49 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:50 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:51 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:52 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:54 | INFO     | API▶ FootballData           | status=200 | records=0    | {'season': '2024'}
+2026-05-31 14:20:54 | WARNING  | FD: team 'Cádiz CF' NOT found
+2026-05-31 14:20:54 | WARNING  | CHECK | FD id 'Real Racing Club de Santander'      | EMPTY/NONE
+2026-05-31 14:20:54 | WARNING  | CHECK | FD id 'Cádiz CF'                           | EMPTY/NONE
+2026-05-31 14:20:54 | INFO     | DATA QUALITY | Real Racing Club de Santander vs Cádiz CF | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 14:20:54 | INFO     | Confidence=67 risk=Medium (dq=none ev=9.7% hm=0 am=0 sharp=True sources=[])
+2026-05-31 14:20:54 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=288 | out={
+"sport_emoji": "⚽",
+  "home_flag": "🇪🇸",
+  "away_flag": "🇪🇸",
+  "logic": "Shar
+2026-05-31 14:20:54 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:20:55 | INFO     | Groq llama-3.1-8b-instant             | tokens=180 | out={
+  "validated_logic": "Sharp market discrepancy drives the pick. The odds imply
+2026-05-31 14:20:55 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:20:55 | INFO     | AI final conf=67 risk=Medium | 'Sharp market discrepancy drives the pick. The odds imply a significant bias towa'
+2026-05-31 14:20:55 | INFO     | SIGNAL | Real Racing Club de Santander vs Cádiz CF | pick=Match to end in a Draw (X) odds=5.70 ev=9.7% conf=67%
+2026-05-31 14:20:55 | INFO     | ✅ Sent: Real Racing Club de Santander vs Cádiz CF
+2026-05-31 14:20:58 | INFO     | Processing: Deportivo La Coruña vs Las Palmas [La Liga 2 - Spain]
+2026-05-31 14:20:58 | WARNING  | Rejected EV=17.6% for Deportivo La Coruña
+2026-05-31 14:20:58 | INFO     | SKIP no value/odds: Deportivo La Coruña vs Las Palmas (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:20:58 | INFO     | Processing: Zaragoza vs Málaga [La Liga 2 - Spain]
+2026-05-31 14:20:58 | WARNING  | Rejected EV=50.8% for Zaragoza
+2026-05-31 14:20:58 | INFO     | SKIP no value/odds: Zaragoza vs Málaga (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:20:58 | INFO     | Processing: Helsingborgs IF vs IFK Norrkoping [Superettan - Sweden]
+2026-05-31 14:20:58 | INFO     | EV [h2h] pick='Draw' ev=3.2% odds=4.05 bookie=Nordic Bet elo=False
+2026-05-31 14:20:58 | INFO     | ============================================================
+2026-05-31 14:20:58 | INFO     |   STATS: Helsingborgs IF vs IFK Norrkoping
+2026-05-31 14:20:58 | INFO     | ============================================================
+2026-05-31 14:20:58 | WARNING  | ELO insufficient: Helsingborgs IF(hm=0) IFK Norrkoping(am=0)
+2026-05-31 14:20:58 | INFO     | RapidAPI fetching: Helsingborgs IF vs IFK Norrkoping (total_req=13)
+2026-05-31 14:20:59 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:20:59 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:21:00 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:21:00 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:21:00 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:21:00 | INFO     | RapidAPI cached: Helsingborgs IF vs IFK Norrkoping | keys=[] | total_req=17
+2026-05-31 14:21:00 | INFO     | DATA QUALITY | Helsingborgs IF vs IFK Norrkoping | NONE (fb=False ss=False elo=False sources=[])
+2026-05-31 14:21:00 | INFO     | Confidence=63 risk=Medium (dq=none ev=3.2% hm=0 am=0 sharp=True sources=[])
+2026-05-31 14:21:00 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=286 | out={
+"sport_emoji": "⚽",
+  "home_flag": "🇸🇪",
+  "away_flag": "🇸🇪",
+  "logic": "Shar
+2026-05-31 14:21:00 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:21:00 | INFO     | Groq llama-3.1-8b-instant             | tokens=179 | out={
+  "validated_logic": "Market overpricing of Helsingborgs IF and IFK Norrkoping
+2026-05-31 14:21:00 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:21:00 | INFO     | AI final conf=63 risk=Medium | 'Market overpricing of Helsingborgs IF and IFK Norrkoping indicates a draw'
+2026-05-31 14:21:00 | INFO     | SIGNAL | Helsingborgs IF vs IFK Norrkoping | pick=Match to end in a Draw (X) odds=4.05 ev=3.2% conf=63%
+2026-05-31 14:21:00 | INFO     | ✅ Sent: Helsingborgs IF vs IFK Norrkoping
+2026-05-31 14:21:03 | INFO     | Processing: Östersunds FK vs Örebro SK [Superettan - Sweden]
+2026-05-31 14:21:03 | INFO     | SKIP no value/odds: Östersunds FK vs Örebro SK (Odds < 1.50 or EV < 1.5%)
+2026-05-31 14:21:03 | INFO     | Processing: Jakub Mensik vs Andrey Rublev [ATP French Open]
+2026-05-31 14:21:03 | INFO     | EV [h2h] pick='Jakub Mensik' ev=4.4% odds=2.18 bookie=Betfair elo=True
+2026-05-31 14:21:03 | INFO     | ============================================================
+2026-05-31 14:21:03 | INFO     |   STATS: Jakub Mensik vs Andrey Rublev
+2026-05-31 14:21:03 | INFO     | ============================================================
+2026-05-31 14:21:03 | INFO     | ELO | Jakub Mensik vs Andrey Rublev | H=51.1% D=0.0% A=48.9% | hm=49 am=351 diff=7
+2026-05-31 14:21:03 | INFO     | RapidAPI fetching: Jakub Mensik vs Andrey Rublev (total_req=17)
+2026-05-31 14:21:04 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:21:04 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:21:05 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:21:05 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:21:05 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:21:05 | INFO     | RapidAPI cached: Jakub Mensik vs Andrey Rublev | keys=[] | total_req=21
+2026-05-31 14:21:05 | INFO     | DATA QUALITY | Jakub Mensik vs Andrey Rublev | MEDIUM (fb=False ss=False elo=True sources=[])
+2026-05-31 14:21:05 | INFO     | Confidence=81 risk=Low (dq=medium ev=4.4% hm=49 am=351 sharp=True sources=[])
+2026-05-31 14:21:05 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=353 | out={
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+  "logic": "Jakub Me
+2026-05-31 14:21:05 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:21:05 | INFO     | Groq llama-3.1-8b-instant             | tokens=231 | out={
+  "validated_logic": "Jakub Mensik's ELO rating is slightly higher than Andrey
+2026-05-31 14:21:05 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:21:05 | INFO     | AI final conf=81 risk=Low | 'Jakub Mensik's ELO rating is slightly higher than Andrey Rublev's, at 1677 compa'
+2026-05-31 14:21:05 | INFO     | SIGNAL | Jakub Mensik vs Andrey Rublev | pick=Jakub Mensik to Win (1) odds=2.18 ev=4.4% conf=81%
+2026-05-31 14:21:06 | INFO     | ✅ Sent: Jakub Mensik vs Andrey Rublev
+2026-05-31 14:21:09 | INFO     | Processing: Mirra Andreeva vs Jil Teichmann [WTA French Open]
+2026-05-31 14:21:09 | INFO     | EV [h2h] pick='Jil Teichmann' ev=7.5% odds=9.00 bookie=Betfair elo=True
+2026-05-31 14:21:09 | INFO     | ============================================================
+2026-05-31 14:21:09 | INFO     |   STATS: Mirra Andreeva vs Jil Teichmann
+2026-05-31 14:21:09 | INFO     | ============================================================
+2026-05-31 14:21:09 | INFO     | ELO | Mirra Andreeva vs Jil Teichmann | H=86.8% D=0.0% A=13.2% | hm=73 am=144 diff=326
+2026-05-31 14:21:09 | INFO     | RapidAPI fetching: Mirra Andreeva vs Jil Teichmann (total_req=21)
+2026-05-31 14:21:09 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:21:10 | DEBUG    | ⚠️  [Rapid-Search] HTTP 404: search/multi-search
+2026-05-31 14:21:10 | DEBUG    | ⚠️  [Rapid-Scheduled-football] HTTP 404: sport/football/scheduled-events/2026-05-31
+2026-05-31 14:21:10 | DEBUG    | ⚠️  [Rapid-Scheduled-tennis] HTTP 404: sport/tennis/scheduled-events/2026-05-31
+2026-05-31 14:21:10 | INFO     | DailyCache saved: daily_rapid_stats.json
+2026-05-31 14:21:10 | INFO     | RapidAPI cached: Mirra Andreeva vs Jil Teichmann | keys=[] | total_req=25
+2026-05-31 14:21:10 | INFO     | DATA QUALITY | Mirra Andreeva vs Jil Teichmann | MEDIUM (fb=False ss=False elo=True sources=[])
+2026-05-31 14:21:10 | INFO     | Confidence=85 risk=Low (dq=medium ev=7.5% hm=73 am=144 sharp=True sources=[])
+2026-05-31 14:21:11 | INFO     | Groq meta-llama/llama-4-scout-17b-16e-instruct | tokens=341 | out={
+"sport_emoji": "🎾",
+  "home_flag": "",
+  "away_flag": "",
+  "logic": "Sharp ma
+2026-05-31 14:21:11 | INFO     | CHECK | AI analyst                                 | OK | OK
+2026-05-31 14:21:11 | INFO     | Groq llama-3.1-8b-instant             | tokens=176 | out={
+  "validated_logic": "Market discrepancy and ELO ratings suggest Jil Teichmann
+2026-05-31 14:21:11 | INFO     | CHECK | AI validator                               | OK | OK
+2026-05-31 14:21:11 | INFO     | AI final conf=85 risk=Low | 'Market discrepancy and ELO ratings suggest Jil Teichmann's value, despite higher'
+2026-05-31 14:21:11 | INFO     | SIGNAL | Mirra Andreeva vs Jil Teichmann | pick=Jil Teichmann to Win (2) odds=9.00 ev=7.5% conf=85%
+2026-05-31 14:21:11 | INFO     | ✅ Sent: Mirra Andreeva vs Jil Teichmann
+2026-05-31 14:21:14 | INFO     | ============================================================
+2026-05-31 14:21:14 | INFO     |   RUN COMPLETE
+2026-05-31 14:21:14 | INFO     | ============================================================
+2026-05-31 14:21:14 | INFO     | CHECK | Signals sent                               | OK | 6
+2026-05-31 14:21:14 | INFO     | Final key status: b99dc2cf…:invalid/rem=1 | 4342465d…:ok/rem=330 | 1275084d…:ok/rem=324
+2026-05-31 14:21:14 | INFO     | RapidAPI stats: key#1(79035f…):ok/req=2 | key#2(817732…):ok/req=22

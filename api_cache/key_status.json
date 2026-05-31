@@ -10,17 +10,17 @@
   "25ec0718": {
     "prefix": "4342465d…",
     "status": "ok",
-    "remaining": 468,
-    "used": "32",
-    "last_used": "2026-05-31T14:12:08.357658+00:00",
+    "remaining": 330,
+    "used": "170",
+    "last_used": "2026-05-31T14:17:11.508703+00:00",
     "last_error": null
   },
   "d8d7ed06": {
     "prefix": "1275084d…",
     "status": "ok",
-    "remaining": 470,
-    "used": "30",
-    "last_used": "2026-05-31T14:12:08.428348+00:00",
+    "remaining": 324,
+    "used": "176",
+    "last_used": "2026-05-31T14:17:12.132097+00:00",
     "last_error": null
   }
 }
