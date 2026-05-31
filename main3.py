@@ -231,49 +231,88 @@ groq_client = AsyncGroq(api_key=GROQ_API_KEY, max_retries=3)
 # 4. NATIONALITY FLAGS
 # =========================================================
 NATIONALITY_FLAGS: dict[str, str] = {
-    "bautista agut": "ES", "alcaraz": "ES", "nadal": "ES",
-    "munar": "ES", "davidovich": "ES", "carreno": "ES",
-    "djokovic": "RS", "kecmanovic": "RS",
-    "sinner": "IT", "berrettini": "IT", "musetti": "IT",
-    "zverev": "DE", "struff": "DE",
-    "tiafoe": "US", "fritz": "US", "paul": "US", "korda": "US",
-    "gauff": "US", "keys": "US", "pegula": "US",
-    "nakashima": "US", "sock": "US", "isner": "US",
-    "medvedev": "RU", "rublev": "RU", "khachanov": "RU",
-    "tsitsipas": "GR", "ruud": "NO", "rune": "DK",
-    "hurkacz": "PL", "swiatek": "PL",
-    "auger-aliassime": "CA", "shapovalov": "CA", "raonic": "CA",
-    "kyrgios": "AU", "de minaur": "AU", "thompson": "AU",
-    "sabalenka": "BY", "kvitova": "CZ", "vondrousova": "CZ",
-    "jabeur": "TN", "rybakina": "KZ", "bublik": "KZ",
-    "norrie": "GB", "murray": "GB", "draper": "GB",
-    "wawrinka": "CH", "monfils": "FR", "simon": "FR",
-    "etcheverry": "AR", "cerundolo": "AR", "schwartzman": "AR",
-    "manchester united": "GB", "manchester city": "GB",
-    "liverpool": "GB", "chelsea": "GB", "arsenal": "GB",
-    "tottenham": "GB", "newcastle": "GB", "west ham": "GB",
-    "aston villa": "GB", "everton": "GB", "brighton": "GB",
-    "celtic": "GB", "rangers": "GB",
-    "real madrid": "ES", "barcelona": "ES", "atletico": "ES",
-    "sevilla": "ES", "valencia": "ES", "villarreal": "ES",
-    "real sociedad": "ES", "athletic bilbao": "ES",
-    "bayern": "DE", "dortmund": "DE", "leipzig": "DE",
-    "leverkusen": "DE", "frankfurt": "DE",
-    "juventus": "IT", "milan": "IT", "inter": "IT",
-    "napoli": "IT", "roma": "IT", "lazio": "IT", "atalanta": "IT",
-    "psg": "FR", "marseille": "FR", "lyon": "FR", "monaco": "FR",
-    "ajax": "NL", "psv": "NL", "feyenoord": "NL",
-    "porto": "PT", "benfica": "PT", "sporting": "PT",
-    "galatasaray": "TR", "fenerbahce": "TR", "besiktas": "TR",
-    "shakhtar": "UA", "salzburg": "AT",
-    "anderlecht": "BE", "club brugge": "BE",
+    # ── Tennis ATP (Men) ─────────────────────────────────
+    "djokovic": "RS", "kecmanovic": "RS", "lajovic": "RS",
+    "sinner": "IT", "berrettini": "IT", "musetti": "IT", "arnaldi": "IT", "sonego": "IT", "cobolli": "IT",
+    "alcaraz": "ES", "nadal": "ES", "bautista agut": "ES", "davidovich fokina": "ES", "carreno busta": "ES", "munar": "ES", "baena": "ES",
+    "medvedev": "RU", "rublev": "RU", "khachanov": "RU", "safiullin": "RU", "karatsev": "RU",
+    "zverev": "DE", "struff": "DE", "altmaier": "DE", "koepfer": "DE",
+    "tsitsipas": "GR", 
+    "ruud": "NO", 
+    "rune": "DK",
+    "hurkacz": "PL", 
+    "de minaur": "AU", "kyrgios": "AU", "thompson": "AU", "popyrin": "AU", "purcell": "AU",
+    "fritz": "US", "paul": "US", "tiafoe": "US", "shelton": "US", "korda": "US", "nakashima": "US", "eubanks": "US", "michelsen": "US",
+    "dimitrov": "BG",
+    "auger-aliassime": "CA", "shapovalov": "CA", "diallo": "CA",
+    "baez": "AR", "cerundolo": "AR", "etcheverry": "AR", "navone": "AR", "diaz acosta": "AR",
+    "jabeur": "TN",
+    "bublik": "KZ",
+    "norrie": "GB", "draper": "GB", "murray": "GB", "evans": "GB",
+    "humbert": "FR", "mannarino": "FR", "fils": "FR", "monfils": "FR", "cazaux": "FR", "mpetshi": "FR",
+    "griekspoor": "NL", "brouwer": "NL",
+    "lehecka": "CZ", "mensik": "CZ", "machac": "CZ",
+    "wawrinka": "CH", "stricker": "CH",
+
+    # ── Tennis WTA (Women) ───────────────────────────────
+    "swiatek": "PL", "linette": "PL", "frech": "PL",
+    "sabalenka": "BY", "azarenka": "BY",
+    "gauff": "US", "pegula": "US", "keys": "US", "navarro": "US", "collins": "US", "stephens": "US",
+    "rybakina": "KZ", "putintseva": "KZ",
+    "vondrousova": "CZ", "muchova": "CZ", "krejcikova": "CZ", "noskova": "CZ", "pliskova": "CZ", "bouzkova": "CZ",
+    "zheng": "RU", "andreeva": "RU", "kasatkina": "RU", "samsonova": "RU", "alexandrova": "RU", "kudermetova": "RU", "potapova": "RU", "pavlyuchenkova": "RU",
+    "sakkari": "GR",
+    "jabeur": "TN",
+    "ostapenko": "LV",
+    "garcia": "FR", "cornet": "FR",
+    "svitolina": "UA", "yastremska": "UA", "kostyuk": "UA", "kalinina": "UA",
+    "haddad maia": "BR",
+    "paolini": "IT", "giorgi": "IT",
+    "teichmann": "CH", "bencic": "CH",
+    "badosa": "ES", "sorribes": "ES",
+    "boulter": "GB", "raducanu": "GB",
+
+    # ── Football: England ────────────────────────────────
+    "manchester city": "GB", "manchester united": "GB", "arsenal": "GB", "liverpool": "GB", 
+    "chelsea": "GB", "tottenham": "GB", "newcastle": "GB", "aston villa": "GB", 
+    "west ham": "GB", "brighton": "GB", "everton": "GB", "crystal palace": "GB", 
+    "bournemouth": "GB", "fulham": "GB", "brentford": "GB", "wolves": "GB", "nottingham": "GB",
+    
+    # ── Football: Spain ──────────────────────────────────
+    "real madrid": "ES", "barcelona": "ES", "atletico": "ES", "girona": "ES", 
+    "athletic bilbao": "ES", "real sociedad": "ES", "betis": "ES", "villarreal": "ES", 
+    "valencia": "ES", "osasuna": "ES", "sevilla": "ES", "celta": "ES", "mallorca": "ES", 
+    "las palmas": "ES", "rayo": "ES", "almeria": "ES", "almería": "ES", "granada": "ES", 
+    "cadiz": "ES", "cádiz": "ES", "valladolid": "ES", "eibar": "ES", "racing": "ES", 
+    "castellon": "ES", "castellón": "ES", "burgos": "ES", "andorra": "ES",
+    
+    # ── Football: Italy ──────────────────────────────────
+    "inter": "IT", "milan": "IT", "juventus": "IT", "atalanta": "IT", "bologna": "IT", 
+    "roma": "IT", "lazio": "IT", "fiorentina": "IT", "napoli": "IT", "torino": "IT", 
+    "monza": "IT", "genoa": "IT", "sassuolo": "IT", "udinese": "IT",
+    
+    # ── Football: Germany ────────────────────────────────
+    "leverkusen": "DE", "stuttgart": "DE", "bayern": "DE", "leipzig": "DE", 
+    "dortmund": "DE", "frankfurt": "DE", "hoffenheim": "DE", "freiburg": "DE", 
+    "bremen": "DE", "wolfsburg": "DE", "gladbach": "DE",
+    
+    # ── Football: France ─────────────────────────────────
+    "psg": "FR", "monaco": "FR", "brest": "FR", "lille": "FR", "nice": "FR", 
+    "lyon": "FR", "lens": "FR", "marseille": "FR", "rennes": "FR", "reims": "FR",
+    
+    # ── Football: Other Europe & Global ──────────────────
+    "psv": "NL", "feyenoord": "NL", "ajax": "NL", "twente": "NL", "az alkmaar": "NL",
+    "sporting": "PT", "benfica": "PT", "porto": "PT", "braga": "PT",
+    "galatasaray": "TR", "fenerbahce": "TR", "besiktas": "TR", "trabzonspor": "TR",
     "copenhagen": "DK", "midtjylland": "DK",
-    "malmo": "SE", "djurgarden": "SE",
-    "flamengo": "BR", "palmeiras": "BR", "corinthians": "BR",
-    "atletico mineiro": "BR", "sao paulo": "BR",
+    "malmo": "SE", "djurgarden": "SE", "helsingborgs": "SE", "norrkoping": "SE",
+    "salzburg": "AT", "sturm graz": "AT",
+    "anderlecht": "BE", "club brugge": "BE", "union sg": "BE",
+    "celtic": "GB", "rangers": "GB",
+    "shakhtar": "UA", "dynamo kyiv": "UA",
+    "flamengo": "BR", "palmeiras": "BR", "atletico mineiro": "BR", "sao paulo": "BR", "corinthians": "BR",
     "boca juniors": "AR", "river plate": "AR",
 }
-
 
 def _code_to_flag(code: str) -> str:
     code = code.upper().strip()
@@ -282,14 +321,12 @@ def _code_to_flag(code: str) -> str:
     offset = 0x1F1E6 - ord("A")
     return chr(ord(code[0]) + offset) + chr(ord(code[1]) + offset)
 
-
 def get_flag_from_name(name: str) -> str:
     nl = name.lower()
     for kw, code in NATIONALITY_FLAGS.items():
         if kw in nl:
             return _code_to_flag(code)
     return "\U0001F3F3\uFE0F"
-
 
 def validate_flag(flag: str, fallback_name: str) -> str:
     if not flag:
