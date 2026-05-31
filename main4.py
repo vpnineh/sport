@@ -2513,6 +2513,62 @@ async def get_stats_async(
     return stats, elo_pred
 
 # =========================================================
+# 19. CONFIDENCE ENGINE
+# =========================================================
+def calculate_confidence(
+    ev: float,
+    stats: dict,
+    market: str,
+    has_sharp: bool,
+) -> tuple[int, str]:
+    score = 50
+    dq    = stats.get("data_quality", "none")
+
+    if dq == "high":     score += 15
+    elif dq == "medium": score += 8
+
+    ep = ev * 100
+    if ep > 5.0:   score += 12
+    elif ep > 3.0: score += 8
+    elif ep > 1.5: score += 4
+
+    elo = stats.get("elo", {})
+    hm  = elo.get("home_matches", 0)
+    am  = elo.get("away_matches", 0)
+    if hm >= 10 and am >= 10: score += 10
+    elif hm >= 5  and am >= 5:  score += 6
+    elif hm >= 3  or  am >= 3:  score += 3
+
+    if has_sharp:          score += 5
+    if market == "totals": score += 3
+
+    hf = stats.get("home_form", {})
+    af = stats.get("away_form", {})
+    if hf.get("form_string") and af.get("form_string"):
+        if hf["form_string"].count("W") >= 3: score += 5
+        if af["form_string"].count("L") >= 3: score += 3
+
+    ss = stats.get("sofascore", {})
+    if ss.get("home_form") and ss.get("away_form"): score += 4
+
+    sources = stats.get("_sources", [])
+    if len(sources) >= 2: score += 4
+    elif len(sources) == 1: score += 2
+
+    score = max(50, min(93, score))
+    risk  = (
+        "Low"    if score >= 75
+        else ("Medium" if score >= 60
+        else "High")
+    )
+    logger.info(
+        "Confidence=%d risk=%s (dq=%s ev=%.1f%% "
+        "hm=%d am=%d sharp=%s src=%s)",
+        score, risk, dq, ep, hm, am, has_sharp, sources,
+    )
+    return score, risk
+    
+# =========================================================
 # 20. DUAL-AI ANALYSIS
 # =========================================================
 def build_stats_summary(stats: dict, home: str, away: str) -> str:
