@@ -60,17 +60,17 @@ class ResultScraper:
                                 away_score = match.get("away", {}).get("score", 0)
                                 
                                 # تشخیص برنده
-                                winner = "Draw"
-                                if home_score > away_score: winner = home
-                                elif away_score > home_score: winner = away
+                                winner = "draw"
+                                if home_score > away_score: winner = home.lower()
+                                elif away_score > home_score: winner = away.lower()
                                 
                                 self.soccer_results.append({
                                     "home": home.lower(), "away": away.lower(),
                                     "home_score": home_score, "away_score": away_score,
-                                    "winner": winner.lower()
+                                    "winner": winner
                                 })
         except Exception as e:
-            logger.warning("FotMob scrape error: %s", e)
+            logger.warning("FotMob scrape error for %s: %s", date_str, e)
 
     async def fetch_espn_other_sports(self):
         """استخراج نتایج تنیس و بسکتبال/بیسبال از ESPN"""
@@ -83,30 +83,41 @@ class ResultScraper:
         try:
             async with AsyncSession(impersonate="chrome110") as session:
                 for url in endpoints:
-                    res = await session.get(url, timeout=10)
-                    if res.status_code == 200:
-                        data = res.json()
-                        for event in data.get("events", []):
-                            status = event.get("status", {}).get("type", {}).get("state", "")
-                            if status == "post":  # تمام شده
-                                comps = event.get("competitions", [])[0].get("competitors", [])
-                                home_team, away_team, winner = "", "", ""
-                                
-                                for comp in comps:
-                                    name = comp.get("team", {}).get("displayName", "") or comp.get("athlete", {}).get("displayName", "")
-                                    is_home = comp.get("homeAway") == "home"
-                                    is_winner = comp.get("winner", False)
-                                    
-                                    if is_home: home_team = name
-                                    else: away_team = name
-                                    if is_winner: winner = name
-                                    
-                                self.other_sports_results.append({
-                                    "home": home_team.lower(), "away": away_team.lower(),
-                                    "winner": winner.lower()
-                                })
+                    try:
+                        res = await session.get(url, timeout=10)
+                        if res.status_code == 200:
+                            data = res.json()
+                            for event in data.get("events", []):
+                                try:
+                                    status = event.get("status", {}).get("type", {}).get("state", "")
+                                    if status == "post":  # تمام شده
+                                        comps = event.get("competitions", [])
+                                        if not comps: continue # <--- سپر دفاعی برای بازی‌های لغوشده
+                                        
+                                        competitors = comps[0].get("competitors", [])
+                                        if not competitors: continue
+
+                                        home_team, away_team, winner = "", "", ""
+                                        for comp in competitors:
+                                            name = comp.get("team", {}).get("displayName", "") or comp.get("athlete", {}).get("displayName", "")
+                                            is_home = comp.get("homeAway") == "home"
+                                            is_winner = comp.get("winner", False)
+                                            
+                                            if is_home: home_team = name
+                                            else: away_team = name
+                                            if is_winner: winner = name
+                                            
+                                        if home_team and away_team:
+                                            self.other_sports_results.append({
+                                                "home": home_team.lower(), "away": away_team.lower(),
+                                                "winner": winner.lower()
+                                            })
+                                except Exception:
+                                    continue # اگر یک مسابقه خاص دیتای عجیبی داشت، حلقه را نشکن
+                    except Exception as req_err:
+                        logger.warning("ESPN endpoint error %s: %s", url, req_err)
         except Exception as e:
-            logger.warning("ESPN scrape error: %s", e)
+            logger.warning("ESPN session error: %s", e)
 
     async def load_recent_results(self):
         logger.info("🌍 [SCRAPER] Fetching results from Web (FotMob/ESPN)...")
@@ -117,19 +128,24 @@ class ResultScraper:
             self.fetch_fotmob_soccer(now - timedelta(days=2)),
             self.fetch_espn_other_sports()
         ]
-        await asyncio.gather(*tasks)
+        # سپر دفاعی دوم: return_exceptions=True تا خرابی یکی، بقیه را متوقف نکند
+        await asyncio.gather(*tasks, return_exceptions=True)
         logger.info("✅ [SCRAPER] Fetched %d Soccer + %d Other matches", len(self.soccer_results), len(self.other_sports_results))
 
     def fuzzy_match(self, home: str, away: str, sport: str) -> dict:
         target_pool = self.soccer_results if "football" in sport.lower() or "soccer" in sport.lower() else self.other_sports_results
-        h_clean, a_clean = home.lower().split()[-1], away.lower().split()[-1]
+        if not target_pool: return {}
         
-        for match in target_pool:
-            mh, ma = match["home"], match["away"]
-            if (h_clean in mh and a_clean in ma) or (h_clean in ma and a_clean in mh):
-                return match
+        try:
+            h_clean = home.lower().split()[-1]
+            a_clean = away.lower().split()[-1]
+            
+            for match in target_pool:
+                mh, ma = match["home"], match["away"]
+                if (h_clean in mh and a_clean in ma) or (h_clean in ma and a_clean in mh):
+                    return match
+        except: pass
         return {}
-
 # =========================================================
 # 2. ODDS-API FALLBACK
 # =========================================================
