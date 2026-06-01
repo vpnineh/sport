@@ -2379,6 +2379,7 @@ async def async_main():
         return
 
     logger.info("🔍 [PHASE 4] Analyzing %d events...", len(events))
+    events.sort(key=lambda x: x.get("commence_time", ""))
     total_sent = 0
     total_analyzed = 0
     skipped_confidence = 0
