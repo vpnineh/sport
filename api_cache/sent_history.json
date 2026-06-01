@@ -64,5 +64,17 @@
     "pick": "Alejandro Tabilo",
     "market": "h2h_lay",
     "sent_at": "2026-06-01T08:38:40.982024+00:00"
+  },
+  "329a0de3d62b2fef62bae560c0d259be": {
+    "match": "Juan Manuel Cerundolo vs Matteo Berrettini",
+    "pick": "Matteo Berrettini",
+    "market": "h2h",
+    "sent_at": "2026-06-01T11:03:06.618465+00:00"
+  },
+  "2c70e64362a782462eff9f9493196cf0": {
+    "match": "Frances Tiafoe vs Matteo Arnaldi",
+    "pick": "Matteo Arnaldi",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T11:03:13.039759+00:00"
   }
 }

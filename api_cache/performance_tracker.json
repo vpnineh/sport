@@ -111,6 +111,34 @@
       "implied_prob": 0.3774,
       "outcome": null,
       "profit_loss": null
+    },
+    {
+      "id": "1ca63cf3",
+      "timestamp": "2026-06-01T11:03:06.619115+00:00",
+      "home": "Juan Manuel Cerundolo",
+      "away": "Matteo Berrettini",
+      "pick": "Matteo Berrettini",
+      "market": "h2h",
+      "odds": 1.67,
+      "ev": 0.0158,
+      "confidence": 72,
+      "implied_prob": 0.6083,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "6d04e00d",
+      "timestamp": "2026-06-01T11:03:13.040443+00:00",
+      "home": "Frances Tiafoe",
+      "away": "Matteo Arnaldi",
+      "pick": "Matteo Arnaldi",
+      "market": "h2h_lay",
+      "odds": 2.04,
+      "ev": 0.0251,
+      "confidence": 72,
+      "implied_prob": 0.5025,
+      "outcome": null,
+      "profit_loss": null
     }
   ],
   "summary": {}
