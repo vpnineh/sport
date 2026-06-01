@@ -3,7 +3,6 @@ import sys
 import json
 import logging
 import asyncio
-import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import requests
@@ -27,12 +26,18 @@ ODDS_KEYS = [
 ]
 ODDS_KEYS = [k for k in ODDS_KEYS if k]
 
+# --- LOGGING SETUP ---
 logger = logging.getLogger("SETTLER")
 logger.setLevel(logging.DEBUG if DEBUG_MODE else logging.INFO)
-formatter = logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s")
+formatter = logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
+file_handler = logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8")
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 # =========================================================
 # 1. SCRAPING ENGINES (PRIMARY)
@@ -43,7 +48,6 @@ class ResultScraper:
         self.other_sports_results = []
 
     async def fetch_fotmob_soccer(self, target_date: datetime):
-        """استخراج نتایج فوتبال از API مخفی FotMob"""
         date_str = target_date.strftime("%Y%m%d")
         url = f"https://www.fotmob.com/api/matches?date={date_str}"
         try:
@@ -59,7 +63,6 @@ class ResultScraper:
                                 home_score = match.get("home", {}).get("score", 0)
                                 away_score = match.get("away", {}).get("score", 0)
                                 
-                                # تشخیص برنده
                                 winner = "draw"
                                 if home_score > away_score: winner = home.lower()
                                 elif away_score > home_score: winner = away.lower()
@@ -73,7 +76,6 @@ class ResultScraper:
             logger.warning("FotMob scrape error for %s: %s", date_str, e)
 
     async def fetch_espn_other_sports(self):
-        """استخراج نتایج تنیس و بسکتبال/بیسبال از ESPN"""
         endpoints = [
             "https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard",
             "https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard",
@@ -90,9 +92,9 @@ class ResultScraper:
                             for event in data.get("events", []):
                                 try:
                                     status = event.get("status", {}).get("type", {}).get("state", "")
-                                    if status == "post":  # تمام شده
+                                    if status == "post": 
                                         comps = event.get("competitions", [])
-                                        if not comps: continue # <--- سپر دفاعی برای بازی‌های لغوشده
+                                        if not comps: continue 
                                         
                                         competitors = comps[0].get("competitors", [])
                                         if not competitors: continue
@@ -113,7 +115,7 @@ class ResultScraper:
                                                 "winner": winner.lower()
                                             })
                                 except Exception:
-                                    continue # اگر یک مسابقه خاص دیتای عجیبی داشت، حلقه را نشکن
+                                    continue 
                     except Exception as req_err:
                         logger.warning("ESPN endpoint error %s: %s", url, req_err)
         except Exception as e:
@@ -128,8 +130,12 @@ class ResultScraper:
             self.fetch_fotmob_soccer(now - timedelta(days=2)),
             self.fetch_espn_other_sports()
         ]
-        # سپر دفاعی دوم: return_exceptions=True تا خرابی یکی، بقیه را متوقف نکند
-        await asyncio.gather(*tasks, return_exceptions=True)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        for res in results:
+            if isinstance(res, Exception):
+                logger.error("❌ Scraper Internal Error (Possible IP Block): %s", res)
+                
         logger.info("✅ [SCRAPER] Fetched %d Soccer + %d Other matches", len(self.soccer_results), len(self.other_sports_results))
 
     def fuzzy_match(self, home: str, away: str, sport: str) -> dict:
@@ -146,6 +152,7 @@ class ResultScraper:
                     return match
         except: pass
         return {}
+
 # =========================================================
 # 2. ODDS-API FALLBACK
 # =========================================================
@@ -165,7 +172,6 @@ def fetch_odds_api_results(sport_key: str, days_from: int = 3) -> list:
 # 3. SETTLEMENT LOGIC
 # =========================================================
 def calculate_profit(odds: float, outcome: str) -> float:
-    # 1 Unit flat betting assumption
     if outcome == "win":
         return round(odds - 1.0, 2)
     elif outcome == "loss":
@@ -179,13 +185,18 @@ def send_telegram_report(settled_bets: list, summary: dict):
     daily_profit = 0.0
     
     for bet in settled_bets:
-        icon = "🟢" if bet["outcome"] == "win" else "🔴"
-        profit = f"+{bet['profit_loss']}u" if bet['profit_loss'] > 0 else f"{bet['profit_loss']}u"
-        daily_profit += bet['profit_loss']
+        outcome = bet.get("outcome", "")
+        if outcome == "void":
+            icon = "⚪️"
+            profit_str = "0.0u"
+        else:
+            icon = "🟢" if outcome == "win" else "🔴"
+            profit_str = f"+{bet['profit_loss']}u" if bet['profit_loss'] > 0 else f"{bet['profit_loss']}u"
+            daily_profit += bet['profit_loss']
         
         lines.append(f"⚔️ <b>{bet['home']} vs {bet['away']}</b>")
         lines.append(f"🎯 Pick: {bet['pick']} @ {bet['odds']}")
-        lines.append(f"🏁 Result: <b>{bet['outcome'].upper()}</b> {icon} | PnL: {profit}\n")
+        lines.append(f"🏁 Result: <b>{outcome.upper()}</b> {icon} | PnL: {profit_str}\n")
     
     total_icon = "📈" if daily_profit > 0 else "📉"
     lines.append(f"══════════════════")
@@ -196,7 +207,8 @@ def send_telegram_report(settled_bets: list, summary: dict):
     msg = "\n".join(lines)
     requests.post(
         f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-        json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "HTML"}
+        json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "HTML"},
+        timeout=10
     )
 
 # =========================================================
@@ -216,7 +228,6 @@ async def async_settle():
 
     pending_bets = [s for s in tracker.get("signals", []) if s.get("outcome") is None]
     
-    # Filter bets older than 4 hours
     now = datetime.now(timezone.utc)
     to_check = []
     for b in pending_bets:
@@ -240,19 +251,49 @@ async def async_settle():
     for bet in to_check:
         match_result = scraper.fuzzy_match(bet["home"], bet["away"], bet.get("sport", "soccer"))
         
-        # اگر در وب پیدا نشد، سراغ Odds-API می‌رود
-        if not match_result and "market" in bet:
-            # (در نسخه پایه، ما برای سادگی فقط از اسکرپر استفاده میکنیم، اما تابع fallback آماده است)
-            pass
+        api_sport_key = bet.get("api_sport_key")
+        
+        # Fallback به API پولی در صورت عدم موفقیت اسکرپر
+        if not match_result and "market" in bet and api_sport_key:
+            fallback_data = fetch_odds_api_results(api_sport_key, days_from=3)
+            
+            if fallback_data:
+                h_clean = bet["home"].lower().split()[-1]
+                a_clean = bet["away"].lower().split()[-1]
+                
+                for api_match in fallback_data:
+                    api_h = api_match.get("home_team", "").lower()
+                    api_a = api_match.get("away_team", "").lower()
+                    
+                    if (h_clean in api_h and a_clean in api_a) or (h_clean in api_a and a_clean in api_h):
+                        if api_match.get("completed"):
+                            scores = api_match.get("scores")
+                            if scores:
+                                try:
+                                    h_score = next((int(s["score"]) for s in scores if s["name"].lower() == api_h), 0)
+                                    a_score = next((int(s["score"]) for s in scores if s["name"].lower() == api_a), 0)
+                                    
+                                    winner = "draw"
+                                    if h_score > a_score: winner = api_h
+                                    elif a_score > h_score: winner = api_a
+                                    
+                                    match_result = {
+                                        "home": api_h, "away": api_a,
+                                        "winner": winner
+                                    }
+                                    logger.info("🔄 [FALLBACK SUCCESS] Found result for %s vs %s via Odds-API (%s)", bet['home'], bet['away'], api_sport_key)
+                                except Exception as e:
+                                    logger.error("Error parsing Odds-API score: %s", e)
+                        break
 
+        # پردازش نتیجه مسابقه
         if match_result:
             pick_clean = bet["pick"].lower()
             winner_clean = match_result.get("winner", "")
             
-            # تطبیق انتخاب با برنده (برای مارکت Match Winner)
             if winner_clean == "draw" and "draw" in pick_clean:
                 outcome = "win"
-            elif winner_clean != "draw" and winner_clean in pick_clean or pick_clean in winner_clean:
+            elif winner_clean != "draw" and (winner_clean in pick_clean or pick_clean in winner_clean):
                 outcome = "win"
             else:
                 outcome = "loss"
@@ -261,10 +302,24 @@ async def async_settle():
             bet["profit_loss"] = calculate_profit(bet["odds"], outcome)
             settled_this_session.append(bet)
             logger.info("✅ Settled: %s vs %s -> %s (Profit: %.2f)", bet['home'], bet['away'], outcome.upper(), bet['profit_loss'])
+        else:
+            # === قانون 48 ساعت (VOID RULE) ===
+            try:
+                bet_time = datetime.fromisoformat(bet["timestamp"])
+                if bet_time.tzinfo is None:
+                    bet_time = bet_time.replace(tzinfo=timezone.utc)
+                    
+                if (datetime.now(timezone.utc) - bet_time) > timedelta(hours=48):
+                    bet["outcome"] = "void"
+                    bet["profit_loss"] = 0.0
+                    settled_this_session.append(bet)
+                    logger.warning("⚠️ VOID (Timeout > 48h or Cancelled): %s vs %s", bet['home'], bet['away'])
+            except Exception as e:
+                logger.error("Void check error: %s", e)
 
     if settled_this_session:
-        # آپدیت فایل JSON
-        resolved = [s for s in tracker["signals"] if s.get("outcome") is not None]
+        # آپدیت فایل JSON (حذف شرط‌های Void از محاسبه وین‌ریت)
+        resolved = [s for s in tracker["signals"] if s.get("outcome") is not None and s.get("outcome") != "void"]
         wins = [s for s in resolved if s["outcome"] == "win"]
         total_pl = sum(s.get("profit_loss", 0) for s in resolved)
         
