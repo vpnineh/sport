@@ -136,5 +136,23 @@
     "pick": "Arizona Diamondbacks",
     "market": "h2h_lay",
     "sent_at": "2026-06-01T23:20:17.027783+00:00"
+  },
+  "e38064a61315217edf27430a603b8744": {
+    "match": "Dallas Wings vs Seattle Storm",
+    "pick": "Seattle Storm",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T23:53:46.493469+00:00"
+  },
+  "c6d4df1ba12b9336feeaf82a4602a67c": {
+    "match": "Texas A&M Aggies vs USC Trojans",
+    "pick": "Texas A&M Aggies",
+    "market": "h2h",
+    "sent_at": "2026-06-01T23:53:52.153094+00:00"
+  },
+  "6af2e9c541a8703c5378509495e147f2": {
+    "match": "Seattle Mariners vs New York Mets",
+    "pick": "New York Mets",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T23:53:56.536373+00:00"
   }
 }

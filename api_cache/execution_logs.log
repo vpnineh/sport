@@ -5930,3 +5930,77 @@
 2026-06-01 23:20:20 | INFO     | 📊 SUMMARY | Analyzed: 4 | Sent: 4 | Skipped(conf): 0
 2026-06-01 23:20:20 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 14 calls (rem: 448) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
 2026-06-01 23:20:20 | INFO     | =================================================================
+2026-06-01 23:53:20 | INFO     | 🔑 [API KEY] primary (ODDS_API_KEY): Loaded ✓
+2026-06-01 23:53:20 | INFO     | 🔑 [API KEY] backup_1 (ODDS_API_KEY2): Loaded ✓
+2026-06-01 23:53:20 | INFO     | 🔑 [API KEY] backup_2 (ODDS_API_KEY3): Loaded ✓
+2026-06-01 23:53:20 | INFO     | 🔑 [API KEYS] 3 key(s) available for fallback
+2026-06-01 23:53:20 | INFO     | =================================================================
+2026-06-01 23:53:20 | INFO     |   ZBET90 ENGINE v6.5 | Dual Confirmation | Smart Money Tracker
+2026-06-01 23:53:20 | INFO     | =================================================================
+2026-06-01 23:53:20 | INFO     | 🔑 [KEYS STATUS] ✅ primary: 14 calls (rem: 448) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 23:53:20 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-01 23:53:20 | INFO     | [FREE DATA] Downloading: atp_matches_2022.csv
+2026-06-01 23:53:20 | INFO     | [FREE DATA] Downloading: wta_matches_2022.csv
+2026-06-01 23:53:20 | INFO     | [FREE DATA] Downloading: atp_matches_2023.csv
+2026-06-01 23:53:20 | INFO     | [FREE DATA] Downloading: wta_matches_2023.csv
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: atp_matches_2024.csv
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: wta_matches_2024.csv
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: atp_matches_2025.csv
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: wta_matches_2025.csv
+2026-06-01 23:53:21 | INFO     | ✅ [TENNIS] ATP loaded: 11923 matches
+2026-06-01 23:53:21 | INFO     | ✅ [TENNIS] WTA loaded: 10888 matches
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: atp_rankings_current.csv
+2026-06-01 23:53:21 | INFO     | ✅ [RANKINGS] ATP loaded: 34203 entries
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: wta_rankings_current.csv
+2026-06-01 23:53:21 | INFO     | ✅ [RANKINGS] WTA loaded: 32060 entries
+2026-06-01 23:53:21 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 23:53:22 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 23:53:23 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 23:53:24 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 23:53:25 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 23:53:25 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 23:53:26 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 23:53:27 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 23:53:28 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 23:53:28 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 23:53:29 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 23:53:30 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 23:53:31 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 23:53:31 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 23:53:32 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 23:53:33 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 23:53:34 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 23:53:35 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 23:53:36 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 23:53:37 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 23:53:37 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 23:53:38 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 23:53:39 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 23:53:40 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 23:53:40 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 23:53:41 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 23:53:42 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 23:53:42 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 23:53:43 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 23:53:44 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 23:53:44 | INFO     | ✅ [FOOTBALL] Loaded 10816 matches from 10 leagues × 3 seasons
+2026-06-01 23:53:44 | INFO     | 🧠 [PHASE 2] Initializing ML models (Using Cache if available)...
+2026-06-01 23:53:45 | INFO     | ⚡ [ML FOOTBALL] Loaded pre-trained model from cache!
+2026-06-01 23:53:45 | INFO     | ⚡ [ML TENNIS ATP] Loaded pre-trained model from cache!
+2026-06-01 23:53:45 | INFO     | 📡 [PHASE 3] Fetching odds (window=6.0h)...
+2026-06-01 23:53:45 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-01 23:53:45 | INFO     | 🔑 [TRYING] primary...
+2026-06-01 23:53:45 | INFO     | 🔑 [primary] OK | Remaining: 414 | Market: h2h | Events: 18
+2026-06-01 23:53:45 | INFO     | 🔑 [primary] OK | Remaining: 418 | Market: totals | Events: 18
+2026-06-01 23:53:45 | INFO     | ✅ [primary] Fetched 8 events
+2026-06-01 23:53:45 | INFO     | 💾 [ODDS CACHE] SAVED 8 events
+2026-06-01 23:53:45 | INFO     | 📊 [API USAGE] ✅ primary: 16 calls (rem: 418) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 23:53:45 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-01 23:53:46 | INFO     | 📤 SENT: Dallas Wings vs Seattle Storm | Seattle Storm | EV=4.71% | Kelly=0.2% | Conf=66%
+2026-06-01 23:53:52 | INFO     | 📤 SENT: Texas A&M Aggies vs USC Trojans | Texas A&M Aggies | EV=3.35% | Kelly=1.2% | Conf=69%
+2026-06-01 23:53:56 | INFO     | 📤 SENT: Seattle Mariners vs New York Mets | New York Mets | EV=2.22% | Kelly=0.5% | Conf=62%
+2026-06-01 23:53:59 | INFO     | =================================================================
+2026-06-01 23:53:59 | INFO     | 📊 SUMMARY | Analyzed: 3 | Sent: 3 | Skipped(conf): 0
+2026-06-01 23:53:59 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 16 calls (rem: 418) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 23:53:59 | INFO     | 📈 [PERFORMANCE] WR=0.0% | ROI=-100.0% | Signals=23
+2026-06-01 23:53:59 | INFO     | =================================================================
