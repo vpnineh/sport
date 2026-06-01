@@ -112,5 +112,29 @@
     "pick": "Toronto Marlies",
     "market": "h2h_lay",
     "sent_at": "2026-06-01T20:38:27.529396+00:00"
+  },
+  "08ed92835ca8c1a54dae0f272eacd799": {
+    "match": "St. Louis Cardinals vs Texas Rangers",
+    "pick": "St. Louis Cardinals",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T23:20:03.937413+00:00"
+  },
+  "291b4fb16b41f8609f289b3474b8c0a9": {
+    "match": "Texas A&M Aggies vs USC Trojans",
+    "pick": "Under 14.5",
+    "market": "totals",
+    "sent_at": "2026-06-01T23:20:08.323879+00:00"
+  },
+  "d7c77335221190eca2c75a42b21105b3": {
+    "match": "Los Angeles Angels vs Colorado Rockies",
+    "pick": "Colorado Rockies",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T23:20:12.800238+00:00"
+  },
+  "18172f48a5b9cf1d4ff1f5b6da0e9d72": {
+    "match": "Arizona Diamondbacks vs Los Angeles Dodgers",
+    "pick": "Arizona Diamondbacks",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T23:20:17.027783+00:00"
   }
 }
