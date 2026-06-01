@@ -3,6 +3,8 @@
     {
       "id": "67771601",
       "timestamp": "2026-05-31T23:13:39.500517+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
       "home": "St. Louis Cardinals",
       "away": "Chicago Cubs",
       "pick": "St. Louis Cardinals",
@@ -17,6 +19,8 @@
     {
       "id": "e021a56c",
       "timestamp": "2026-05-31T23:13:43.204633+00:00",
+      "sport": "football",
+      "api_sport_key": "soccer_brazil_serie_b",
       "home": "Remo",
       "away": "Sao Paulo",
       "pick": "Sao Paulo",
@@ -31,6 +35,8 @@
     {
       "id": "3e0da326",
       "timestamp": "2026-06-01T08:38:18.322392+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_wta_french_open",
       "home": "Anastasia Potapova",
       "away": "Anna Kalinskaya",
       "pick": "Anna Kalinskaya",
@@ -45,6 +51,8 @@
     {
       "id": "5027646c",
       "timestamp": "2026-06-01T08:38:23.045196+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
       "home": "Flavio Cobolli",
       "away": "Zachary Svajda",
       "pick": "Zachary Svajda",
@@ -59,6 +67,8 @@
     {
       "id": "d0d8c431",
       "timestamp": "2026-06-01T08:38:28.043420+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_wta_french_open",
       "home": "Madison Keys",
       "away": "Diana Shnaider",
       "pick": "Diana Shnaider",
@@ -73,6 +83,8 @@
     {
       "id": "e34f278f",
       "timestamp": "2026-06-01T08:38:32.470549+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_wta_french_open",
       "home": "Maja Chwalinska",
       "away": "Diane Parry",
       "pick": "Diane Parry",
@@ -87,6 +99,8 @@
     {
       "id": "5351d621",
       "timestamp": "2026-06-01T08:38:36.664315+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
       "home": "Juan Manuel Cerundolo",
       "away": "Matteo Berrettini",
       "pick": "Matteo Berrettini",
@@ -101,6 +115,8 @@
     {
       "id": "18230301",
       "timestamp": "2026-06-01T08:38:40.982600+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
       "home": "Felix Auger-Aliassime",
       "away": "Alejandro Tabilo",
       "pick": "Alejandro Tabilo",
@@ -115,6 +131,8 @@
     {
       "id": "1ca63cf3",
       "timestamp": "2026-06-01T11:03:06.619115+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
       "home": "Juan Manuel Cerundolo",
       "away": "Matteo Berrettini",
       "pick": "Matteo Berrettini",
@@ -129,6 +147,8 @@
     {
       "id": "6d04e00d",
       "timestamp": "2026-06-01T11:03:13.040443+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
       "home": "Frances Tiafoe",
       "away": "Matteo Arnaldi",
       "pick": "Matteo Arnaldi",
@@ -143,6 +163,8 @@
     {
       "id": "ac44cd45",
       "timestamp": "2026-06-01T14:38:23.078601+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_wta_french_open",
       "home": "Aryna Sabalenka",
       "away": "Naomi Osaka",
       "pick": "Naomi Osaka",
@@ -157,6 +179,8 @@
     {
       "id": "fa5ad317",
       "timestamp": "2026-06-01T20:38:10.315288+00:00",
+      "sport": "football",
+      "api_sport_key": "soccer_brazil_serie_b",
       "home": "Ponte Preta",
       "away": "Botafogo",
       "pick": "Ponte Preta",
@@ -171,6 +195,8 @@
     {
       "id": "8db1666c",
       "timestamp": "2026-06-01T20:38:14.591329+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_ncaa",
       "home": "Florida Gators",
       "away": "Troy Trojans",
       "pick": "Over 15.5",
@@ -185,6 +211,8 @@
     {
       "id": "870e4e8a",
       "timestamp": "2026-06-01T20:38:19.041436+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
       "home": "Tampa Bay Rays",
       "away": "Detroit Tigers",
       "pick": "Detroit Tigers",
@@ -199,6 +227,8 @@
     {
       "id": "150c8224",
       "timestamp": "2026-06-01T20:38:23.505858+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
       "home": "Washington Nationals",
       "away": "Miami Marlins",
       "pick": "Washington Nationals",
@@ -213,6 +243,8 @@
     {
       "id": "308bb8e0",
       "timestamp": "2026-06-01T20:38:27.530247+00:00",
+      "sport": "icehockey",
+      "api_sport_key": "icehockey_ahl",
       "home": "Toronto Marlies",
       "away": "W-B/Scranton Penguins",
       "pick": "Toronto Marlies",
