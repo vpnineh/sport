@@ -1382,12 +1382,12 @@ class MLPredictionEngine:
         return {f"{player_a}_win_prob": round(prob_a, 4), f"{player_b}_win_prob": round(1 - prob_a, 4)}
 
 # =========================================================
-# 9.5 POISSON EXPECTED GOALS ENGINE (DUAL CONFIRMATION)
+# 9.5 DIXON-COLES EXPECTED GOALS ENGINE (ADVANCED DUAL CONFIRMATION)
 # =========================================================
 class PoissonEngine:
     @staticmethod
     def calculate_match_probabilities(home_team: str, away_team: str, df: pd.DataFrame) -> dict:
-        """محاسبه احتمالات پواسون بر اساس قدرت حمله و دفاع تاریخی."""
+        """محاسبه احتمالات با توزیع پیشرفته Dixon-Coles برای درک وابستگی گل‌ها"""
         if df is None or df.empty:
             return {}
 
@@ -1410,7 +1410,6 @@ class PoissonEngine:
                     if m.any(): return m
             return pd.Series([False] * len(col), index=col.index)
 
-        # محاسبه قدرت هجومی و دفاعی
         home_matches = recent_df[_fuzzy_match(home_team, recent_df["HomeTeam"])]
         if len(home_matches) < 5: return {}
         home_attack = (home_matches["FTHG"].mean()) / league_avg_home_goals
@@ -1421,16 +1420,35 @@ class PoissonEngine:
         away_attack = (away_matches["FTAG"].mean()) / league_avg_away_goals
         away_defense = (away_matches["FTHG"].mean()) / league_avg_home_goals
 
-        # Expected Goals (xG)
         home_xg = home_attack * away_defense * league_avg_home_goals
         away_xg = away_attack * home_defense * league_avg_away_goals
 
-        # توزیع پواسون تا ۵ گل
         max_goals = 5
-        home_probs = [stats_scipy.poisson.pmf(i, home_xg) for i in range(max_goals + 1)]
-        away_probs = [stats_scipy.poisson.pmf(i, away_xg) for i in range(max_goals + 1)]
+        prob_matrix = np.zeros((max_goals + 1, max_goals + 1))
+        
+        # پارامتر وابستگی (Rho) برای تصحیح نتایج کم‌گل در فوتبال (مساوی‌ها)
+        rho = -0.1 
 
-        prob_matrix = np.outer(home_probs, away_probs)
+        for x in range(max_goals + 1):
+            for y in range(max_goals + 1):
+                base_prob = stats_scipy.poisson.pmf(x, home_xg) * stats_scipy.poisson.pmf(y, away_xg)
+                
+                # Dixon-Coles Adjustment for low scores
+                if x == 0 and y == 0:
+                    adj = max(0, 1 - home_xg * away_xg * rho)
+                elif x == 0 and y == 1:
+                    adj = max(0, 1 + home_xg * rho)
+                elif x == 1 and y == 0:
+                    adj = max(0, 1 + away_xg * rho)
+                elif x == 1 and y == 1:
+                    adj = max(0, 1 - rho)
+                else:
+                    adj = 1.0
+                    
+                prob_matrix[x, y] = base_prob * adj
+
+        # نرمال‌سازی ماتریس برای اطمینان از مجموع 1.0
+        prob_matrix = prob_matrix / np.sum(prob_matrix)
         
         home_win_prob = np.sum(np.tril(prob_matrix, -1))
         draw_prob = np.sum(np.diag(prob_matrix))
@@ -1704,6 +1722,7 @@ class ConfidenceEngine:
         "ml_strong": 10, "ml_medium": 5, 
         "poisson_confirm": 8,
         "h2h_data": 5, "form_consistency": 4,
+        "smart_money_steam": 10,  # پاداش برای ردیابی پول هوشمند
         "totals_bonus": 3, "kelly_high": 6, "kelly_medium": 3,
     }
 
@@ -1742,6 +1761,11 @@ class ConfidenceEngine:
 
         if poisson_prediction: 
             score += cls.WEIGHTS["poisson_confirm"]
+
+        # بررسی ورود پول هوشمند (اگر افت ضریب بیشتر از 3% بود)
+        steam_pct = opp.get("steam_pct", 0)
+        if steam_pct >= 3.0:
+            score += cls.WEIGHTS["smart_money_steam"]
 
         score = int(np.clip(score, 50, 93))
         risk = "Low" if score >= 75 else ("Medium" if score >= 65 else "High")
@@ -2046,6 +2070,56 @@ async def fetch_all_odds_async() -> list:
     logger.info("📊 [API USAGE] %s", odds_key_manager.get_usage_summary())
     return final_events
 
+# =========================================================
+# 13.5 SMART MONEY TRACKER (LINE MOVEMENT)
+# =========================================================
+class LineMovementTracker:
+    def __init__(self):
+        self.history_file = CFG.CACHE_DIR / "line_movement.json"
+        self.data = CacheManager.load(self.history_file)
+        self._cleanup_old_entries()
+
+    def _cleanup_old_entries(self):
+        now = datetime.now(timezone.utc)
+        to_delete = []
+        for match_key, entry in self.data.items():
+            try:
+                entry_time = datetime.fromisoformat(entry["timestamp"])
+                if now - entry_time > timedelta(hours=24):
+                    to_delete.append(match_key)
+            except Exception:
+                to_delete.append(match_key)
+        for key in to_delete:
+            del self.data[key]
+
+    def record_and_get_movement(self, home: str, away: str, market: str, outcome: str, current_odds: float) -> float:
+        """
+        ضریب را ذخیره می‌کند و میزان درصد افت ضریب (Steam) را نسبت به گذشته برمی‌گرداند.
+        """
+        if current_odds <= 1.0: return 0.0
+        
+        match_key = hashlib.md5(f"{home}|{away}|{market}|{outcome}".encode()).hexdigest()
+        now_str = datetime.now(timezone.utc).isoformat()
+
+        if match_key not in self.data:
+            self.data[match_key] = {
+                "initial_odds": current_odds,
+                "current_odds": current_odds,
+                "timestamp": now_str
+            }
+            CacheManager.save(self.history_file, self.data)
+            return 0.0
+
+        initial_odds = self.data[match_key]["initial_odds"]
+        self.data[match_key]["current_odds"] = current_odds
+        self.data[match_key]["timestamp"] = now_str
+        CacheManager.save(self.history_file, self.data)
+
+        # محاسبه درصد افت ضریب
+        drop_pct = (initial_odds / current_odds - 1) * 100
+        return round(drop_pct, 2)
+
+line_movement_tracker = LineMovementTracker()
 
 # =========================================================
 # 14. AI ANALYSIS
@@ -2273,7 +2347,7 @@ def send_telegram(message_html: str) -> bool:
 # =========================================================
 async def async_main():
     logger.info("=" * 65)
-    logger.info("  ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation")
+    logger.info("  ZBET90 ENGINE v6.5 | Dual Confirmation | Smart Money Tracker")
     logger.info("=" * 65)
     logger.info("🔑 [KEYS STATUS] %s", odds_key_manager.get_usage_summary())
 
@@ -2331,6 +2405,12 @@ async def async_main():
 
         if sent_history.was_sent(home, away, opp["market"]):
             continue
+
+        # ── Smart Money Tracking ─────────────────────────
+        steam_drop = line_movement_tracker.record_and_get_movement(
+            home, away, opp["market"], opp["pick"], opp["odds"]
+        )
+        opp["steam_pct"] = steam_drop
 
         # ── Gather Stats ─────────────────────────────────
         stats: dict = {}
@@ -2410,16 +2490,18 @@ async def async_main():
         has_us = bool(stats.get("us_sports"))
         has_real_stats = has_historical or has_football or has_elo or has_ml or has_us
 
-        if has_real_stats:
+        if has_real_stats or opp.get("steam_pct", 0) > 0:
             sources = []
             if has_historical: sources.append("Tennis-Historical")
             if has_football:   sources.append("Football-Data")
             if has_elo:        sources.append("ClubElo")
             if has_ml:         sources.append("ML-Model")
             if has_us:         sources.append("US-Sports")
+            if opp.get("steam_pct", 0) > 2.0: sources.append("Smart-Money")
+            
             logger.info(
                 "✅ [DATA] %s | EV=%.2f%% | Kelly=%.1f%% | Conf=%d%%",
-                " + ".join(sources),
+                " + ".join(sources) if sources else "Market-Only",
                 opp["edge_pct"], opp.get("kelly_pct", 0), conf,
             )
 
@@ -2442,6 +2524,7 @@ async def async_main():
         # EV line
         ev_line = f"📈 <b>Edge:</b> {opp['edge_pct']:.2f}%"
         kelly_line = f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
+        steam_line = f" | 📉 <b>Steam:</b> -{opp['steam_pct']:.1f}%" if opp.get("steam_pct", 0) > 2.0 else ""
         clv_line = (
             f" | 📊 <b>CLV:</b> {opp.get('clv_pct', 0):+.1f}%"
             if abs(opp.get("clv_pct", 0)) > 0.5 else ""
@@ -2471,7 +2554,7 @@ async def async_main():
             f"🎯 <b>PICK:</b> <code>{html_lib.escape(opp['pick'])}</code> "
             f"@ <b>{opp['odds']}</b>\n"
             f"📊 <b>Market:</b> {html_lib.escape(opp['market_label'])}\n\n"
-            f"{ev_line}{kelly_line}{clv_line}\n"
+            f"{ev_line}{kelly_line}{steam_line}{clv_line}\n"
             f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  "
             f"{conf_icon} <b>Confidence: {ai_data['confidence']}%</b>"
             f"{ml_line}{data_badge}\n"
