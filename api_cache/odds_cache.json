@@ -18647,5 +18647,128 @@
         }
       }
     ]
+  },
+  "0409e7dd047a701fb81581903929dc35": {
+    "timestamp": "2026-06-01T02:38:12.716854+00:00",
+    "data": [
+      {
+        "id": "c3aacf90adbfe4dd324b2307bd5ccdf7",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-01T03:10:00Z",
+        "home_team": "Milwaukee Panthers",
+        "away_team": "Auburn Tigers",
+        "bookmakers": [
+          {
+            "key": "draftkings",
+            "title": "DraftKings",
+            "last_update": "2026-06-01T02:37:41Z",
+            "markets": [
+              {
+                "key": "h2h",
+                "last_update": "2026-06-01T02:37:41Z",
+                "outcomes": [
+                  {
+                    "name": "Auburn Tigers",
+                    "price": 1.07
+                  },
+                  {
+                    "name": "Milwaukee Panthers",
+                    "price": 8.5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "betmgm",
+            "title": "BetMGM",
+            "last_update": "2026-06-01T02:37:42Z",
+            "markets": [
+              {
+                "key": "h2h",
+                "last_update": "2026-06-01T02:37:42Z",
+                "outcomes": [
+                  {
+                    "name": "Auburn Tigers",
+                    "price": 1.05
+                  },
+                  {
+                    "name": "Milwaukee Panthers",
+                    "price": 8.5
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Auburn Tigers",
+                  "price": 1.07
+                },
+                {
+                  "name": "Milwaukee Panthers",
+                  "price": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Auburn Tigers",
+                  "price": 1.05
+                },
+                {
+                  "name": "Milwaukee Panthers",
+                  "price": 8.5
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 14.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.87,
+                  "point": 14.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.91,
+                  "point": 14.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 14.5
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }
