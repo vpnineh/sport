@@ -437,7 +437,7 @@ class CacheManager:
 
 
 # =========================================================
-# 6. PERFORMANCE TRACKER  ← NEW
+# 6. PERFORMANCE TRACKER
 # =========================================================
 class PerformanceTracker:
     """
@@ -454,12 +454,15 @@ class PerformanceTracker:
             self.data["summary"] = {}
 
     def record_signal(self, home: str, away: str, pick: str, market: str,
-                      odds: float, ev: float, confidence: int, prob: float):
+                      odds: float, ev: float, confidence: int, prob: float,
+                      sport: str = "other", api_sport_key: str = ""):
         signal = {
             "id": hashlib.md5(
                 f"{home}|{away}|{market}|{datetime.now(timezone.utc).date()}".encode()
             ).hexdigest()[:8],
             "timestamp": datetime.now(timezone.utc).isoformat(),
+            "sport": sport,
+            "api_sport_key": api_sport_key,
             "home": home, "away": away, "pick": pick, "market": market,
             "odds": odds, "ev": ev, "confidence": confidence,
             "implied_prob": prob,
@@ -499,7 +502,6 @@ class PerformanceTracker:
         if len(recent) < 5:
             return 0.55  # default
         return sum(1 for s in recent if s["outcome"] == "win") / len(recent)
-
 
 performance_tracker = PerformanceTracker()
 
@@ -2567,9 +2569,11 @@ async def async_main():
 
         if send_telegram(msg):
             sent_history.mark_sent(home, away, opp["pick"], opp["market"])
+            # ذخیره سیگنال به همراه sport_key و کلید دقیق تورنمنت
             performance_tracker.record_signal(
                 home, away, opp["pick"], opp["market"],
                 opp["odds"], opp["ev"], ai_data["confidence"], opp["prob"],
+                sport_key, event.get("sport_key", "")
             )
             total_sent += 1
             logger.info(
