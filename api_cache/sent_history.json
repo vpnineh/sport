@@ -28,5 +28,41 @@
     "pick": "Sao Paulo",
     "market": "h2h",
     "sent_at": "2026-05-31T23:13:43.204283+00:00"
+  },
+  "1759a24731a39d50153a96be942a7679": {
+    "match": "Anastasia Potapova vs Anna Kalinskaya",
+    "pick": "Anna Kalinskaya",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:18.321860+00:00"
+  },
+  "48cd9236b42b5bd0d9caec63ddff2ab9": {
+    "match": "Flavio Cobolli vs Zachary Svajda",
+    "pick": "Zachary Svajda",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:23.044651+00:00"
+  },
+  "90dcfc987de2a6db965d0a81121a4be6": {
+    "match": "Madison Keys vs Diana Shnaider",
+    "pick": "Diana Shnaider",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:28.042873+00:00"
+  },
+  "1062d05b45bb3ff654680847d4c1d050": {
+    "match": "Maja Chwalinska vs Diane Parry",
+    "pick": "Diane Parry",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:32.470017+00:00"
+  },
+  "f0835eaaecb231a17fe145f0c22154a2": {
+    "match": "Juan Manuel Cerundolo vs Matteo Berrettini",
+    "pick": "Matteo Berrettini",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:36.663028+00:00"
+  },
+  "8b5532327cb92b879ae0c76be1559ad5": {
+    "match": "Felix Auger-Aliassime vs Alejandro Tabilo",
+    "pick": "Alejandro Tabilo",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T08:38:40.982024+00:00"
   }
 }

@@ -5412,3 +5412,88 @@
 2026-06-01 02:38:12 | INFO     | ℹ️  No qualifying +EV opportunities in current window.
 2026-06-01 02:38:12 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 2 calls (rem: 492) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
 2026-06-01 02:38:12 | INFO     | =================================================================
+2026-06-01 08:37:38 | INFO     | 🔑 [API KEY] primary (ODDS_API_KEY): Loaded ✓
+2026-06-01 08:37:38 | INFO     | 🔑 [API KEY] backup_1 (ODDS_API_KEY2): Loaded ✓
+2026-06-01 08:37:38 | INFO     | 🔑 [API KEY] backup_2 (ODDS_API_KEY3): Loaded ✓
+2026-06-01 08:37:38 | INFO     | 🔑 [API KEYS] 3 key(s) available for fallback
+2026-06-01 08:37:38 | INFO     | =================================================================
+2026-06-01 08:37:38 | INFO     |   ZBET90 ENGINE v6.0 | Production ML | Dual Confirmation
+2026-06-01 08:37:38 | INFO     | =================================================================
+2026-06-01 08:37:38 | INFO     | 🔑 [KEYS STATUS] ✅ primary: 2 calls (rem: 492) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 08:37:38 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-01 08:37:38 | INFO     | [FREE DATA] Downloading: atp_matches_2022.csv
+2026-06-01 08:37:38 | INFO     | [FREE DATA] Downloading: wta_matches_2022.csv
+2026-06-01 08:37:39 | INFO     | [FREE DATA] Downloading: atp_matches_2023.csv
+2026-06-01 08:37:39 | INFO     | [FREE DATA] Downloading: wta_matches_2023.csv
+2026-06-01 08:37:39 | INFO     | [FREE DATA] Downloading: atp_matches_2024.csv
+2026-06-01 08:37:39 | INFO     | [FREE DATA] Downloading: wta_matches_2024.csv
+2026-06-01 08:37:40 | INFO     | [FREE DATA] Downloading: atp_matches_2025.csv
+2026-06-01 08:37:40 | INFO     | [FREE DATA] Downloading: wta_matches_2025.csv
+2026-06-01 08:37:40 | INFO     | ✅ [TENNIS] ATP loaded: 11923 matches
+2026-06-01 08:37:40 | INFO     | ✅ [TENNIS] WTA loaded: 10888 matches
+2026-06-01 08:37:40 | INFO     | [FREE DATA] Downloading: atp_rankings_current.csv
+2026-06-01 08:37:40 | INFO     | ✅ [RANKINGS] ATP loaded: 34203 entries
+2026-06-01 08:37:40 | INFO     | [FREE DATA] Downloading: wta_rankings_current.csv
+2026-06-01 08:37:41 | INFO     | ✅ [RANKINGS] WTA loaded: 32060 entries
+2026-06-01 08:37:41 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 08:37:42 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 08:37:44 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 08:37:45 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 08:37:46 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 08:37:47 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 08:37:48 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 08:37:50 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 08:37:51 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 08:37:52 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 08:37:53 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 08:37:54 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 08:37:55 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 08:37:57 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 08:37:58 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 08:37:59 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 08:38:00 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 08:38:02 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 08:38:03 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 08:38:04 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 08:38:05 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-01 08:38:06 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-01 08:38:07 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-01 08:38:09 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-01 08:38:10 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-01 08:38:11 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-01 08:38:12 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-01 08:38:13 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-01 08:38:14 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-01 08:38:15 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-01 08:38:16 | INFO     | ✅ [FOOTBALL] Loaded 10816 matches from 10 leagues × 3 seasons
+2026-06-01 08:38:16 | INFO     | 🧠 [PHASE 2] Initializing ML models (Using Cache if available)...
+2026-06-01 08:38:16 | INFO     | ⚡ [ML FOOTBALL] Loaded pre-trained model from cache!
+2026-06-01 08:38:16 | INFO     | ⚡ [ML TENNIS ATP] Loaded pre-trained model from cache!
+2026-06-01 08:38:16 | INFO     | 📡 [PHASE 3] Fetching odds (window=6.0h)...
+2026-06-01 08:38:16 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-01 08:38:16 | INFO     | 🔑 [TRYING] primary...
+2026-06-01 08:38:17 | INFO     | 🔑 [primary] OK | Remaining: 488 | Market: h2h | Events: 8
+2026-06-01 08:38:17 | INFO     | 🔑 [primary] OK | Remaining: 484 | Market: totals | Events: 8
+2026-06-01 08:38:17 | INFO     | ✅ [primary] Fetched 6 events
+2026-06-01 08:38:17 | INFO     | 💾 [ODDS CACHE] SAVED 6 events
+2026-06-01 08:38:17 | INFO     | 📊 [API USAGE] ✅ primary: 4 calls (rem: 484) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 08:38:17 | INFO     | 🔍 [PHASE 4] Analyzing 6 events...
+2026-06-01 08:38:17 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=2.02% | Kelly=0.3% | Conf=72%
+2026-06-01 08:38:18 | INFO     | 📤 SENT: Anastasia Potapova vs Anna Kalinskaya | Anna Kalinskaya | EV=2.02% | Kelly=0.3% | Conf=72%
+2026-06-01 08:38:21 | INFO     | ✅ [H2H] Flavio Cobolli vs Zachary Svajda: 1 H2H matches
+2026-06-01 08:38:21 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=3.87% | Kelly=0.1% | Conf=66%
+2026-06-01 08:38:23 | INFO     | 📤 SENT: Flavio Cobolli vs Zachary Svajda | Zachary Svajda | EV=3.87% | Kelly=0.1% | Conf=66%
+2026-06-01 08:38:26 | INFO     | ✅ [H2H] Madison Keys vs Diana Shnaider: 2 H2H matches
+2026-06-01 08:38:26 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=2.70% | Kelly=0.5% | Conf=72%
+2026-06-01 08:38:28 | INFO     | 📤 SENT: Madison Keys vs Diana Shnaider | Diana Shnaider | EV=2.70% | Kelly=0.5% | Conf=72%
+2026-06-01 08:38:31 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=2.73% | Kelly=0.4% | Conf=72%
+2026-06-01 08:38:32 | INFO     | 📤 SENT: Maja Chwalinska vs Diane Parry | Diane Parry | EV=2.73% | Kelly=0.4% | Conf=72%
+2026-06-01 08:38:35 | INFO     | ✅ [H2H] Juan Manuel Cerundolo vs Matteo Berrettini: 1 H2H matches
+2026-06-01 08:38:35 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=2.23% | Kelly=0.8% | Conf=72%
+2026-06-01 08:38:36 | INFO     | 📤 SENT: Juan Manuel Cerundolo vs Matteo Berrettini | Matteo Berrettini | EV=2.23% | Kelly=0.8% | Conf=72%
+2026-06-01 08:38:39 | INFO     | ✅ [DATA] Tennis-Historical + ML-Model | EV=2.64% | Kelly=0.4% | Conf=72%
+2026-06-01 08:38:40 | INFO     | 📤 SENT: Felix Auger-Aliassime vs Alejandro Tabilo | Alejandro Tabilo | EV=2.64% | Kelly=0.4% | Conf=72%
+2026-06-01 08:38:43 | INFO     | =================================================================
+2026-06-01 08:38:43 | INFO     | 📊 SUMMARY | Analyzed: 6 | Sent: 6 | Skipped(conf): 0
+2026-06-01 08:38:43 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 4 calls (rem: 484) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-01 08:38:43 | INFO     | =================================================================
