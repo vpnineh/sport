@@ -82,5 +82,35 @@
     "pick": "Naomi Osaka",
     "market": "h2h_lay",
     "sent_at": "2026-06-01T14:38:23.077921+00:00"
+  },
+  "e59061b33524b7740afbdc1059053eef": {
+    "match": "Ponte Preta vs Botafogo",
+    "pick": "Ponte Preta",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T20:38:10.314548+00:00"
+  },
+  "70bf4fcc69fd5d35963de3ff6c9e6b03": {
+    "match": "Florida Gators vs Troy Trojans",
+    "pick": "Over 15.5",
+    "market": "totals",
+    "sent_at": "2026-06-01T20:38:14.590544+00:00"
+  },
+  "c34583ded90f3235fa5ccdeb16b0a762": {
+    "match": "Tampa Bay Rays vs Detroit Tigers",
+    "pick": "Detroit Tigers",
+    "market": "h2h",
+    "sent_at": "2026-06-01T20:38:19.040682+00:00"
+  },
+  "ded50f7293bfc4a6f6c96abc9737e12e": {
+    "match": "Washington Nationals vs Miami Marlins",
+    "pick": "Washington Nationals",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T20:38:23.505161+00:00"
+  },
+  "e6ab600bc817765877f57046b2ef110b": {
+    "match": "Toronto Marlies vs W-B/Scranton Penguins",
+    "pick": "Toronto Marlies",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-01T20:38:27.529396+00:00"
   }
 }
