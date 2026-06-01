@@ -48,7 +48,9 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
           FORCE_BOOTSTRAP: ${{ github.event.inputs.force_bootstrap || 'false' }}
-        run: python main4.py
+        run: |
+          python main4.py
+          python settler.py
 
       - name: 💾 Commit Cache Files
         run: |
@@ -65,5 +67,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zbet90-logs-${{ github.run_number }}
-          path: api_cache/execution_logs.log
+          path: api_cache/*.log
           retention-days: 7
