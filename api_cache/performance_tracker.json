@@ -139,6 +139,20 @@
       "implied_prob": 0.5025,
       "outcome": null,
       "profit_loss": null
+    },
+    {
+      "id": "ac44cd45",
+      "timestamp": "2026-06-01T14:38:23.078601+00:00",
+      "home": "Aryna Sabalenka",
+      "away": "Naomi Osaka",
+      "pick": "Naomi Osaka",
+      "market": "h2h_lay",
+      "odds": 5.1,
+      "ev": 0.035,
+      "confidence": 66,
+      "implied_prob": 0.2029,
+      "outcome": null,
+      "profit_loss": null
     }
   ],
   "summary": {}
