@@ -143,3 +143,39 @@
 2026-06-02 14:03:50 | INFO     | ⏳ [PENDING] Yomiuri Giants vs Orix Buffaloes (retry #2, 5h elapsed)
 2026-06-02 14:03:50 | INFO     | 💾 [PENDING] Saved 15 unsettled bets for next run
 2026-06-02 14:03:50 | INFO     | ⏳ No matches settled this session.
+2026-06-02 14:38:09 | INFO     | =======================================================
+2026-06-02 14:38:09 | INFO     | 🤖 ZBET90 SETTLER ENGINE v2.0 | Gemini-Powered
+2026-06-02 14:38:09 | INFO     | =======================================================
+2026-06-02 14:38:09 | INFO     | 🔍 15 bets to check (including pending from previous runs).
+2026-06-02 14:38:09 | INFO     | ✅ [GEMINI ENGINE] Load Balancing Active: 4 keys (Capacity: 56 RPM)
+2026-06-02 14:38:09 | INFO     | 🤖 [PHASE 1] Querying Gemini for 15 matches...
+2026-06-02 14:38:09 | INFO     | 🌍 [SCRAPER] Fetching from FotMob / ESPN / SofaScore...
+2026-06-02 14:38:10 | INFO     | ✅ [SCRAPER] Soccer: 119 | Other: 24
+2026-06-02 14:38:24 | INFO     | 🤖 [GEMINI] Found: 0 | Missed: 15 → going to scraper/odds-api
+2026-06-02 14:38:24 | INFO     | 🔄 [ODDS-API] Got 3 results for tennis_wta_french_open
+2026-06-02 14:38:24 | INFO     | 🔄 [ODDS-API] Got 4 results for tennis_atp_french_open
+2026-06-02 14:38:24 | INFO     | ⏳ [ODDS-API] Not finished yet: Madison Keys vs Diana Shnaider
+2026-06-02 14:38:24 | INFO     | ⏳ [ODDS-API] Not finished yet: Felix Auger-Aliassime vs Alejandro Tabilo
+2026-06-02 14:38:24 | INFO     | ⏳ [ODDS-API] Not finished yet: Frances Tiafoe vs Matteo Arnaldi
+2026-06-02 14:38:24 | INFO     | ⏳ [ODDS-API] Not finished yet: Aryna Sabalenka vs Naomi Osaka
+2026-06-02 14:38:25 | INFO     | 🔄 [ODDS-API] Got 0 results for baseball_ncaa
+2026-06-02 14:38:25 | INFO     | 🔄 [ODDS-API] Got 2 results for icehockey_ahl
+2026-06-02 14:38:25 | INFO     | ⏳ [ODDS-API] Not finished yet: Toronto Marlies vs W-B/Scranton Penguins
+2026-06-02 14:38:25 | INFO     | 🔄 [ODDS-API] Got 0 results for baseball_npb
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Anastasia Potapova vs Anna Kalinskaya (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Flavio Cobolli vs Zachary Svajda (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Madison Keys vs Diana Shnaider (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Maja Chwalinska vs Diane Parry (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Juan Manuel Cerundolo vs Matteo Berrettini (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Felix Auger-Aliassime vs Alejandro Tabilo (retry #3, 30h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Juan Manuel Cerundolo vs Matteo Berrettini (retry #3, 28h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Frances Tiafoe vs Matteo Arnaldi (retry #3, 28h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Aryna Sabalenka vs Naomi Osaka (retry #3, 24h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Florida Gators vs Troy Trojans (retry #3, 18h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Toronto Marlies vs W-B/Scranton Penguins (retry #3, 18h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Texas A&M Aggies vs USC Trojans (retry #3, 15h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Texas A&M Aggies vs USC Trojans (retry #3, 15h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Mirra Andreeva vs Sorana Cirstea (retry #3, 6h elapsed)
+2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Yomiuri Giants vs Orix Buffaloes (retry #3, 6h elapsed)
+2026-06-02 14:38:25 | INFO     | 💾 [PENDING] Saved 15 unsettled bets for next run
+2026-06-02 14:38:25 | INFO     | ⏳ No matches settled this session.

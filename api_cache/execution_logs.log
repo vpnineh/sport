@@ -6303,3 +6303,76 @@
 2026-06-02 14:03:32 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 8 calls (rem: 360) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
 2026-06-02 14:03:32 | INFO     | 📈 [PERFORMANCE] WR=30.0% | ROI=-20.1% | Signals=26
 2026-06-02 14:03:32 | INFO     | =================================================================
+2026-06-02 14:37:41 | INFO     | ✅ [GEMINI SDK] Initialized with 4 API keys for Load Balancing
+2026-06-02 14:37:41 | INFO     | 🔑 [API KEY] primary (ODDS_API_KEY): Loaded ✓
+2026-06-02 14:37:41 | INFO     | 🔑 [API KEY] backup_1 (ODDS_API_KEY2): Loaded ✓
+2026-06-02 14:37:41 | INFO     | 🔑 [API KEY] backup_2 (ODDS_API_KEY3): Loaded ✓
+2026-06-02 14:37:41 | INFO     | 🔑 [API KEYS] 3 key(s) available for fallback
+2026-06-02 14:37:41 | INFO     | =================================================================
+2026-06-02 14:37:41 | INFO     |   ZBET90 ENGINE v6.5 | AI Judge Mode (AI 70% + Math 30%)
+2026-06-02 14:37:41 | INFO     | =================================================================
+2026-06-02 14:37:41 | INFO     | 🔑 [KEYS STATUS] ✅ primary: 8 calls (rem: 360) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 14:37:41 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: atp_matches_2022.csv
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: wta_matches_2022.csv
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: atp_matches_2023.csv
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: wta_matches_2023.csv
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: atp_matches_2024.csv
+2026-06-02 14:37:41 | INFO     | [FREE DATA] Downloading: wta_matches_2024.csv
+2026-06-02 14:37:42 | INFO     | [FREE DATA] Downloading: atp_matches_2025.csv
+2026-06-02 14:37:42 | INFO     | [FREE DATA] Downloading: wta_matches_2025.csv
+2026-06-02 14:37:42 | INFO     | ✅ [TENNIS] ATP loaded: 11923 matches
+2026-06-02 14:37:42 | INFO     | ✅ [TENNIS] WTA loaded: 10888 matches
+2026-06-02 14:37:42 | INFO     | [FREE DATA] Downloading: atp_rankings_current.csv
+2026-06-02 14:37:42 | INFO     | ✅ [RANKINGS] ATP loaded: 34203 entries
+2026-06-02 14:37:42 | INFO     | [FREE DATA] Downloading: wta_rankings_current.csv
+2026-06-02 14:37:42 | INFO     | ✅ [RANKINGS] WTA loaded: 32060 entries
+2026-06-02 14:37:42 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 14:37:43 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 14:37:44 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 14:37:45 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 14:37:46 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 14:37:47 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 14:37:48 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 14:37:49 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 14:37:50 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 14:37:50 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 14:37:51 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 14:37:52 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 14:37:53 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 14:37:53 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 14:37:55 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 14:37:55 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 14:37:56 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 14:37:57 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 14:37:58 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 14:37:58 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 14:37:59 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 14:38:00 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 14:38:01 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 14:38:01 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 14:38:02 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 14:38:03 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 14:38:04 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 14:38:05 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 14:38:06 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 14:38:07 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 14:38:07 | INFO     | ✅ [FOOTBALL] Loaded 10816 matches from 10 leagues × 3 seasons
+2026-06-02 14:38:07 | INFO     | 🧠 [PHASE 2] Initializing ML models...
+2026-06-02 14:38:07 | INFO     | ⚡ [ML FOOTBALL] Loaded pre-trained model from cache!
+2026-06-02 14:38:07 | INFO     | ⚡ [ML TENNIS ATP] Loaded pre-trained model from cache!
+2026-06-02 14:38:07 | INFO     | 📡 [PHASE 3] Fetching odds (window=6.0h)...
+2026-06-02 14:38:07 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-02 14:38:07 | INFO     | 🔑 [TRYING] primary...
+2026-06-02 14:38:07 | INFO     | 🔑 [primary] OK | Remaining: 346 | Market: totals | Events: 10
+2026-06-02 14:38:07 | INFO     | 🔑 [primary] OK | Remaining: 342 | Market: h2h | Events: 10
+2026-06-02 14:38:07 | INFO     | ✅ [primary] Fetched 2 unique events
+2026-06-02 14:38:08 | INFO     | 💾 [ODDS CACHE] SAVED 2 events
+2026-06-02 14:38:08 | INFO     | 📊 [API USAGE] ✅ primary: 10 calls (rem: 342) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 14:38:08 | INFO     | 🔍 [PHASE 4] Analyzing 2 events...
+2026-06-02 14:38:08 | INFO     | =================================================================
+2026-06-02 14:38:08 | INFO     | 📊 SUMMARY | Analyzed:2 | Sent:0 | Skip(math):1 | Skip(AI):0 | Skip(conf):0
+2026-06-02 14:38:08 | INFO     | ℹ️  2 opportunities analyzed → filtered out. Math:1 | AI:0 | Conf:0
+2026-06-02 14:38:08 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 10 calls (rem: 342) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 14:38:08 | INFO     | 📈 [PERFORMANCE] WR=30.0% | ROI=-20.1% | Signals=26
+2026-06-02 14:38:08 | INFO     | =================================================================
