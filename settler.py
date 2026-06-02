@@ -10,7 +10,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 import requests
-
+from google import genai
+from google.genai import types
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from curl_cffi.requests import AsyncSession
@@ -54,16 +55,9 @@ if not GEMINI_API_KEY:
 
 
 # =========================================================
-# GEMINI RESULT ENGINE  ← موتور اصلی
+# GEMINI RESULT ENGINE (Async & New SDK)
 # =========================================================
 class GeminiResultEngine:
-    """
-    از Gemini می‌پرسیم نتیجه مسابقه چیه.
-    - اول تلاش می‌کنه از دانش خودش جواب بده
-    - اگه مطمئن نیست → None برمی‌گردونه
-    - Thread-safe با Singleton pattern
-    """
-
     _instance: Optional["GeminiResultEngine"] = None
     _lock = threading.Lock()
 
@@ -78,20 +72,7 @@ class GeminiResultEngine:
         if self._initialized:
             return
 
-        genai.configure(api_key=GEMINI_API_KEY)
-
-        self._safety = {
-            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-        }
-
-        self._gen_config = genai.types.GenerationConfig(
-            temperature=0.0,          # قطعیت کامل - ما نظر نمی‌خوایم
-            max_output_tokens=256,    # جواب کوتاه کافیه
-            response_mime_type="application/json",
-        )
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
 
         self._system = (
             "You are a sports results database. Your ONLY job is to return VERIFIED match results.\n"
@@ -112,50 +93,55 @@ class GeminiResultEngine:
             "}"
         )
 
-        self._model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            generation_config=self._gen_config,
-            safety_settings=self._safety,
+        self._config = types.GenerateContentConfig(
             system_instruction=self._system,
+            temperature=0.0,
+            max_output_tokens=256,
+            response_mime_type="application/json",
+            safety_settings=[
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                ),
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                ),
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                ),
+                types.SafetySetting(
+                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                ),
+            ]
         )
 
-        # Rate limiting: max 14 req/min برای flash
         self._request_times: list = []
-        self._rate_lock = threading.Lock()
+        # استفاده از قفل غیرهم‌زمان
+        self._rate_lock = asyncio.Lock()
 
         self._initialized = True
-        logger.info("✅ [GEMINI ENGINE] Initialized (gemini-1.5-flash, temp=0.0)")
+        logger.info("✅ [GEMINI ENGINE] Initialized (New SDK, Async, gemini-1.5-flash, temp=0.0)")
 
-    def _rate_limit_wait(self):
-        """حداکثر ۱۴ درخواست در دقیقه."""
-        with self._rate_lock:
+    async def _rate_limit_wait(self):
+        """حداکثر ۱۴ درخواست در دقیقه با پشتیبانی Async."""
+        async with self._rate_lock:
             now = time.time()
-            # پاک کردن درخواست‌های قدیمی‌تر از ۶۰ ثانیه
             self._request_times = [t for t in self._request_times if now - t < 60]
 
             if len(self._request_times) >= 14:
                 wait = 60 - (now - self._request_times[0]) + 1
                 if wait > 0:
                     logger.info("[GEMINI] Rate limit reached, waiting %.1fs...", wait)
-                    time.sleep(wait)
+                    await asyncio.sleep(wait)  # فریز نشدن کل برنامه
 
             self._request_times.append(time.time())
 
-    def query_match_result(
-        self,
-        home: str,
-        away: str,
-        sport: str,
-        match_date: str,
-        max_retries: int = 2,
+    async def query_match_result(
+        self, home: str, away: str, sport: str, match_date: str, max_retries: int = 2
     ) -> Optional[dict]:
-        """
-        نتیجه مسابقه را از Gemini می‌پرسد.
-
-        Returns:
-            dict با winner, home_score, away_score
-            یا None اگه Gemini مطمئن نیست
-        """
         prompt = (
             f"Match result query:\n"
             f"Sport: {sport}\n"
@@ -169,22 +155,22 @@ class GeminiResultEngine:
         last_error = None
         for attempt in range(max_retries):
             try:
-                self._rate_limit_wait()
-                response = self._model.generate_content(prompt)
-
-                if not response.candidates:
-                    logger.debug("[GEMINI] No candidates for %s vs %s", home, away)
-                    continue
+                await self._rate_limit_wait()
+                
+                # فراخوانی به صورت کاملاً غیرهم‌زمان
+                response = await self.client.aio.models.generate_content(
+                    model="gemini-1.5-flash",
+                    contents=prompt,
+                    config=self._config
+                )
 
                 raw = response.text
                 if not raw:
                     continue
 
-                # Parse JSON
                 try:
                     data = json.loads(raw)
                 except json.JSONDecodeError:
-                    # تلاش برای extract
                     import re
                     m = re.search(r"\{[\s\S]*\}", raw)
                     if m:
@@ -198,28 +184,13 @@ class GeminiResultEngine:
                 if not isinstance(data, dict):
                     continue
 
-                # بررسی اینکه آیا Gemini می‌دونه
-                if not data.get("known", False):
-                    logger.debug(
-                        "[GEMINI] Unknown result: %s vs %s (note: %s)",
-                        home, away, data.get("note", "")
-                    )
-                    return None
-
-                # بررسی confidence
-                if data.get("confidence") == "low":
-                    logger.debug(
-                        "[GEMINI] Low confidence for %s vs %s → skipping",
-                        home, away
-                    )
+                if not data.get("known", False) or data.get("confidence") == "low":
                     return None
 
                 winner_raw = data.get("winner")
                 if winner_raw not in ["home", "away", "draw"]:
-                    logger.debug("[GEMINI] Invalid winner value: %s", winner_raw)
                     return None
 
-                # تبدیل home/away به نام تیم
                 if winner_raw == "home":
                     winner_name = home
                 elif winner_raw == "away":
@@ -236,42 +207,27 @@ class GeminiResultEngine:
                     "source": "gemini",
                     "confidence": data.get("confidence", "medium"),
                 }
-
+                
                 logger.info(
-                    "🤖 [GEMINI] %s vs %s → %s (conf: %s)",
-                    home, away,
-                    result["winner"].upper(),
-                    result["confidence"],
+                    "🤖 [GEMINI] %s vs %s → %s",
+                    home, away, result["winner"].upper(),
                 )
                 return result
 
             except Exception as e:
-                last_error = str(e)
                 err_str = str(e)
+                last_error = err_str
 
                 if "429" in err_str or "quota" in err_str.lower():
                     wait = (attempt + 1) * 15
-                    logger.warning(
-                        "[GEMINI] Rate limited, waiting %ds (attempt %d/%d)",
-                        wait, attempt + 1, max_retries
-                    )
-                    time.sleep(wait)
+                    logger.warning("[GEMINI] Rate limited, waiting %ds", wait)
+                    await asyncio.sleep(wait) # فریز نشدن کل برنامه
                 elif "400" in err_str:
-                    logger.error("[GEMINI] Bad request: %s", err_str[:100])
                     return None
                 else:
-                    logger.debug(
-                        "[GEMINI] Attempt %d/%d failed: %s",
-                        attempt + 1, max_retries, err_str[:100]
-                    )
                     if attempt < max_retries - 1:
-                        time.sleep(2 ** attempt)
+                        await asyncio.sleep(2 ** attempt)
 
-        if last_error:
-            logger.debug(
-                "[GEMINI] All attempts failed for %s vs %s: %s",
-                home, away, last_error[:100]
-            )
         return None
 
 
@@ -883,7 +839,7 @@ async def async_settle():
         except Exception:
             match_date_str = "unknown date"
 
-        result = gemini_engine.query_match_result(
+        result = await gemini_engine.query_match_result(
             home=bet.get("home", ""),
             away=bet.get("away", ""),
             sport=bet.get("sport", "soccer"),
