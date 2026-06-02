@@ -1754,33 +1754,34 @@ async def async_main():
     skip_no_opp = skip_ev = skip_sent = skip_math = skip_ai = skip_conf = 0
 
     for event in events:
-    home = clean_team_name(event.get("home_team", ""))
-    away = clean_team_name(event.get("away_team", ""))
-    sport = event.get("sport_title", "Unknown")
-    sport_key = normalize_sport_key(sport)
-    if not home or not away: continue
+        home = clean_team_name(event.get("home_team", ""))
+        away = clean_team_name(event.get("away_team", ""))
+        sport = event.get("sport_title", "Unknown")
+        sport_key = normalize_sport_key(sport)
+        if not home or not away: continue
 
-    markets_data = event.get("_markets_data", {})
-    opps = calculate_sharp_ev_advanced(markets_data)
-    
-    # DEBUG: ببین چرا skip میشه
-    if not opps:
-        logger.info("⏭️ NO_OPP: %s vs %s (no EV opportunity)", home, away)
-        continue
-    
-    opp = opps[0]
-    total_analyzed += 1
-    
-    # FIX: اول EV چک کن، بعد was_sent
-    if opp["ev"] < CFG.MATH_MIN_EV_TO_ANALYZE:
-        skip_math += 1
-        logger.info("⏭️ LOW_EV: %s vs %s EV=%.2f%% < %.1f%%",
-                    home, away, opp["edge_pct"], CFG.MATH_MIN_EV_TO_ANALYZE*100)
-        continue
-    
-    if sent.was_sent(home, away, opp["market"]):
-        logger.info("⏭️ ALREADY_SENT: %s vs %s [%s]", home, away, opp["market"])
-        continue
+        markets_data = event.get("_markets_data", {})
+        opps = calculate_sharp_ev_advanced(markets_data)
+        
+        if not opps:
+            logger.info("⏭️ NO_OPP: %s vs %s (no EV opportunity)", home, away)
+            skip_no_opp += 1
+            continue
+        
+        opp = opps[0]
+        total_analyzed += 1
+        
+        # FIX: اول EV چک کن، بعد was_sent
+        if opp["ev"] < CFG.MATH_MIN_EV_TO_ANALYZE:
+            skip_ev += 1
+            logger.info("⏭️ LOW_EV: %s vs %s EV=%.2f%% < %.1f%%",
+                        home, away, opp["edge_pct"], CFG.MATH_MIN_EV_TO_ANALYZE*100)
+            continue
+        
+        if sent.was_sent(home, away, opp["market"]):
+            logger.info("⏭️ ALREADY_SENT: %s vs %s [%s]", home, away, opp["market"])
+            skip_sent += 1
+            continue
 
         opp["steam_pct"] = line_movement_tracker.record_and_get_movement(
             home, away, opp["market"], opp["pick"], opp["odds"])
