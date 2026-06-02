@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import re
+import random
 import logging
 import html as html_lib
 import hashlib
@@ -111,7 +112,7 @@ class Config:
 
     # ── AI Models ────────────────────────────────────────
     # FIX: مدل صحیح Gemini با SDK رسمی
-    AI_MODEL_ANALYST: str = "gemini-1.5-flash"
+    AI_MODEL_ANALYST: str = "gemini-flash-latest"
     AI_MAX_TOKENS: int = 2048
     AI_TEMPERATURE: float = 0.1
 
@@ -199,15 +200,24 @@ class GeminiManager:
         if self._initialized:
             return
         
-        api_key = os.getenv("GEMINI", "").strip()
-        if not api_key:
-            logger.critical("FATAL: GEMINI env var not set!")
+        # خواندن تمام کلیدهای تعریف شده
+        raw_keys = [
+            os.getenv("GEMINI", ""),
+            os.getenv("GEMINI1", ""),
+            os.getenv("GEMINI2", ""),
+            os.getenv("GEMINI3", ""),
+        ]
+        # فیلتر کردن کلیدهای خالی
+        valid_keys = [k.strip() for k in raw_keys if k.strip()]
+
+        if not valid_keys:
+            logger.critical("FATAL: No GEMINI API keys found!")
             sys.exit(1)
 
-        # پیکربندی SDK جدید گوگل
-        self.client = genai.Client(api_key=api_key)
+        # ساخت یک کلاینت مجزا برای هر کلید
+        self.clients = [genai.Client(api_key=k) for k in valid_keys]
 
-        # Safety settings - برای محتوای ورزشی آزاد
+        # بقیه تنظیمات مثل قبل...
         self._safety_settings = [
             types.SafetySetting(
                 category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -228,7 +238,7 @@ class GeminiManager:
         ]
 
         self._initialized = True
-        logger.info("✅ [GEMINI SDK] Initialized with NEW SDK for model: %s", CFG.AI_MODEL_ANALYST)
+        logger.info("✅ [GEMINI SDK] Initialized with %d API keys for Load Balancing", len(self.clients))
 
     def generate(
         self,
@@ -238,17 +248,15 @@ class GeminiManager:
         temperature: Optional[float] = None,
         max_retries: int = 3,
     ) -> Optional[dict]:
-        """تولید محتوا با retry خودکار."""
+        
         target_model = model_name or CFG.AI_MODEL_ANALYST
         
-        # ساخت تنظیمات درخواست
         config_kwargs = {
             "temperature": temperature if temperature is not None else CFG.AI_TEMPERATURE,
             "max_output_tokens": CFG.AI_MAX_TOKENS,
             "response_mime_type": "application/json",
             "safety_settings": self._safety_settings,
         }
-        
         if system_instruction:
             config_kwargs["system_instruction"] = system_instruction
             
@@ -257,13 +265,15 @@ class GeminiManager:
         last_error = None
         for attempt in range(max_retries):
             try:
-                response = self.client.models.generate_content(
+                # 🎯 انتخاب رندوم یک کلاینت (کلید) در هر تلاش
+                client = random.choice(self.clients)
+                
+                response = client.models.generate_content(
                     model=target_model,
                     contents=prompt,
                     config=gen_config
                 )
                 
-                # بررسی بلاک شدن توسط فیلترهای ایمنی (در صورت وجود)
                 if getattr(response, "prompt_feedback", None) and response.prompt_feedback.block_reason:
                     logger.warning("[GEMINI] Safety block!")
                     return None
