@@ -3,6 +3,7 @@ import sys
 import json
 import logging
 import asyncio
+import random
 import unicodedata
 import threading
 import time
@@ -70,70 +71,47 @@ class GeminiResultEngine:
         if self._initialized:
             return
 
-        self.client = genai.Client(api_key=GEMINI_API_KEY)
+        raw_keys = [
+            os.getenv("GEMINI", ""),
+            os.getenv("GEMINI1", ""),
+            os.getenv("GEMINI2", ""),
+            os.getenv("GEMINI3", ""),
+        ]
+        valid_keys = [k.strip() for k in raw_keys if k.strip()]
+
+        if not valid_keys:
+            logger.critical("FATAL: No GEMINI API keys found!")
+            sys.exit(1)
+
+        self.clients = [genai.Client(api_key=k) for k in valid_keys]
+        
+        # محاسبه سقف درخواست‌ها بر اساس تعداد کلیدها (هر کلید 14 تا)
+        self.max_rpm = 14 * len(self.clients)
 
         self._system = (
-            "You are a sports results database. Your ONLY job is to return VERIFIED match results.\n"
-            "RULES:\n"
-            "1. Only report results you are CERTAIN about from your training data.\n"
-            "2. If the match happened after your knowledge cutoff OR you are not sure → set 'known': false.\n"
-            "3. For soccer/football: winner can be 'home', 'away', or 'draw'.\n"
-            "4. For tennis/basketball/baseball: winner is always 'home' or 'away' (no draw).\n"
-            "5. NEVER guess or hallucinate. Uncertainty = unknown.\n\n"
-            "Output schema (strict JSON):\n"
-            "{\n"
-            '  "known": bool,\n'
-            '  "winner": "home" | "away" | "draw" | null,\n'
-            '  "home_score": int | null,\n'
-            '  "away_score": int | null,\n'
-            '  "confidence": "high" | "medium" | "low",\n'
-            '  "note": "string (optional)"\n'
-            "}"
+            # ... کدهای پرامپت شما ...
         )
 
         self._config = types.GenerateContentConfig(
-            system_instruction=self._system,
-            temperature=0.0,
-            max_output_tokens=256,
-            response_mime_type="application/json",
-            safety_settings=[
-                types.SafetySetting(
-                    category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                ),
-                types.SafetySetting(
-                    category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                ),
-                types.SafetySetting(
-                    category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                ),
-                types.SafetySetting(
-                    category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                ),
-            ]
+            # ... تنظیمات کانفیگ و safety ...
         )
 
         self._request_times: list = []
-        # استفاده از قفل غیرهم‌زمان
         self._rate_lock = asyncio.Lock()
 
         self._initialized = True
-        logger.info("✅ [GEMINI ENGINE] Initialized (New SDK, Async, gemini-1.5-flash, temp=0.0)")
+        logger.info("✅ [GEMINI ENGINE] Load Balancing Active: %d keys (Capacity: %d RPM)", len(self.clients), self.max_rpm)
 
     async def _rate_limit_wait(self):
-        """حداکثر ۱۴ درخواست در دقیقه با پشتیبانی Async."""
         async with self._rate_lock:
             now = time.time()
             self._request_times = [t for t in self._request_times if now - t < 60]
 
-            if len(self._request_times) >= 14:
+            if len(self._request_times) >= self.max_rpm:
                 wait = 60 - (now - self._request_times[0]) + 1
                 if wait > 0:
-                    logger.info("[GEMINI] Rate limit reached, waiting %.1fs...", wait)
-                    await asyncio.sleep(wait)  # فریز نشدن کل برنامه
+                    logger.info("[GEMINI] Global Rate limit reached, waiting %.1fs...", wait)
+                    await asyncio.sleep(wait)
 
             self._request_times.append(time.time())
 
@@ -141,13 +119,7 @@ class GeminiResultEngine:
         self, home: str, away: str, sport: str, match_date: str, max_retries: int = 2
     ) -> Optional[dict]:
         prompt = (
-            f"Match result query:\n"
-            f"Sport: {sport}\n"
-            f"Home team: {home}\n"
-            f"Away team: {away}\n"
-            f"Match date (UTC): {match_date}\n\n"
-            f"Did this match finish? Who won?\n"
-            f"Return the JSON result."
+            # ... متن پرامپت ...
         )
 
         last_error = None
@@ -155,9 +127,11 @@ class GeminiResultEngine:
             try:
                 await self._rate_limit_wait()
                 
-                # فراخوانی به صورت کاملاً غیرهم‌زمان
-                response = await self.client.aio.models.generate_content(
-                    model="gemini-1.5-flash",
+                # 🎯 انتخاب رندوم کلاینت برای درخواست غیرهم‌زمان
+                client = random.choice(self.clients)
+                
+                response = await client.aio.models.generate_content(
+                    model="gemini-flash-latest",
                     contents=prompt,
                     config=self._config
                 )
