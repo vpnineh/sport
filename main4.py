@@ -26,6 +26,8 @@ warnings.filterwarnings('ignore', category=RuntimeWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 
 # ── Google AI SDK (جایگزین requests خام) ──────────────
+from google import genai
+from google.genai import types
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
@@ -175,14 +177,13 @@ logger.addHandler(file_handler)
 
 
 # =========================================================
-# 3. GOOGLE AI SDK MANAGER  ← کاملاً بازنویسی شده
+# 3. GOOGLE AI SDK MANAGER (Updated to google-genai)
 # =========================================================
 class GeminiManager:
     """
-    مدیریت Google Generative AI SDK با:
+    مدیریت Google GenAI SDK با:
     - Connection pooling
     - Retry با exponential backoff
-    - Safety settings مناسب
     - Thread-safe
     """
     
@@ -205,38 +206,31 @@ class GeminiManager:
             logger.critical("FATAL: GEMINI env var not set!")
             sys.exit(1)
 
-        # پیکربندی SDK رسمی گوگل
-        genai.configure(api_key=api_key)
+        # پیکربندی SDK جدید گوگل
+        self.client = genai.Client(api_key=api_key)
 
         # Safety settings - برای محتوای ورزشی آزاد
-        self._safety_settings = {
-            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-        }
+        self._safety_settings = [
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+        ]
 
-        # Generation config پیش‌فرض
-        self._generation_config = genai.types.GenerationConfig(
-            temperature=CFG.AI_TEMPERATURE,
-            max_output_tokens=CFG.AI_MAX_TOKENS,
-            response_mime_type="application/json",  # JSON mode رسمی SDK
-        )
-
-        # Cache مدل‌ها برای جلوگیری از re-init
-        self._models: Dict[str, genai.GenerativeModel] = {}
         self._initialized = True
-        logger.info("✅ [GEMINI SDK] Initialized with model: %s", CFG.AI_MODEL_ANALYST)
-
-    def _get_model(self, model_name: str) -> genai.GenerativeModel:
-        """دریافت یا ساخت مدل با cache."""
-        if model_name not in self._models:
-            self._models[model_name] = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config=self._generation_config,
-                safety_settings=self._safety_settings,
-            )
-        return self._models[model_name]
+        logger.info("✅ [GEMINI SDK] Initialized with NEW SDK for model: %s", CFG.AI_MODEL_ANALYST)
 
     def generate(
         self,
@@ -246,59 +240,34 @@ class GeminiManager:
         temperature: Optional[float] = None,
         max_retries: int = 3,
     ) -> Optional[dict]:
-        """
-        تولید محتوا با retry خودکار.
+        """تولید محتوا با retry خودکار."""
+        target_model = model_name or CFG.AI_MODEL_ANALYST
         
-        Returns:
-            dict اگر JSON معتبر، None در صورت خطا
-        """
-        model_name = model_name or CFG.AI_MODEL_ANALYST
+        # ساخت تنظیمات درخواست
+        config_kwargs = {
+            "temperature": temperature if temperature is not None else CFG.AI_TEMPERATURE,
+            "max_output_tokens": CFG.AI_MAX_TOKENS,
+            "response_mime_type": "application/json",
+            "safety_settings": self._safety_settings,
+        }
         
-        # اگه temperature متفاوت نیاز داریم، مدل جدید با config جدید بساز
-        if temperature is not None and temperature != CFG.AI_TEMPERATURE:
-            gen_config = genai.types.GenerationConfig(
-                temperature=temperature,
-                max_output_tokens=CFG.AI_MAX_TOKENS,
-                response_mime_type="application/json",
-            )
-            model = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config=gen_config,
-                safety_settings=self._safety_settings,
-                system_instruction=system_instruction,
-            )
-        else:
-            # استفاده از system_instruction در GenerativeModel
-            if system_instruction:
-                model = genai.GenerativeModel(
-                    model_name=model_name,
-                    generation_config=self._generation_config,
-                    safety_settings=self._safety_settings,
-                    system_instruction=system_instruction,
-                )
-            else:
-                model = self._get_model(model_name)
+        if system_instruction:
+            config_kwargs["system_instruction"] = system_instruction
+            
+        gen_config = types.GenerateContentConfig(**config_kwargs)
 
         last_error = None
         for attempt in range(max_retries):
             try:
-                response = model.generate_content(prompt)
+                response = self.client.models.generate_content(
+                    model=target_model,
+                    contents=prompt,
+                    config=gen_config
+                )
                 
-                # بررسی safety block
-                if not response.candidates:
-                    logger.warning(
-                        "[GEMINI] No candidates returned (attempt %d/%d)",
-                        attempt + 1, max_retries
-                    )
-                    last_error = "No candidates"
-                    continue
-
-                candidate = response.candidates[0]
-                
-                # بررسی finish_reason
-                finish_reason = str(candidate.finish_reason)
-                if "SAFETY" in finish_reason:
-                    logger.warning("[GEMINI] Safety block: %s", finish_reason)
+                # بررسی بلاک شدن توسط فیلترهای ایمنی (در صورت وجود)
+                if getattr(response, "prompt_feedback", None) and response.prompt_feedback.block_reason:
+                    logger.warning("[GEMINI] Safety block!")
                     return None
 
                 raw_text = response.text
@@ -306,12 +275,12 @@ class GeminiManager:
                     last_error = "Empty response"
                     continue
 
-                # Parse JSON - SDK با response_mime_type=json باید مستقیم JSON بده
+                # Parse JSON
                 try:
                     result = json.loads(raw_text)
                     return result
                 except json.JSONDecodeError:
-                    # fallback به extractor
+                    # fallback به extractor شما
                     result = robust_json_extractor(raw_text)
                     if result:
                         return result
@@ -321,7 +290,6 @@ class GeminiManager:
                 error_str = str(e)
                 last_error = error_str
                 
-                # Resource exhausted (429)
                 if "429" in error_str or "quota" in error_str.lower():
                     wait_time = (attempt + 1) * 10
                     logger.warning(
@@ -330,13 +298,9 @@ class GeminiManager:
                     )
                     time.sleep(wait_time)
                     continue
-                    
-                # Invalid argument
                 elif "400" in error_str or "invalid" in error_str.lower():
                     logger.error("[GEMINI] Invalid request: %s", error_str[:200])
                     return None
-                    
-                # سایر خطاها
                 else:
                     logger.warning(
                         "[GEMINI] Error (attempt %d/%d): %s",
@@ -347,17 +311,6 @@ class GeminiManager:
 
         logger.error("[GEMINI] All %d attempts failed. Last error: %s", max_retries, last_error)
         return None
-
-    def count_tokens(self, text: str, model_name: Optional[str] = None) -> int:
-        """شمارش token برای مدیریت هزینه."""
-        try:
-            model = self._get_model(model_name or CFG.AI_MODEL_ANALYST)
-            result = model.count_tokens(text)
-            return result.total_tokens
-        except Exception:
-            # تخمین ساده
-            return len(text) // 4
-
 
 # ─── Singleton ──────────────────────────────────────────
 gemini_manager = GeminiManager()
