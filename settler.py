@@ -3,16 +3,11 @@ import sys
 import json
 import logging
 import asyncio
-import random
+import re
 import unicodedata
-import threading
-import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
 import requests
-from google import genai
-from google.genai import types
 from curl_cffi.requests import AsyncSession
 
 # =========================================================
@@ -26,7 +21,6 @@ LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
-GEMINI_API_KEY = os.getenv("GEMINI", "").strip()
 
 ODDS_KEYS = [k for k in [
     os.getenv("ODDS_API_KEY", "").strip(),
@@ -48,170 +42,16 @@ for h in [
     h.setFormatter(formatter)
     logger.addHandler(h)
 
-if not GEMINI_API_KEY:
-    logger.critical("FATAL: GEMINI env var not set!")
+if not ODDS_KEYS:
+    logger.critical("FATAL: No ODDS_API_KEY found!")
     sys.exit(1)
 
 
 # =========================================================
-# GEMINI RESULT ENGINE (Async & New SDK)
-# =========================================================
-class GeminiResultEngine:
-    _instance: Optional["GeminiResultEngine"] = None
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        with cls._lock:
-            if cls._instance is None:
-                cls._instance = super().__new__(cls)
-                cls._instance._initialized = False
-            return cls._instance
-
-    def __init__(self):
-        if self._initialized:
-            return
-
-        raw_keys = [
-            os.getenv("GEMINI", ""),
-            os.getenv("GEMINI1", ""),
-            os.getenv("GEMINI2", ""),
-            os.getenv("GEMINI3", ""),
-        ]
-        valid_keys = [k.strip() for k in raw_keys if k.strip()]
-
-        if not valid_keys:
-            logger.critical("FATAL: No GEMINI API keys found!")
-            sys.exit(1)
-
-        self.clients = [genai.Client(api_key=k) for k in valid_keys]
-        
-        # محاسبه سقف درخواست‌ها بر اساس تعداد کلیدها (هر کلید 14 تا)
-        self.max_rpm = 14 * len(self.clients)
-
-        self._system = (
-            # ... کدهای پرامپت شما ...
-        )
-
-        self._config = types.GenerateContentConfig(
-            # ... تنظیمات کانفیگ و safety ...
-        )
-
-        self._request_times: list = []
-        self._rate_lock = asyncio.Lock()
-
-        self._initialized = True
-        logger.info("✅ [GEMINI ENGINE] Load Balancing Active: %d keys (Capacity: %d RPM)", len(self.clients), self.max_rpm)
-
-    async def _rate_limit_wait(self):
-        async with self._rate_lock:
-            now = time.time()
-            self._request_times = [t for t in self._request_times if now - t < 60]
-
-            if len(self._request_times) >= self.max_rpm:
-                wait = 60 - (now - self._request_times[0]) + 1
-                if wait > 0:
-                    logger.info("[GEMINI] Global Rate limit reached, waiting %.1fs...", wait)
-                    await asyncio.sleep(wait)
-
-            self._request_times.append(time.time())
-
-    async def query_match_result(
-        self, home: str, away: str, sport: str, match_date: str, max_retries: int = 2
-    ) -> Optional[dict]:
-        prompt = (
-            # ... متن پرامپت ...
-        )
-
-        last_error = None
-        for attempt in range(max_retries):
-            try:
-                await self._rate_limit_wait()
-                
-                # 🎯 انتخاب رندوم کلاینت برای درخواست غیرهم‌زمان
-                client = random.choice(self.clients)
-                
-                response = await client.aio.models.generate_content(
-                    model="gemini-flash-latest",
-                    contents=prompt,
-                    config=self._config
-                )
-
-                raw = response.text
-                if not raw:
-                    continue
-
-                try:
-                    data = json.loads(raw)
-                except json.JSONDecodeError:
-                    import re
-                    m = re.search(r"\{[\s\S]*\}", raw)
-                    if m:
-                        try:
-                            data = json.loads(m.group(0))
-                        except Exception:
-                            continue
-                    else:
-                        continue
-
-                if not isinstance(data, dict):
-                    continue
-
-                if not data.get("known", False) or data.get("confidence") == "low":
-                    return None
-
-                winner_raw = data.get("winner")
-                if winner_raw not in ["home", "away", "draw"]:
-                    return None
-
-                if winner_raw == "home":
-                    winner_name = home
-                elif winner_raw == "away":
-                    winner_name = away
-                else:
-                    winner_name = "draw"
-
-                result = {
-                    "home": normalize_str(home),
-                    "away": normalize_str(away),
-                    "winner": normalize_str(winner_name),
-                    "home_score": data.get("home_score"),
-                    "away_score": data.get("away_score"),
-                    "source": "gemini",
-                    "confidence": data.get("confidence", "medium"),
-                }
-                
-                logger.info(
-                    "🤖 [GEMINI] %s vs %s → %s",
-                    home, away, result["winner"].upper(),
-                )
-                return result
-
-            except Exception as e:
-                err_str = str(e)
-                last_error = err_str
-
-                if "429" in err_str or "quota" in err_str.lower():
-                    wait = (attempt + 1) * 15
-                    logger.warning("[GEMINI] Rate limited, waiting %ds", wait)
-                    await asyncio.sleep(wait) # فریز نشدن کل برنامه
-                elif "400" in err_str:
-                    return None
-                else:
-                    if attempt < max_retries - 1:
-                        await asyncio.sleep(2 ** attempt)
-
-        return None
-
-
-# =========================================================
-# PENDING MANAGER  ← مدیریت بت‌های بی‌جواب
+# PENDING MANAGER
 # =========================================================
 class PendingManager:
-    """
-    بت‌هایی که هنوز نتیجه نگرفتیم رو نگه می‌داره.
-    دور بعدی اجرا دوباره چک می‌کنه.
-    """
-
+    """مدیریت بت‌های در انتظار تسویه"""
     def __init__(self):
         self.data = self._load()
 
@@ -220,7 +60,6 @@ class PendingManager:
             if PENDING_FILE.exists():
                 with open(PENDING_FILE, "r", encoding="utf-8") as f:
                     d = json.load(f)
-                    # پاک کردن ورودی‌های خیلی قدیمی (>5 روز)
                     now = datetime.now(timezone.utc)
                     d["pending"] = [
                         p for p in d.get("pending", [])
@@ -246,7 +85,6 @@ class PendingManager:
         save_json_safe(PENDING_FILE, self.data)
 
     def add(self, bet: dict):
-        """اضافه کردن bet به لیست pending (بدون duplicate)."""
         bet_id = bet.get("id") or f"{bet.get('home')}|{bet.get('away')}|{bet.get('timestamp')}"
         existing_ids = {
             (p.get("id") or f"{p.get('home')}|{p.get('away')}|{p.get('timestamp')}")
@@ -256,7 +94,6 @@ class PendingManager:
             self.data["pending"].append({**bet, "_pending_since": datetime.now(timezone.utc).isoformat()})
 
     def remove(self, bet: dict):
-        """حذف bet از pending بعد از settle شدن."""
         bet_id = bet.get("id")
         ts = bet.get("timestamp")
         home = bet.get("home")
@@ -272,32 +109,19 @@ class PendingManager:
     def get_all(self) -> list:
         return list(self.data["pending"])
 
-    def retry_count(self, bet: dict) -> int:
-        """تعداد دفعاتی که برای این bet تلاش کردیم."""
-        bet_id = bet.get("id")
-        for p in self.data["pending"]:
-            if bet_id and p.get("id") == bet_id:
-                return p.get("_retry_count", 0)
-        return 0
-
     def increment_retry(self, bet: dict):
-        """شمارنده retry رو زیاد می‌کنه."""
         bet_id = bet.get("id")
         ts = bet.get("timestamp")
         home = bet.get("home")
         for p in self.data["pending"]:
-            match = (
-                (bet_id and p.get("id") == bet_id)
-                or (ts and p.get("timestamp") == ts and p.get("home") == home)
-            )
-            if match:
+            if (bet_id and p.get("id") == bet_id) or (ts and p.get("timestamp") == ts and p.get("home") == home):
                 p["_retry_count"] = p.get("_retry_count", 0) + 1
                 p["_last_retry"] = datetime.now(timezone.utc).isoformat()
                 break
 
 
 # =========================================================
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS & BET RESOLVER
 # =========================================================
 def normalize_str(s: str) -> str:
     if not s:
@@ -308,30 +132,65 @@ def normalize_str(s: str) -> str:
         if unicodedata.category(c) != "Mn"
     )
 
+def resolve_bet(bet: dict, h_score: int, a_score: int, api_h: str, api_a: str) -> str:
+    """
+    بررسی دقیق نتیجه بر اساس نوع مارکت (h2h, h2h_lay, totals)
+    """
+    pick = normalize_str(bet.get("pick", ""))
+    market = bet.get("market", "h2h").lower()
+    
+    # پیدا کردن برنده واقعی در دنیای واقعی
+    winner = "draw"
+    if h_score > a_score:
+        winner = normalize_str(api_h)
+    elif a_score > h_score:
+        winner = normalize_str(api_a)
+        
+    def is_match(p_str, w_str):
+        if w_str == "draw":
+            return "draw" in p_str
+        p_tokens = {t for t in p_str.split() if len(t) > 2}
+        w_tokens = set(w_str.split())
+        if not p_tokens: 
+            return p_str == w_str
+        return (len(p_tokens & w_tokens) / len(p_tokens)) >= 0.5
 
-def is_pick_winner(pick: str, winner: str) -> bool:
-    """تطبیق pick با winner با fuzzy matching."""
-    if not pick or not winner:
-        return False
-    pick_norm = normalize_str(pick)
-    winner_norm = normalize_str(winner)
+    # ── ۱. مارکت برد مستقیم (Match Winner) ──
+    if market == "h2h":
+        return "win" if is_match(pick, winner) else "loss"
+        
+    # ── ۲. مارکت ضدِ برد (Lay) ──
+    elif market == "h2h_lay":
+        # در Lay، اگر تیمی که انتخاب کردیم ببرد، شرط را باخته‌ایم!
+        return "loss" if is_match(pick, winner) else "win"
+        
+    # ── ۳. مارکت مجموع گل/امتیاز (Over/Under) ──
+    elif market in ["totals", "over/under"]:
+        total_points = h_score + a_score
+        # استخراج عدد لاین از پیک (مثل Over 2.5 -> 2.5)
+        numbers = re.findall(r"\d+\.?\d*", pick)
+        
+        if not numbers:
+            return "void"
+        
+        line = float(numbers[0])
+        is_over = "over" in pick or "ov" in pick
+        is_under = "under" in pick or "un" in pick
+        
+        if is_over:
+            if total_points > line: return "win"
+            if total_points < line: return "loss"
+            return "void" # Push
+            
+        elif is_under:
+            if total_points < line: return "win"
+            if total_points > line: return "loss"
+            return "void"
+            
+    # مارکت پشتیبانی نشده
+    return "void"
 
-    if winner_norm == "draw":
-        return "draw" in pick_norm
-
-    p_tokens = {t for t in pick_norm.split() if len(t) > 2}
-    w_tokens = set(winner_norm.split())
-
-    if not p_tokens:
-        return pick_norm == winner_norm
-
-    overlap = len(p_tokens & w_tokens) / len(p_tokens)
-    return overlap >= 0.5
-
-
-def match_teams_in_fallback(
-    bet_home: str, bet_away: str, api_h: str, api_a: str
-) -> bool:
+def match_teams_in_fallback(bet_home: str, bet_away: str, api_h: str, api_a: str) -> bool:
     h_norm = normalize_str(bet_home)
     a_norm = normalize_str(bet_away)
     score = 0
@@ -342,7 +201,6 @@ def match_teams_in_fallback(
     score += sum(1 for t in h_norm.split() if len(t) > 2 and t in api_h)
     score += sum(1 for t in a_norm.split() if len(t) > 2 and t in api_a)
     return score >= 3
-
 
 def find_score_in_fallback(scores: list, team_name: str) -> int:
     team_norm = normalize_str(team_name)
@@ -355,7 +213,6 @@ def find_score_in_fallback(scores: list, team_name: str) -> int:
                 pass
     return 0
 
-
 def save_json_safe(filepath: Path, data: dict):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = filepath.with_suffix(".tmp")
@@ -363,23 +220,15 @@ def save_json_safe(filepath: Path, data: dict):
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
     tmp_path.replace(filepath)
 
-
 def sync_bet_to_tracker(bet: dict, tracker: dict):
-    """همگام‌سازی نتیجه با tracker."""
     bet_id = bet.get("id")
     for signal in tracker["signals"]:
-        matched = (bet_id and signal.get("id") == bet_id) or (
-            not bet_id
-            and signal.get("timestamp") == bet.get("timestamp")
-            and signal.get("home") == bet.get("home")
-        )
-        if matched:
+        if (bet_id and signal.get("id") == bet_id) or (not bet_id and signal.get("timestamp") == bet.get("timestamp") and signal.get("home") == bet.get("home")):
             signal["outcome"] = bet["outcome"]
             signal["profit_loss"] = bet["profit_loss"]
-            signal["_settled_by"] = bet.get("_settled_by", "unknown")
+            signal["_settled_by"] = bet.get("_settled_by", "system")
             signal["_settled_at"] = datetime.now(timezone.utc).isoformat()
             break
-
 
 def calculate_profit(odds: float, outcome: str) -> float:
     if outcome == "win":
@@ -390,7 +239,7 @@ def calculate_profit(odds: float, outcome: str) -> float:
 
 
 # =========================================================
-# SCRAPING ENGINES  ← Fallback اول بعد از Gemini
+# SCRAPING ENGINES
 # =========================================================
 class ResultScraper:
     def __init__(self):
@@ -400,11 +249,7 @@ class ResultScraper:
 
     async def _add(self, pool_type: str, result: dict):
         async with self._lock:
-            pool = (
-                self.soccer_results
-                if pool_type == "soccer"
-                else self.other_sports_results
-            )
+            pool = self.soccer_results if pool_type == "soccer" else self.other_sports_results
             h, a = result["home"], result["away"]
             if not any(e["home"] == h and e["away"] == a for e in pool):
                 pool.append(result)
@@ -415,25 +260,20 @@ class ResultScraper:
         try:
             async with AsyncSession(impersonate="chrome110") as session:
                 res = await session.get(url, timeout=15)
-                if res.status_code != 200:
-                    return
+                if res.status_code != 200: return
                 for league in res.json().get("leagues", []):
                     for match in league.get("matches", []):
-                        if not match.get("status", {}).get("finished", False):
-                            continue
+                        if not match.get("status", {}).get("finished", False): continue
                         home = match.get("home", {}).get("name", "")
                         away = match.get("away", {}).get("name", "")
                         h_score = match.get("home", {}).get("score", 0) or 0
                         a_score = match.get("away", {}).get("score", 0) or 0
-                        winner = "draw"
-                        if h_score > a_score:
-                            winner = home
-                        elif a_score > h_score:
-                            winner = away
+                        
                         await self._add("soccer", {
                             "home": normalize_str(home),
                             "away": normalize_str(away),
-                            "winner": normalize_str(winner),
+                            "home_score": h_score,
+                            "away_score": a_score,
                             "source": "fotmob",
                         })
         except Exception as e:
@@ -442,66 +282,35 @@ class ResultScraper:
     async def fetch_espn_by_date(self, target_date: datetime):
         date_str = target_date.strftime("%Y%m%d")
         endpoints = [
-            (
-                f"https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates={date_str}",
-                "other",
-            ),
-            (
-                f"https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates={date_str}",
-                "other",
-            ),
-            (
-                f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date_str}",
-                "other",
-            ),
-            (
-                f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={date_str}",
-                "other",
-            ),
-            (
-                f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}",
-                "soccer",
-            ),
+            (f"https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates={date_str}", "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates={date_str}", "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date_str}", "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={date_str}", "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}", "soccer"),
         ]
         try:
             async with AsyncSession(impersonate="chrome110") as session:
                 for url, pool in endpoints:
                     try:
                         res = await session.get(url, timeout=10)
-                        if res.status_code != 200:
-                            continue
+                        if res.status_code != 200: continue
                         for event in res.json().get("events", []):
                             try:
-                                state = (
-                                    event.get("status", {})
-                                    .get("type", {})
-                                    .get("state")
-                                )
-                                if state != "post":
-                                    continue
+                                state = event.get("status", {}).get("type", {}).get("state")
+                                if state != "post": continue
                                 comps_list = event.get("competitions", [])
-                                if not comps_list:
-                                    continue
+                                if not comps_list: continue
                                 competitors = comps_list[0].get("competitors", [])
-                                if not competitors:
-                                    continue
+                                if not competitors: continue
 
-                                home_team, away_team, winner = "", "", "draw"
+                                home_team, away_team = "", ""
                                 h_score, a_score = 0, 0
 
                                 for comp in competitors:
-                                    name = comp.get("team", {}).get(
-                                        "displayName"
-                                    ) or comp.get("athlete", {}).get(
-                                        "displayName", ""
-                                    )
+                                    name = comp.get("team", {}).get("displayName") or comp.get("athlete", {}).get("displayName", "")
                                     is_home = comp.get("homeAway") == "home"
-                                    try:
-                                        score_val = int(
-                                            float(comp.get("score", "0") or "0")
-                                        )
-                                    except (ValueError, TypeError):
-                                        score_val = 0
+                                    try: score_val = int(float(comp.get("score", "0") or "0"))
+                                    except (ValueError, TypeError): score_val = 0
 
                                     if is_home:
                                         home_team = name
@@ -510,40 +319,24 @@ class ResultScraper:
                                         away_team = name
                                         a_score = score_val
 
-                                    if comp.get("winner"):
-                                        winner = name
-
-                                if not home_team or not away_team:
-                                    continue
-
-                                if pool == "soccer":
-                                    if winner == "draw":
-                                        if h_score > a_score:
-                                            winner = home_team
-                                        elif a_score > h_score:
-                                            winner = away_team
+                                if not home_team or not away_team: continue
 
                                 await self._add(pool, {
                                     "home": normalize_str(home_team),
                                     "away": normalize_str(away_team),
-                                    "winner": normalize_str(winner),
+                                    "home_score": h_score,
+                                    "away_score": a_score,
                                     "source": "espn",
                                 })
-                            except Exception:
-                                continue
-                    except Exception:
-                        pass
+                            except Exception: continue
+                    except Exception: pass
         except Exception as e:
             logger.debug("ESPN error: %s", e)
 
     async def fetch_sofascore_by_date(self, target_date: datetime):
         date_str = target_date.strftime("%Y-%m-%d")
         headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/110.0.0.0 Safari/537.36"
-            ),
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
             "Referer": "https://www.sofascore.com/",
             "Origin": "https://www.sofascore.com",
         }
@@ -552,33 +345,24 @@ class ResultScraper:
             async with AsyncSession(impersonate="chrome110") as session:
                 for sport in sports:
                     try:
-                        url = (
-                            f"https://api.sofascore.com/api/v1/sport/{sport}"
-                            f"/scheduled-events/{date_str}"
-                        )
+                        url = f"https://api.sofascore.com/api/v1/sport/{sport}/scheduled-events/{date_str}"
                         res = await session.get(url, headers=headers, timeout=10)
-                        if res.status_code != 200:
-                            continue
+                        if res.status_code != 200: continue
                         for event in res.json().get("events", []):
-                            if event.get("status", {}).get("type") != "finished":
-                                continue
+                            if event.get("status", {}).get("type") != "finished": continue
                             home = event.get("homeTeam", {}).get("name", "")
                             away = event.get("awayTeam", {}).get("name", "")
                             h_score = event.get("homeScore", {}).get("current", 0) or 0
                             a_score = event.get("awayScore", {}).get("current", 0) or 0
-                            winner = "draw"
-                            if h_score > a_score:
-                                winner = home
-                            elif a_score > h_score:
-                                winner = away
+                            
                             await self._add("other", {
                                 "home": normalize_str(home),
                                 "away": normalize_str(away),
-                                "winner": normalize_str(winner),
+                                "home_score": h_score,
+                                "away_score": a_score,
                                 "source": "sofascore",
                             })
-                    except Exception:
-                        pass
+                    except Exception: pass
         except Exception as e:
             logger.debug("SofaScore error: %s", e)
 
@@ -594,17 +378,12 @@ class ResultScraper:
                 self.fetch_sofascore_by_date(target),
             ]
         await asyncio.gather(*tasks, return_exceptions=True)
-        logger.info(
-            "✅ [SCRAPER] Soccer: %d | Other: %d",
-            len(self.soccer_results),
-            len(self.other_sports_results),
-        )
+        logger.info("✅ [SCRAPER] Soccer: %d | Other: %d", len(self.soccer_results), len(self.other_sports_results))
 
     def fuzzy_match(self, home: str, away: str, sport: str) -> dict:
         is_soccer = any(k in sport.lower() for k in ("football", "soccer"))
         pool = self.soccer_results if is_soccer else self.other_sports_results
-        if not pool:
-            return {}
+        if not pool: return {}
 
         h_norm = normalize_str(home)
         a_norm = normalize_str(away)
@@ -613,10 +392,8 @@ class ResultScraper:
         for match in pool:
             mh, ma = match["home"], match["away"]
             score = 0
-            if h_norm in mh or mh in h_norm:
-                score += 2
-            if a_norm in ma or ma in a_norm:
-                score += 2
+            if h_norm in mh or mh in h_norm: score += 2
+            if a_norm in ma or ma in a_norm: score += 2
             score += sum(1 for t in h_norm.split() if len(t) > 2 and t in mh)
             score += sum(1 for t in a_norm.split() if len(t) > 2 and t in ma)
             if score > best_score and score >= 3:
@@ -627,29 +404,21 @@ class ResultScraper:
 
 
 # =========================================================
-# ODDS-API FALLBACK  ← Fallback آخر
+# ODDS-API ENGINE
 # =========================================================
 def fetch_odds_api_results(sport_key: str, days_from: int = 3) -> list:
-    if not ODDS_KEYS:
-        return []
     for key in ODDS_KEYS:
-        url = (
-            f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/"
-            f"?daysFrom={days_from}&apiKey={key}"
-        )
+        url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?daysFrom={days_from}&apiKey={key}"
         try:
             res = requests.get(url, timeout=15)
             if res.status_code == 200:
-                logger.info(
-                    "🔄 [ODDS-API] Got %d results for %s",
-                    len(res.json()), sport_key
-                )
+                logger.info("🔄 [ODDS-API] Got %d results for %s", len(res.json()), sport_key)
                 return res.json()
             elif res.status_code == 422:
-                logger.debug("[ODDS-API] sport_key '%s' not supported", sport_key)
+                logger.debug("[ODDS-API] sport_key '%s' not supported or no recent events", sport_key)
                 return []
         except Exception as e:
-            logger.debug("[ODDS-API] Error: %s", e)
+            logger.debug("[ODDS-API] Error using key %s: %s", key[:8], e)
             continue
     return []
 
@@ -663,19 +432,21 @@ def send_telegram_report(settled_bets: list, summary: dict):
 
     import html as html_lib
 
-    lines = ["🧾 <b>ZBET90 DAILY SETTLEMENT REPORT</b>\n"]
+    lines = ["🧾 <b>ZBET90 SETTLEMENT REPORT</b>\n"]
     daily_profit = 0.0
 
     for bet in settled_bets:
         outcome = bet.get("outcome", "unknown")
         source = bet.get("_settled_by", "unknown")
         source_icon = {
-            "gemini": "🤖",
             "scraper": "🌐",
+            "fotmob": "⚽",
+            "espn": "📺",
+            "sofascore": "📱",
             "odds_api": "📡",
             "void": "⚪️",
-        }.get(source, "❓")
-
+        }.get(source, "📡")
+        
         if outcome == "void":
             icon, profit_str = "⚪️", "0.0u"
         else:
@@ -684,18 +455,9 @@ def send_telegram_report(settled_bets: list, summary: dict):
             profit_str = f"+{pl:.2f}u" if pl > 0 else f"{pl:.2f}u"
             daily_profit += pl
 
-        lines.append(
-            f"⚔️ <b>{html_lib.escape(str(bet.get('home', '?')))} "
-            f"vs {html_lib.escape(str(bet.get('away', '?')))}</b>"
-        )
-        lines.append(
-            f"🎯 Pick: {html_lib.escape(str(bet.get('pick', '?')))} "
-            f"@ {bet.get('odds', '?')}"
-        )
-        lines.append(
-            f"🏁 Result: <b>{outcome.upper()}</b> {icon} | "
-            f"PnL: {profit_str} {source_icon}\n"
-        )
+        lines.append(f"⚔️ <b>{html_lib.escape(str(bet.get('home', '?')))} vs {html_lib.escape(str(bet.get('away', '?')))}</b>")
+        lines.append(f"🎯 Pick: {html_lib.escape(str(bet.get('pick', '?')))} @ {bet.get('odds', '?')}")
+        lines.append(f"🏁 Result: <b>{outcome.upper()}</b> {icon} | PnL: {profit_str} {source_icon}\n")
 
     total_icon = "📈" if daily_profit > 0 else "📉"
     lines += [
@@ -707,33 +469,15 @@ def send_telegram_report(settled_bets: list, summary: dict):
     ]
 
     message_html = "\n".join(lines)
-    MAX_LEN = 4000
-    chunks, current = [], ""
-    for line in message_html.split("\n"):
-        if len(current) + len(line) + 1 > MAX_LEN:
-            chunks.append(current.strip())
-            current = line + "\n"
-        else:
-            current += line + "\n"
-    if current.strip():
-        chunks.append(current.strip())
-
-    for chunk in chunks:
-        try:
-            res = requests.post(
-                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                json={
-                    "chat_id": TELEGRAM_CHAT_ID,
-                    "text": chunk,
-                    "parse_mode": "HTML",
-                    "disable_web_page_preview": True,
-                },
-                timeout=10,
-            )
-            if not res.ok:
-                logger.error("Telegram error [%d]: %s", res.status_code, res.text[:100])
-        except Exception as e:
-            logger.error("Telegram send error: %s", e)
+    
+    try:
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": message_html, "parse_mode": "HTML", "disable_web_page_preview": True},
+            timeout=10,
+        )
+    except Exception as e:
+        logger.error("Telegram send error: %s", e)
 
 
 # =========================================================
@@ -741,10 +485,9 @@ def send_telegram_report(settled_bets: list, summary: dict):
 # =========================================================
 async def async_settle():
     logger.info("=" * 55)
-    logger.info("🤖 ZBET90 SETTLER ENGINE v2.0 | Gemini-Powered")
+    logger.info("⚡ ZBET90 SETTLER ENGINE v4.0 | Scraper -> API Pipeline")
     logger.info("=" * 55)
 
-    # ─── Load Tracker ────────────────────────────────────
     if not PERFORMANCE_FILE.exists():
         logger.info("❌ No performance tracker file found. Exiting.")
         return
@@ -753,11 +496,8 @@ async def async_settle():
         tracker = json.load(f)
 
     now = datetime.now(timezone.utc)
-
-    # ─── Load Pending ─────────────────────────────────────
     pending_mgr = PendingManager()
 
-    # بت‌های تازه که هنوز settle نشدن
     fresh_unsettled = []
     for b in tracker.get("signals", []):
         if b.get("outcome") is not None:
@@ -766,17 +506,12 @@ async def async_settle():
             bet_time = datetime.fromisoformat(b["timestamp"])
             if bet_time.tzinfo is None:
                 bet_time = bet_time.replace(tzinfo=timezone.utc)
-            # فقط بت‌هایی که بیش از 4 ساعت گذشته
-            if (now - bet_time) > timedelta(hours=4):
+            if (now - bet_time) > timedelta(hours=3): 
                 fresh_unsettled.append(b)
-        except Exception as e:
-            logger.error("Time parse error [%s]: %s", b.get("id", "?"), e)
+        except Exception:
+            pass
 
-    # ترکیب: pending قبلی + تازه‌ها (بدون تکرار)
-    existing_pending_ids = {
-        (p.get("id") or f"{p.get('home')}|{p.get('timestamp')}")
-        for p in pending_mgr.get_all()
-    }
+    existing_pending_ids = {(p.get("id") or f"{p.get('home')}|{p.get('timestamp')}") for p in pending_mgr.get_all()}
     for b in fresh_unsettled:
         bid = b.get("id") or f"{b.get('home')}|{b.get('timestamp')}"
         if bid not in existing_pending_ids:
@@ -787,202 +522,112 @@ async def async_settle():
         logger.info("ℹ️ No bets ready to settle.")
         return
 
-    logger.info("🔍 %d bets to check (including pending from previous runs).", len(to_check))
+    logger.info("🔍 %d bets to check.", len(to_check))
 
-    # ─── Initialize Engines ──────────────────────────────
-    gemini_engine = GeminiResultEngine()
+    # ─── 1. اجرای Scraper ───
     scraper = ResultScraper()
+    await scraper.load_recent_results()
 
-    # scraper رو parallel اجرا کن
-    scraper_task = asyncio.create_task(scraper.load_recent_results())
+    settled_this_session = []
+    need_api_check = []
 
-    # ─── Phase 1: Gemini Query ────────────────────────────
-    logger.info("🤖 [PHASE 1] Querying Gemini for %d matches...", len(to_check))
-    gemini_results: dict = {}   # bet_key → result
-
+    # ─── 2. بررسی نتایج در Scraper ───
     for bet in to_check:
-        bet_key = bet.get("id") or f"{bet.get('home')}|{bet.get('timestamp')}"
-
-        try:
-            bet_time = datetime.fromisoformat(bet["timestamp"])
-            if bet_time.tzinfo is None:
-                bet_time = bet_time.replace(tzinfo=timezone.utc)
-            match_date_str = bet_time.strftime("%Y-%m-%d")
-        except Exception:
-            match_date_str = "unknown date"
-
-        result = await gemini_engine.query_match_result(
-            home=bet.get("home", ""),
-            away=bet.get("away", ""),
-            sport=bet.get("sport", "soccer"),
-            match_date=match_date_str,
-        )
-
-        if result:
-            gemini_results[bet_key] = result
-
-    gemini_found = len(gemini_results)
-    gemini_missed = len(to_check) - gemini_found
-    logger.info(
-        "🤖 [GEMINI] Found: %d | Missed: %d → going to scraper/odds-api",
-        gemini_found, gemini_missed
-    )
-
-    # ─── Wait for Scraper ─────────────────────────────────
-    await scraper_task
-
-    # ─── Phase 2 & 3: Scraper + Odds-API for misses ───────
-    odds_api_cache: dict = {}
-    scraper_results: dict = {}    # bet_key → result
-
-    for bet in to_check:
-        bet_key = bet.get("id") or f"{bet.get('home')}|{bet.get('timestamp')}"
-        if bet_key in gemini_results:
-            continue    # Gemini قبلاً پیدا کرده
-
-        # Scraper
-        match = scraper.fuzzy_match(
-            bet.get("home", ""),
-            bet.get("away", ""),
-            bet.get("sport", "soccer"),
-        )
+        match = scraper.fuzzy_match(bet.get("home", ""), bet.get("away", ""), bet.get("sport", "soccer"))
+        
         if match:
-            scraper_results[bet_key] = {**match, "source": match.get("source", "scraper")}
-            continue
-
-        # Odds-API
-        api_sport_key = bet.get("api_sport_key", "")
-        if not api_sport_key:
-            continue
-
-        if api_sport_key not in odds_api_cache:
-            odds_api_cache[api_sport_key] = fetch_odds_api_results(
-                api_sport_key, days_from=3
-            )
-
-        for api_match in odds_api_cache.get(api_sport_key, []):
-            api_h = normalize_str(api_match.get("home_team", ""))
-            api_a = normalize_str(api_match.get("away_team", ""))
-
-            if not match_teams_in_fallback(
-                bet["home"], bet["away"], api_h, api_a
-            ):
-                continue
-
-            if not api_match.get("completed"):
-                logger.info(
-                    "⏳ [ODDS-API] Not finished yet: %s vs %s",
-                    bet["home"], bet["away"]
-                )
-                break
-
-            scores = api_match.get("scores") or []
-            if scores:
-                h_score = find_score_in_fallback(
-                    scores, api_match.get("home_team", "")
-                )
-                a_score = find_score_in_fallback(
-                    scores, api_match.get("away_team", "")
-                )
-                winner = "draw"
-                if h_score > a_score:
-                    winner = api_h
-                elif a_score > h_score:
-                    winner = api_a
-
-                scraper_results[bet_key] = {
-                    "home": api_h,
-                    "away": api_a,
-                    "winner": winner,
-                    "source": "odds_api",
-                }
-                logger.info(
-                    "📡 [ODDS-API] Found: %s vs %s → %s",
-                    bet["home"], bet["away"], winner.upper()
-                )
-            break
-
-    # ─── Phase 4: Settle ──────────────────────────────────
-    settled_this_session: list = []
-    still_pending: list = []
-
-    for bet in to_check:
-        bet_key = bet.get("id") or f"{bet.get('home')}|{bet.get('timestamp')}"
-
-        # پیدا کردن نتیجه
-        result = gemini_results.get(bet_key) or scraper_results.get(bet_key)
-
-        if result:
-            winner = result.get("winner", "")
-            outcome = "win" if is_pick_winner(bet["pick"], winner) else "loss"
-            source = result.get("source", "unknown")
-
+            h_score = match.get("home_score", 0)
+            a_score = match.get("away_score", 0)
+            
+            outcome = resolve_bet(bet, h_score, a_score, match["home"], match["away"])
+            
             bet["outcome"] = outcome
             bet["profit_loss"] = calculate_profit(bet.get("odds", 2.0), outcome)
-            bet["_settled_by"] = source
-
+            bet["_settled_by"] = match.get("source", "scraper")
+            
             settled_this_session.append(bet)
             pending_mgr.remove(bet)
-
-            logger.info(
-                "✅ [%s] %s vs %s → %s (%.2f units)",
-                source.upper(),
-                bet["home"], bet["away"],
-                outcome.upper(),
-                bet["profit_loss"],
-            )
-
+            logger.info("✅ [%s] %s vs %s → %s (%.2f units)", bet["_settled_by"].upper(), bet["home"], bet["away"], outcome.upper(), bet["profit_loss"])
         else:
-            # هنوز بی‌جواب - بررسی void rule
-            try:
-                bet_time = datetime.fromisoformat(bet["timestamp"])
-                if bet_time.tzinfo is None:
-                    bet_time = bet_time.replace(tzinfo=timezone.utc)
-                hours_elapsed = (now - bet_time).total_seconds() / 3600
-            except Exception:
-                hours_elapsed = 0
+            need_api_check.append(bet)
 
-            if hours_elapsed > 48:
-                # VOID
-                bet["outcome"] = "void"
-                bet["profit_loss"] = 0.0
-                bet["_settled_by"] = "void"
-                settled_this_session.append(bet)
-                pending_mgr.remove(bet)
-                logger.warning(
-                    "⚪️ [VOID] %s vs %s (%.0fh elapsed)",
-                    bet["home"], bet["away"], hours_elapsed
-                )
-            else:
-                # هنوز صبر می‌کنیم
-                pending_mgr.increment_retry(bet)
-                retry_n = pending_mgr.retry_count(bet)
-                still_pending.append(bet)
-                logger.info(
-                    "⏳ [PENDING] %s vs %s (retry #%d, %.0fh elapsed)",
-                    bet["home"], bet["away"], retry_n, hours_elapsed
-                )
+    # ─── 3. اجرای Odds-API برای مسابقات باقی‌مانده ───
+    if need_api_check:
+        logger.info("📡 %d matches not found by scraper. Passing to Odds-API...", len(need_api_check))
+        odds_api_cache: dict = {}
+        needed_sports = {bet.get("api_sport_key") for bet in need_api_check if bet.get("api_sport_key")}
+        
+        for sport in needed_sports:
+            odds_api_cache[sport] = fetch_odds_api_results(sport, days_from=3)
 
-    # ─── Save Pending ─────────────────────────────────────
+        still_pending = []
+
+        for bet in need_api_check:
+            api_sport_key = bet.get("api_sport_key", "")
+            result_found = False
+            
+            if api_sport_key in odds_api_cache:
+                for api_match in odds_api_cache[api_sport_key]:
+                    api_h = normalize_str(api_match.get("home_team", ""))
+                    api_a = normalize_str(api_match.get("away_team", ""))
+
+                    if not match_teams_in_fallback(bet["home"], bet["away"], api_h, api_a):
+                        continue
+
+                    if not api_match.get("completed"):
+                        logger.info("⏳ [ODDS-API] Not finished yet: %s vs %s", bet["home"], bet["away"])
+                        break
+
+                    scores = api_match.get("scores") or []
+                    if scores:
+                        h_score = find_score_in_fallback(scores, api_match.get("home_team", ""))
+                        a_score = find_score_in_fallback(scores, api_match.get("away_team", ""))
+                        
+                        outcome = resolve_bet(bet, h_score, a_score, api_h, api_a)
+                        
+                        bet["outcome"] = outcome
+                        bet["profit_loss"] = calculate_profit(bet.get("odds", 2.0), outcome)
+                        bet["_settled_by"] = "odds_api"
+
+                        settled_this_session.append(bet)
+                        pending_mgr.remove(bet)
+                        result_found = True
+                        
+                        logger.info("✅ [ODDS-API] %s vs %s → %s (%.2f units)", bet["home"], bet["away"], outcome.upper(), bet["profit_loss"])
+                    break
+
+            if not result_found:
+                try:
+                    bet_time = datetime.fromisoformat(bet["timestamp"])
+                    if bet_time.tzinfo is None:
+                        bet_time = bet_time.replace(tzinfo=timezone.utc)
+                    hours_elapsed = (now - bet_time).total_seconds() / 3600
+                except Exception:
+                    hours_elapsed = 0
+
+                # اگر 48 ساعت گذشت و پیدا نشد، Void کن
+                if hours_elapsed > 48:
+                    bet["outcome"] = "void"
+                    bet["profit_loss"] = 0.0
+                    bet["_settled_by"] = "void"
+                    settled_this_session.append(bet)
+                    pending_mgr.remove(bet)
+                    logger.warning("⚪️ [VOID] %s vs %s (%.0fh elapsed)", bet["home"], bet["away"], hours_elapsed)
+                else:
+                    pending_mgr.increment_retry(bet)
+                    still_pending.append(bet)
+
+    # ─── 4. همگام‌سازی و گزارش ───
     pending_mgr.save()
-    logger.info(
-        "💾 [PENDING] Saved %d unsettled bets for next run",
-        len(still_pending)
-    )
 
     if not settled_this_session:
         logger.info("⏳ No matches settled this session.")
         return
 
-    # ─── Sync to Tracker ──────────────────────────────────
     for bet in settled_this_session:
         sync_bet_to_tracker(bet, tracker)
 
-    # ─── Update Summary ───────────────────────────────────
-    resolved = [
-        s for s in tracker["signals"]
-        if s.get("outcome") not in (None, "void")
-    ]
+    resolved = [s for s in tracker["signals"] if s.get("outcome") not in (None, "void")]
     wins = [s for s in resolved if s["outcome"] == "win"]
     total_pl = sum(s.get("profit_loss", 0) or 0 for s in resolved)
 
@@ -993,22 +638,12 @@ async def async_settle():
         "total_profit_loss_units": round(total_pl, 2),
         "roi_pct": round((total_pl / len(resolved)) * 100, 2) if resolved else 0.0,
         "last_updated": now.isoformat(),
-        "pending_count": len(still_pending),
+        "pending_count": len(pending_mgr.get_all()),
     }
 
     save_json_safe(PERFORMANCE_FILE, tracker)
-    logger.info(
-        "📊 Settled: %d | Win: %d | Loss: %d | Void: %d",
-        len(settled_this_session),
-        sum(1 for b in settled_this_session if b["outcome"] == "win"),
-        sum(1 for b in settled_this_session if b["outcome"] == "loss"),
-        sum(1 for b in settled_this_session if b["outcome"] == "void"),
-    )
-
-    # ─── Telegram Report ──────────────────────────────────
     send_telegram_report(settled_this_session, tracker["summary"])
     logger.info("=" * 55)
-
 
 if __name__ == "__main__":
     asyncio.run(async_settle())
