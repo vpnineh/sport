@@ -54,11 +54,11 @@ class Config:
 
     # FIX v7.1: EV Filters سخت‌گیرانه‌تر
     H2H_MIN_ODDS:float=1.40
-    H2H_MIN_EV:float=0.025       # بود 0.010
+    H2H_MIN_EV:float=0.020       # بود 0.010
     TOTALS_MIN_ODDS:float=1.50
-    TOTALS_MIN_EV:float=0.028    # بود 0.012
+    TOTALS_MIN_EV:float=0.022    # بود 0.012
     MAX_REALISTIC_EV:float=0.25
-    MATH_MIN_EV_TO_ANALYZE:float=0.015   # بود 0.005
+    MATH_MIN_EV_TO_ANALYZE:float=0.010   # بود 0.005
     MARKET_EXPECTED_OUTCOMES:dict=field(default_factory=lambda:{"h2h":{"min":2,"max":3},"totals":{"min":2,"max":2}})
     MAX_VALID_IMPLIED_SUM:float=1.30
     MIN_VALID_IMPLIED_SUM:float=0.75
@@ -192,7 +192,7 @@ class HybridAIManager:
                 try:
                     client=random.choice(self.groq_clients)
                     cc=client.chat.completions.create(
-                        messages=messages,model="llama-3.3-70b-versatile",
+                        messages=messages,model="gpt-oss-120b",
                         temperature=CFG.AI_TEMPERATURE,max_tokens=CFG.AI_MAX_TOKENS,
                         response_format={"type":"json_object"})
                     raw=cc.choices[0].message.content
@@ -707,7 +707,7 @@ class FreeDataEngine:
         try:
             from nba_api.stats.endpoints import leaguestandings
             standings=leaguestandings.LeagueStandings(season="2024-25",season_type="Regular Season",league_id="00",
-                headers={"User-Agent":"Mozilla/5.0","Accept":"application/json","Referer":"https://www.nba.com/","Origin":"https://www.nba.com"},timeout=30)
+                headers={"User-Agent":"Mozilla/5.0","Accept":"application/json","Referer":"https://www.nba.com/","Origin":"https://www.nba.com"},timeout=10)
             df=standings.get_data_frames()[0]
             if df is not None and not df.empty:
                 self.nba_data=df;cache_path.write_text(json.dumps(df.to_dict(orient="records"),indent=2))
@@ -1721,119 +1721,185 @@ async def async_main():
     logger.info("="*65)
     logger.info("  ZBET90 ENGINE v7.1 | Multi-Sport | AI 70%% + Math 30%%")
     logger.info("="*65)
-    logger.info("🔑 %s",odds_key_manager.get_usage_summary())
-    sent=SentHistory();now=datetime.now(timezone.utc)
+    logger.info("🔑 %s", odds_key_manager.get_usage_summary())
+    sent = SentHistory()
+    now = datetime.now(timezone.utc)
 
     logger.info("📥 [PHASE 1] Loading data...")
-    de=FreeDataEngine()
-    de.load_tennis_data();de.load_football_data()
-    de.load_nba_data();de.load_nhl_data();de.load_mlb_data();de.load_cricket_data()
+    de = FreeDataEngine()
+    de.load_tennis_data()
+    de.load_football_data()
+    de.load_nba_data()
+    de.load_nhl_data()
+    de.load_mlb_data()
+    de.load_cricket_data()
 
     logger.info("🧠 [PHASE 2] ML models...")
-    ml=MLPredictionEngine(de)
+    ml = MLPredictionEngine(de)
     ml.load_or_train_football_model()
     ml.load_or_train_tennis_model(is_wta=False)
     ml.load_or_train_nba_model()
 
-    logger.info("📡 [PHASE 3] Fetching odds (%.1fh window)...",CFG.MATCH_WINDOW_HOURS)
-    events=await fetch_all_odds_async()
+    logger.info("📡 [PHASE 3] Fetching odds (%.1fh window)...", CFG.MATCH_WINDOW_HOURS)
+    events = await fetch_all_odds_async()
     if not events:
-        logger.info("❌ No events in window.");logger.info("📊 %s",odds_key_manager.get_usage_summary());return
+        logger.info("❌ No events in window.")
+        logger.info("📊 %s", odds_key_manager.get_usage_summary())
+        return
 
-    logger.info("🔍 [PHASE 4] Analyzing %d events...",len(events))
-    events.sort(key=lambda x:x.get("commence_time",""))
-    total_sent=total_analyzed=skip_math=skip_ai=skip_conf=0
+    logger.info("🔍 [PHASE 4] Analyzing %d events...", len(events))
+    events.sort(key=lambda x: x.get("commence_time", ""))
+
+    total_sent = total_analyzed = 0
+    skip_no_opp = skip_ev = skip_sent = skip_math = skip_ai = skip_conf = 0
 
     for event in events:
-        home=clean_team_name(event.get("home_team",""));away=clean_team_name(event.get("away_team",""))
-        sport=event.get("sport_title","Unknown");sport_key=normalize_sport_key(sport)
-        if not home or not away:continue
-        markets_data=event.get("_markets_data",{})
-        opps=calculate_sharp_ev_advanced(markets_data)
-        if not opps:continue
-        opp=opps[0];total_analyzed+=1
-        if sent.was_sent(home,away,opp["market"]):continue
-        if opp["ev"]<CFG.MATH_MIN_EV_TO_ANALYZE:skip_math+=1;continue
+    home = clean_team_name(event.get("home_team", ""))
+    away = clean_team_name(event.get("away_team", ""))
+    sport = event.get("sport_title", "Unknown")
+    sport_key = normalize_sport_key(sport)
+    if not home or not away: continue
 
-        opp["steam_pct"]=line_movement_tracker.record_and_get_movement(home,away,opp["market"],opp["pick"],opp["odds"])
+    markets_data = event.get("_markets_data", {})
+    opps = calculate_sharp_ev_advanced(markets_data)
+    
+    # DEBUG: ببین چرا skip میشه
+    if not opps:
+        logger.info("⏭️ NO_OPP: %s vs %s (no EV opportunity)", home, away)
+        continue
+    
+    opp = opps[0]
+    total_analyzed += 1
+    
+    # FIX: اول EV چک کن، بعد was_sent
+    if opp["ev"] < CFG.MATH_MIN_EV_TO_ANALYZE:
+        skip_math += 1
+        logger.info("⏭️ LOW_EV: %s vs %s EV=%.2f%% < %.1f%%",
+                    home, away, opp["edge_pct"], CFG.MATH_MIN_EV_TO_ANALYZE*100)
+        continue
+    
+    if sent.was_sent(home, away, opp["market"]):
+        logger.info("⏭️ ALREADY_SENT: %s vs %s [%s]", home, away, opp["market"])
+        continue
 
-        stats:dict={};ml_pred=None;poisson_pred=None
+        opp["steam_pct"] = line_movement_tracker.record_and_get_movement(
+            home, away, opp["market"], opp["pick"], opp["odds"])
 
-        if sport_key=="tennis":
-            is_wta="wta" in sport.lower()
-            ts=de.get_tennis_stats(home,away,is_wta)
-            if ts:stats["historical_data"]=ts
+        stats: dict = {}
+        ml_pred = None
+        poisson_pred = None
+
+        if sport_key == "tennis":
+            is_wta = "wta" in sport.lower()
+            ts = de.get_tennis_stats(home, away, is_wta)
+            if ts:
+                stats["historical_data"] = ts
             if ml.is_tennis_trained and ts:
-                surf=("grass" if "wimbledon" in sport.lower() else
-                      "hard" if any(k in sport.lower() for k in ["us open","hard"]) else
-                      "clay" if "clay" in sport.lower() else "hard")
-                ml_pred=ml.predict_tennis(home,away,ts,surf)
-                if ml_pred:stats["ml_prediction"]=ml_pred
+                surf = ("grass" if "wimbledon" in sport.lower() else
+                        "hard" if any(k in sport.lower() for k in ["us open", "hard"]) else
+                        "clay" if "clay" in sport.lower() else "hard")
+                ml_pred = ml.predict_tennis(home, away, ts, surf)
+                if ml_pred:
+                    stats["ml_prediction"] = ml_pred
 
-        elif sport_key=="football":
-            fs=de.get_football_stats(home,away)
-            if fs:stats["football_stats"]=fs
-            ed=de.get_elo_delta(home,away)
-            if ed:stats["elo_data"]=ed
+        elif sport_key == "football":
+            fs = de.get_football_stats(home, away)
+            if fs:
+                stats["football_stats"] = fs
+            ed = de.get_elo_delta(home, away)
+            if ed:
+                stats["elo_data"] = ed
             if ml.is_football_trained:
-                ml_pred=ml.predict_football(home,away)
-                if ml_pred:stats["ml_prediction"]=ml_pred
-            poisson_pred=PoissonEngine.calculate_match_probabilities(home,away,de.football_data.get("all"))
-            if poisson_pred:stats["poisson_prediction"]=poisson_pred
+                ml_pred = ml.predict_football(home, away)
+                if ml_pred:
+                    stats["ml_prediction"] = ml_pred
+            poisson_pred = PoissonEngine.calculate_match_probabilities(
+                home, away, de.football_data.get("all"))
+            if poisson_pred:
+                stats["poisson_prediction"] = poisson_pred
 
-        elif sport_key=="basketball":
-            hs=de.get_nba_stats(home);aws=de.get_nba_stats(away)
-            nb_matchup=de.get_nba_matchup(home,away)
-            if nb_matchup:stats["nba_matchup"]=nb_matchup
-            if hs or aws:stats["us_sports"]={"home":hs,"away":aws}
+        elif sport_key == "basketball":
+            hs = de.get_nba_stats(home)
+            aws = de.get_nba_stats(away)
+            nb_matchup = de.get_nba_matchup(home, away)
+            if nb_matchup:
+                stats["nba_matchup"] = nb_matchup
+            if hs or aws:
+                stats["us_sports"] = {"home": hs, "away": aws}
             if hs and aws:
-                nba_pred=ml.predict_nba(hs,aws)
-                if nba_pred:ml_pred=nba_pred;stats["ml_prediction"]=ml_pred
+                nba_pred = ml.predict_nba(hs, aws)
+                if nba_pred:
+                    ml_pred = nba_pred
+                    stats["ml_prediction"] = ml_pred
 
-        elif sport_key in ["baseball","hockey","cricket"]:
-            hs=de.get_us_sports_stats(sport,home);aws=de.get_us_sports_stats(sport,away)
-            if hs or aws:stats["us_sports"]={"home":hs,"away":aws}
+        elif sport_key in ["baseball", "hockey", "cricket"]:
+            hs = de.get_us_sports_stats(sport, home)
+            aws = de.get_us_sports_stats(sport, away)
+            if hs or aws:
+                stats["us_sports"] = {"home": hs, "away": aws}
+            h_source = hs.get("source", "") if hs else ""
+            if h_source in ["mlb_official_api", "nhl_official_api"] and not hs.get("recent_form"):
+                logger.info("⏭️ SKIP: %s vs %s standings-only", home, away)
+                skip_math += 1
+                continue
 
-            # FIX v7.1: standings-only → skip اگر کافی نیست
-            h_source=hs.get("source","") if hs else ""
-            if h_source in ["mlb_official_api","nhl_official_api"] and not hs.get("recent_form"):
-                logger.info("⏭️ SKIP: %s vs %s - standings-only, no recent form",home,away)
-                skip_math+=1;continue
+        math_score = ConfidenceEngine.calculate_math_score(
+            opp, stats, opp["market"], ml_pred, poisson_pred)
 
-        math_score=ConfidenceEngine.calculate_math_score(opp,stats,opp["market"],ml_pred,poisson_pred)
-        if math_score<CFG.MIN_MATH_SCORE_TO_CALL_AI:
-            skip_math+=1
-            logger.info("⏭️ SKIP(math:%d<%d) %s vs %s EV=%.2f%%",math_score,CFG.MIN_MATH_SCORE_TO_CALL_AI,home,away,opp["edge_pct"])
+        if math_score < CFG.MIN_MATH_SCORE_TO_CALL_AI:
+            skip_math += 1
+            logger.info("⏭️ SKIP(math:%d<%d) %s vs %s EV=%.2f%%",
+                        math_score, CFG.MIN_MATH_SCORE_TO_CALL_AI, home, away, opp["edge_pct"])
             continue
 
-        ai=generate_ai_decision(home,away,sport,sport_key,opp,stats,math_score,ml_pred,poisson_pred)
-        fc=ai["final_confidence"]
-        if ai.get("decision")=="SKIP":
-            skip_ai+=1
-            logger.info("⏭️ AI SKIP: %s vs %s Math:%d AI:%d Final:%d Flags:%s",home,away,math_score,ai["ai_confidence"],fc,ai.get("red_flags",[]))
+        ai = generate_ai_decision(home, away, sport, sport_key, opp, stats,
+                                   math_score, ml_pred, poisson_pred)
+        fc = ai["final_confidence"]
+
+        if ai.get("decision") == "SKIP":
+            skip_ai += 1
+            logger.info("⏭️ AI SKIP: %s vs %s Math:%d AI:%d Final:%d Flags:%s",
+                        home, away, math_score, ai["ai_confidence"], fc,
+                        ai.get("red_flags", []))
             continue
-        if fc<CFG.MIN_CONFIDENCE_TO_SEND:
-            skip_conf+=1;logger.info("⏭️ SKIP(conf:%d<%d) %s vs %s",fc,CFG.MIN_CONFIDENCE_TO_SEND,home,away);continue
 
-        logger.info("✅ APPROVED %s vs %s | %s | Math:%d AI:%d Final:%d EV=%.2f%%",
-                    home,away,ai["decision"],math_score,ai["ai_confidence"],fc,opp["edge_pct"])
+        if fc < CFG.MIN_CONFIDENCE_TO_SEND:
+            skip_conf += 1
+            logger.info("⏭️ SKIP(conf:%d<%d) %s vs %s", fc,
+                        CFG.MIN_CONFIDENCE_TO_SEND, home, away)
+            continue
 
-        msg=build_signal_message(home,away,sport,sport_key,opp,ai,stats,math_score,ml_pred,poisson_pred,now,event.get("commence_time",""))
+        logger.info("✅ APPROVED %s vs %s | Math:%d AI:%d Final:%d EV=%.2f%%",
+                    home, away, math_score, ai["ai_confidence"], fc, opp["edge_pct"])
+
+        msg = build_signal_message(home, away, sport, sport_key, opp, ai, stats,
+                                    math_score, ml_pred, poisson_pred, now,
+                                    event.get("commence_time", ""))
         if send_telegram(msg):
-            sent.mark_sent(home,away,opp["pick"],opp["market"])
-            performance_tracker.record_signal(home,away,opp["pick"],opp["market"],opp["odds"],opp["ev"],fc,opp["prob"],sport_key,event.get("sport_key",""))
-            total_sent+=1
-            logger.info("📤 SENT: %s vs %s EV=%.2f%% Conf=%d%%",home,away,opp["edge_pct"],fc)
-        else:logger.error("❌ Telegram failed: %s vs %s",home,away)
+            sent.mark_sent(home, away, opp["pick"], opp["market"])
+            performance_tracker.record_signal(
+                home, away, opp["pick"], opp["market"],
+                opp["odds"], opp["ev"], fc, opp["prob"],
+                sport_key, event.get("sport_key", ""))
+            total_sent += 1
+            logger.info("📤 SENT: %s vs %s EV=%.2f%% Conf=%d%%",
+                        home, away, opp["edge_pct"], fc)
+        else:
+            logger.error("❌ Telegram failed: %s vs %s", home, away)
+
         await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
     logger.info("="*65)
-    logger.info("📊 SUMMARY | Analyzed:%d Sent:%d Skip(math):%d Skip(AI):%d Skip(conf):%d",
-                total_analyzed,total_sent,skip_math,skip_ai,skip_conf)
-    logger.info("📊 %s",odds_key_manager.get_usage_summary())
-    perf=performance_tracker.data.get("summary",{})
-    if perf.get("resolved",0)>0:
-        logger.info("📈 WR=%.1f%% ROI=%.1f%% Signals=%d",perf["win_rate"]*100,perf["roi_pct"],perf["total_signals"])
+    logger.info(
+        "📊 SUMMARY | Events:%d Analyzed:%d Sent:%d | "
+        "Skip(no_opp):%d Skip(ev):%d Skip(sent):%d Skip(math):%d Skip(AI):%d Skip(conf):%d",
+        len(events), total_analyzed, total_sent,
+        skip_no_opp, skip_ev, skip_sent, skip_math, skip_ai, skip_conf)
+    logger.info("📊 %s", odds_key_manager.get_usage_summary())
+    perf = performance_tracker.data.get("summary", {})
+    if perf.get("resolved", 0) > 0:
+        logger.info("📈 WR=%.1f%% ROI=%.1f%% Signals=%d",
+                    perf["win_rate"]*100, perf["roi_pct"], perf["total_signals"])
     logger.info("="*65)
 
 if __name__=="__main__":
