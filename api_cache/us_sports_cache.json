@@ -58,5 +58,25 @@
       "run_diff": 2.7,
       "source": "statsapi_live"
     }
+  },
+  "mlb_chicagocubs": {
+    "timestamp": "2026-06-02T23:21:28.763089+00:00",
+    "data": {
+      "recent_form": "3W-4L",
+      "avg_runs_scored": 4.4,
+      "avg_runs_allowed": 4.6,
+      "run_diff": -0.1,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_athletics": {
+    "timestamp": "2026-06-02T23:21:29.281685+00:00",
+    "data": {
+      "recent_form": "2W-5L",
+      "avg_runs_scored": 3.6,
+      "avg_runs_allowed": 7.0,
+      "run_diff": -3.4,
+      "source": "statsapi_live"
+    }
   }
 }
