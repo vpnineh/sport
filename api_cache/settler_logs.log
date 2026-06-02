@@ -179,3 +179,23 @@
 2026-06-02 14:38:25 | INFO     | ⏳ [PENDING] Yomiuri Giants vs Orix Buffaloes (retry #3, 6h elapsed)
 2026-06-02 14:38:25 | INFO     | 💾 [PENDING] Saved 15 unsettled bets for next run
 2026-06-02 14:38:25 | INFO     | ⏳ No matches settled this session.
+2026-06-02 20:00:05 | INFO     | =======================================================
+2026-06-02 20:00:05 | INFO     | ⚡ ZBET90 SETTLER ENGINE v4.0 | Scraper -> API Pipeline
+2026-06-02 20:00:05 | INFO     | =======================================================
+2026-06-02 20:00:05 | INFO     | 🔍 16 bets to check.
+2026-06-02 20:00:05 | INFO     | 🌍 [SCRAPER] Fetching from FotMob / ESPN / SofaScore...
+2026-06-02 20:00:07 | INFO     | ✅ [SCRAPER] Soccer: 124 | Other: 24
+2026-06-02 20:00:07 | INFO     | 📡 16 matches not found by scraper. Passing to Odds-API...
+2026-06-02 20:00:07 | INFO     | 🔄 [ODDS-API] Got 3 results for tennis_wta_french_open
+2026-06-02 20:00:07 | INFO     | 🔄 [ODDS-API] Got 6 results for baseball_npb
+2026-06-02 20:00:07 | INFO     | 🔄 [ODDS-API] Got 3 results for tennis_atp_french_open
+2026-06-02 20:00:08 | INFO     | 🔄 [ODDS-API] Got 0 results for baseball_ncaa
+2026-06-02 20:00:08 | INFO     | 🔄 [ODDS-API] Got 2 results for icehockey_ahl
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Madison Keys vs Diana Shnaider
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Felix Auger-Aliassime vs Alejandro Tabilo
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Frances Tiafoe vs Matteo Arnaldi
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Aryna Sabalenka vs Naomi Osaka
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Toronto Marlies vs W-B/Scranton Penguins
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Yomiuri Giants vs Orix Buffaloes
+2026-06-02 20:00:08 | INFO     | ⏳ [ODDS-API] Not finished yet: Jakub Mensik vs Joao Fonseca
+2026-06-02 20:00:08 | INFO     | ⏳ No matches settled this session.

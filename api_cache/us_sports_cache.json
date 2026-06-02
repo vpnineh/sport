@@ -1,0 +1,62 @@
+{
+  "mlb_tampabayrays": {
+    "timestamp": "2026-06-02T19:57:01.048443+00:00",
+    "data": {
+      "recent_form": "2W-5L",
+      "avg_runs_scored": 5.0,
+      "avg_runs_allowed": 8.1,
+      "run_diff": -3.1,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_detroittigers": {
+    "timestamp": "2026-06-02T19:57:01.544747+00:00",
+    "data": {
+      "recent_form": "2W-5L",
+      "avg_runs_scored": 3.7,
+      "avg_runs_allowed": 5.6,
+      "run_diff": -1.9,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_philadelphiaphillies": {
+    "timestamp": "2026-06-02T19:58:02.460419+00:00",
+    "data": {
+      "recent_form": "4W-3L",
+      "avg_runs_scored": 2.6,
+      "avg_runs_allowed": 3.1,
+      "run_diff": -0.6,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_sandiegopadres": {
+    "timestamp": "2026-06-02T19:58:02.916970+00:00",
+    "data": {
+      "recent_form": "1W-6L",
+      "avg_runs_scored": 2.6,
+      "avg_runs_allowed": 4.7,
+      "run_diff": -2.1,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_bostonredsox": {
+    "timestamp": "2026-06-02T19:59:03.903812+00:00",
+    "data": {
+      "recent_form": "3W-4L",
+      "avg_runs_scored": 6.0,
+      "avg_runs_allowed": 4.6,
+      "run_diff": 1.4,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_baltimoreorioles": {
+    "timestamp": "2026-06-02T19:59:04.407811+00:00",
+    "data": {
+      "recent_form": "5W-2L",
+      "avg_runs_scored": 6.7,
+      "avg_runs_allowed": 4.0,
+      "run_diff": 2.7,
+      "source": "statsapi_live"
+    }
+  }
+}

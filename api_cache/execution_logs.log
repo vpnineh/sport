@@ -6376,3 +6376,88 @@
 2026-06-02 14:38:08 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 10 calls (rem: 342) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
 2026-06-02 14:38:08 | INFO     | 📈 [PERFORMANCE] WR=30.0% | ROI=-20.1% | Signals=26
 2026-06-02 14:38:08 | INFO     | =================================================================
+2026-06-02 19:54:05 | INFO     | ✅ [GEMINI] 4 keys loaded
+2026-06-02 19:54:05 | INFO     | 🔑 [API KEY] primary: Loaded ✓
+2026-06-02 19:54:05 | INFO     | 🔑 [API KEY] backup_1: Loaded ✓
+2026-06-02 19:54:05 | INFO     | 🔑 [API KEY] backup_2: Loaded ✓
+2026-06-02 19:54:05 | INFO     | =================================================================
+2026-06-02 19:54:05 | INFO     |   ZBET90 ENGINE v7.0 | Multi-Sport | AI 70%% + Math 30%%
+2026-06-02 19:54:05 | INFO     | =================================================================
+2026-06-02 19:54:05 | INFO     | 🔑 ✅ primary: 10 calls (rem:342) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 19:54:05 | INFO     | 📥 [PHASE 1] Loading data...
+2026-06-02 19:54:05 | INFO     | [FREE DATA] Downloading: atp_2022.csv
+2026-06-02 19:54:05 | INFO     | [FREE DATA] Downloading: wta_2022.csv
+2026-06-02 19:54:05 | INFO     | [FREE DATA] Downloading: atp_2023.csv
+2026-06-02 19:54:05 | INFO     | [FREE DATA] Downloading: wta_2023.csv
+2026-06-02 19:54:06 | INFO     | [FREE DATA] Downloading: atp_2024.csv
+2026-06-02 19:54:06 | INFO     | [FREE DATA] Downloading: wta_2024.csv
+2026-06-02 19:54:06 | INFO     | [FREE DATA] Downloading: atp_2025.csv
+2026-06-02 19:54:07 | INFO     | [FREE DATA] Downloading: wta_2025.csv
+2026-06-02 19:54:07 | INFO     | ✅ [TENNIS] ATP: 11923 matches
+2026-06-02 19:54:07 | INFO     | ✅ [TENNIS] WTA: 10888 matches
+2026-06-02 19:54:07 | INFO     | [FREE DATA] Downloading: atp_rankings.csv
+2026-06-02 19:54:07 | INFO     | ✅ [RANKINGS] ATP loaded
+2026-06-02 19:54:07 | INFO     | [FREE DATA] Downloading: wta_rankings.csv
+2026-06-02 19:54:07 | INFO     | ✅ [RANKINGS] WTA loaded
+2026-06-02 19:54:07 | INFO     | [FREE DATA] Downloading: football_E0_2223.csv
+2026-06-02 19:54:08 | INFO     | [FREE DATA] Downloading: football_E1_2223.csv
+2026-06-02 19:54:09 | INFO     | [FREE DATA] Downloading: football_D1_2223.csv
+2026-06-02 19:54:10 | INFO     | [FREE DATA] Downloading: football_SP1_2223.csv
+2026-06-02 19:54:11 | INFO     | [FREE DATA] Downloading: football_I1_2223.csv
+2026-06-02 19:54:12 | INFO     | [FREE DATA] Downloading: football_F1_2223.csv
+2026-06-02 19:54:13 | INFO     | [FREE DATA] Downloading: football_N1_2223.csv
+2026-06-02 19:54:14 | INFO     | [FREE DATA] Downloading: football_P1_2223.csv
+2026-06-02 19:54:15 | INFO     | [FREE DATA] Downloading: football_T1_2223.csv
+2026-06-02 19:54:16 | INFO     | [FREE DATA] Downloading: football_B1_2223.csv
+2026-06-02 19:54:18 | INFO     | [FREE DATA] Downloading: football_E0_2324.csv
+2026-06-02 19:54:18 | INFO     | [FREE DATA] Downloading: football_E1_2324.csv
+2026-06-02 19:54:20 | INFO     | [FREE DATA] Downloading: football_D1_2324.csv
+2026-06-02 19:54:20 | INFO     | [FREE DATA] Downloading: football_SP1_2324.csv
+2026-06-02 19:54:21 | INFO     | [FREE DATA] Downloading: football_I1_2324.csv
+2026-06-02 19:54:22 | INFO     | [FREE DATA] Downloading: football_F1_2324.csv
+2026-06-02 19:54:23 | INFO     | [FREE DATA] Downloading: football_N1_2324.csv
+2026-06-02 19:54:24 | INFO     | [FREE DATA] Downloading: football_P1_2324.csv
+2026-06-02 19:54:25 | INFO     | [FREE DATA] Downloading: football_T1_2324.csv
+2026-06-02 19:54:26 | INFO     | [FREE DATA] Downloading: football_B1_2324.csv
+2026-06-02 19:54:27 | INFO     | [FREE DATA] Downloading: football_E0_2425.csv
+2026-06-02 19:54:28 | INFO     | [FREE DATA] Downloading: football_E1_2425.csv
+2026-06-02 19:54:29 | INFO     | [FREE DATA] Downloading: football_D1_2425.csv
+2026-06-02 19:54:30 | INFO     | [FREE DATA] Downloading: football_SP1_2425.csv
+2026-06-02 19:54:31 | INFO     | [FREE DATA] Downloading: football_I1_2425.csv
+2026-06-02 19:54:32 | INFO     | [FREE DATA] Downloading: football_F1_2425.csv
+2026-06-02 19:54:33 | INFO     | [FREE DATA] Downloading: football_N1_2425.csv
+2026-06-02 19:54:34 | INFO     | [FREE DATA] Downloading: football_P1_2425.csv
+2026-06-02 19:54:35 | INFO     | [FREE DATA] Downloading: football_T1_2425.csv
+2026-06-02 19:54:36 | INFO     | [FREE DATA] Downloading: football_B1_2425.csv
+2026-06-02 19:54:37 | INFO     | ✅ [FOOTBALL] 10816 matches from 10 leagues × 3 seasons
+2026-06-02 19:55:07 | WARNING  | [NBA] nba_api error: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-02 19:55:07 | WARNING  | [NBA] No data available
+2026-06-02 19:55:07 | INFO     | ✅ [NHL] 32 teams from official API
+2026-06-02 19:55:07 | INFO     | ✅ [MLB] 30 teams from official API
+2026-06-02 19:55:08 | WARNING  | [CRICKET] No data available
+2026-06-02 19:55:08 | INFO     | 🧠 [PHASE 2] ML models...
+2026-06-02 19:56:52 | INFO     | ✅ [ML FOOTBALL] Trained on 10395 samples
+2026-06-02 19:56:52 | INFO     | 💾 [ML FOOTBALL] Saved
+2026-06-02 19:57:00 | ERROR    | [ML TENNIS ATP] Training failed: The 'cv' parameter of CalibratedClassifierCV must be an int in the range [2, inf), an object implementing 'split' and 'get_n_splits', an iterable or None. Got 'prefit' instead.
+2026-06-02 19:57:00 | INFO     | [ML NBA] Using standings-based matchup prediction (no ML training needed)
+2026-06-02 19:57:00 | INFO     | 📡 [PHASE 3] Fetching odds (6.0h window)...
+2026-06-02 19:57:00 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-02 19:57:00 | INFO     | 🔑 [TRYING] primary...
+2026-06-02 19:57:00 | INFO     | 🔑 [primary] OK rem:332 market:totals events:8
+2026-06-02 19:57:00 | INFO     | 🔑 [primary] OK rem:328 market:h2h events:8
+2026-06-02 19:57:00 | INFO     | ✅ [primary] 8 events
+2026-06-02 19:57:00 | INFO     | 💾 [ODDS CACHE] SAVED 8 events
+2026-06-02 19:57:00 | INFO     | 📊 [API USAGE] ✅ primary: 12 calls (rem:328) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 19:57:00 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-02 19:58:01 | WARNING  | [AI JUDGE] No response → math fallback
+2026-06-02 19:58:01 | INFO     | ⏭️ SKIP(conf:55<58) Tampa Bay Rays vs Detroit Tigers
+2026-06-02 19:59:03 | WARNING  | [AI JUDGE] No response → math fallback
+2026-06-02 19:59:03 | INFO     | ⏭️ SKIP(conf:55<58) Philadelphia Phillies vs San Diego Padres
+2026-06-02 20:00:04 | WARNING  | [AI JUDGE] No response → math fallback
+2026-06-02 20:00:04 | INFO     | ⏭️ SKIP(conf:55<58) Boston Red Sox vs Baltimore Orioles
+2026-06-02 20:00:04 | INFO     | =================================================================
+2026-06-02 20:00:04 | INFO     | 📊 SUMMARY | Analyzed:3 Sent:0 Skip(math):0 Skip(AI):0 Skip(conf):3
+2026-06-02 20:00:04 | INFO     | ℹ️  3 analyzed → filtered. Math:0 AI:0 Conf:3
+2026-06-02 20:00:04 | INFO     | 📊 ✅ primary: 12 calls (rem:328) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 20:00:04 | INFO     | 📈 WR=30.0% ROI=-20.1% Signals=26
+2026-06-02 20:00:04 | INFO     | =================================================================
