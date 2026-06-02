@@ -269,8 +269,8 @@
       "ev": 0.0236,
       "confidence": 62,
       "implied_prob": 0.457,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0
     },
     {
       "id": "de321cdf",
@@ -301,8 +301,8 @@
       "ev": 0.0212,
       "confidence": 62,
       "implied_prob": 0.3521,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "win",
+      "profit_loss": 1.9
     },
     {
       "id": "219b8c03",
@@ -317,8 +317,8 @@
       "ev": 0.0213,
       "confidence": 62,
       "implied_prob": 0.399,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "win",
+      "profit_loss": 1.56
     },
     {
       "id": "bd2f5646",
@@ -333,8 +333,8 @@
       "ev": 0.0471,
       "confidence": 66,
       "implied_prob": 0.1496,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0
     },
     {
       "id": "38b99e7f",
@@ -365,16 +365,48 @@
       "ev": 0.0222,
       "confidence": 62,
       "implied_prob": 0.4563,
+      "outcome": "loss",
+      "profit_loss": -1.0
+    },
+    {
+      "id": "b02883ef",
+      "timestamp": "2026-06-02T08:38:07.592195+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_wta_french_open",
+      "home": "Mirra Andreeva",
+      "away": "Sorana Cirstea",
+      "pick": "Sorana Cirstea",
+      "market": "h2h_lay",
+      "odds": 2.98,
+      "ev": 0.0225,
+      "confidence": 62,
+      "implied_prob": 0.3431,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "942eea95",
+      "timestamp": "2026-06-02T08:38:11.857895+00:00",
+      "sport": "other",
+      "api_sport_key": "baseball_npb",
+      "home": "Yomiuri Giants",
+      "away": "Orix Buffaloes",
+      "pick": "Yomiuri Giants",
+      "market": "h2h",
+      "odds": 2.08,
+      "ev": 0.0502,
+      "confidence": 73,
+      "implied_prob": 0.5049,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 23,
-    "resolved": 5,
-    "win_rate": 0.2,
-    "total_profit_loss_units": -2.47,
-    "roi_pct": -49.4,
-    "last_updated": "2026-06-02T02:38:07.646197+00:00"
+    "total_signals": 25,
+    "resolved": 10,
+    "win_rate": 0.3,
+    "total_profit_loss_units": -2.01,
+    "roi_pct": -20.1,
+    "last_updated": "2026-06-02T08:38:15.344220+00:00"
   }
 }

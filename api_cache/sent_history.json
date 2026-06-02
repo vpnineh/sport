@@ -154,5 +154,17 @@
     "pick": "New York Mets",
     "market": "h2h_lay",
     "sent_at": "2026-06-01T23:53:56.536373+00:00"
+  },
+  "91bb7bad64667632a730c1d735d316e9": {
+    "match": "Mirra Andreeva vs Sorana Cirstea",
+    "pick": "Sorana Cirstea",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-02T08:38:07.591351+00:00"
+  },
+  "8f699b2cc4af0a9740abd40d6ab2776d": {
+    "match": "Yomiuri Giants vs Orix Buffaloes",
+    "pick": "Yomiuri Giants",
+    "market": "h2h",
+    "sent_at": "2026-06-02T08:38:11.857079+00:00"
   }
 }

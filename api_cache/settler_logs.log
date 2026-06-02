@@ -47,3 +47,25 @@
 2026-06-02 02:38:08 | INFO     | ✅ Tampa Bay Rays vs Detroit Tigers → WIN (1.53)
 2026-06-02 02:38:08 | INFO     | ✅ Washington Nationals vs Miami Marlins → LOSS (-1.00)
 2026-06-02 02:38:08 | INFO     | 🔄 [FALLBACK] Odds-API for icehockey_ahl...
+2026-06-02 08:38:15 | INFO     | ==================================================
+2026-06-02 08:38:15 | INFO     | 🤖 ZBET90 SETTLER ENGINE v1.6 | Final Edition
+2026-06-02 08:38:15 | INFO     | ==================================================
+2026-06-02 08:38:15 | INFO     | 🔍 18 bets to check.
+2026-06-02 08:38:15 | INFO     | 🌍 [SCRAPER] Fetching results (FotMob / ESPN / SofaScore)...
+2026-06-02 08:38:15 | INFO     | ✅ [SCRAPER] Soccer: 119 | Other: 24
+2026-06-02 08:38:15 | INFO     | 🔄 [FALLBACK] Odds-API for tennis_wta_french_open...
+2026-06-02 08:38:15 | INFO     | 🔄 [FALLBACK] Odds-API for tennis_atp_french_open...
+2026-06-02 08:38:16 | INFO     | ⏳ Match found but not completed: Madison Keys vs Diana Shnaider
+2026-06-02 08:38:16 | INFO     | ⏳ Match found but not completed: Felix Auger-Aliassime vs Alejandro Tabilo
+2026-06-02 08:38:16 | INFO     | ⏳ Match found but not completed: Frances Tiafoe vs Matteo Arnaldi
+2026-06-02 08:38:16 | INFO     | ⏳ Match found but not completed: Aryna Sabalenka vs Naomi Osaka
+2026-06-02 08:38:16 | INFO     | 🔄 [FALLBACK] Odds-API for baseball_ncaa...
+2026-06-02 08:38:16 | INFO     | 🔄 [FALLBACK] Odds-API for icehockey_ahl...
+2026-06-02 08:38:16 | INFO     | ⏳ Match found but not completed: Toronto Marlies vs W-B/Scranton Penguins
+2026-06-02 08:38:16 | INFO     | ✅ St. Louis Cardinals vs Texas Rangers → LOSS (-1.00)
+2026-06-02 08:38:16 | INFO     | ✅ Los Angeles Angels vs Colorado Rockies → WIN (1.90)
+2026-06-02 08:38:16 | INFO     | ✅ Arizona Diamondbacks vs Los Angeles Dodgers → WIN (1.56)
+2026-06-02 08:38:16 | INFO     | 🔄 [FALLBACK] Odds-API for basketball_wnba...
+2026-06-02 08:38:16 | INFO     | 🔄 [FALLBACK SUCCESS] Dallas Wings vs Seattle Storm
+2026-06-02 08:38:16 | INFO     | ✅ Dallas Wings vs Seattle Storm → LOSS (-1.00)
+2026-06-02 08:38:16 | INFO     | ✅ Seattle Mariners vs New York Mets → LOSS (-1.00)
