@@ -11,12 +11,8 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Tuple, Any
 from collections import defaultdict, deque
-
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
-
-from google import genai
-from google.genai import types
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, StackingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import RobustScaler
@@ -135,10 +131,18 @@ _ch = logging.StreamHandler(sys.stdout); _ch.setFormatter(_fmt); logger.addHandl
 _fh = logging.FileHandler(CFG.LOG_FILE, mode="a", encoding="utf-8"); _fh.setFormatter(_fmt); logger.addHandler(_fh)
 
 # =========================================================
-# 3. GEMINI MANAGER
+# 3. HYBRID AI MANAGER (Gemini Primary -> Groq Fallback)
 # =========================================================
-class GeminiManager:
-    _instance: Optional["GeminiManager"] = None
+import google.genai as genai
+from google.genai import types
+try:
+    from groq import Groq
+    HAS_GROQ = True
+except ImportError:
+    HAS_GROQ = False
+
+class HybridAIManager:
+    _instance: Optional["HybridAIManager"] = None
     _lock = threading.Lock()
 
     def __new__(cls):
@@ -150,54 +154,87 @@ class GeminiManager:
 
     def __init__(self):
         if self._initialized: return
-        keys = [k.strip() for k in [
+        
+        # 1. Setup Gemini
+        gem_keys = [k.strip() for k in [
             os.getenv("GEMINI",""), os.getenv("GEMINI1",""),
-            os.getenv("GEMINI2",""), os.getenv("GEMINI3",""),
+            os.getenv("GEMINI2",""), os.getenv("GEMINI3","")
         ] if k.strip()]
-        if not keys: logger.critical("FATAL: No GEMINI API keys!"); sys.exit(1)
-        self.clients = [genai.Client(api_key=k) for k in keys]
-        self._safety = [
-            types.SafetySetting(category=c, threshold=types.HarmBlockThreshold.BLOCK_NONE)
-            for c in [
-                types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-                types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            ]
-        ]
+        self.gemini_clients = [genai.Client(api_key=k) for k in gem_keys] if gem_keys else []
+        self._safety = [types.SafetySetting(category=c, threshold=types.HarmBlockThreshold.BLOCK_NONE) for c in [
+            types.HarmCategory.HARM_CATEGORY_HARASSMENT, types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT]]
+        
+        # 2. Setup Groq
+        groq_keys = [k.strip() for k in [
+            os.getenv("GROQ_API_KEY", ""), os.getenv("GROQ1", ""), os.getenv("GROQ2", "")
+        ] if k.strip()]
+        self.groq_clients = [Groq(api_key=k) for k in groq_keys] if (groq_keys and HAS_GROQ) else []
+        
         self._initialized = True
-        logger.info("✅ [GEMINI] %d keys loaded", len(self.clients))
+        logger.info("✅ [AI MANAGER] Loaded %d Gemini keys, %d Groq keys", len(self.gemini_clients), len(self.groq_clients))
 
-    def generate(self, prompt: str, system_instruction: str = None,
-                 temperature: float = None, max_retries: int = 3) -> Optional[dict]:
-        cfg_kw = dict(
-            temperature=temperature or CFG.AI_TEMPERATURE,
-            max_output_tokens=CFG.AI_MAX_TOKENS,
-            response_mime_type="application/json",
-            safety_settings=self._safety,
-        )
-        if system_instruction: cfg_kw["system_instruction"] = system_instruction
-        gen_cfg = types.GenerateContentConfig(**cfg_kw)
+    def generate(self, prompt: str, system_instruction: str = None) -> Optional[dict]:
+        # مکث اجباری برای جلوگیری از رگبار درخواست به Gemini (جلوگیری از Rate Limit سریع)
+        time.sleep(3) 
 
-        for attempt in range(max_retries):
-            try:
-                resp = random.choice(self.clients).models.generate_content(
-                    model=CFG.AI_MODEL_ANALYST, contents=prompt, config=gen_cfg)
-                if getattr(resp, "prompt_feedback", None) and resp.prompt_feedback.block_reason:
-                    return None
-                raw = resp.text
-                if not raw: continue
-                try: return json.loads(raw)
-                except json.JSONDecodeError: return robust_json_extractor(raw)
-            except Exception as e:
-                es = str(e)
-                if "429" in es or "quota" in es.lower():
-                    time.sleep((attempt+1)*10); continue
-                if "400" in es: return None
-                if attempt < max_retries-1: time.sleep(2**attempt)
+        # --- PRIMARY: GEMINI ---
+        if self.gemini_clients:
+            cfg_kw = dict(temperature=CFG.AI_TEMPERATURE, max_output_tokens=CFG.AI_MAX_TOKENS, response_mime_type="application/json", safety_settings=self._safety)
+            if system_instruction: cfg_kw["system_instruction"] = system_instruction
+            gen_cfg = types.GenerateContentConfig(**cfg_kw)
+
+            for attempt in range(2):
+                try:
+                    client = random.choice(self.gemini_clients)
+                    resp = client.models.generate_content(model=CFG.AI_MODEL_ANALYST, contents=prompt, config=gen_cfg)
+                    if getattr(resp, "prompt_feedback", None) and resp.prompt_feedback.block_reason:
+                        logger.warning("[GEMINI] Blocked by Safety. Switching to Groq...")
+                        break
+                    
+                    raw = resp.text
+                    if raw:
+                        try: return json.loads(raw)
+                        except json.JSONDecodeError: return robust_json_extractor(raw)
+                except Exception as e:
+                    es = str(e)
+                    logger.warning("[GEMINI ERROR] Attempt %d: %s", attempt+1, es[:100])
+                    if "429" in es or "quota" in es.lower():
+                        time.sleep((attempt+1)*5)
+                        continue
+                    break
+
+        # --- FALLBACK: GROQ ---
+        if self.groq_clients:
+            logger.info("🔄 [AI MANAGER] Switching to Groq Fallback...")
+            model_id = "llama-3.3-70b-versatile"
+            messages = []
+            if system_instruction:
+                messages.append({"role": "system", "content": system_instruction})
+            messages.append({"role": "user", "content": prompt})
+
+            for attempt in range(2):
+                try:
+                    client = random.choice(self.groq_clients)
+                    chat_completion = client.chat.completions.create(
+                        messages=messages, 
+                        model=model_id,
+                        temperature=CFG.AI_TEMPERATURE, 
+                        max_tokens=CFG.AI_MAX_TOKENS,
+                        response_format={"type": "json_object"}
+                    )
+                    raw = chat_completion.choices[0].message.content
+                    if raw:
+                        try: return json.loads(raw)
+                        except json.JSONDecodeError: return robust_json_extractor(raw)
+                except Exception as e:
+                    logger.warning("[GROQ ERROR] Attempt %d: %s", attempt+1, str(e)[:100])
+                    time.sleep(3)
+                    
+        logger.error("❌ [AI MANAGER] Both Gemini and Groq failed.")
         return None
 
-gemini_manager = GeminiManager()
+ai_manager = HybridAIManager()
 
 # =========================================================
 # 4. API KEY MANAGER
@@ -914,6 +951,9 @@ class FreeDataEngine:
     # ──────────────────────────────────────────────────────
     # NBA  (nba_api پکیج رسمی)
     # ──────────────────────────────────────────────────────
+    # ──────────────────────────────────────────────────────
+    # NBA  (nba_api پکیج رسمی)
+    # ──────────────────────────────────────────────────────
     def load_nba_data(self):
         """
         pip install nba_api
@@ -934,11 +974,21 @@ class FreeDataEngine:
 
         try:
             from nba_api.stats.endpoints import leaguestandings
+            
+            nba_headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Referer": "https://www.nba.com/",
+                "Origin": "https://www.nba.com"
+            }
 
             standings = leaguestandings.LeagueStandings(
                 season="2024-25",
                 season_type="Regular Season",
                 league_id="00",
+                headers=nba_headers,
+                timeout=30
             )
             df = standings.get_data_frames()[0]
 
@@ -1744,22 +1794,14 @@ class MLPredictionEngine:
         scaler = RobustScaler()
         Xs = scaler.fit_transform(X)
 
-        from sklearn.model_selection import train_test_split
-
         try:
-            # split برای جلوگیری از data leakage در calibration
-            X_tr, X_val, y_tr, y_val, sw_tr, _ = train_test_split(
-                Xs, y, sw,
-                test_size=0.2, random_state=42, stratify=y,
-            )
             gb = GradientBoostingClassifier(
                 n_estimators=200, max_depth=3,
                 learning_rate=0.05, random_state=42, subsample=0.8,
             )
-            gb.fit(X_tr, y_tr, sample_weight=sw_tr)
-
-            cal = CalibratedClassifierCV(gb, cv="prefit", method="isotonic")
-            cal.fit(X_val, y_val)
+            
+            cal = CalibratedClassifierCV(estimator=gb, cv=3, method="isotonic")
+            cal.fit(Xs, y)
 
             self.tennis_pipeline = {"model": cal, "scaler": scaler}
             self.is_tennis_trained = True
@@ -2184,16 +2226,16 @@ def generate_ai_decision(home: str, away: str, sport: str, sport_key: str,
         "BET when: EV>1.5% AND (sharp line OR strong historical edge) AND models agree\n"
         "SKIP when: Conflicting signals OR EV only from soft books OR insufficient data\n\n"
         "Confidence: 75-100=Strong BET | 62-74=Moderate BET | 50-61=Weak BET | 0-49=NO BET\n\n"
-        'Return ONLY: {"decision":"BET"/"SKIP","confidence":0-100,"sport_emoji":"<emoji>",'
-        '"risk_level":"Low"/"Medium"/"High","key_factors":["..."],"logic":"2-3 sentences","red_flags":[]}\n\n'
-        "RULES: Base on data only | EV<1.5% no sharp→SKIP | ML/Poisson disagree→lower conf | Be conservative"
+        'You must output ONLY a valid JSON object in this exact format, with no other text:\n'
+        '{"decision":"BET" or "SKIP","confidence":<int 0-100>,"sport_emoji":"<emoji>",'
+        '"risk_level":"Low" or "Medium" or "High","key_factors":["fact1","fact2"],"logic":"2-3 sentences max","red_flags":["flag1"]}'
     )
-    prompt=f"MATCH:{home} vs {away} | SPORT:{sport} | PICK:{opp['pick']} | MARKET:{opp['market_label']}\n\n"+"\n\n".join(parts)+"\n\nReturn BET/SKIP decision as JSON."
+    prompt=f"MATCH:{home} vs {away} | SPORT:{sport} | PICK:{opp['pick']} | MARKET:{opp['market_label']}\n\n"+"\n\n".join(parts)
 
-    ai_data=gemini_manager.generate(prompt=prompt,system_instruction=sys_inst,temperature=CFG.AI_TEMPERATURE)
+    ai_data=ai_manager.generate(prompt=prompt, system_instruction=sys_inst)
 
     if not ai_data or not isinstance(ai_data,dict):
-        logger.warning("[AI JUDGE] No response → math fallback")
+        logger.warning("[AI JUDGE] No response from AI Manager → math fallback")
         return {**default,"decision":"BET" if math_score>=55 else "SKIP","logic":"AI unavailable - math models only."}
 
     decision=str(ai_data.get("decision","SKIP")).upper().strip()
