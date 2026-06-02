@@ -1,5 +1,5 @@
 # =========================================================
-# ZBET90 ENGINE v7.1 | AI Judge | Multi-Sport | Fully Fixed
+# ZBET90 ENGINE v7.2 | AI Judge | Multi-Sport | All Bugs Fixed
 # =========================================================
 import os,sys,time,json,re,random,logging,html as html_lib
 import hashlib,asyncio,aiohttp,requests,numpy as np,pandas as pd
@@ -75,6 +75,8 @@ class Config:
     AI_TEMPERATURE:float=0.05
     TELEGRAM_ID:str="@zBET90"
     SHARP_BOOKMAKERS:List[str]=field(default_factory=lambda:["pinnacle","betfair_ex_eu","matchbook","betfair_ex_uk","sport888","betsson"])
+    # BUG-15: Higher threshold for sport=other
+    MIN_MATH_SCORE_OTHER_SPORT:int=60
     GITHUB_SOURCES:Dict[str,Any]=field(default_factory=lambda:{
         "atp":"https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_matches_{year}.csv",
         "wta":"https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master/wta_matches_{year}.csv",
@@ -87,7 +89,8 @@ class Config:
         "E0":"Premier League","E1":"Championship","D1":"Bundesliga","SP1":"La Liga",
         "I1":"Serie A","F1":"Ligue 1","N1":"Eredivisie","P1":"Liga Portugal","T1":"Super Lig","B1":"Jupiler League",
     })
-    FOOTBALL_DATA_UK_SEASONS:List[str]=field(default_factory=lambda:["2223","2324","2425"])
+    # BUG-17: Added 2526 season
+    FOOTBALL_DATA_UK_SEASONS:List[str]=field(default_factory=lambda:["2324","2425","2526"])
 
 CFG=Config()
 
@@ -147,14 +150,22 @@ class HybridAIManager:
         groq_keys=[k.strip() for k in [os.getenv("GROQ_API_KEY",""),os.getenv("GROQ1",""),os.getenv("GROQ2","")] if k.strip()]
         self.groq_clients=[Groq(api_key=k) for k in groq_keys] if (groq_keys and HAS_GROQ) else []
         self._last_provider="none"
-        self._gemini_failed:set=set()
+        # BUG-12: Store timestamp per failed key instead of just a set
+        self._gemini_failed:Dict[int,float]={}
         self._last_call_time:float=0.0
         self._rate_lock=threading.Lock()
         self._initialized=True
         logger.info("✅ [AI MANAGER] Loaded %d Gemini keys, %d Groq keys",len(self.gemini_clients),len(self.groq_clients))
 
+    def _is_key_failed(self,idx:int)->bool:
+        """BUG-12: Keys auto-recover after 15 minutes."""
+        ft=self._gemini_failed.get(idx)
+        if ft is None:return False
+        if time.time()-ft>900:
+            del self._gemini_failed[idx];return False
+        return True
+
     def generate(self,prompt:str,system_instruction:str=None,is_groq_strict:bool=False)->Optional[dict]:
-        # Thread-safe rate limiting
         with self._rate_lock:
             elapsed=time.time()-self._last_call_time
             if elapsed<3.0:time.sleep(3.0-elapsed)
@@ -165,7 +176,7 @@ class HybridAIManager:
                         response_mime_type="application/json",safety_settings=self._safety)
             if system_instruction:cfg_kw["system_instruction"]=system_instruction
             gen_cfg=types.GenerateContentConfig(**cfg_kw)
-            available=[i for i in range(len(self.gemini_clients)) if i not in self._gemini_failed]
+            available=[i for i in range(len(self.gemini_clients)) if not self._is_key_failed(i)]
             if not available:
                 self._gemini_failed.clear()
                 available=list(range(len(self.gemini_clients)))
@@ -184,9 +195,11 @@ class HybridAIManager:
                         except:return robust_json_extractor(raw)
                 except Exception as e:
                     es=str(e)
-                    logger.warning("[GEMINI ERROR] Key %d: %s",idx,es[:100])
+                    # BUG-12: Sanitize key from error message
+                    sanitized=re.sub(r'key["\s:=]+[A-Za-z0-9_\-]{10,}',"key=***",es,flags=re.IGNORECASE)
+                    logger.warning("[GEMINI ERROR] Key %d: %s",idx,sanitized[:100])
                     if "429" in es or "quota" in es.lower():
-                        self._gemini_failed.add(idx);available.remove(idx);continue
+                        self._gemini_failed[idx]=time.time();available.remove(idx);continue
                     break
 
         if self.groq_clients:
@@ -197,9 +210,11 @@ class HybridAIManager:
                 try:
                     client=random.choice(self.groq_clients)
                     cc=client.chat.completions.create(
-                        messages=messages,model="openai/gpt-oss-120b",
+                        messages=messages,
+                        # Selected qwen/qwen3-32b for better reasoning vs gpt-oss-120b
+                        model="qwen/qwen3-32b",
                         temperature=CFG.AI_TEMPERATURE,max_completion_tokens=CFG.AI_MAX_TOKENS,
-                        top_p=1,reasoning_effort="medium",stream=False,stop=None,
+                        top_p=1,stream=False,stop=None,
                         response_format={"type":"json_object"})
                     raw=cc.choices[0].message.content
                     if raw:
@@ -243,6 +258,7 @@ class OddsAPIKeyManager:
         except:pass
 
     def record_usage(self,label:str,used:int=0,remaining:int=-1):
+        # BUG-3: All usage access inside lock
         with self._lock:
             self.usage["keys"].setdefault(label,{"calls":0,"remaining":-1,"last_used":None})
             self.usage["keys"][label]["calls"]+=1
@@ -272,9 +288,12 @@ class OddsAPIKeyManager:
         return active
 
     def get_usage_summary(self)->str:
+        # BUG-3: Read usage inside lock
+        with self._lock:
+            usage_snapshot=json.loads(json.dumps(self.usage))
         parts=[]
         for k in self.keys:
-            u=self.usage.get("keys",{}).get(k["label"],{})
+            u=usage_snapshot.get("keys",{}).get(k["label"],{})
             parts.append(f"{'❌' if k['failed'] else '✅'} {k['label']}: {u.get('calls',0)} calls (rem:{u.get('remaining','?')})")
         return " | ".join(parts)
 
@@ -300,20 +319,59 @@ NATIONALITY_FLAGS:dict={
     "psg":"FR","ajax":"NL","porto":"PT","benfica":"PT",
     "lakers":"US","celtics":"US","warriors":"US","bulls":"US",
     "flamengo":"BR","palmeiras":"BR","river plate":"AR","boca juniors":"AR",
+    # BUG-14: Additional common teams/players
+    "tottenham":"GB","manchester united":"GB","atletico madrid":"ES","sevilla":"ES",
+    "valencia":"ES","villarreal":"ES","real sociedad":"ES","athletic bilbao":"ES",
+    "borussia":"DE","leverkusen":"DE","frankfurt":"DE","hoffenheim":"DE",
+    "roma":"IT","lazio":"IT","atalanta":"IT","fiorentina":"IT","torino":"IT",
+    "marseille":"FR","lyon":"FR","monaco":"FR","nice":"FR","lille":"FR",
+    "ajax":"NL","psv":"NL","feyenoord":"NL",
+    "sporting":"PT","braga":"PT",
+    "galatasaray":"TR","fenerbahce":"TR","besiktas":"TR",
+    "anderlecht":"BE","club brugge":"BE",
+    "celtic":"GB","rangers":"GB",
+    "shakhtar":"UA","dynamo kyiv":"UA",
+    "slavia prague":"CZ","sparta prague":"CZ",
+    "murray":"GB","djokovic":"RS","federer":"CH","wawrinka":"CH",
+    "bencic":"CH","vondrousova":"CZ","krejcikova":"CZ","muchova":"CZ",
+    "pegula":"US","keys":"US","navarro":"ES","badosa":"ES",
+    "halep":"RO","simona":"RO",
+    "miami heat":"US","brooklyn nets":"US","golden state":"US","boston":"US",
+    "milwaukee":"US","phoenix":"US","denver":"US","dallas":"US",
+    "new york":"US","toronto":"CA","chicago":"US","cleveland":"US",
+    "houston":"US","memphis":"US","oklahoma":"US","portland":"US",
+    "utah":"US","sacramento":"US","san antonio":"US","indiana":"US",
+    "new orleans":"US","charlotte":"US","washington":"US","detroit":"US",
+    "atlanta":"US","orlando":"US","minnesota":"US",
+    "yankees":"US","red sox":"US","dodgers":"US","cubs":"US","mets":"US",
+    "braves":"US","cardinals":"US","giants":"US","astros":"US","rangers":"US",
+    "bruins":"US","blackhawks":"US","maple leafs":"CA","canadiens":"CA",
+    "penguins":"US","capitals":"US","lightning":"US","rangers":"US",
+    "oilers":"CA","flames":"CA","canucks":"CA","senators":"CA","jets":"CA",
 }
+
 def _code_to_flag(code:str)->str:
     code=code.upper()
     return chr(ord(code[0])+0x1F1E6-ord('A'))+chr(ord(code[1])+0x1F1E6-ord('A'))
+
 def get_flag_from_name(name:str)->str:
     nl=name.lower()
+    # Exact match first
+    if nl in NATIONALITY_FLAGS:return _code_to_flag(NATIONALITY_FLAGS[nl])
+    # Substring match
     for kw,code in NATIONALITY_FLAGS.items():
         if kw in nl:return _code_to_flag(code)
-    return "🏳️"
+    # BUG-14: Try word-by-word match for compound names
+    words=nl.split()
+    for w in words:
+        if len(w)>3 and w in NATIONALITY_FLAGS:return _code_to_flag(NATIONALITY_FLAGS[w])
+    return "🏆"  # BUG-14: Better fallback than 🏳️
 
 # =========================================================
 # 6. CACHE MANAGER
 # =========================================================
 _cache_lock=threading.Lock()
+
 class CacheManager:
     @staticmethod
     def load(fp:Path)->dict:
@@ -324,14 +382,24 @@ class CacheManager:
 
     @staticmethod
     def save(fp:Path,data:dict):
+        # BUG-6 & BUG-16: Atomic write with proper locking
         try:
             fp.parent.mkdir(parents=True,exist_ok=True)
-            tmp_name=f"{fp.name}.tmp.{os.getpid()}_{threading.get_ident()}"
+            tmp_name=f"{fp.name}.tmp.{os.getpid()}_{threading.get_ident()}_{int(time.time()*1000)}"
             tmp=fp.with_name(tmp_name)
+            content=json.dumps(data,ensure_ascii=False,indent=2,default=str)
             with _cache_lock:
-                tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2,default=str),encoding="utf-8")
-                tmp.replace(fp)
-        except:pass
+                tmp.write_text(content,encoding="utf-8")
+                try:
+                    tmp.replace(fp)
+                except PermissionError:
+                    # Windows fallback
+                    if fp.exists():fp.unlink()
+                    tmp.rename(fp)
+        except Exception as e:
+            logger.debug("[CACHE SAVE] Error: %s",e)
+            try:tmp.unlink(missing_ok=True)
+            except:pass
 
     @staticmethod
     def is_valid(cache:dict,key:str,ttl_hours:float)->bool:
@@ -361,6 +429,8 @@ class CacheManager:
 # =========================================================
 class PerformanceTracker:
     def __init__(self):
+        # BUG-11: Add lock for thread safety
+        self._lock=threading.Lock()
         self.data=CacheManager.load(CFG.PERFORMANCE_FILE)
         self.data.setdefault("signals",[])
         self.data.setdefault("summary",{})
@@ -370,9 +440,11 @@ class PerformanceTracker:
              "timestamp":datetime.now(timezone.utc).isoformat(),"sport":sport,"api_sport_key":api_sport_key,
              "home":home,"away":away,"pick":pick,"market":market,"odds":odds,"ev":ev,
              "confidence":confidence,"implied_prob":prob,"outcome":None,"profit_loss":None}
-        self.data["signals"].append(sig)
-        if len(self.data["signals"])>500:self.data["signals"]=self.data["signals"][-500:]
-        self._update_summary()
+        # BUG-11: Thread-safe record
+        with self._lock:
+            self.data["signals"].append(sig)
+            if len(self.data["signals"])>500:self.data["signals"]=self.data["signals"][-500:]
+            self._update_summary()
         CacheManager.save(CFG.PERFORMANCE_FILE,self.data)
 
     def _update_summary(self):
@@ -438,7 +510,7 @@ class FreeDataEngine:
         logger.info("[FREE DATA] Downloading: %s",path.name)
         for attempt in range(3):
             try:
-                r=requests.get(url,timeout=timeout+attempt*10,headers={"User-Agent":"Mozilla/5.0 (compatible; ZBET90/7.1)"})
+                r=requests.get(url,timeout=timeout+attempt*10,headers={"User-Agent":"Mozilla/5.0 (compatible; ZBET90/7.2)"})
                 if r.status_code==200 and len(r.content)>100:
                     path.write_bytes(r.content);return True
                 logger.debug("[FREE DATA] HTTP %d for %s",r.status_code,url);break
@@ -481,12 +553,32 @@ class FreeDataEngine:
     def get_player_ranking(self,name:str,is_wta:bool=False)->Optional[int]:
         df=self.wta_rankings if is_wta else self.atp_rankings
         if df is None or df.empty:return None
-        clean=name.split()[-1].lower()
+        # BUG-8: Handle compound names (e.g., "Auger-Aliassime", "De Minaur")
         nc=next((c for c in ["player","name","player_name"] if c in df.columns),None)
         if not nc:return None
-        exact=df[df[nc].astype(str).str.lower()==clean]
+        name_lower=name.lower().strip()
+        col_lower=df[nc].astype(str).str.lower()
+        # Try exact full name match first
+        exact=df[col_lower==name_lower]
         if not exact.empty:m=exact
-        else:m=df[df[nc].astype(str).str.lower().str.contains(re.escape(clean),na=False)]
+        else:
+            # Try last word match (simple case)
+            last_word=name.split()[-1].lower()
+            # Try full name substring
+            m=df[col_lower.str.contains(re.escape(name_lower),na=False)]
+            if m.empty:
+                # Try hyphenated last name (e.g., Auger-Aliassime)
+                parts=name.split()
+                if len(parts)>1:
+                    # Try last two words joined (De Minaur → "de minaur")
+                    last_two=" ".join(parts[-2:]).lower()
+                    m=df[col_lower.str.contains(re.escape(last_two),na=False)]
+                if m.empty and "-" in name:
+                    # Try after hyphen (Auger-Aliassime → Aliassime)
+                    after_hyphen=name.split("-")[-1].lower()
+                    m=df[col_lower.str.contains(re.escape(after_hyphen),na=False)]
+                if m.empty:
+                    m=df[col_lower.str.contains(re.escape(last_word),na=False)]
         if not m.empty:
             rc=next((c for c in ["rank","ranking","player_rank"] if c in m.columns),None)
             if rc:
@@ -533,7 +625,21 @@ class FreeDataEngine:
     def get_tennis_stats(self,pa:str,pb:str,is_wta:bool=False)->dict:
         df=self.wta_matches if is_wta else self.atp_matches
         if df is None or df.empty:return {}
-        def cl(n):return n.split()[-1].lower()
+        # BUG-8: Better name cleaning for compound names
+        def cl(n):
+            n=n.strip()
+            # If hyphenated, keep full last name
+            parts=n.split()
+            if len(parts)>=2:
+                # Return last two parts joined for compound surnames
+                candidate=" ".join(parts[-2:]).lower()
+                # Check if this compound surname exists in data
+                if df is not None:
+                    wn=df["winner_name"].astype(str).str.lower()
+                    ln=df["loser_name"].astype(str).str.lower()
+                    if any(wn.str.contains(re.escape(candidate),na=False)) or any(ln.str.contains(re.escape(candidate),na=False)):
+                        return candidate
+            return parts[-1].lower()
         ca,cb=cl(pa),cl(pb)
         stats={"player_a":{"name":pa},"player_b":{"name":pb},"h2h":{}}
         for p_c,key,p_f in [(ca,"player_a",pa),(cb,"player_b",pb)]:
@@ -579,6 +685,7 @@ class FreeDataEngine:
                     except Exception as e:logger.debug("[FOOTBALL] %s: %s",path.name,e)
         if all_dfs:
             comb=pd.concat(all_dfs,ignore_index=True)
+            # BUG-2: Ensure chronological sort before any rolling calculation
             if "Date" in comb.columns:comb=comb.sort_values("Date").reset_index(drop=True)
             self.football_data["all"]=comb;logger.info("✅ [FOOTBALL] %d matches",len(comb))
 
@@ -870,6 +977,7 @@ class FreeDataEngine:
         try:
             r=requests.get("https://cricsheet.org/downloads/t20s_csv2.zip",timeout=30,headers={"User-Agent":"Mozilla/5.0"})
             if r.status_code==200 and len(r.content)>1000:
+                import zipfile,io
                 with zipfile.ZipFile(io.BytesIO(r.content)) as z:
                     csv_files=sorted([f for f in z.namelist() if f.endswith(".csv")],key=lambda x:len(x))
                     if csv_files:
@@ -907,17 +1015,15 @@ class FreeDataEngine:
         return result
 
 # =========================================================
-# 10. ML ENGINE
+# 10. ML ENGINE  — BUG-1 FIXED (No Data Leakage)
 # =========================================================
 class MLPredictionEngine:
     def __init__(self,de:FreeDataEngine):
         self.de=de
         self.football_pipeline:Optional[dict]=None
-        # FIX: Separate pipelines for ATP and WTA
         self.tennis_pipelines:Dict[str,Optional[dict]]={"atp":None,"wta":None}
         self.is_football_trained=False
         self.is_nba_trained=False
-        # FIX: Keep deques separate from pickle-safe stats
         self._football_team_deques:Dict[str,deque]=defaultdict(lambda:deque(maxlen=10))
         self._football_team_stats:Dict[str,List]={}
         self._rng=np.random.RandomState(42)
@@ -927,13 +1033,12 @@ class MLPredictionEngine:
         return any(p is not None for p in self.tennis_pipelines.values())
 
     def load_or_train_football_model(self):
-        path=CFG.ML_DIR/"football_model_v7.pkl"
+        path=CFG.ML_DIR/"football_model_v72.pkl"
         if path.exists() and (time.time()-path.stat().st_mtime)/3600<24:
             try:
                 d=pickle.loads(path.read_bytes())
                 self.football_pipeline=d["pipeline"]
                 self._football_team_stats=d["stats"]
-                # Rebuild deques from saved stats
                 self._football_team_deques=defaultdict(lambda:deque(maxlen=10))
                 for k,v in self._football_team_stats.items():
                     self._football_team_deques[k]=deque(v,maxlen=10)
@@ -942,7 +1047,6 @@ class MLPredictionEngine:
         self._train_football()
         if self.is_football_trained:
             try:
-                # FIX: Save only list snapshots, not deques
                 stats_snapshot={k:list(v) for k,v in self._football_team_deques.items()}
                 path.write_bytes(pickle.dumps({"pipeline":self.football_pipeline,"stats":stats_snapshot}))
                 logger.info("💾 [ML FOOTBALL] Saved")
@@ -951,6 +1055,8 @@ class MLPredictionEngine:
     def _train_football(self):
         df=self.de.football_data.get("all")
         if df is None or len(df)<300:logger.warning("[ML FOOTBALL] Insufficient data (%d)",len(df) if df is not None else 0);return
+        # BUG-2: Ensure sort before rolling
+        if "Date" in df.columns:df=df.sort_values("Date").reset_index(drop=True)
         result_lookup=self._build_fb_rolling(df)
         X,y=self._build_fb_features(result_lookup)
         if len(X)<200 or len(np.unique(y))<2:logger.warning("[ML FOOTBALL] Too few samples");return
@@ -966,7 +1072,7 @@ class MLPredictionEngine:
         except Exception as e:logger.error("[ML FOOTBALL] Training failed: %s",e)
 
     def _build_fb_rolling(self,df:pd.DataFrame)->dict:
-        # FIX: Use instance deques (maxlen=10), not local dict
+        # BUG-2: df must be sorted by Date before calling this method
         self._football_team_deques=defaultdict(lambda:deque(maxlen=10))
         lookup={}
         for idx,row in df.iterrows():
@@ -984,7 +1090,6 @@ class MLPredictionEngine:
             if hs and aws:lookup[idx]={"home_stats":hs,"away_stats":aws,"label":{"H":0,"D":1,"A":2}[ftr]}
             self._football_team_deques[ht].appendleft({"gs":hg,"gc":ag,"pts":3 if ftr=="H" else(1 if ftr=="D" else 0)})
             self._football_team_deques[at].appendleft({"gs":ag,"gc":hg,"pts":3 if ftr=="A" else(1 if ftr=="D" else 0)})
-        # FIX: Update list snapshot for pickle
         self._football_team_stats={k:list(v) for k,v in self._football_team_deques.items()}
         return lookup
 
@@ -1026,7 +1131,7 @@ class MLPredictionEngine:
 
     def load_or_train_tennis_model(self,is_wta:bool=False):
         tour="wta" if is_wta else "atp"
-        path=CFG.ML_DIR/f"tennis_model_{tour}_v7.pkl"
+        path=CFG.ML_DIR/f"tennis_model_{tour}_v72.pkl"
         if path.exists() and (time.time()-path.stat().st_mtime)/3600<24:
             try:
                 d=pickle.loads(path.read_bytes())
@@ -1040,84 +1145,207 @@ class MLPredictionEngine:
                 logger.info("💾 [ML TENNIS %s] Saved",tour.upper())
             except:pass
 
-    def _build_tennis_features(self,df:pd.DataFrame)->Tuple[np.ndarray,np.ndarray,np.ndarray]:
+    # -------------------------------------------------------
+    # BUG-1 FIX: Build player aggregate stats BEFORE each match
+    # Uses rolling history up to (but NOT including) the current row.
+    # NO in-match stats (w_ace, w_1stWon etc.) are used as features.
+    # -------------------------------------------------------
+    def _build_tennis_features_leak_free(self,df:pd.DataFrame)->Tuple[np.ndarray,np.ndarray,np.ndarray]:
+        """
+        Leak-free feature builder for tennis.
+        For each match we compute rolling aggregate stats for BOTH players
+        from their PREVIOUS matches only (no current-match stats used).
+        Features: ranking gap, surface dummies, best_of,
+                  rolling win_rate, rolling aces/svpt, rolling 1stWon/1stIn,
+                  rolling bp_saved for each player.
+        """
+        # Sort by date ascending to ensure chronological order
+        df=df.sort_values("tourney_date").reset_index(drop=True)
+
+        # Per-player rolling stats accumulator
+        # key: player_id (winner_id or loser_id), value: list of historical match stat dicts
+        from collections import defaultdict as _dd
+        player_history:Dict[Any,List[dict]]=_dd(list)
+
         feats,labels,wts=[],[],[]
+
+        def _agg(history:list,n:int=20)->dict:
+            """Aggregate last n matches for a player."""
+            recent=history[-n:] if len(history)>=n else history
+            if not recent:return {}
+            total=len(recent)
+            wins=sum(1 for h in recent if h["won"])
+            ace_sum=sum(h.get("ace",0) for h in recent)
+            svpt_sum=sum(h.get("svpt",1) for h in recent)
+            in1_sum=sum(h.get("1stIn",0) for h in recent)
+            won1_sum=sum(h.get("1stWon",0) for h in recent)
+            bps_sum=sum(h.get("bpSaved",0) for h in recent)
+            bpf_sum=sum(h.get("bpFaced",1) for h in recent)
+            svpt_safe=max(svpt_sum,1);in1_safe=max(in1_sum,1);bpf_safe=max(bpf_sum,1)
+            return {
+                "win_rate":wins/total,
+                "ace_rate":ace_sum/svpt_safe,
+                "first_in_rate":in1_sum/svpt_safe,
+                "first_won_rate":won1_sum/in1_safe,
+                "bp_saved_rate":bps_sum/bpf_safe,
+                "n":total,
+            }
+
+        def _sf(v,d=0.):
+            try:return float(v or d)
+            except:return d
+
         for _,row in df.iterrows():
-            wr=float(row.get("winner_rank",0) or 0);lr=float(row.get("loser_rank",0) or 0)
-            if wr<=0 or lr<=0:continue
-            surf=str(row.get("surface","Hard") or "Hard").lower();bo=float(row.get("best_of",3) or 3)
-            def sf(v,d=0.):
-                try:return float(v or d)
-                except:return d
-            ws=[sf(row.get("w_ace")),sf(row.get("w_df")),sf(row.get("w_svpt",50)),sf(row.get("w_1stIn")),
-                sf(row.get("w_1stWon")),sf(row.get("w_2ndWon")),sf(row.get("w_bpSaved")),sf(row.get("w_bpFaced"))]
-            ls=[sf(row.get("l_ace")),sf(row.get("l_df")),sf(row.get("l_svpt",50)),sf(row.get("l_1stIn")),
-                sf(row.get("l_1stWon")),sf(row.get("l_2ndWon")),sf(row.get("l_bpSaved")),sf(row.get("l_bpFaced"))]
-            def ns(s):
-                sv=max(s[2],1.);i1=max(s[3],1.);bpf=max(s[7],1.)
-                return [s[0]/sv,s[1]/sv,s[3]/sv,s[4]/i1,s[5]/max(sv-s[3],1.),s[6]/bpf]
-            wn=ns(ws);ln=ns(ls)
-            # FIX: Deterministic anchor - lower rank number = better player = P1
-            # winner always has winner_rank, loser has loser_rank
-            # P1 = better ranked (lower number). If winner is better ranked → label=1
-            is_winner_p1=(wr<lr)
-            if wr==lr:
-                # Deterministic tiebreak using row index hash
-                is_winner_p1=(hash(str(row.get("winner_name",""))+str(row.get("loser_name","")))%2==0)
-            p1r,p2r=(wr,lr) if is_winner_p1 else(lr,wr)
-            p1s,p2s=(wn,ln) if is_winner_p1 else(ln,wn)
-            label=1  # P1 always won (winner row = P1 won by definition when is_winner_p1=True)
-            if not is_winner_p1:label=0  # P2 (worse ranked) won = upset
-            fv=[p1r,p2r,p2r-p1r,p2r/max(p1r,1.),25.,25.,
-                1. if surf=="hard" else 0.,1. if surf=="clay" else 0.,1. if surf=="grass" else 0.,bo,
-                *p1s,*p2s,p1s[0]-p2s[0],p1s[3]-p2s[3],p1s[5]-p2s[5]]
-            feats.append(fv);labels.append(label)
-            td=sf(row.get("tourney_date"),20200101)
-            wts.append(float(np.clip(0.5+0.5*(td-20200101)/max(20260101-20200101,1),0.5,1.)))
+            wid=row.get("winner_id");lid=row.get("loser_id")
+            wr=_sf(row.get("winner_rank",0));lr=_sf(row.get("loser_rank",0))
+            if wr<=0 or lr<=0:
+                # Still update history even if we skip this sample
+                pass
+            else:
+                surf=str(row.get("surface","Hard") or "Hard").lower()
+                bo=_sf(row.get("best_of",3))
+                td=_sf(row.get("tourney_date"),20200101)
+
+                # --- Get PREVIOUS stats for winner and loser ---
+                w_hist=player_history.get(wid,[])
+                l_hist=player_history.get(lid,[])
+                w_agg=_agg(w_hist)
+                l_agg=_agg(l_hist)
+
+                # Only add sample if both players have at least 3 prior matches
+                if w_agg.get("n",0)>=3 and l_agg.get("n",0)>=3:
+                    # Anchor: lower rank number = better = P1
+                    is_winner_p1=(wr<lr)
+                    if wr==lr:
+                        is_winner_p1=(hash(str(wid)+str(lid))%2==0)
+
+                    p1r,p2r=(wr,lr) if is_winner_p1 else(lr,wr)
+                    p1a,p2a=(w_agg,l_agg) if is_winner_p1 else(l_agg,w_agg)
+
+                    # label=1 means P1 won (better-ranked player won)
+                    label=1 if is_winner_p1 else 0
+
+                    fv=[
+                        p1r,p2r,
+                        p2r-p1r,            # rank gap (positive = P1 better)
+                        p2r/max(p1r,1.),    # rank ratio
+                        1. if surf=="hard" else 0.,
+                        1. if surf=="clay" else 0.,
+                        1. if surf=="grass" else 0.,
+                        bo,
+                        # P1 rolling aggregate features
+                        p1a.get("win_rate",0.5),
+                        p1a.get("ace_rate",0.05),
+                        p1a.get("first_in_rate",0.6),
+                        p1a.get("first_won_rate",0.7),
+                        p1a.get("bp_saved_rate",0.6),
+                        float(p1a.get("n",0)),
+                        # P2 rolling aggregate features
+                        p2a.get("win_rate",0.5),
+                        p2a.get("ace_rate",0.05),
+                        p2a.get("first_in_rate",0.6),
+                        p2a.get("first_won_rate",0.7),
+                        p2a.get("bp_saved_rate",0.6),
+                        float(p2a.get("n",0)),
+                        # Differentials
+                        p1a.get("win_rate",0.5)-p2a.get("win_rate",0.5),
+                        p1a.get("first_won_rate",0.7)-p2a.get("first_won_rate",0.7),
+                        p1a.get("bp_saved_rate",0.6)-p2a.get("bp_saved_rate",0.6),
+                    ]
+                    feats.append(fv);labels.append(label)
+                    wts.append(float(np.clip(0.5+0.5*(td-20200101)/max(20260101-20200101,1),0.5,1.)))
+
+            # --- Update player history AFTER extracting features ---
+            # Winner stats from this match
+            w_match={
+                "won":True,
+                "ace":_sf(row.get("w_ace")),
+                "svpt":max(_sf(row.get("w_svpt",50)),1.),
+                "1stIn":_sf(row.get("w_1stIn")),
+                "1stWon":_sf(row.get("w_1stWon")),
+                "bpSaved":_sf(row.get("w_bpSaved")),
+                "bpFaced":max(_sf(row.get("w_bpFaced")),1.),
+            }
+            l_match={
+                "won":False,
+                "ace":_sf(row.get("l_ace")),
+                "svpt":max(_sf(row.get("l_svpt",50)),1.),
+                "1stIn":_sf(row.get("l_1stIn")),
+                "1stWon":_sf(row.get("l_1stWon")),
+                "bpSaved":_sf(row.get("l_bpSaved")),
+                "bpFaced":max(_sf(row.get("l_bpFaced")),1.),
+            }
+            if wid is not None:player_history[wid].append(w_match)
+            if lid is not None:player_history[lid].append(l_match)
+
         if not feats:return np.array([]),np.array([]),np.array([])
-        return np.nan_to_num(np.array(feats,dtype=np.float64)),np.array(labels,dtype=np.int32),np.array(wts,dtype=np.float64)
+        return (np.nan_to_num(np.array(feats,dtype=np.float64)),
+                np.array(labels,dtype=np.int32),
+                np.array(wts,dtype=np.float64))
 
     def _train_tennis(self,is_wta:bool=False):
-        df=self.de.wta_matches if is_wta else self.de.atp_matches;tour="wta" if is_wta else "atp"
+        df=self.de.wta_matches if is_wta else self.de.atp_matches
+        tour="wta" if is_wta else "atp"
         if df is None or len(df)<500:logger.warning("[ML TENNIS %s] Insufficient data",tour.upper());return
-        X,y,sw=self._build_tennis_features(df)
-        if len(X)<200 or len(np.unique(y))<2:logger.warning("[ML TENNIS %s] Too few samples",tour.upper());return
+        # BUG-1: Use leak-free feature builder
+        X,y,sw=self._build_tennis_features_leak_free(df)
+        if len(X)<200 or len(np.unique(y))<2:logger.warning("[ML TENNIS %s] Too few samples (%d)",tour.upper(),len(X));return
         scaler=RobustScaler();Xs=scaler.fit_transform(X)
         try:
             gb=GradientBoostingClassifier(n_estimators=200,max_depth=3,learning_rate=0.05,random_state=42,subsample=0.8)
-            cal=CalibratedClassifierCV(estimator=gb,cv=3,method="isotonic");cal.fit(Xs,y)
+            cal=CalibratedClassifierCV(estimator=gb,cv=3,method="isotonic");cal.fit(Xs,y,sample_weight=sw if len(sw)==len(X) else None)
             self.tennis_pipelines[tour]={"model":cal,"scaler":scaler}
-            logger.info("✅ [ML TENNIS %s] Trained on %d samples",tour.upper(),len(X))
+            logger.info("✅ [ML TENNIS %s] Leak-free training on %d samples",tour.upper(),len(X))
         except Exception as e:logger.error("[ML TENNIS %s] Training failed: %s",tour.upper(),e)
 
     def predict_tennis(self,pa:str,pb:str,stats:dict,surface:str="hard")->Optional[dict]:
-        tour="wta" if "wta" in stats.get("tour","").lower() else "atp"
+        # BUG-9: Correctly detect tour from stats dict
+        tour="wta" if stats.get("tour","").lower()=="wta" else "atp"
         pipeline=self.tennis_pipelines.get(tour)
+        if not pipeline:
+            # Fallback to whichever is available
+            for t in ["atp","wta"]:
+                if self.tennis_pipelines.get(t):pipeline=self.tennis_pipelines[t];break
         if not pipeline:return None
+
         pas=stats.get("player_a",{});pbs=stats.get("player_b",{})
-        ra=float(pas.get("current_ranking",100) or 100);rb=float(pbs.get("current_ranking",100) or 100)
+        ra=float(pas.get("current_ranking",100) or 100)
+        rb=float(pbs.get("current_ranking",100) or 100)
+
+        # Rolling aggregate features at inference time (from historical stats)
         def gs(p):
-            sv=max(float(p.get("svpt_per_match",50) or 50),1.)
-            return [float(p.get("aces_per_match",5) or 5)/sv,float(p.get("df_per_match",2) or 2)/sv,
-                    float(p.get("first_serve_in_pct",0.6) or 0.6),float(p.get("first_serve_win_pct",0.7) or 0.7),
-                    0.5,float(p.get("bp_saved_pct",0.6) or 0.6)]
-        # FIX: Inference anchoring matches training exactly
-        # P1 = better ranked (lower rank number)
+            wr=float(p.get("recent_win_rate",0.5) or 0.5)
+            svpt=max(float(p.get("svpt_per_match",50) or 50),1.)
+            ace=float(p.get("aces_per_match",5) or 5)
+            return {
+                "win_rate":wr,
+                "ace_rate":ace/svpt,
+                "first_in_rate":float(p.get("first_serve_in_pct",0.6) or 0.6),
+                "first_won_rate":float(p.get("first_serve_win_pct",0.7) or 0.7),
+                "bp_saved_rate":float(p.get("bp_saved_pct",0.6) or 0.6),
+                "n":float(p.get("total_matches",10) or 10),
+            }
+
         is_pa_p1=(ra<=rb)
         if ra==rb:is_pa_p1=(hash(pa+pb)%2==0)
         p1r,p2r=(ra,rb) if is_pa_p1 else(rb,ra)
-        wa,wb=gs(pas),gs(pbs)
-        p1s,p2s=(wa,wb) if is_pa_p1 else(wb,wa)
-        fv=[p1r,p2r,p2r-p1r,p2r/max(p1r,1.),25.,25.,
-            1. if surface=="hard" else 0.,1. if surface=="clay" else 0.,1. if surface=="grass" else 0.,3.,
-            *p1s,*p2s,p1s[0]-p2s[0],p1s[3]-p2s[3],p1s[5]-p2s[5]]
+        p1a,p2a=(gs(pas),gs(pbs)) if is_pa_p1 else(gs(pbs),gs(pas))
+
+        fv=[
+            p1r,p2r,p2r-p1r,p2r/max(p1r,1.),
+            1. if surface=="hard" else 0.,1. if surface=="clay" else 0.,1. if surface=="grass" else 0.,
+            3.,
+            p1a["win_rate"],p1a["ace_rate"],p1a["first_in_rate"],p1a["first_won_rate"],p1a["bp_saved_rate"],p1a["n"],
+            p2a["win_rate"],p2a["ace_rate"],p2a["first_in_rate"],p2a["first_won_rate"],p2a["bp_saved_rate"],p2a["n"],
+            p1a["win_rate"]-p2a["win_rate"],
+            p1a["first_won_rate"]-p2a["first_won_rate"],
+            p1a["bp_saved_rate"]-p2a["bp_saved_rate"],
+        ]
         try:
             X=np.nan_to_num(np.array([fv],dtype=np.float64));Xs=pipeline["scaler"].transform(X)
             probs=pipeline["model"].predict_proba(Xs)[0]
-            # label=1 means P1 (better ranked) won
             pm={int(c):float(p) for c,p in zip(pipeline["model"].classes_,probs)}
             p1_win_prob=pm.get(1,0.5)
-            # Map back: if pa is P1, pa_prob = p1_win_prob
             pa_p=p1_win_prob if is_pa_p1 else(1-p1_win_prob)
             return {f"{pa}_win_prob":round(pa_p,4),f"{pb}_win_prob":round(1-pa_p,4)}
         except Exception as e:logger.warning("[ML TENNIS] Predict error: %s",e);return None
@@ -1220,47 +1448,55 @@ def calculate_sharp_ev_advanced(markets_data:dict)->list:
     best_per_market:dict={}
     for mk,ml in markets_data.items():
         if not isinstance(ml,list):continue
-        sharp_all:Dict[str,List[float]]=defaultdict(list);soft_all:Dict[str,List[float]]=defaultdict(list)
-        best_mkt:Dict[str,Tuple[float,str]]={}
+        # BUG-10: Use composite key (name, point) to avoid outcome collision
+        sharp_all:Dict[Tuple,List[float]]=defaultdict(list)
+        soft_all:Dict[Tuple,List[float]]=defaultdict(list)
+        best_mkt:Dict[Tuple,Tuple[float,str,str]]={}  # key→(price, bookmaker, display_name)
         for entry in ml:
             if not isinstance(entry,dict):continue
             bk=entry.get("bookmaker_key","");bk_name=entry.get("bookmaker",bk)
             is_sharp=bk in CFG.SHARP_BOOKMAKERS
             for o in entry.get("outcomes",[]):
                 if not isinstance(o,dict):continue
-                name=(f"{o['name']} {o.get('point')}" if o.get("point") is not None else o.get("name",""))
-                if not name:continue
+                raw_name=o.get("name","")
+                if not raw_name:continue
+                point=o.get("point")
+                # BUG-10: Composite key avoids collision between e.g. Over 2.5 and Over 3.5
+                comp_key=(raw_name,point)
+                display_name=(f"{raw_name} {point}" if point is not None else raw_name)
                 try:price=float(o["price"])
                 except:continue
                 if price<=1.:continue
-                (sharp_all if is_sharp else soft_all)[name].append(price)
-                if name not in best_mkt or price>best_mkt[name][0]:best_mkt[name]=(price,bk_name)
+                (sharp_all if is_sharp else soft_all)[comp_key].append(price)
+                if comp_key not in best_mkt or price>best_mkt[comp_key][0]:
+                    best_mkt[comp_key]=(price,bk_name,display_name)
         if not best_mkt:continue
-        sharp_best={n:max(p) for n,p in sharp_all.items() if p}
+        sharp_best={k:max(p) for k,p in sharp_all.items() if p}
         has_sharp=bool(sharp_best)
-        if not sharp_best:sharp_best={n:max(p) for n,p in soft_all.items() if p}
+        if not sharp_best:sharp_best={k:max(p) for k,p in soft_all.items() if p}
         if not sharp_best:continue
-        outcomes=list(sharp_best.keys());odds_list=[sharp_best[o] for o in outcomes]
+        comp_keys=list(sharp_best.keys());odds_list=[sharp_best[k] for k in comp_keys]
         impl_sum=sum(1/o for o in odds_list if o>0)
         if not(CFG.MIN_VALID_IMPLIED_SUM<=impl_sum<=CFG.MAX_VALID_IMPLIED_SUM):continue
-        if len(outcomes)<CFG.MARKET_EXPECTED_OUTCOMES.get(mk,{}).get("min",2):continue
+        if len(comp_keys)<CFG.MARKET_EXPECTED_OUTCOMES.get(mk,{}).get("min",2):continue
         try:
             tp_pw=EVEngine.remove_vig_power(odds_list);tp_sh=EVEngine.remove_vig_shin(odds_list)
-            if len(tp_pw)!=len(outcomes) or len(tp_sh)!=len(outcomes):raise ValueError()
-            tp={outcomes[i]:0.6*tp_pw[i]+0.4*tp_sh[i] for i in range(len(outcomes))}
-        except:tp={outcomes[i]:(1/odds_list[i])/max(impl_sum,1e-10) for i in range(len(outcomes))}
+            if len(tp_pw)!=len(comp_keys) or len(tp_sh)!=len(comp_keys):raise ValueError()
+            tp={comp_keys[i]:0.6*tp_pw[i]+0.4*tp_sh[i] for i in range(len(comp_keys))}
+        except:tp={comp_keys[i]:(1/odds_list[i])/max(impl_sum,1e-10) for i in range(len(comp_keys))}
         min_odds=CFG.H2H_MIN_ODDS if mk=="h2h" else CFG.TOTALS_MIN_ODDS
         min_ev=(CFG.H2H_MIN_EV if mk=="h2h" else CFG.TOTALS_MIN_EV)*(1. if has_sharp else 1.5)
         best_opp=None
-        for on in outcomes:
-            true_p=tp.get(on,0)
+        for ck in comp_keys:
+            true_p=tp.get(ck,0)
             if true_p<=0 or true_p>=1:continue
-            bp,bbm=best_mkt.get(on,(0,"?"))
+            bp,bbm,disp_name=best_mkt.get(ck,(0,"?","?"))
             if bp<=1.:continue
             ev=true_p*bp-1.
             if ev<min_ev or ev>CFG.MAX_REALISTIC_EV or bp<min_odds:continue
-            kelly_p=EVEngine.kelly(true_p,bp);sp=sharp_best.get(on,bp);clv=(bp/sp-1)*100 if sp>0 else 0.
-            opp={"pick":on,"market":mk,"market_label":get_market_label(mk),
+            kelly_p=EVEngine.kelly(true_p,bp)
+            sp=sharp_best.get(ck,bp);clv=(bp/sp-1)*100 if sp>0 else 0.
+            opp={"pick":disp_name,"market":mk,"market_label":get_market_label(mk),
                  "prob":round(true_p,4),"odds":round(bp,3),"bookmaker":bbm,
                  "ev":round(ev,4),"edge_pct":round(ev*100,2),"kelly_pct":round(kelly_p*100,2),
                  "clv_pct":round(clv,2),"has_sharp_line":has_sharp,"devigging_method":"power_shin_weighted","steam_pct":0.}
@@ -1292,10 +1528,11 @@ class ConfidenceEngine:
             mx=max((v for v in ml_pred.values() if isinstance(v,float) and 0<v<=1),default=0)
             s+=(cls.W["ml_strong"] if mx>0.65 else cls.W["ml_medium"] if mx>0.55 else 0)
         if poisson_pred:s+=cls.W["poisson_confirm"]
-        # FIX: Both directions of steam
-        steam=opp.get("steam_pct",0)
-        if steam>=3:s+=cls.W["smart_money"]
-        elif steam<=-5:s-=cls.W["smart_money"]
+        # BUG-4: Only apply steam if it's a real movement (not first-seen sentinel None/0 from first observation)
+        steam=opp.get("steam_pct")
+        if steam is not None and steam!=0.:
+            if steam>=3:s+=cls.W["smart_money"]
+            elif steam<=-5:s-=cls.W["smart_money"]
         us=stats.get("us_sports",{});home_data=us.get("home",{})
         if home_data.get("source")=="mlb_official_api":s-=8
         elif home_data.get("source")=="nhl_official_api":s-=6
@@ -1357,7 +1594,6 @@ def get_sport_name(sport_key:str,sport_title:str)->str:
            "baseball":"⚾ Baseball","hockey":"🏒 Ice Hockey","cricket":"🏏 Cricket"}
     return names.get(sport_key,f"🏆 {sport_title}")
 
-# FIX: Added missing FA variants
 def get_sport_name_fa(sport_key:str,sport_title:str)->str:
     names={"tennis":"🎾 تنیس","football":"⚽ فوتبال","basketball":"🏀 بسکتبال",
            "baseball":"⚾ بیسبال","hockey":"🏒 هاکی روی یخ","cricket":"🏏 کریکت"}
@@ -1372,12 +1608,11 @@ def get_confidence_text(fc:int)->str:
 def get_risk_text(risk:str)->str:
     return {"Low":"Low 🟢","Medium":"Medium 🟠","High":"High 🔴"}.get(risk,"Medium 🟠")
 
-# FIX: Added missing FA variant
 def get_risk_text_fa(risk:str)->str:
     return {"Low":"پایین 🟢","Medium":"متوسط 🟠","High":"بالا 🔴"}.get(risk,"متوسط 🟠")
 
 # =========================================================
-# 15. LINE MOVEMENT TRACKER
+# 15. LINE MOVEMENT TRACKER — BUG-4 FIXED
 # =========================================================
 class LineMovementTracker:
     def __init__(self):
@@ -1385,7 +1620,6 @@ class LineMovementTracker:
         self.data=CacheManager.load(self._path);self._cleanup()
 
     def _cleanup(self):
-        # FIX: Properly removes entries older than 48h
         now=datetime.now(timezone.utc);to_del=[]
         for k,v in self.data.items():
             if not isinstance(v,dict):to_del.append(k);continue
@@ -1396,26 +1630,30 @@ class LineMovementTracker:
             except:to_del.append(k)
         for k in to_del:self.data.pop(k,None)
 
-    def record_and_get_movement(self,home:str,away:str,market:str,outcome:str,odds:float)->float:
-        if odds<=1.:return 0.
+    def record_and_get_movement(self,home:str,away:str,market:str,outcome:str,odds:float)->Optional[float]:
+        """
+        BUG-4: Returns None on first observation (no movement data yet).
+        Returns float steam% on subsequent calls.
+        Positive = odds dropped = money came in (steam).
+        Negative = odds drifted up = money left (fade).
+        """
+        if odds<=1.:return None
         mk=hashlib.md5(f"{home}|{away}|{market}|{outcome}".encode()).hexdigest()
         with self._lock:
             now=datetime.now(timezone.utc).isoformat()
             if mk not in self.data:
-                self.data[mk]={"initial_odds":odds,"current_odds":odds,"timestamp":now}
-                CacheManager.save(self._path,self.data);return 0.
+                # BUG-4: First observation - store and return None (not 0)
+                self.data[mk]={"initial_odds":odds,"current_odds":odds,"timestamp":now,"first_seen":True}
+                CacheManager.save(self._path,self.data);return None
             init=self.data[mk].get("initial_odds",odds)
-            self.data[mk].update({"current_odds":odds,"timestamp":now})
+            self.data[mk].update({"current_odds":odds,"timestamp":now,"first_seen":False})
             CacheManager.save(self._path,self.data)
-        # FIX: Correctly signed steam:
-        # Positive = odds dropped = money came in (steam)
-        # Negative = odds drifted up = money left (fade)
         return round((init/odds-1)*100,2) if init>0 else 0.
 
 line_movement_tracker=LineMovementTracker()
 
 # =========================================================
-# 16. PICK TRANSLATOR
+# 16. PICK TRANSLATOR — BUG-13 FIXED
 # =========================================================
 def translate_pick_for_public(pick:str,market:str,home:str,away:str,odds:float,prob:float)->str:
     pick_lower=pick.lower().strip()
@@ -1436,12 +1674,27 @@ def translate_pick_for_public(pick:str,market:str,home:str,away:str,odds:float,p
         elif is_away:action=f"{away} to Win"
         elif is_draw:action="Match to end in a Draw"
     elif "total" in market_lower:
-        # FIX: Correct regex to avoid team name number collisions
-        m=re.search(r"(?:over|under)\s+([\d.]+)",pick_lower)
-        if not m:m=re.search(r"([\d.]+)",pick_lower)
-        line=m.group(1) if m else "?"
-        if "over" in pick_lower:action=f"Over {line} Goals/Points"
-        elif "under" in pick_lower:action=f"Under {line} Goals/Points"
+        # BUG-13: Anchored regex - look for over/under keyword first, then the number
+        # Pattern: optional team name words, then over/under, then the line number
+        m=re.search(r"\b(over|under)\b\s+([\d.]+)",pick_lower)
+        if not m:
+            # Try reversed: number then over/under
+            m2=re.search(r"([\d.]+)\s+\b(over|under)\b",pick_lower)
+            if m2:
+                line=m2.group(1);direction=m2.group(2)
+            else:
+                # Last resort: just find a decimal number that looks like a line (e.g. 2.5, 47.5)
+                nums=re.findall(r"\b(\d+\.5|\d+\.0|\d{1,3})\b",pick_lower)
+                line=nums[-1] if nums else "?"
+                direction="over" if "over" in pick_lower else "under" if "under" in pick_lower else ""
+        else:
+            direction=m.group(1);line=m.group(2)
+        if "over" in (direction if isinstance(direction,str) else ""):
+            action=f"Over {line} Goals/Points"
+        elif "under" in (direction if isinstance(direction,str) else ""):
+            action=f"Under {line} Goals/Points"
+        else:
+            action=pick.title()
     elif "spread" in market_lower or "handicap" in market_lower:
         team_name=home if is_home else(away if is_away else pick.title())
         m=re.search(r"([+-]?[\d.]+)",pick_lower)
@@ -1473,10 +1726,12 @@ def generate_ai_decision(home:str,away:str,sport:str,sport_key:str,opp:dict,stat
             logger.info("⏭️ SKIP: %s - standings-only data insufficient (math=%d)",sport_key,math_score)
             return {**default,"decision":"SKIP","logic":f"Standings-only data for {sport_key}. Need game logs for reliable signal."}
     parts=[]
+    steam_val=opp.get("steam_pct")
+    steam_str=f"{steam_val:.1f}%" if steam_val is not None else "N/A (first seen)"
     parts.append(f"=== MARKET ===\nPick:{opp['pick']} | Market:{opp['market_label']} | "
                  f"Odds:{opp['odds']} | TrueProb:{opp['prob']*100:.1f}% | EV:{opp['edge_pct']:+.2f}% | "
                  f"Kelly:{opp.get('kelly_pct',0):.1f}% | SharpLine:{opp.get('has_sharp_line',False)} | "
-                 f"CLV:{opp.get('clv_pct',0):+.1f}% | Steam:{opp.get('steam_pct',0):.1f}% | MathScore:{math_score}/100")
+                 f"CLV:{opp.get('clv_pct',0):+.1f}% | Steam:{steam_str} | MathScore:{math_score}/100")
     if stats.get("historical_data"):
         pa=stats["historical_data"].get("player_a",{});pb=stats["historical_data"].get("player_b",{})
         h2h=stats["historical_data"].get("h2h",{})
@@ -1504,8 +1759,8 @@ def generate_ai_decision(home:str,away:str,sport:str,sport_key:str,opp:dict,stat
                      f"H:{poisson_pred.get('home_win_prob_poisson',0)*100:.1f}% D:{poisson_pred.get('draw_prob_poisson',0)*100:.1f}% "
                      f"A:{poisson_pred.get('away_win_prob_poisson',0)*100:.1f}%")
     if stats.get("us_sports"):
-        us=stats["us_sports"]
-        parts.append(f"=== US SPORTS ===\n{home}:{json.dumps(us.get('home',{}))} {away}:{json.dumps(us.get('away',{}))}")
+        us2=stats["us_sports"]
+        parts.append(f"=== US SPORTS ===\n{home}:{json.dumps(us2.get('home',{}))} {away}:{json.dumps(us2.get('away',{}))}")
     sys_inst=(
         "You are an elite sports betting analyst. Analyze ALL data and make a BET/SKIP decision.\n\n"
         "BET when: EV>2.5% AND (sharp line OR strong historical edge) AND models agree\n"
@@ -1569,12 +1824,10 @@ def send_telegram(msg:str)->bool:
 def build_signal_message(home,away,sport,sport_key,opp,ai_data,stats,math_score,ml_pred,poisson_pred,now_utc,commence_time)->str:
     fc=ai_data["final_confidence"]
     he=html_lib.escape(home);ae=html_lib.escape(away)
-    # FIX: Uses correct FA functions
     sport_fa=get_sport_name_fa(sport_key,sport)
     public_pick=translate_pick_for_public(opp["pick"],opp["market"],home,away,opp["odds"],opp["prob"])
     public_pick_escaped=html_lib.escape(public_pick)
     conf_text=get_confidence_text(fc)
-    # FIX: Uses correct FA risk function
     risk_text=get_risk_text_fa(ai_data["risk_level"])
     countdown=get_countdown_str(commence_time,now_utc)
     badges=[]
@@ -1612,7 +1865,7 @@ def build_signal_message(home,away,sport,sport_key,opp,ai_data,stats,math_score,
         f"{kf_lines}{rf_line}\n\n"
         f"📋 <b>منابع داده:</b> {sources}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"🔍 <i>کانال {html_lib.escape(CFG.TELEGRAM_ID)} | سیستم هوشمند v7.1</i>"
+        f"🔍 <i>کانال {html_lib.escape(CFG.TELEGRAM_ID)} | سیستم هوشمند v7.2</i>"
     )
     return msg
 
@@ -1720,7 +1973,7 @@ async def fetch_all_odds_async()->list:
 # =========================================================
 async def async_main():
     logger.info("="*65)
-    logger.info("  ZBET90 ENGINE v7.1 | Multi-Sport | AI 70%% + Math 30%%")
+    logger.info("  ZBET90 ENGINE v7.2 | Multi-Sport | AI 70%% + Math 30%%")
     logger.info("="*65)
     logger.info("🔑 %s",odds_key_manager.get_usage_summary())
     sent=SentHistory();now=datetime.now(timezone.utc)
@@ -1730,7 +1983,10 @@ async def async_main():
     de.load_nhl_data();de.load_mlb_data();de.load_cricket_data()
     logger.info("🧠 [PHASE 2] ML models...")
     ml=MLPredictionEngine(de)
-    ml.load_or_train_football_model();ml.load_or_train_tennis_model(is_wta=False);ml.load_or_train_nba_model()
+    ml.load_or_train_football_model()
+    ml.load_or_train_tennis_model(is_wta=False)
+    ml.load_or_train_tennis_model(is_wta=True)  # BUG-9: Train WTA model too
+    ml.load_or_train_nba_model()
     logger.info("📡 [PHASE 3] Fetching odds (%.1fh window)...",CFG.MATCH_WINDOW_HOURS)
     events=await fetch_all_odds_async()
     if not events:
@@ -1751,15 +2007,27 @@ async def async_main():
             skip_ev+=1;logger.info("⏭️ LOW_EV: %s vs %s EV=%.2f%%",home,away,opp["edge_pct"]);continue
         if sent.was_sent(home,away,opp["market"]):
             logger.info("⏭️ ALREADY_SENT: %s vs %s [%s]",home,away,opp["market"]);skip_sent+=1;continue
+        # BUG-4: steam_pct is now Optional[float]; None = first seen
         opp["steam_pct"]=line_movement_tracker.record_and_get_movement(home,away,opp["market"],opp["pick"],opp["odds"])
         stats:dict={};ml_pred=None;poisson_pred=None
         if sport_key=="tennis":
-            is_wta="wta" in sport.lower();ts=de.get_tennis_stats(home,away,is_wta)
-            if ts:stats["historical_data"]=ts
+            is_wta="wta" in sport.lower()
+            ts=de.get_tennis_stats(home,away,is_wta)
+            if ts:
+                # BUG-9: Set tour in stats so ML can pick correct model
+                ts["tour"]="wta" if is_wta else "atp"
+                stats["historical_data"]=ts
             if ml.is_tennis_trained and ts:
-                surf=("grass" if "wimbledon" in sport.lower() else
-                      "hard" if any(k in sport.lower() for k in ["us open","hard"]) else
-                      "clay" if "clay" in sport.lower() else "hard")
+                # BUG-7: Complete surface detection
+                sport_lower=sport.lower()
+                if any(k in sport_lower for k in ["wimbledon","queens","halle","grass"]):
+                    surf="grass"
+                elif any(k in sport_lower for k in ["french open","roland garros","monte carlo","madrid open","rome","clay"]):
+                    surf="clay"
+                elif any(k in sport_lower for k in ["us open","australian open","indian wells","miami","hard","indoor"]):
+                    surf="hard"
+                else:
+                    surf="hard"  # default
                 ml_pred=ml.predict_tennis(home,away,ts,surf)
                 if ml_pred:stats["ml_prediction"]=ml_pred
         elif sport_key=="football":
@@ -1786,10 +2054,15 @@ async def async_main():
             h_source=hs.get("source","") if hs else ""
             if h_source in ["mlb_official_api","nhl_official_api"] and not hs.get("recent_form"):
                 logger.info("⏭️ SKIP: %s vs %s standings-only",home,away);skip_math+=1;continue
+        elif sport_key=="other":
+            # BUG-15: For unknown sports, we have no stats - use higher threshold
+            pass
         math_score=ConfidenceEngine.calculate_math_score(opp,stats,opp["market"],ml_pred,poisson_pred)
-        if math_score<CFG.MIN_MATH_SCORE_TO_CALL_AI:
+        # BUG-15: Higher threshold for sport=other (no stats available)
+        min_math=(CFG.MIN_MATH_SCORE_OTHER_SPORT if sport_key=="other" else CFG.MIN_MATH_SCORE_TO_CALL_AI)
+        if math_score<min_math:
             skip_math+=1;logger.info("⏭️ SKIP(math:%d<%d) %s vs %s EV=%.2f%%",
-                                      math_score,CFG.MIN_MATH_SCORE_TO_CALL_AI,home,away,opp["edge_pct"]);continue
+                                      math_score,min_math,home,away,opp["edge_pct"]);continue
         ai=generate_ai_decision(home,away,sport,sport_key,opp,stats,math_score,ml_pred,poisson_pred)
         fc=ai["final_confidence"]
         if ai.get("decision")=="SKIP":
