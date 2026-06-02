@@ -1,37 +1,5 @@
 {
-  "signals": [
-    {
-      "id": "67771601",
-      "timestamp": "2026-05-31T23:13:39.500517+00:00",
-      "sport": "baseball",
-      "api_sport_key": "baseball_mlb",
-      "home": "St. Louis Cardinals",
-      "away": "Chicago Cubs",
-      "pick": "St. Louis Cardinals",
-      "market": "h2h_lay",
-      "odds": 1.95,
-      "ev": 0.0203,
-      "confidence": 62,
-      "implied_prob": 0.5233,
-      "outcome": "loss",
-      "profit_loss": -1.0
-    },
-    {
-      "id": "e021a56c",
-      "timestamp": "2026-05-31T23:13:43.204633+00:00",
-      "sport": "football",
-      "api_sport_key": "soccer_brazil_serie_b",
-      "home": "Remo",
-      "away": "Sao Paulo",
-      "pick": "Sao Paulo",
-      "market": "h2h",
-      "odds": 2.56,
-      "ev": 0.0322,
-      "confidence": 66,
-      "implied_prob": 0.4032,
-      "outcome": "loss",
-      "profit_loss": -1.0
-    },
+  "pending": [
     {
       "id": "3e0da326",
       "timestamp": "2026-06-01T08:38:18.322392+00:00",
@@ -46,7 +14,10 @@
       "confidence": 72,
       "implied_prob": 0.3567,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848148+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675039+00:00"
     },
     {
       "id": "5027646c",
@@ -62,7 +33,10 @@
       "confidence": 66,
       "implied_prob": 0.1208,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848156+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675152+00:00"
     },
     {
       "id": "d0d8c431",
@@ -78,7 +52,10 @@
       "confidence": 72,
       "implied_prob": 0.4175,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848159+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675234+00:00"
     },
     {
       "id": "e34f278f",
@@ -94,7 +71,10 @@
       "confidence": 72,
       "implied_prob": 0.3567,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848162+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675309+00:00"
     },
     {
       "id": "5351d621",
@@ -110,7 +90,10 @@
       "confidence": 72,
       "implied_prob": 0.5875,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848165+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675376+00:00"
     },
     {
       "id": "18230301",
@@ -126,7 +109,10 @@
       "confidence": 72,
       "implied_prob": 0.3774,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848168+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675440+00:00"
     },
     {
       "id": "1ca63cf3",
@@ -142,7 +128,10 @@
       "confidence": 72,
       "implied_prob": 0.6083,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848170+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675500+00:00"
     },
     {
       "id": "6d04e00d",
@@ -158,7 +147,10 @@
       "confidence": 72,
       "implied_prob": 0.5025,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848177+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675578+00:00"
     },
     {
       "id": "ac44cd45",
@@ -174,23 +166,10 @@
       "confidence": 66,
       "implied_prob": 0.2029,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "fa5ad317",
-      "timestamp": "2026-06-01T20:38:10.315288+00:00",
-      "sport": "football",
-      "api_sport_key": "soccer_brazil_serie_b",
-      "home": "Ponte Preta",
-      "away": "Botafogo",
-      "pick": "Ponte Preta",
-      "market": "h2h_lay",
-      "odds": 3.4,
-      "ev": 0.0243,
-      "confidence": 62,
-      "implied_prob": 0.3013,
-      "outcome": "loss",
-      "profit_loss": -1.0
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848181+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675665+00:00"
     },
     {
       "id": "8db1666c",
@@ -206,39 +185,10 @@
       "confidence": 73,
       "implied_prob": 0.4832,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "870e4e8a",
-      "timestamp": "2026-06-01T20:38:19.041436+00:00",
-      "sport": "baseball",
-      "api_sport_key": "baseball_mlb",
-      "home": "Tampa Bay Rays",
-      "away": "Detroit Tigers",
-      "pick": "Detroit Tigers",
-      "market": "h2h",
-      "odds": 2.53,
-      "ev": 0.0297,
-      "confidence": 62,
-      "implied_prob": 0.407,
-      "outcome": "win",
-      "profit_loss": 1.53
-    },
-    {
-      "id": "150c8224",
-      "timestamp": "2026-06-01T20:38:23.505858+00:00",
-      "sport": "baseball",
-      "api_sport_key": "baseball_mlb",
-      "home": "Washington Nationals",
-      "away": "Miami Marlins",
-      "pick": "Washington Nationals",
-      "market": "h2h_lay",
-      "odds": 1.82,
-      "ev": 0.0228,
-      "confidence": 62,
-      "implied_prob": 0.562,
-      "outcome": "loss",
-      "profit_loss": -1.0
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848185+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675751+00:00"
     },
     {
       "id": "308bb8e0",
@@ -254,23 +204,10 @@
       "confidence": 68,
       "implied_prob": 0.4394,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "88616440",
-      "timestamp": "2026-06-01T23:20:03.938140+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_mlb",
-      "home": "St. Louis Cardinals",
-      "away": "Texas Rangers",
-      "pick": "St. Louis Cardinals",
-      "market": "h2h_lay",
-      "odds": 2.24,
-      "ev": 0.0236,
-      "confidence": 62,
-      "implied_prob": 0.457,
-      "outcome": "loss",
-      "profit_loss": -1.0
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848187+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675849+00:00"
     },
     {
       "id": "de321cdf",
@@ -286,55 +223,10 @@
       "confidence": 73,
       "implied_prob": 0.5408,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "bb70628a",
-      "timestamp": "2026-06-01T23:20:12.801009+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_mlb",
-      "home": "Los Angeles Angels",
-      "away": "Colorado Rockies",
-      "pick": "Colorado Rockies",
-      "market": "h2h_lay",
-      "odds": 2.9,
-      "ev": 0.0212,
-      "confidence": 62,
-      "implied_prob": 0.3521,
-      "outcome": "win",
-      "profit_loss": 1.9
-    },
-    {
-      "id": "219b8c03",
-      "timestamp": "2026-06-01T23:20:17.028500+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_mlb",
-      "home": "Arizona Diamondbacks",
-      "away": "Los Angeles Dodgers",
-      "pick": "Arizona Diamondbacks",
-      "market": "h2h_lay",
-      "odds": 2.56,
-      "ev": 0.0213,
-      "confidence": 62,
-      "implied_prob": 0.399,
-      "outcome": "win",
-      "profit_loss": 1.56
-    },
-    {
-      "id": "bd2f5646",
-      "timestamp": "2026-06-01T23:53:46.494083+00:00",
-      "sport": "basketball",
-      "api_sport_key": "basketball_wnba",
-      "home": "Dallas Wings",
-      "away": "Seattle Storm",
-      "pick": "Seattle Storm",
-      "market": "h2h_lay",
-      "odds": 7.0,
-      "ev": 0.0471,
-      "confidence": 66,
-      "implied_prob": 0.1496,
-      "outcome": "loss",
-      "profit_loss": -1.0
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848190+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.675929+00:00"
     },
     {
       "id": "38b99e7f",
@@ -350,23 +242,10 @@
       "confidence": 69,
       "implied_prob": 0.6009,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "42757688",
-      "timestamp": "2026-06-01T23:53:56.537136+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_mlb",
-      "home": "Seattle Mariners",
-      "away": "New York Mets",
-      "pick": "New York Mets",
-      "market": "h2h_lay",
-      "odds": 2.24,
-      "ev": 0.0222,
-      "confidence": 62,
-      "implied_prob": 0.4563,
-      "outcome": "loss",
-      "profit_loss": -1.0
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848194+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.676004+00:00"
     },
     {
       "id": "b02883ef",
@@ -382,7 +261,10 @@
       "confidence": 62,
       "implied_prob": 0.3431,
       "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848198+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.676071+00:00"
     },
     {
       "id": "942eea95",
@@ -398,31 +280,11 @@
       "confidence": 73,
       "implied_prob": 0.5049,
       "outcome": null,
-      "profit_loss": null
-    },
-    {
-      "id": "6b61c21d",
-      "timestamp": "2026-06-02T13:46:31.556978+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Jakub Mensik",
-      "away": "Joao Fonseca",
-      "pick": "Jakub Mensik",
-      "market": "h2h_lay",
-      "odds": 2.96,
-      "ev": 0.029,
-      "confidence": 65,
-      "implied_prob": 0.3476,
-      "outcome": null,
-      "profit_loss": null
+      "profit_loss": null,
+      "_pending_since": "2026-06-02T13:46:35.848201+00:00",
+      "_retry_count": 1,
+      "_last_retry": "2026-06-02T13:48:39.676143+00:00"
     }
   ],
-  "summary": {
-    "total_signals": 26,
-    "resolved": 10,
-    "win_rate": 0.3,
-    "total_profit_loss_units": -2.01,
-    "roi_pct": -20.1,
-    "last_updated": "2026-06-02T13:46:31.557008+00:00"
-  }
+  "last_updated": "2026-06-02T13:48:39.676212+00:00"
 }

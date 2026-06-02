@@ -166,5 +166,11 @@
     "pick": "Yomiuri Giants",
     "market": "h2h",
     "sent_at": "2026-06-02T08:38:11.857079+00:00"
+  },
+  "745b27f5e7f14f1d7d68364aa2b27eec": {
+    "match": "Jakub Mensik vs Joao Fonseca",
+    "pick": "Jakub Mensik",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-02T13:46:31.556274+00:00"
   }
 }

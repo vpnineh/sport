@@ -91362,5 +91362,1676 @@
         }
       }
     ]
+  },
+  "2062a5c325654702ae5aeb7eba7399ea": {
+    "timestamp": "2026-06-02T13:46:27.689374+00:00",
+    "data": [
+      {
+        "id": "dd4e3c2777edaa41a13a89fd5a2c477f",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-02T18:00:00Z",
+        "home_team": "Hampshire",
+        "away_team": "Sussex",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.58
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.34
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.66
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.66
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.37
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.66
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.66
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.37
+                }
+              ]
+            },
+            {
+              "bookmaker": "Paddy Power",
+              "bookmaker_key": "paddypower",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.38
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.58
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.62
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.3
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.58
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "TAB",
+              "bookmaker_key": "tab",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.62
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.6
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "BoyleSports",
+              "bookmaker_key": "boylesports",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.62
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (SE)",
+              "bookmaker_key": "unibet_se",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas (SE)",
+              "bookmaker_key": "leovegas_se",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.64
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.2
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.65
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.16
+                }
+              ]
+            },
+            {
+              "bookmaker": "Marathon Bet",
+              "bookmaker_key": "marathonbet",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.57
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.67
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.61
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.28
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.69
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.69
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.69
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.69
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Hampshire",
+                  "price": 1.69
+                },
+                {
+                  "name": "Sussex",
+                  "price": 2.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "cc0adbef781ada963c0516646063a2e1",
+        "sport_key": "tennis_atp_french_open",
+        "sport_title": "ATP French Open",
+        "commence_time": "2026-06-02T18:15:00Z",
+        "home_team": "Jakub Mensik",
+        "away_team": "Joao Fonseca",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.43
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.88
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Right",
+              "bookmaker_key": "betright",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (SE)",
+              "bookmaker_key": "unibet_se",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.65
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.84
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.42
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.88
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (FR)",
+              "bookmaker_key": "unibet_fr",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.49
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.86
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.52
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.88
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.53
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas (SE)",
+              "bookmaker_key": "leovegas_se",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Codere (IT)",
+              "bookmaker_key": "codere_it",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (UK)",
+              "bookmaker_key": "unibet_uk",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.49
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.78
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.82
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.49
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.77
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.6
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair Sportsbook",
+              "bookmaker_key": "betfair_sb_uk",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.43
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.84
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betclic (FR)",
+              "bookmaker_key": "betclic_fr",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "Paddy Power",
+              "bookmaker_key": "paddypower",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (FR)",
+              "bookmaker_key": "winamax_fr",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (DE)",
+              "bookmaker_key": "winamax_de",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.65
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.48
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_au",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "Neds",
+              "bookmaker_key": "neds",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "TAB",
+              "bookmaker_key": "tab",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "Marathon Bet",
+              "bookmaker_key": "marathonbet",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.78
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.8
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.82
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.82
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.46
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.47
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.7
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.45
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.75
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.44
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.9
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.54
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.96
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.56
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.9
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.54
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.9
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.54
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Jakub Mensik",
+                  "price": 2.9
+                },
+                {
+                  "name": "Joao Fonseca",
+                  "price": 1.54
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.99,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.86,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.93,
+                  "point": 38.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 38.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.91,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.84,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.86,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.96,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.81,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.72,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 38.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 38.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.87,
+                  "point": 38.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.94,
+                  "point": 38.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 38.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 37.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 37.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.87,
+                  "point": 37.5
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

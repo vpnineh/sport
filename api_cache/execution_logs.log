@@ -6145,3 +6145,88 @@
 2026-06-02 08:38:14 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 4 calls (rem: 386) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
 2026-06-02 08:38:14 | INFO     | 📈 [PERFORMANCE] WR=20.0% | ROI=-49.4% | Signals=25
 2026-06-02 08:38:14 | INFO     | =================================================================
+2026-06-02 13:44:03 | INFO     | ✅ [GEMINI SDK] Initialized with NEW SDK for model: gemini-1.5-flash
+2026-06-02 13:44:03 | INFO     | 🔑 [API KEY] primary (ODDS_API_KEY): Loaded ✓
+2026-06-02 13:44:03 | INFO     | 🔑 [API KEY] backup_1 (ODDS_API_KEY2): Loaded ✓
+2026-06-02 13:44:03 | INFO     | 🔑 [API KEY] backup_2 (ODDS_API_KEY3): Loaded ✓
+2026-06-02 13:44:03 | INFO     | 🔑 [API KEYS] 3 key(s) available for fallback
+2026-06-02 13:44:03 | INFO     | =================================================================
+2026-06-02 13:44:03 | INFO     |   ZBET90 ENGINE v6.5 | Dual Confirmation (Math + Gemini 50/50)
+2026-06-02 13:44:03 | INFO     | =================================================================
+2026-06-02 13:44:03 | INFO     | 🔑 [KEYS STATUS] ✅ primary: 4 calls (rem: 386) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 13:44:03 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-02 13:44:03 | INFO     | [FREE DATA] Downloading: atp_matches_2022.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: wta_matches_2022.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: atp_matches_2023.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: wta_matches_2023.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: atp_matches_2024.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: wta_matches_2024.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: atp_matches_2025.csv
+2026-06-02 13:44:04 | INFO     | [FREE DATA] Downloading: wta_matches_2025.csv
+2026-06-02 13:44:05 | INFO     | ✅ [TENNIS] ATP loaded: 11923 matches
+2026-06-02 13:44:05 | INFO     | ✅ [TENNIS] WTA loaded: 10888 matches
+2026-06-02 13:44:05 | INFO     | [FREE DATA] Downloading: atp_rankings_current.csv
+2026-06-02 13:44:05 | INFO     | ✅ [RANKINGS] ATP loaded: 34203 entries
+2026-06-02 13:44:05 | INFO     | [FREE DATA] Downloading: wta_rankings_current.csv
+2026-06-02 13:44:05 | INFO     | ✅ [RANKINGS] WTA loaded: 32060 entries
+2026-06-02 13:44:05 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 13:44:06 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 13:44:07 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 13:44:08 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 13:44:09 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 13:44:10 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 13:44:11 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 13:44:12 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 13:44:13 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 13:44:14 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 13:44:14 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 13:44:15 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 13:44:17 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 13:44:17 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 13:44:18 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 13:44:19 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 13:44:20 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 13:44:20 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 13:44:21 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 13:44:22 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 13:44:23 | INFO     | [FREE DATA] Downloading: E0.csv
+2026-06-02 13:44:24 | INFO     | [FREE DATA] Downloading: E1.csv
+2026-06-02 13:44:25 | INFO     | [FREE DATA] Downloading: D1.csv
+2026-06-02 13:44:25 | INFO     | [FREE DATA] Downloading: SP1.csv
+2026-06-02 13:44:26 | INFO     | [FREE DATA] Downloading: I1.csv
+2026-06-02 13:44:27 | INFO     | [FREE DATA] Downloading: F1.csv
+2026-06-02 13:44:27 | INFO     | [FREE DATA] Downloading: N1.csv
+2026-06-02 13:44:28 | INFO     | [FREE DATA] Downloading: P1.csv
+2026-06-02 13:44:29 | INFO     | [FREE DATA] Downloading: T1.csv
+2026-06-02 13:44:30 | INFO     | [FREE DATA] Downloading: B1.csv
+2026-06-02 13:44:31 | INFO     | ✅ [FOOTBALL] Loaded 10816 matches from 10 leagues × 3 seasons
+2026-06-02 13:44:31 | INFO     | 🧠 [PHASE 2] Initializing ML models...
+2026-06-02 13:44:31 | WARNING  | Football model cache corrupt: No module named '_loss'
+2026-06-02 13:46:09 | INFO     | ✅ [ML FOOTBALL] Trained on 10395 samples
+2026-06-02 13:46:09 | INFO     | 💾 [ML FOOTBALL] Model saved to cache.
+2026-06-02 13:46:09 | WARNING  | Tennis model cache corrupt: No module named '_loss'
+2026-06-02 13:46:10 | INFO     | [ML TENNIS ATP] Class distribution: {0: 6026, 1: 5897}
+2026-06-02 13:46:27 | INFO     | ✅ [ML TENNIS ATP] Trained on 11923 samples
+2026-06-02 13:46:27 | INFO     | 💾 [ML TENNIS ATP] Model saved to cache.
+2026-06-02 13:46:27 | INFO     | 📡 [PHASE 3] Fetching odds (window=6.0h)...
+2026-06-02 13:46:27 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-02 13:46:27 | INFO     | 🔑 [TRYING] primary...
+2026-06-02 13:46:27 | INFO     | 🔑 [primary] OK | Remaining: 374 | Market: totals | Events: 10
+2026-06-02 13:46:27 | INFO     | 🔑 [primary] OK | Remaining: 370 | Market: h2h | Events: 10
+2026-06-02 13:46:27 | INFO     | ✅ [primary] Fetched 2 events
+2026-06-02 13:46:27 | INFO     | 💾 [ODDS CACHE] SAVED 2 events
+2026-06-02 13:46:27 | INFO     | 📊 [API USAGE] ✅ primary: 6 calls (rem: 370) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 13:46:27 | INFO     | 🔍 [PHASE 4] Analyzing 2 events...
+2026-06-02 13:46:27 | INFO     | ✅ [H2H] Jakub Mensik vs Joao Fonseca: 2 H2H matches
+2026-06-02 13:46:27 | WARNING  | [GEMINI] Error (attempt 1/3): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of
+2026-06-02 13:46:29 | WARNING  | [GEMINI] Error (attempt 2/3): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of
+2026-06-02 13:46:31 | WARNING  | [GEMINI] Error (attempt 3/3): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of
+2026-06-02 13:46:31 | ERROR    | [GEMINI] All 3 attempts failed. Last error: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}
+2026-06-02 13:46:31 | WARNING  | [AI] Gemini returned no valid data, using math fallback
+2026-06-02 13:46:31 | INFO     | ✅ [APPROVED] Math:65 | AI:65 | EV=2.90% | Conf=65%
+2026-06-02 13:46:31 | INFO     | 📤 SENT: Jakub Mensik vs Joao Fonseca | EV=2.90% | Conf=65%
+2026-06-02 13:46:34 | INFO     | =================================================================
+2026-06-02 13:46:34 | INFO     | 📊 SUMMARY | Analyzed: 1 | Sent: 1 | Skipped(conf): 0
+2026-06-02 13:46:34 | INFO     | 📊 [FINAL API USAGE] ✅ primary: 6 calls (rem: 370) | ✅ backup_1: 0 calls (rem: ?) | ✅ backup_2: 0 calls (rem: ?)
+2026-06-02 13:46:34 | INFO     | 📈 [PERFORMANCE] WR=30.0% | ROI=-20.1% | Signals=26
+2026-06-02 13:46:34 | INFO     | =================================================================
