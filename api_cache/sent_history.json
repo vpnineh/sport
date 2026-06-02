@@ -172,23 +172,4 @@
     "pick": "Jakub Mensik",
     "market": "h2h_lay",
     "sent_at": "2026-06-02T13:46:31.556274+00:00"
-  },
-  "37f948d90be40de5342eab24d10ea4c3": {
-    "match": "Tampa Bay Rays vs Detroit Tigers",
-    "pick": "Detroit Tigers",
-    "market": "h2h_lay",
-    "sent_at": "2026-06-02T20:39:15.850662+00:00"
-  },
-  "3fc9d4c6b8d75bbb53c43086677ab5f4": {
-    "match": "Philadelphia Phillies vs San Diego Padres",
-    "pick": "Philadelphia Phillies",
-    "market": "h2h_lay",
-    "sent_at": "2026-06-02T20:39:38.096262+00:00"
-  },
-  "048e515a68d399a7d818925e9539a6e7": {
-    "match": "Boston Red Sox vs Baltimore Orioles",
-    "pick": "Boston Red Sox",
-    "market": "h2h_lay",
-    "sent_at": "2026-06-02T20:40:00.445427+00:00"
   }
-}
