@@ -28,8 +28,6 @@ warnings.filterwarnings('ignore', category=UserWarning)
 # ── Google AI SDK (جایگزین requests خام) ──────────────
 from google import genai
 from google.genai import types
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 from sklearn.ensemble import (
     GradientBoostingClassifier,
