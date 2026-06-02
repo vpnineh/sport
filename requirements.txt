@@ -14,3 +14,4 @@ httpx>=0.23.0
 curl_cffi
 MLB-StatsAPI>=1.4.0
 google-genai>=0.1.0
+nba_api>=1.4.1
