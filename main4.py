@@ -81,7 +81,7 @@ class Config:
     TTL_H2H: float = 24.0
     TTL_GITHUB_DATA: float = 12.0
 
-    # ── EV Filters - کمی آرام‌تر برای دریافت سیگنال بیشتر ──
+    # ── EV Filters ───────────────────────────────────────
     H2H_MIN_ODDS: float = 1.40
     H2H_MIN_EV: float = 0.010
     TOTALS_MIN_ODDS: float = 1.50
@@ -98,23 +98,34 @@ class Config:
     KELLY_FRACTION: float = 0.25
     MAX_KELLY_PCT: float = 5.0
 
-    # ── Confidence - پایین‌تر برای سیگنال بیشتر ──
-    MIN_CONFIDENCE_TO_SEND: int = 52
+    # ── Confidence ───────────────────────────────────────
+    # Math فقط gatekeeper اولیه - AI تصمیم اصلی میگیره
+    MIN_MATH_SCORE_TO_CALL_AI: int = 38   # زیر این اصلاً AI صدا نزن
+    MIN_CONFIDENCE_TO_SEND: int = 58       # threshold نهایی برای ارسال
     HIGH_CONFIDENCE: int = 75
     MEDIUM_CONFIDENCE: int = 62
 
-    # ── AI Model - مدل صحیح ──
+    # ── AI Judge ─────────────────────────────────────────
+    AI_IS_FINAL_JUDGE: bool = True
+    AI_WEIGHT: float = 0.70        # وزن AI در hybrid score
+    MATH_WEIGHT: float = 0.30      # وزن Math در hybrid score
+    MAX_AI_BOOST: int = 12         # حداکثر امتیاز اضافه از AI
+    MAX_AI_PENALTY: int = 8        # حداکثر امتیاز کم از AI
+
+    # ── AI Model ─────────────────────────────────────────
     AI_MODEL_ANALYST: str = "gemini-2.0-flash"
-    AI_MAX_TOKENS: int = 2048
-    AI_TEMPERATURE: float = 0.1
+    AI_MAX_TOKENS: int = 3000
+    AI_TEMPERATURE: float = 0.05   # خیلی کم برای consistency
 
     TELEGRAM_ID: str = "@zBET90"
 
+    # ── Sharp Bookmakers ─────────────────────────────────
     SHARP_BOOKMAKERS: list = field(default_factory=lambda: [
         "pinnacle", "betfair_ex_eu", "matchbook",
         "betfair_ex_uk", "sport888", "betsson",
     ])
 
+    # ── Data Sources ─────────────────────────────────────
     GITHUB_SOURCES: dict = field(default_factory=lambda: {
         "atp": "https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_matches_{year}.csv",
         "wta": "https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master/wta_matches_{year}.csv",
@@ -139,7 +150,6 @@ class Config:
 
 
 CFG = Config()
-
 
 # =========================================================
 # 2. LOGGING
@@ -2522,144 +2532,337 @@ line_movement_tracker = LineMovementTracker()
 
 
 # =========================================================
-# 16. DUAL AI ANALYSIS
+# 16. AI DECISION ENGINE  ← جایگزین generate_dual_ai_analysis
 # =========================================================
-def generate_dual_ai_analysis(
+def generate_ai_decision(
     home: str,
     away: str,
     sport: str,
-    pick: str,
-    market: str,
+    sport_key: str,
     opp: dict,
     stats: dict,
-    has_real_stats: bool,
     math_score: int,
     ml_prediction: Optional[dict] = None,
     poisson_prediction: Optional[dict] = None,
-    sport_key: str = "other",
 ) -> dict:
+    """
+    AI تمام داده‌های math/ML را میبینه و تصمیم نهایی BET/SKIP میگیره.
+    Math فقط داده خام تولید میکنه - AI judge اصلیه.
+    """
 
     default_response = {
         "sport_emoji": _get_sport_emoji(sport_key),
+        "decision": "SKIP",
         "ai_confidence": math_score,
         "math_confidence": math_score,
         "final_confidence": math_score,
-        "risk_level": "Medium",
-        "logic": "Quantitative edge detected via mathematical variance analysis.",
+        "risk_level": "High",
+        "logic": "Insufficient data for AI decision.",
+        "key_factors": [],
+        "red_flags": [],
     }
 
-    context_parts = []
+    # ── اگر math score خیلی پایین → اصلاً API صدا نزن ──
+    if math_score < CFG.MIN_MATH_SCORE_TO_CALL_AI:
+        logger.info(
+            "[AI JUDGE] Math score %d < %d threshold → skipping AI call",
+            math_score, CFG.MIN_MATH_SCORE_TO_CALL_AI
+        )
+        return {
+            **default_response,
+            "decision": "SKIP",
+            "logic": f"Math score {math_score} below minimum threshold for AI analysis.",
+        }
 
+    # ── ساخت context کامل برای AI ─────────────────────
+    summary_parts = []
+
+    # اطلاعات بازار
+    summary_parts.append(
+        f"=== MARKET DATA ===\n"
+        f"Pick: {opp['pick']}\n"
+        f"Market: {opp['market_label']}\n"
+        f"Best Odds: {opp['odds']}\n"
+        f"True Probability (devigged): {opp['prob'] * 100:.1f}%\n"
+        f"Expected Value: {opp['edge_pct']:+.2f}%\n"
+        f"Kelly Stake: {opp.get('kelly_pct', 0):.1f}%\n"
+        f"Has Sharp Line: {opp.get('has_sharp_line', False)}\n"
+        f"CLV: {opp.get('clv_pct', 0):+.1f}%\n"
+        f"Steam Movement: {opp.get('steam_pct', 0):.1f}%\n"
+        f"Math Score: {math_score}/100"
+    )
+
+    # داده‌های تنیس
     if stats.get("historical_data"):
         pa = stats["historical_data"].get("player_a", {})
         pb = stats["historical_data"].get("player_b", {})
-        context_parts.append(
-            f"RANK/FORM: {home}(R:{pa.get('current_ranking', '-')}, "
-            f"WR:{pa.get('recent_win_rate', 0):.2f}) vs "
-            f"{away}(R:{pb.get('current_ranking', '-')}, "
-            f"WR:{pb.get('recent_win_rate', 0):.2f})"
+        h2h = stats["historical_data"].get("h2h", {})
+
+        pa_surface = pa.get("surface_stats", {})
+        pb_surface = pb.get("surface_stats", {})
+
+        summary_parts.append(
+            f"=== TENNIS STATS ===\n"
+            f"{home}:\n"
+            f"  Ranking: {pa.get('current_ranking', 'N/A')}\n"
+            f"  Recent Form (last 10): {pa.get('recent_form', 'N/A')}\n"
+            f"  Win Rate (recent): {pa.get('recent_win_rate', 0) * 100:.1f}%\n"
+            f"  Overall Win Rate: {pa.get('win_rate_overall', 0) * 100:.1f}%\n"
+            f"  Aces/Match: {pa.get('aces_per_match', 'N/A')}\n"
+            f"  1st Serve In%: {pa.get('first_serve_in_pct', 0) * 100:.1f}%\n"
+            f"  1st Serve Won%: {pa.get('first_serve_win_pct', 0) * 100:.1f}%\n"
+            f"  BP Saved%: {pa.get('bp_saved_pct', 0) * 100:.1f}%\n"
+            f"  Surface Stats: {json.dumps(pa_surface)}\n\n"
+            f"{away}:\n"
+            f"  Ranking: {pb.get('current_ranking', 'N/A')}\n"
+            f"  Recent Form (last 10): {pb.get('recent_form', 'N/A')}\n"
+            f"  Win Rate (recent): {pb.get('recent_win_rate', 0) * 100:.1f}%\n"
+            f"  Overall Win Rate: {pb.get('win_rate_overall', 0) * 100:.1f}%\n"
+            f"  Aces/Match: {pb.get('aces_per_match', 'N/A')}\n"
+            f"  1st Serve In%: {pb.get('first_serve_in_pct', 0) * 100:.1f}%\n"
+            f"  1st Serve Won%: {pb.get('first_serve_win_pct', 0) * 100:.1f}%\n"
+            f"  BP Saved%: {pb.get('bp_saved_pct', 0) * 100:.1f}%\n"
+            f"  Surface Stats: {json.dumps(pb_surface)}\n\n"
+            f"H2H: {h2h.get('total', 0)} matches | "
+            f"Dominance: {h2h.get('dominance', 'balanced')}\n"
+            f"H2H by surface: {json.dumps(h2h.get('by_surface', {}))}"
         )
 
+    # داده‌های فوتبال
     if stats.get("football_stats"):
         hm = stats["football_stats"].get("home", {})
         aw = stats["football_stats"].get("away", {})
-        if hm:
-            context_parts.append(
-                f"{home} METRICS: GF={hm.get('avg_scored', 0):.1f}, "
-                f"GA={hm.get('avg_conceded', 0):.1f}, "
-                f"Form={hm.get('form_string', 'N/A')}"
-            )
-        if aw:
-            context_parts.append(
-                f"{away} METRICS: GF={aw.get('avg_scored', 0):.1f}, "
-                f"GA={aw.get('avg_conceded', 0):.1f}, "
-                f"Form={aw.get('form_string', 'N/A')}"
-            )
-        if stats["football_stats"].get("elo_data"):
-            elo = stats["football_stats"]["elo_data"]
-            context_parts.append(
-                f"ELO: {home}={elo.get('home_elo')}, "
-                f"{away}={elo.get('away_elo')}, Delta={elo.get('delta')}"
-            )
+        h2h_fb = stats["football_stats"].get("h2h", {})
 
+        summary_parts.append(
+            f"=== FOOTBALL STATS ===\n"
+            f"{home} (Home):\n"
+            f"  Form (last 10): {hm.get('form_string', 'N/A')}\n"
+            f"  Goals Scored/Game: {hm.get('avg_scored', 0):.2f}\n"
+            f"  Goals Conceded/Game: {hm.get('avg_conceded', 0):.2f}\n"
+            f"  Win Rate: {hm.get('win_rate', 0) * 100:.1f}%\n"
+            f"  Home Win Rate: {hm.get('venue_win_rate', 0) * 100:.1f}%\n"
+            f"  Home Avg Goals: {hm.get('venue_avg_goals', 0):.2f}\n"
+            f"  Over 2.5 Rate: {hm.get('over25_rate', 0) * 100:.1f}%\n"
+            f"  BTTS Rate: {hm.get('btts_rate', 0) * 100:.1f}%\n"
+            f"  Clean Sheet Rate: {hm.get('clean_sheet_rate', 0) * 100:.1f}%\n"
+            f"  Weighted Form Points: {hm.get('weighted_form_points', 0):.2f}\n\n"
+            f"{away} (Away):\n"
+            f"  Form (last 10): {aw.get('form_string', 'N/A')}\n"
+            f"  Goals Scored/Game: {aw.get('avg_scored', 0):.2f}\n"
+            f"  Goals Conceded/Game: {aw.get('avg_conceded', 0):.2f}\n"
+            f"  Win Rate: {aw.get('win_rate', 0) * 100:.1f}%\n"
+            f"  Away Win Rate: {aw.get('venue_win_rate', 0) * 100:.1f}%\n"
+            f"  Away Avg Goals: {aw.get('venue_avg_goals', 0):.2f}\n"
+            f"  Over 2.5 Rate: {aw.get('over25_rate', 0) * 100:.1f}%\n"
+            f"  BTTS Rate: {aw.get('btts_rate', 0) * 100:.1f}%\n"
+            f"  Clean Sheet Rate: {aw.get('clean_sheet_rate', 0) * 100:.1f}%\n"
+            f"  Weighted Form Points: {aw.get('weighted_form_points', 0):.2f}\n\n"
+            f"H2H ({h2h_fb.get('total_matches', 0)} matches):\n"
+            f"  Avg Goals: {h2h_fb.get('avg_goals', 0):.2f}\n"
+            f"  Over 2.5: {h2h_fb.get('over25_rate', 0) * 100:.1f}%\n"
+            f"  BTTS: {h2h_fb.get('btts_rate', 0) * 100:.1f}%\n"
+            f"  Std Goals: {h2h_fb.get('std_goals', 0):.2f}"
+        )
+
+    # ELO
+    if stats.get("elo_data"):
+        elo = stats["elo_data"]
+        summary_parts.append(
+            f"=== ELO RATINGS ===\n"
+            f"{home}: {elo.get('home_elo')} | "
+            f"{away}: {elo.get('away_elo')}\n"
+            f"Delta: {elo.get('delta')} "
+            f"({elo.get('elo_confidence', 'unknown')} confidence)\n"
+            f"ELO Win Prob → {home}: "
+            f"{elo.get('home_win_prob_elo', 0) * 100:.1f}% | "
+            f"{away}: {elo.get('away_win_prob_elo', 0) * 100:.1f}%"
+        )
+
+    # ML Predictions
     if ml_prediction:
-        context_parts.append(f"ML PROBS: {json.dumps(ml_prediction)}")
+        summary_parts.append(
+            f"=== ML MODEL PREDICTIONS ===\n"
+            f"{json.dumps(ml_prediction, indent=2)}"
+        )
+
+    # Poisson
     if poisson_prediction:
-        context_parts.append(f"POISSON xG: {json.dumps(poisson_prediction)}")
+        summary_parts.append(
+            f"=== POISSON / DIXON-COLES MODEL ===\n"
+            f"Home xG: {poisson_prediction.get('home_xg')}\n"
+            f"Away xG: {poisson_prediction.get('away_xg')}\n"
+            f"Win Probs:\n"
+            f"  Home: {poisson_prediction.get('home_win_prob_poisson', 0) * 100:.1f}%\n"
+            f"  Draw: {poisson_prediction.get('draw_prob_poisson', 0) * 100:.1f}%\n"
+            f"  Away: {poisson_prediction.get('away_win_prob_poisson', 0) * 100:.1f}%"
+        )
 
-    context_parts.append(
-        f"MARKET EDGE: EV={opp.get('edge_pct', 0):.2f}%, "
-        f"Steam={opp.get('steam_pct', 0):.1f}%, "
-        f"CLV={opp.get('clv_pct', 0):.1f}%, "
-        f"Kelly={opp.get('kelly_pct', 0):.1f}%"
-    )
+    # US Sports
+    if stats.get("us_sports"):
+        us = stats["us_sports"]
+        hus = us.get("home", {})
+        aus = us.get("away", {})
+        if hus or aus:
+            summary_parts.append(
+                f"=== US SPORTS STATS ===\n"
+                f"{home}: {json.dumps(hus)}\n"
+                f"{away}: {json.dumps(aus)}"
+            )
 
-    stats_str = (
-        "\n".join(context_parts) if context_parts else "NO EXTERNAL CONTEXT."
-    )
+    full_context = "\n\n".join(summary_parts)
 
+    # ── System Instruction ────────────────────────────
     system_instruction = (
-        "ROLE: Elite Quantitative Sports Betting Analyst (Machine-like objectivity).\n"
-        "GOAL: Evaluate structural betting data and output a strictly formatted JSON analysis.\n\n"
-        "MANDATORY PROTOCOLS:\n"
-        "1. ANTI-HALLUCINATION: Base logic 100% on the provided DATA CONTEXT only.\n"
-        "2. TECHNICAL: Use sharp betting terminology (xG convergence, market resistance, CLV).\n"
-        "3. LOGIC: Exactly 2 sentences maximum, highly condensed.\n"
-        "4. AI CONFIDENCE: Strict integer 0-100 based ONLY on data context quality.\n"
-        "5. OUTPUT: Valid JSON matching this exact schema:\n"
-        '{"ai_confidence": int, "logic": "string", "sport_emoji": "string"}'
+        "You are an elite sports betting analyst with 20 years of professional experience.\n"
+        "You have access to statistical models, historical data, ELO ratings, and market signals.\n\n"
+        "YOUR MISSION:\n"
+        "Analyze ALL provided data and make a FINAL BET/NO-BET decision.\n\n"
+        "DECISION FRAMEWORK:\n"
+        "BET when: EV > 1.5% AND (sharp line OR strong historical edge) AND models agree\n"
+        "SKIP when: Conflicting signals OR EV only from soft books OR insufficient data\n\n"
+        "CONFIDENCE SCALE:\n"
+        "75-100: Strong bet - multiple confirming signals\n"
+        "62-74: Moderate bet - edge present but some uncertainty\n"
+        "50-61: Weak bet - proceed with caution\n"
+        "0-49: NO BET - insufficient edge\n\n"
+        "OUTPUT FORMAT (strict JSON only, no other text):\n"
+        "{\n"
+        '  "decision": "BET" or "SKIP",\n'
+        '  "confidence": <integer 0-100>,\n'
+        '  "sport_emoji": "<single emoji>",\n'
+        '  "risk_level": "Low" or "Medium" or "High",\n'
+        '  "key_factors": ["factor1", "factor2", "factor3"],\n'
+        '  "logic": "<2-3 sentences based on DATA ONLY>",\n'
+        '  "red_flags": ["flag1"] or []\n'
+        "}\n\n"
+        "CRITICAL RULES:\n"
+        "1. Base EVERYTHING on provided data - zero assumptions\n"
+        "2. If EV < 1.5% AND no sharp line → SKIP\n"
+        "3. If ML and Poisson strongly disagree → lower confidence\n"
+        "4. decision=SKIP means confidence should be < 55\n"
+        "5. decision=BET means confidence should be >= 55\n"
+        "6. Be conservative - missing a bet < losing bankroll"
     )
 
     user_prompt = (
         f"MATCH: {home} vs {away}\n"
         f"SPORT: {sport}\n"
-        f"TARGET PICK: {pick}\n"
-        f"MARKET TYPE: {get_market_label(market)}\n\n"
-        f"=== DATA CONTEXT ===\n{stats_str}\n==================\n\n"
-        "Return a JSON object with keys: "
-        "ai_confidence (int), logic (string), sport_emoji (string)"
+        f"TARGET PICK: {opp['pick']}\n"
+        f"MARKET: {opp['market_label']}\n\n"
+        f"{full_context}\n\n"
+        "Analyze all data above and return your BET/SKIP decision as JSON."
     )
 
+    # ── Call Gemini ───────────────────────────────────
     ai_data = gemini_manager.generate(
         prompt=user_prompt,
         system_instruction=system_instruction,
         temperature=CFG.AI_TEMPERATURE,
+        max_retries=3,
     )
 
+    # ── Fallback اگر AI جواب نداد ─────────────────────
     if not ai_data or not isinstance(ai_data, dict):
-        logger.warning("[AI] Gemini returned no valid data, using math fallback")
-        return default_response
+        logger.warning(
+            "[AI JUDGE] No response for %s vs %s → math fallback",
+            home, away
+        )
+        fallback_decision = "BET" if math_score >= 55 else "SKIP"
+        return {
+            **default_response,
+            "decision": fallback_decision,
+            "ai_confidence": math_score,
+            "final_confidence": math_score,
+            "logic": "AI unavailable - decision based on mathematical models only.",
+        }
+
+    # ── Parse decision ────────────────────────────────
+    decision = str(ai_data.get("decision", "SKIP")).upper().strip()
+    if decision not in ["BET", "SKIP"]:
+        decision = "SKIP"
 
     try:
-        ai_score_raw = ai_data.get("ai_confidence", math_score)
-        ai_score = int(np.clip(float(ai_score_raw), 0, 100))
+        ai_confidence = int(
+            np.clip(float(ai_data.get("confidence", math_score)), 0, 100)
+        )
     except (ValueError, TypeError):
-        ai_score = math_score
+        ai_confidence = math_score
 
-    final_conf = int(np.clip((math_score + ai_score) / 2, 0, 100))
-    risk_level = (
-        "Low"
-        if final_conf >= CFG.HIGH_CONFIDENCE
-        else ("Medium" if final_conf >= CFG.MEDIUM_CONFIDENCE else "High")
-    )
+    # ── Hybrid Score: AI 70% + Math 30% ──────────────
+    hybrid_raw = ai_confidence * CFG.AI_WEIGHT + math_score * CFG.MATH_WEIGHT
 
+    # محدود کردن تأثیر AI روی math score
+    ai_delta = hybrid_raw - math_score
+    if ai_delta > CFG.MAX_AI_BOOST:
+        hybrid_raw = math_score + CFG.MAX_AI_BOOST
+    elif ai_delta < -CFG.MAX_AI_PENALTY:
+        hybrid_raw = math_score - CFG.MAX_AI_PENALTY
+
+    final_confidence = int(np.clip(hybrid_raw, 0, 100))
+
+    # ── Consistency check ─────────────────────────────
+    # اگر AI گفت BET ولی confidence داد زیر 55 → SKIP
+    if decision == "BET" and ai_confidence < 50:
+        decision = "SKIP"
+        logger.warning(
+            "[AI JUDGE] Inconsistent response: BET with confidence %d → forcing SKIP",
+            ai_confidence
+        )
+
+    # اگر AI گفت SKIP ولی confidence داد بالای 70 → SKIP رو حفظ کن ولی log کن
+    if decision == "SKIP" and ai_confidence > 70:
+        logger.info(
+            "[AI JUDGE] High confidence SKIP (%d) for %s vs %s",
+            ai_confidence, home, away
+        )
+
+    # ── Parse other fields ────────────────────────────
     logic_raw = ai_data.get("logic", default_response["logic"])
     logic = str(logic_raw)[:600] if logic_raw else default_response["logic"]
 
-    sport_emoji_raw = ai_data.get(
-        "sport_emoji", _get_sport_emoji(sport_key)
+    key_factors_raw = ai_data.get("key_factors", [])
+    if isinstance(key_factors_raw, list):
+        key_factors = [str(f)[:120] for f in key_factors_raw[:5]]
+    else:
+        key_factors = []
+
+    red_flags_raw = ai_data.get("red_flags", [])
+    if isinstance(red_flags_raw, list):
+        red_flags = [str(f)[:120] for f in red_flags_raw[:3]]
+    else:
+        red_flags = []
+
+    risk_level_raw = str(ai_data.get("risk_level", "Medium")).strip()
+    risk_level = (
+        risk_level_raw if risk_level_raw in ["Low", "Medium", "High"] else "Medium"
     )
+
+    sport_emoji_raw = ai_data.get("sport_emoji", "")
     sport_emoji = (
-        str(sport_emoji_raw) if sport_emoji_raw else _get_sport_emoji(sport_key)
+        str(sport_emoji_raw).strip()
+        if sport_emoji_raw
+        else _get_sport_emoji(sport_key)
+    )
+
+    logger.info(
+        "[AI JUDGE] %s vs %s | Decision: %s | "
+        "AI: %d | Math: %d | Final: %d | Flags: %s",
+        home, away, decision,
+        ai_confidence, math_score, final_confidence,
+        red_flags if red_flags else "none",
     )
 
     return {
         "sport_emoji": sport_emoji,
-        "ai_confidence": ai_score,
+        "decision": decision,
+        "ai_confidence": ai_confidence,
         "math_confidence": math_score,
-        "final_confidence": final_conf,
+        "final_confidence": final_confidence,
         "risk_level": risk_level,
         "logic": logic,
+        "key_factors": key_factors,
+        "red_flags": red_flags,
     }
 
 
@@ -2729,14 +2932,14 @@ def build_signal_message(
     final_confidence = ai_data["final_confidence"]
 
     conf_icon = (
-        "🔥"
-        if final_confidence >= CFG.HIGH_CONFIDENCE
+        "🔥" if final_confidence >= CFG.HIGH_CONFIDENCE
         else ("✅" if final_confidence >= CFG.MEDIUM_CONFIDENCE else "⚡")
     )
-    risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(
-        ai_data["risk_level"], "🟠"
-    )
+    risk_icon = {
+        "Low": "🟢", "Medium": "🟠", "High": "🔴"
+    }.get(ai_data["risk_level"], "🟠")
 
+    # Escape همه رشته‌ها
     h_esc = html_lib.escape(home)
     a_esc = html_lib.escape(away)
     sport_esc = html_lib.escape(sport)
@@ -2744,47 +2947,67 @@ def build_signal_message(
     market_label_esc = html_lib.escape(opp["market_label"])
     logic_esc = html_lib.escape(str(ai_data["logic"]))
 
+    # خطوط اصلی
     ev_line = f"📈 <b>Edge:</b> {opp['edge_pct']:.2f}%"
-    kelly_line = (
-        f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
-    )
+    kelly_line = f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
     steam_line = (
         f" | 📉 <b>Steam:</b> -{opp['steam_pct']:.1f}%"
-        if opp.get("steam_pct", 0) > 2.0
-        else ""
+        if opp.get("steam_pct", 0) > 2.0 else ""
     )
     clv_line = (
         f" | 📊 <b>CLV:</b> {opp.get('clv_pct', 0):+.1f}%"
-        if abs(opp.get("clv_pct", 0)) > 0.5
-        else ""
+        if abs(opp.get("clv_pct", 0)) > 0.5 else ""
     )
 
+    # ML تأیید
     ml_line = (
-        "\n🧠 <b>Math Models:</b> Verified"
-        if ml_prediction or poisson_prediction
-        else ""
+        "\n🧠 <b>Models:</b> ML + Poisson Verified"
+        if ml_prediction and poisson_prediction
+        else (
+            "\n🧠 <b>Models:</b> ML Verified"
+            if ml_prediction
+            else (
+                "\n🧠 <b>Models:</b> Poisson Verified"
+                if poisson_prediction else ""
+            )
+        )
     )
 
-    data_badge = ""
-    has_historical = bool(stats.get("historical_data"))
-    has_football = bool(stats.get("football_stats"))
-    has_elo = bool(stats.get("elo_data"))
-    has_ml = bool(ml_prediction)
-    has_us = bool(stats.get("us_sports"))
+    # Data sources badge
+    badges = []
+    if stats.get("historical_data"):
+        badges.append("📚 Historical")
+    if stats.get("football_stats"):
+        badges.append("⚽ Match Data")
+    if stats.get("elo_data"):
+        badges.append("📊 Elo")
+    if ml_prediction:
+        badges.append("🤖 ML")
+    if poisson_prediction:
+        badges.append("📐 Poisson")
+    if stats.get("us_sports"):
+        badges.append("🇺🇸 US Stats")
 
-    if has_historical or has_football or has_elo or has_ml or has_us:
-        badges = []
-        if has_historical:
-            badges.append("📚 Historical")
-        if has_football:
-            badges.append("⚽ Match Data")
-        if has_elo:
-            badges.append("📊 Elo")
-        if has_ml:
-            badges.append("🧠 ML")
-        if has_us:
-            badges.append("🇺🇸 US Stats")
-        data_badge = "\n📋 <b>Sources:</b> " + " | ".join(badges)
+    data_badge = (
+        "\n📋 <b>Sources:</b> " + " | ".join(badges)
+        if badges else ""
+    )
+
+    # Key factors از AI
+    key_factors = ai_data.get("key_factors", [])
+    factors_line = ""
+    if key_factors:
+        factors_escaped = [html_lib.escape(str(f)) for f in key_factors[:3]]
+        factors_text = "\n  • ".join(factors_escaped)
+        factors_line = f"\n\n🔑 <b>Key Factors:</b>\n  • {factors_text}"
+
+    # Red flags از AI
+    red_flags = ai_data.get("red_flags", [])
+    flags_line = ""
+    if red_flags:
+        flags_escaped = [html_lib.escape(str(f)) for f in red_flags]
+        flags_text = " | ".join(flags_escaped)
+        flags_line = f"\n⚠️ <b>Monitored:</b> <i>{flags_text}</i>"
 
     countdown = get_countdown_str(commence_time, now_utc)
 
@@ -2796,14 +3019,16 @@ def build_signal_message(
         f"📊 <b>Market:</b> {market_label_esc}\n\n"
         f"{ev_line}{kelly_line}{steam_line}{clv_line}\n\n"
         f"{risk_icon} <b>Risk:</b> {ai_data['risk_level']}  |  "
-        f"{conf_icon} <b>Final Confidence: {final_confidence}%</b>\n"
+        f"{conf_icon} <b>Confidence: {final_confidence}%</b>\n"
         f"⚙️ <i>(Math: {math_score} | AI: {ai_data['ai_confidence']})</i>"
-        f"{ml_line}{data_badge}\n\n"
+        f"{ml_line}"
+        f"{data_badge}"
+        f"{factors_line}"
+        f"{flags_line}\n\n"
         f"💡 <b>AI ANALYSIS:</b>\n"
         f"<blockquote>{logic_esc}</blockquote>\n\n"
         f"🔍 <i>Curated by {html_lib.escape(CFG.TELEGRAM_ID)}</i>"
     )
-
 
 # =========================================================
 # 18. ODDS FETCHER
@@ -3068,7 +3293,7 @@ async def fetch_all_odds_async() -> list:
 async def async_main():
     logger.info("=" * 65)
     logger.info(
-        "  ZBET90 ENGINE v6.5 | Dual Confirmation (Math + Gemini 50/50)"
+        "  ZBET90 ENGINE v6.5 | AI Judge Mode (AI 70% + Math 30%)"
     )
     logger.info("=" * 65)
     logger.info(
@@ -3111,6 +3336,8 @@ async def async_main():
 
     total_sent = 0
     total_analyzed = 0
+    skipped_math = 0
+    skipped_ai = 0
     skipped_confidence = 0
 
     for event in events:
@@ -3122,10 +3349,8 @@ async def async_main():
         if not home or not away:
             continue
 
-        # FIX: markets_data را از _markets_data بخوان
         markets_data = event.get("_markets_data", {})
 
-        # Debug: نشان بده چند market داریم
         if DEBUG_MODE:
             for mk, entries in markets_data.items():
                 bk_count = len(entries)
@@ -3141,23 +3366,29 @@ async def async_main():
         if not opportunities:
             continue
 
-        # بهترین فرصت را انتخاب کن
         opp = opportunities[0]
         total_analyzed += 1
 
+        # ── فیلتر اول: already sent ──────────────────────
         if sent_history.was_sent(home, away, opp["market"]):
             logger.debug(
-                "⏭️ Already sent: %s vs %s | %s", home, away, opp["market"]
+                "⏭️ Already sent: %s vs %s | %s",
+                home, away, opp["market"]
             )
             continue
 
-        # Smart Money
+        # ── فیلتر دوم: EV خیلی پایین ─────────────────────
+        if opp["ev"] < CFG.MATH_MIN_EV_TO_CALL_AI if hasattr(CFG, 'MATH_MIN_EV_TO_CALL_AI') else 0.005:
+            skipped_math += 1
+            continue
+
+        # ── Smart Money ───────────────────────────────────
         steam_drop = line_movement_tracker.record_and_get_movement(
             home, away, opp["market"], opp["pick"], opp["odds"]
         )
         opp["steam_pct"] = steam_drop
 
-        # Gather Stats
+        # ── Gather Stats ──────────────────────────────────
         stats: dict = {}
         ml_prediction: Optional[dict] = None
         poisson_prediction: Optional[dict] = None
@@ -3170,7 +3401,7 @@ async def async_main():
             ):
                 stats["historical_data"] = tennis_stats
             if ml_engine.is_tennis_trained and tennis_stats:
-                surface = "clay"  # French Open default
+                surface = "clay"
                 if "wimbledon" in sport.lower():
                     surface = "grass"
                 elif "us open" in sport.lower() or "hard" in sport.lower():
@@ -3203,54 +3434,6 @@ async def async_main():
             if poisson_prediction:
                 stats["poisson_prediction"] = poisson_prediction
 
-            # Dual confirmation filter - فقط اگر هر دو مدل داریم
-            if (
-                ml_prediction
-                and poisson_prediction
-                and opp["market"] == "h2h"
-            ):
-                pick_lower = opp["pick"].lower()
-                home_lower = home.lower()
-                away_lower = away.lower()
-
-                # FIX: handle Draw
-                if "draw" in pick_lower:
-                    pass  # Draw را از filter رد کن
-                else:
-                    is_home_pick = any(
-                        part in pick_lower
-                        for part in home_lower.split()
-                        if len(part) > 2
-                    )
-                    is_away_pick = any(
-                        part in pick_lower
-                        for part in away_lower.split()
-                        if len(part) > 2
-                    )
-
-                    if is_home_pick:
-                        ml_prob = ml_prediction.get("home_win", 0.5)
-                        poisson_prob = poisson_prediction.get(
-                            "home_win_prob_poisson", 0.5
-                        )
-                    elif is_away_pick:
-                        ml_prob = ml_prediction.get("away_win", 0.5)
-                        poisson_prob = poisson_prediction.get(
-                            "away_win_prob_poisson", 0.5
-                        )
-                    else:
-                        ml_prob = 0.5
-                        poisson_prob = 0.5
-
-                    # FIX: threshold پایین‌تر برای filter کمتر
-                    if ml_prob < 0.38 or poisson_prob < 0.38:
-                        logger.info(
-                            "⏭️ SKIP (Dual Filter): %s vs %s | ML=%.2f | "
-                            "Poisson=%.2f",
-                            home, away, ml_prob, poisson_prob,
-                        )
-                        continue
-
         elif sport_key in ["baseball", "basketball"]:
             us_stats = {
                 "home": data_engine.get_us_sports_stats(sport, home),
@@ -3259,67 +3442,102 @@ async def async_main():
             if us_stats["home"] or us_stats["away"]:
                 stats["us_sports"] = us_stats
 
-        # Math Score
+        # ── Math Score (gatekeeper اولیه) ────────────────
         math_score = ConfidenceEngine.calculate_math_score(
             opp, stats, opp["market"], ml_prediction, poisson_prediction
         )
 
-        # AI Analysis
-        ai_data = generate_dual_ai_analysis(
-            home, away, sport, opp["pick"], opp["market"],
-            opp, stats,
-            bool(
-                stats.get("historical_data")
-                or stats.get("football_stats")
-                or stats.get("elo_data")
-                or ml_prediction
-                or stats.get("us_sports")
-            ),
-            math_score,
-            ml_prediction,
-            poisson_prediction,
-            sport_key,
-        )
-
-        final_confidence = ai_data["final_confidence"]
-
-        if final_confidence < CFG.MIN_CONFIDENCE_TO_SEND:
-            skipped_confidence += 1
+        # اگر math score خیلی پایین → رد کن بدون صدا زدن AI
+        if math_score < CFG.MIN_MATH_SCORE_TO_CALL_AI:
+            skipped_math += 1
             logger.info(
-                "⏭️ SKIP (Math:%d | AI:%d | Final:%d < %d): "
-                "%s vs %s | %s | EV=%.2f%%",
-                math_score,
-                ai_data["ai_confidence"],
-                final_confidence,
-                CFG.MIN_CONFIDENCE_TO_SEND,
-                home,
-                away,
-                opp["pick"],
-                opp["edge_pct"],
+                "⏭️ SKIP (Math too low: %d < %d): %s vs %s | EV=%.2f%%",
+                math_score, CFG.MIN_MATH_SCORE_TO_CALL_AI,
+                home, away, opp["edge_pct"],
             )
             continue
 
-        logger.info(
-            "✅ [APPROVED] Math:%d | AI:%d | EV=%.2f%% | Conf=%d%%",
-            math_score,
-            ai_data["ai_confidence"],
-            opp["edge_pct"],
-            final_confidence,
+        # ── AI Judge - تصمیم اصلی ─────────────────────────
+        ai_data = generate_ai_decision(
+            home=home,
+            away=away,
+            sport=sport,
+            sport_key=sport_key,
+            opp=opp,
+            stats=stats,
+            math_score=math_score,
+            ml_prediction=ml_prediction,
+            poisson_prediction=poisson_prediction,
         )
 
-        # Build and send message
+        final_confidence = ai_data["final_confidence"]
+        ai_decision = ai_data.get("decision", "SKIP")
+
+        # ── فیلتر سوم: AI گفت SKIP ───────────────────────
+        if ai_decision == "SKIP":
+            skipped_ai += 1
+            logger.info(
+                "⏭️ AI SKIP: %s vs %s | "
+                "Math:%d | AI:%d | Final:%d | Flags:%s",
+                home, away,
+                math_score,
+                ai_data["ai_confidence"],
+                final_confidence,
+                ai_data.get("red_flags", []),
+            )
+            continue
+
+        # ── فیلتر چهارم: confidence نهایی ────────────────
+        if final_confidence < CFG.MIN_CONFIDENCE_TO_SEND:
+            skipped_confidence += 1
+            logger.info(
+                "⏭️ SKIP (Low confidence: %d < %d): %s vs %s",
+                final_confidence, CFG.MIN_CONFIDENCE_TO_SEND,
+                home, away,
+            )
+            continue
+
+        # ── تأیید نهایی ───────────────────────────────────
+        logger.info(
+            "✅ [APPROVED] %s vs %s | "
+            "Decision:%s | Math:%d | AI:%d | Final:%d | EV=%.2f%%",
+            home, away,
+            ai_decision,
+            math_score,
+            ai_data["ai_confidence"],
+            final_confidence,
+            opp["edge_pct"],
+        )
+
+        # ── Build & Send ──────────────────────────────────
         msg = build_signal_message(
-            home, away, sport, sport_key, opp, ai_data, stats,
-            math_score, ml_prediction, poisson_prediction,
-            now_utc, event.get("commence_time", ""),
+            home=home,
+            away=away,
+            sport=sport,
+            sport_key=sport_key,
+            opp=opp,
+            ai_data=ai_data,
+            stats=stats,
+            math_score=math_score,
+            ml_prediction=ml_prediction,
+            poisson_prediction=poisson_prediction,
+            now_utc=now_utc,
+            commence_time=event.get("commence_time", ""),
         )
 
         if send_telegram(msg):
             sent_history.mark_sent(home, away, opp["pick"], opp["market"])
             performance_tracker.record_signal(
-                home, away, opp["pick"], opp["market"],
-                opp["odds"], opp["ev"], final_confidence, opp["prob"],
-                sport_key, event.get("sport_key", ""),
+                home=home,
+                away=away,
+                pick=opp["pick"],
+                market=opp["market"],
+                odds=opp["odds"],
+                ev=opp["ev"],
+                confidence=final_confidence,
+                prob=opp["prob"],
+                sport=sport_key,
+                api_sport_key=event.get("sport_key", ""),
             )
             total_sent += 1
             logger.info(
@@ -3331,22 +3549,22 @@ async def async_main():
 
         await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
-    # Summary
+    # ── Summary ───────────────────────────────────────────
     logger.info("=" * 65)
     logger.info(
-        "📊 SUMMARY | Analyzed: %d | Sent: %d | Skipped(conf): %d",
-        total_analyzed, total_sent, skipped_confidence,
+        "📊 SUMMARY | Analyzed:%d | Sent:%d | "
+        "Skip(math):%d | Skip(AI):%d | Skip(conf):%d",
+        total_analyzed, total_sent,
+        skipped_math, skipped_ai, skipped_confidence,
     )
+
     if total_sent == 0 and total_analyzed == 0:
-        logger.info(
-            "ℹ️  No qualifying +EV opportunities in current window."
-        )
+        logger.info("ℹ️  No qualifying +EV opportunities in current window.")
     elif total_sent == 0:
         logger.info(
-            "ℹ️  %d opportunities found but filtered by confidence "
-            "threshold (%d).",
-            total_analyzed,
-            CFG.MIN_CONFIDENCE_TO_SEND,
+            "ℹ️  %d opportunities analyzed → filtered out. "
+            "Math:%d | AI:%d | Conf:%d",
+            total_analyzed, skipped_math, skipped_ai, skipped_confidence,
         )
 
     logger.info(
