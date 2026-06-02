@@ -12,8 +12,6 @@ from typing import Optional
 import requests
 from google import genai
 from google.genai import types
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from curl_cffi.requests import AsyncSession
 
 # =========================================================
