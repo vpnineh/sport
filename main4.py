@@ -834,7 +834,6 @@ class FreeDataEngine:
                     sum(1 for r in vm if r["scored"] > 0 and r["conceded"] > 0) / vn, 3
                 )
 
-        # H2H Football
         if "HomeTeam" in df.columns:
             hm2 = self._fuzzy(home, df["HomeTeam"])
             am2 = self._fuzzy(away, df["AwayTeam"])
@@ -863,9 +862,7 @@ class FreeDataEngine:
                     "over35_rate": round(sum(1 for r in h2hr if r["over35"]) / hn, 3),
                     "std_goals": round(float(np.std(gl)), 2),
                 }
-                logger.info(
-                    "✅ [FOOTBALL H2H] %s vs %s: %d matches", home, away, hn
-                )
+                logger.info("✅ [FOOTBALL H2H] %s vs %s: %d matches", home, away, hn)
 
         return stats
 
@@ -915,152 +912,152 @@ class FreeDataEngine:
         }
 
     # ──────────────────────────────────────────────────────
-    # NBA
+    # NBA  (nba_api پکیج رسمی)
     # ──────────────────────────────────────────────────────
     def load_nba_data(self):
-    """
-    منبع: nba_api - پکیج رسمی Python برای NBA Stats
-    pip install nba_api
-    """
-    cache_path = CFG.HISTORICAL_DIR / "nba_standings.json"
+        """
+        pip install nba_api
+        منبع رسمی NBA - standings فعلی فصل
+        """
+        cache_path = CFG.HISTORICAL_DIR / "nba_standings.json"
 
-    # چک cache اول
-    if cache_path.exists() and (time.time() - cache_path.stat().st_mtime) / 3600 < 12:
+        # چک cache اول (12 ساعت TTL)
+        if cache_path.exists() and (time.time() - cache_path.stat().st_mtime) / 3600 < 12:
+            try:
+                data = json.loads(cache_path.read_text())
+                if data:
+                    self.nba_data = pd.DataFrame(data)
+                    logger.info("✅ [NBA] %d teams from cache", len(self.nba_data))
+                    return
+            except Exception:
+                pass
+
         try:
-            data = json.loads(cache_path.read_text())
-            if data:
-                self.nba_data = pd.DataFrame(data)
-                logger.info("✅ [NBA] %d teams from cache", len(self.nba_data))
-                return
-        except Exception:
-            pass
+            from nba_api.stats.endpoints import leaguestandings
 
-    try:
-        from nba_api.stats.endpoints import leaguestandings
-        from nba_api.stats.static import teams as nba_teams_static
-
-        standings = leaguestandings.LeagueStandings(
-            season="2024-25",
-            season_type="Regular Season",
-            league_id="00",
-        )
-        df = standings.get_data_frames()[0]
-
-        if df is not None and not df.empty:
-            self.nba_data = df
-            cache_path.write_text(
-                json.dumps(df.to_dict(orient="records"), indent=2)
+            standings = leaguestandings.LeagueStandings(
+                season="2024-25",
+                season_type="Regular Season",
+                league_id="00",
             )
-            logger.info("✅ [NBA] %d teams via nba_api", len(df))
-            return
+            df = standings.get_data_frames()[0]
 
-    except ImportError:
-        logger.warning("[NBA] nba_api not installed → pip install nba_api")
-    except Exception as e:
-        logger.warning("[NBA] nba_api error: %s", str(e)[:80])
-
-    # Fallback: cache قدیمی
-    if cache_path.exists():
-        try:
-            data = json.loads(cache_path.read_text())
-            if data:
-                self.nba_data = pd.DataFrame(data)
-                logger.info("✅ [NBA] %d teams from stale cache", len(self.nba_data))
-                return
-        except Exception as e:
-            logger.error("[NBA] Cache error: %s", e)
-
-    logger.warning("[NBA] No data available")
-    self.nba_data = None
-
-
-def get_nba_stats(self, team: str) -> dict:
-    if self.nba_data is None or self.nba_data.empty:
-        return {}
-
-    df = self.nba_data
-    clean = team.lower().strip()
-
-    # جستجو در ستون‌های مختلف
-    m = pd.DataFrame()
-    for col in ["TeamName", "TEAM_NAME", "TeamCity", "TEAM_CITY"]:
-        if col in df.columns:
-            found = df[
-                df[col].astype(str).str.lower().str.contains(
-                    re.escape(clean), na=False
+            if df is not None and not df.empty:
+                self.nba_data = df
+                cache_path.write_text(
+                    json.dumps(df.to_dict(orient="records"), indent=2)
                 )
-            ]
-            if not found.empty:
-                m = found
-                break
+                logger.info("✅ [NBA] %d teams via nba_api", len(df))
+                return
 
-    if m.empty:
-        return {}
+        except ImportError:
+            logger.warning("[NBA] nba_api not installed → pip install nba_api")
+        except Exception as e:
+            logger.warning("[NBA] nba_api error: %s", str(e)[:80])
 
-    row = m.iloc[0]
+        # Fallback: cache قدیمی
+        if cache_path.exists():
+            try:
+                data = json.loads(cache_path.read_text())
+                if data:
+                    self.nba_data = pd.DataFrame(data)
+                    logger.info("✅ [NBA] %d teams from stale cache", len(self.nba_data))
+                    return
+            except Exception as e:
+                logger.error("[NBA] Cache error: %s", e)
 
-    def safe_int(*col_names):
-        for c in col_names:
-            if c in row.index:
-                try: return int(row[c] or 0)
-                except (ValueError, TypeError): return 0
-        return 0
+        logger.warning("[NBA] No data available")
+        self.nba_data = None
 
-    def safe_float(*col_names):
-        for c in col_names:
-            if c in row.index:
-                try: return float(row[c] or 0)
-                except (ValueError, TypeError): return 0.0
-        return 0.0
+    def get_nba_stats(self, team: str) -> dict:
+        if self.nba_data is None or self.nba_data.empty:
+            return {}
 
-    wins    = safe_int("WINS", "W")
-    losses  = safe_int("LOSSES", "L")
-    gp      = max(wins + losses, 1)
-    win_pct = safe_float("WinPCT", "WIN_PCT", "PCT")
-    pts_pg  = safe_float("PointsPG", "PTS_PG")
-    opp_pts = safe_float("OppPointsPG", "OPP_PTS_PG")
-    l10     = str(row.get("L10", row.get("LAST_TEN", "")))
-    streak  = str(row.get("strCurrentStreak", row.get("CurrentStreak", "")))
+        df = self.nba_data
+        clean = team.lower().strip()
 
-    return {
-        "season_record":    f"{wins}W-{losses}L",
-        "win_pct":          round(win_pct, 3),
-        "avg_pts_scored":   round(pts_pg, 1),
-        "avg_pts_allowed":  round(opp_pts, 1),
-        "pt_diff":          round(pts_pg - opp_pts, 1),
-        "last_10":          l10,
-        "streak":           streak,
-        "games_played":     gp,
-        "source":           "nba_api",
-    }
+        m = pd.DataFrame()
+        for col in ["TeamName", "TEAM_NAME", "TeamCity", "TEAM_CITY"]:
+            if col in df.columns:
+                found = df[
+                    df[col].astype(str).str.lower().str.contains(
+                        re.escape(clean), na=False
+                    )
+                ]
+                if not found.empty:
+                    m = found
+                    break
 
+        if m.empty:
+            return {}
 
-def get_nba_matchup(self, home: str, away: str) -> dict:
-    hs = self.get_nba_stats(home)
-    aw = self.get_nba_stats(away)
-    if not hs or not aw:
-        return {}
+        row = m.iloc[0]
 
-    h_str = hs.get("win_pct", 0.5) * 0.6 + max(
-        min(hs.get("pt_diff", 0) / 20, 0.3), -0.3
-    )
-    a_str = aw.get("win_pct", 0.5) * 0.6 + max(
-        min(aw.get("pt_diff", 0) / 20, 0.3), -0.3
-    )
-    total = h_str + a_str
-    home_prob = (
-        min(0.85, max(0.15, (h_str / total) + 0.02))
-        if total > 0 else 0.52
-    )
-    return {
-        "home":              hs,
-        "away":              aw,
-        "elo_home_win_prob": round(home_prob, 3),
-        "elo_away_win_prob": round(1 - home_prob, 3),
-    }
+        def safe_int(*cols):
+            for c in cols:
+                if c in row.index:
+                    try:
+                        return int(row[c] or 0)
+                    except (ValueError, TypeError):
+                        return 0
+            return 0
+
+        def safe_float(*cols):
+            for c in cols:
+                if c in row.index:
+                    try:
+                        return float(row[c] or 0)
+                    except (ValueError, TypeError):
+                        return 0.0
+            return 0.0
+
+        wins    = safe_int("WINS", "W")
+        losses  = safe_int("LOSSES", "L")
+        gp      = max(wins + losses, 1)
+        win_pct = safe_float("WinPCT", "WIN_PCT", "PCT")
+        pts_pg  = safe_float("PointsPG", "PTS_PG")
+        opp_pts = safe_float("OppPointsPG", "OPP_PTS_PG")
+        l10     = str(row.get("L10", row.get("LAST_TEN", "")))
+        streak  = str(row.get("strCurrentStreak", row.get("CurrentStreak", "")))
+
+        return {
+            "season_record":   f"{wins}W-{losses}L",
+            "win_pct":         round(win_pct, 3),
+            "avg_pts_scored":  round(pts_pg, 1),
+            "avg_pts_allowed": round(opp_pts, 1),
+            "pt_diff":         round(pts_pg - opp_pts, 1),
+            "last_10":         l10,
+            "streak":          streak,
+            "games_played":    gp,
+            "source":          "nba_api",
+        }
+
+    def get_nba_matchup(self, home: str, away: str) -> dict:
+        hs = self.get_nba_stats(home)
+        aw = self.get_nba_stats(away)
+        if not hs or not aw:
+            return {}
+
+        h_str = hs.get("win_pct", 0.5) * 0.6 + max(
+            min(hs.get("pt_diff", 0) / 20, 0.3), -0.3
+        )
+        a_str = aw.get("win_pct", 0.5) * 0.6 + max(
+            min(aw.get("pt_diff", 0) / 20, 0.3), -0.3
+        )
+        total = h_str + a_str
+        home_prob = (
+            min(0.85, max(0.15, (h_str / total) + 0.02))
+            if total > 0 else 0.52
+        )
+        return {
+            "home":              hs,
+            "away":              aw,
+            "elo_home_win_prob": round(home_prob, 3),
+            "elo_away_win_prob": round(1 - home_prob, 3),
+        }
 
     # ──────────────────────────────────────────────────────
-    # NHL  (Official NHL API - رایگان، بدون key)
+    # NHL  (Official NHL API)
     # ──────────────────────────────────────────────────────
     def load_nhl_data(self):
         """
@@ -1079,34 +1076,32 @@ def get_nba_matchup(self, home: str, away: str) -> dict:
                     rows = []
                     for team in standings:
                         rows.append({
-                            "team": team.get("teamName", {}).get("default", ""),
-                            "teamAbbrev": team.get("teamAbbrev", {}).get("default", ""),
-                            "wins": team.get("wins", 0),
-                            "losses": team.get("losses", 0),
-                            "otLosses": team.get("otLosses", 0),
-                            "points": team.get("points", 0),
-                            "goalsFor": team.get("goalFor", 0),
+                            "team":         team.get("teamName", {}).get("default", ""),
+                            "teamAbbrev":   team.get("teamAbbrev", {}).get("default", ""),
+                            "wins":         team.get("wins", 0),
+                            "losses":       team.get("losses", 0),
+                            "otLosses":     team.get("otLosses", 0),
+                            "points":       team.get("points", 0),
+                            "goalsFor":     team.get("goalFor", 0),
                             "goalsAgainst": team.get("goalAgainst", 0),
                             "goalsForPctg": team.get("goalsForPctg", 0.0),
-                            "home_wins": team.get("homeWins", 0),
-                            "home_losses": team.get("homeLosses", 0),
-                            "road_wins": team.get("roadWins", 0),
-                            "road_losses": team.get("roadLosses", 0),
-                            "l10Wins": team.get("l10Wins", 0),
-                            "l10Losses": team.get("l10Losses", 0),
-                            "streakCode": team.get("streakCode", ""),
-                            "streakCount": team.get("streakCount", 0),
+                            "home_wins":    team.get("homeWins", 0),
+                            "home_losses":  team.get("homeLosses", 0),
+                            "road_wins":    team.get("roadWins", 0),
+                            "road_losses":  team.get("roadLosses", 0),
+                            "l10Wins":      team.get("l10Wins", 0),
+                            "l10Losses":    team.get("l10Losses", 0),
+                            "streakCode":   team.get("streakCode", ""),
+                            "streakCount":  team.get("streakCount", 0),
                         })
                     self.nhl_data = pd.DataFrame(rows)
                     cache_path.write_text(json.dumps(data, indent=2))
-                    logger.info(
-                        "✅ [NHL] %d teams loaded from official API", len(rows)
-                    )
+                    logger.info("✅ [NHL] %d teams from official API", len(rows))
                     return
         except Exception as e:
             logger.warning("[NHL] Live API error: %s", str(e)[:80])
 
-        # Fallback: cache قبلی
+        # Fallback: cache
         if cache_path.exists():
             try:
                 data = json.loads(cache_path.read_text())
@@ -1115,28 +1110,28 @@ def get_nba_matchup(self, home: str, away: str) -> dict:
                     rows = []
                     for t in standings:
                         rows.append({
-                            "team": t.get("teamName", {}).get("default", ""),
-                            "teamAbbrev": t.get("teamAbbrev", {}).get("default", ""),
-                            "wins": t.get("wins", 0),
-                            "losses": t.get("losses", 0),
-                            "otLosses": t.get("otLosses", 0),
-                            "points": t.get("points", 0),
-                            "goalsFor": t.get("goalFor", 0),
+                            "team":         t.get("teamName", {}).get("default", ""),
+                            "teamAbbrev":   t.get("teamAbbrev", {}).get("default", ""),
+                            "wins":         t.get("wins", 0),
+                            "losses":       t.get("losses", 0),
+                            "otLosses":     t.get("otLosses", 0),
+                            "points":       t.get("points", 0),
+                            "goalsFor":     t.get("goalFor", 0),
                             "goalsAgainst": t.get("goalAgainst", 0),
-                            "l10Wins": t.get("l10Wins", 0),
-                            "l10Losses": t.get("l10Losses", 0),
-                            "streakCode": t.get("streakCode", ""),
-                            "streakCount": t.get("streakCount", 0),
-                            "home_wins": t.get("homeWins", 0),
-                            "home_losses": t.get("homeLosses", 0),
-                            "road_wins": t.get("roadWins", 0),
-                            "road_losses": t.get("roadLosses", 0),
+                            "l10Wins":      t.get("l10Wins", 0),
+                            "l10Losses":    t.get("l10Losses", 0),
+                            "streakCode":   t.get("streakCode", ""),
+                            "streakCount":  t.get("streakCount", 0),
+                            "home_wins":    t.get("homeWins", 0),
+                            "home_losses":  t.get("homeLosses", 0),
+                            "road_wins":    t.get("roadWins", 0),
+                            "road_losses":  t.get("roadLosses", 0),
                         })
                     self.nhl_data = pd.DataFrame(rows)
                     logger.info("✅ [NHL] %d teams from cache", len(rows))
                     return
             except Exception as e:
-                logger.error("[NHL] Cache fallback error: %s", e)
+                logger.error("[NHL] Cache error: %s", e)
 
         logger.warning("[NHL] No data available")
         self.nhl_data = None
@@ -1144,17 +1139,15 @@ def get_nba_matchup(self, home: str, away: str) -> dict:
     def get_nhl_stats(self, team: str) -> dict:
         if self.nhl_data is None or self.nhl_data.empty:
             return {}
+
         clean = team.lower().strip()
         m = self.nhl_data[
-            self.nhl_data["team"].str.lower().str.contains(
-                re.escape(clean), na=False
-            ) |
-            self.nhl_data["teamAbbrev"].str.lower().str.contains(
-                re.escape(clean), na=False
-            )
+            self.nhl_data["team"].str.lower().str.contains(re.escape(clean), na=False) |
+            self.nhl_data["teamAbbrev"].str.lower().str.contains(re.escape(clean), na=False)
         ]
         if m.empty:
             return {}
+
         row = m.iloc[0]
         gp = max(
             int(row.get("wins", 0)) +
@@ -1162,161 +1155,171 @@ def get_nba_matchup(self, home: str, away: str) -> dict:
             int(row.get("otLosses", 0)),
             1,
         )
-        gf = int(row.get("goalsFor", 0))
-        ga = int(row.get("goalsAgainst", 0))
+        gf   = int(row.get("goalsFor", 0))
+        ga   = int(row.get("goalsAgainst", 0))
         l10w = int(row.get("l10Wins", 0))
         l10l = int(row.get("l10Losses", 0))
+
         return {
-            "wins": int(row.get("wins", 0)),
-            "losses": int(row.get("losses", 0)),
-            "ot_losses": int(row.get("otLosses", 0)),
-            "points": int(row.get("points", 0)),
-            "games_played": gp,
-            "win_pct": round(int(row.get("wins", 0)) / gp, 3),
-            "avg_goals_for": round(gf / gp, 2),
-            "avg_goals_against": round(ga / gp, 2),
+            "wins":               int(row.get("wins", 0)),
+            "losses":             int(row.get("losses", 0)),
+            "ot_losses":          int(row.get("otLosses", 0)),
+            "points":             int(row.get("points", 0)),
+            "games_played":       gp,
+            "win_pct":            round(int(row.get("wins", 0)) / gp, 3),
+            "avg_goals_for":      round(gf / gp, 2),
+            "avg_goals_against":  round(ga / gp, 2),
             "goal_diff_per_game": round((gf - ga) / gp, 2),
-            "last_10": f"{l10w}W-{l10l}L",
-            "streak": f"{row.get('streakCode', '?')}{row.get('streakCount', 0)}",
-            "home_wins": int(row.get("home_wins", 0)),
-            "home_losses": int(row.get("home_losses", 0)),
-            "road_wins": int(row.get("road_wins", 0)),
-            "road_losses": int(row.get("road_losses", 0)),
-            "source": "nhl_official_api",
+            "last_10":            f"{l10w}W-{l10l}L",
+            "streak":             f"{row.get('streakCode', '?')}{row.get('streakCount', 0)}",
+            "home_wins":          int(row.get("home_wins", 0)),
+            "home_losses":        int(row.get("home_losses", 0)),
+            "road_wins":          int(row.get("road_wins", 0)),
+            "road_losses":        int(row.get("road_losses", 0)),
+            "source":             "nhl_official_api",
         }
 
     # ──────────────────────────────────────────────────────
-    # MLB
+    # MLB  (MLB Stats API رسمی)
     # ──────────────────────────────────────────────────────
     def load_mlb_data(self):
-    """
-    MLB Stats API رسمی - رایگان، بدون key، همیشه آپدیت
-    https://statsapi.mlb.com
-    """
-    url = "https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=2025&standingsTypes=regularSeason"
-    cache_path = CFG.HISTORICAL_DIR / "mlb_standings.json"
+        """
+        MLB Stats API رسمی - رایگان، بدون key
+        https://statsapi.mlb.com
+        """
+        url = "https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=2025&standingsTypes=regularSeason"
+        cache_path = CFG.HISTORICAL_DIR / "mlb_standings.json"
 
-    try:
-        r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-        if r.status_code == 200:
-            data = r.json()
-            rows = []
-            for record in data.get("records", []):
-                for tr in record.get("teamRecords", []):
-                    team_info = tr.get("team", {})
-                    rows.append({
-                        "team": team_info.get("name", ""),
-                        "team_id": team_info.get("id", 0),
-                        "wins": tr.get("wins", 0),
-                        "losses": tr.get("losses", 0),
-                        "win_pct": float(tr.get("winningPercentage", 0) or 0),
-                        "runs_scored": tr.get("runsScored", 0),
-                        "runs_allowed": tr.get("runsAllowed", 0),
-                        "home_wins": tr.get("records", {}).get("splitRecords", [{}])[0].get("wins", 0) if tr.get("records", {}).get("splitRecords") else 0,
-                        "away_wins": tr.get("records", {}).get("splitRecords", [{}])[1].get("wins", 0) if tr.get("records", {}).get("splitRecords") and len(tr.get("records", {}).get("splitRecords", [])) > 1 else 0,
-                        "last10_wins": next((s.get("wins", 0) for s in tr.get("records", {}).get("splitRecords", []) if s.get("type") == "lastTen"), 0),
-                        "streak": tr.get("streak", {}).get("streakCode", ""),
-                    })
-            if rows:
-                self.mlb_data = pd.DataFrame(rows)
-                cache_path.write_text(json.dumps(data, indent=2))
-                logger.info("✅ [MLB] %d teams from official API", len(rows))
-                return
-    except Exception as e:
-        logger.warning("[MLB] Live API error: %s", str(e)[:80])
-
-    # Fallback: cache
-    if cache_path.exists():
         try:
-            data = json.loads(cache_path.read_text())
-            rows = []
-            for record in data.get("records", []):
-                for tr in record.get("teamRecords", []):
-                    team_info = tr.get("team", {})
-                    rows.append({
-                        "team": team_info.get("name", ""),
-                        "team_id": team_info.get("id", 0),
-                        "wins": tr.get("wins", 0),
-                        "losses": tr.get("losses", 0),
-                        "win_pct": float(tr.get("winningPercentage", 0) or 0),
-                        "runs_scored": tr.get("runsScored", 0),
-                        "runs_allowed": tr.get("runsAllowed", 0),
-                        "streak": tr.get("streak", {}).get("streakCode", ""),
-                    })
-            if rows:
-                self.mlb_data = pd.DataFrame(rows)
-                logger.info("✅ [MLB] %d teams from cache", len(rows))
-                return
+            r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+            if r.status_code == 200:
+                data = r.json()
+                rows = []
+                for record in data.get("records", []):
+                    for tr in record.get("teamRecords", []):
+                        team_info = tr.get("team", {})
+                        split_records = tr.get("records", {}).get("splitRecords", [])
+                        home_wins = next(
+                            (s.get("wins", 0) for s in split_records if s.get("type") == "home"), 0
+                        )
+                        away_wins = next(
+                            (s.get("wins", 0) for s in split_records if s.get("type") == "away"), 0
+                        )
+                        last10_wins = next(
+                            (s.get("wins", 0) for s in split_records if s.get("type") == "lastTen"), 0
+                        )
+                        rows.append({
+                            "team":         team_info.get("name", ""),
+                            "team_id":      team_info.get("id", 0),
+                            "wins":         tr.get("wins", 0),
+                            "losses":       tr.get("losses", 0),
+                            "win_pct":      float(tr.get("winningPercentage", 0) or 0),
+                            "runs_scored":  tr.get("runsScored", 0),
+                            "runs_allowed": tr.get("runsAllowed", 0),
+                            "home_wins":    home_wins,
+                            "away_wins":    away_wins,
+                            "last10_wins":  last10_wins,
+                            "streak":       tr.get("streak", {}).get("streakCode", ""),
+                        })
+                if rows:
+                    self.mlb_data = pd.DataFrame(rows)
+                    cache_path.write_text(json.dumps(data, indent=2))
+                    logger.info("✅ [MLB] %d teams from official API", len(rows))
+                    return
         except Exception as e:
-            logger.error("[MLB] Cache error: %s", e)
+            logger.warning("[MLB] Live API error: %s", str(e)[:80])
 
-    logger.warning("[MLB] No data available")
-    self.mlb_data = None
+        # Fallback: cache
+        if cache_path.exists():
+            try:
+                data = json.loads(cache_path.read_text())
+                rows = []
+                for record in data.get("records", []):
+                    for tr in record.get("teamRecords", []):
+                        team_info = tr.get("team", {})
+                        rows.append({
+                            "team":         team_info.get("name", ""),
+                            "team_id":      team_info.get("id", 0),
+                            "wins":         tr.get("wins", 0),
+                            "losses":       tr.get("losses", 0),
+                            "win_pct":      float(tr.get("winningPercentage", 0) or 0),
+                            "runs_scored":  tr.get("runsScored", 0),
+                            "runs_allowed": tr.get("runsAllowed", 0),
+                            "streak":       tr.get("streak", {}).get("streakCode", ""),
+                        })
+                if rows:
+                    self.mlb_data = pd.DataFrame(rows)
+                    logger.info("✅ [MLB] %d teams from cache", len(rows))
+                    return
+            except Exception as e:
+                logger.error("[MLB] Cache error: %s", e)
 
+        logger.warning("[MLB] No data available")
+        self.mlb_data = None
 
-def get_mlb_stats(self, team: str) -> dict:
-    # اول statsapi پکیج (real-time game logs)
-    if HAS_STATSAPI:
-        try:
-            teams = mlb_statsapi.lookup_team(team)
-            if teams:
-                tid = teams[0]["id"]
-                sd = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
-                ed = datetime.now().strftime("%Y-%m-%d")
-                sched = mlb_statsapi.schedule(team=tid, start_date=sd, end_date=ed)
-                finished = [g for g in sched if g.get("status") == "Final"][-7:]
-                if finished:
-                    wins = losses = rs = ra = 0
-                    for g in finished:
-                        ih = g.get("home_id") == tid
-                        hs = g.get("home_score", 0) or 0
-                        as_ = g.get("away_score", 0) or 0
-                        ts = hs if ih else as_
-                        os_ = as_ if ih else hs
-                        if ts > os_:
-                            wins += 1
-                        else:
-                            losses += 1
-                        rs += ts
-                        ra += os_
-                    tg = max(wins + losses, 1)
-                    return {
-                        "recent_form": f"{wins}W-{losses}L",
-                        "avg_runs_scored": round(rs / tg, 1),
-                        "avg_runs_allowed": round(ra / tg, 1),
-                        "run_diff": round((rs - ra) / tg, 1),
-                        "source": "statsapi_live",
-                    }
-        except Exception as e:
-            logger.debug("[MLB STATSAPI] %s: %s", team, str(e)[:80])
+    def get_mlb_stats(self, team: str) -> dict:
+        # اول statsapi پکیج (real-time game logs)
+        if HAS_STATSAPI:
+            try:
+                teams = mlb_statsapi.lookup_team(team)
+                if teams:
+                    tid = teams[0]["id"]
+                    sd  = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
+                    ed  = datetime.now().strftime("%Y-%m-%d")
+                    sched = mlb_statsapi.schedule(team=tid, start_date=sd, end_date=ed)
+                    finished = [g for g in sched if g.get("status") == "Final"][-7:]
+                    if finished:
+                        wins = losses = rs = ra = 0
+                        for g in finished:
+                            ih  = g.get("home_id") == tid
+                            hs  = g.get("home_score", 0) or 0
+                            as_ = g.get("away_score", 0) or 0
+                            ts  = hs if ih else as_
+                            os_ = as_ if ih else hs
+                            if ts > os_:
+                                wins += 1
+                            else:
+                                losses += 1
+                            rs += ts
+                            ra += os_
+                        tg = max(wins + losses, 1)
+                        return {
+                            "recent_form":       f"{wins}W-{losses}L",
+                            "avg_runs_scored":   round(rs / tg, 1),
+                            "avg_runs_allowed":  round(ra / tg, 1),
+                            "run_diff":          round((rs - ra) / tg, 1),
+                            "source":            "statsapi_live",
+                        }
+            except Exception as e:
+                logger.debug("[MLB STATSAPI] %s: %s", team, str(e)[:80])
 
-    # Fallback: standings data
-    if self.mlb_data is None or self.mlb_data.empty:
-        return {}
-    clean = team.lower().strip()
-    m = self.mlb_data[
-        self.mlb_data["team"].str.lower().str.contains(re.escape(clean), na=False)
-    ]
-    if m.empty:
-        return {}
-    row = m.iloc[0]
-    w = int(row.get("wins", 0))
-    l = int(row.get("losses", 0))
-    gp = max(w + l, 1)
-    rs = int(row.get("runs_scored", 0))
-    ra = int(row.get("runs_allowed", 0))
-    return {
-        "season_record": f"{w}W-{l}L",
-        "win_pct": round(float(row.get("win_pct", 0)), 3),
-        "avg_runs_scored": round(rs / gp, 1),
-        "avg_runs_allowed": round(ra / gp, 1),
-        "run_diff_per_game": round((rs - ra) / gp, 2),
-        "streak": str(row.get("streak", "")),
-        "source": "mlb_official_api",
-    }
+        # Fallback: standings
+        if self.mlb_data is None or self.mlb_data.empty:
+            return {}
+        clean = team.lower().strip()
+        m = self.mlb_data[
+            self.mlb_data["team"].str.lower().str.contains(re.escape(clean), na=False)
+        ]
+        if m.empty:
+            return {}
+        row = m.iloc[0]
+        w  = int(row.get("wins", 0))
+        l  = int(row.get("losses", 0))
+        gp = max(w + l, 1)
+        rs = int(row.get("runs_scored", 0))
+        ra = int(row.get("runs_allowed", 0))
+        return {
+            "season_record":      f"{w}W-{l}L",
+            "win_pct":            round(float(row.get("win_pct", 0)), 3),
+            "avg_runs_scored":    round(rs / gp, 1),
+            "avg_runs_allowed":   round(ra / gp, 1),
+            "run_diff_per_game":  round((rs - ra) / gp, 2),
+            "streak":             str(row.get("streak", "")),
+            "source":             "mlb_official_api",
+        }
 
     # ──────────────────────────────────────────────────────
-    # CRICKET
+    # CRICKET  (cricsheet.org)
     # ──────────────────────────────────────────────────────
     def load_cricket_data(self):
         """
@@ -1326,7 +1329,6 @@ def get_mlb_stats(self, team: str) -> dict:
         import zipfile
         import io
 
-        zip_path = CFG.HISTORICAL_DIR / "cricket_t20.zip"
         extracted = CFG.HISTORICAL_DIR / "cricket_t20_matches.csv"
 
         if extracted.exists() and (time.time() - extracted.stat().st_mtime) / 3600 < CFG.TTL_GITHUB_DATA:
@@ -1341,9 +1343,7 @@ def get_mlb_stats(self, team: str) -> dict:
         try:
             r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
             if r.status_code == 200 and len(r.content) > 1000:
-                zip_path.write_bytes(r.content)
                 with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-                    # فایل اصلی match info
                     csv_files = sorted(
                         [f for f in z.namelist() if f.endswith(".csv")],
                         key=lambda x: len(x),
@@ -1356,9 +1356,7 @@ def get_mlb_stats(self, team: str) -> dict:
                             self.cricket_data["date"] = pd.to_datetime(
                                 self.cricket_data["date"], errors="coerce"
                             )
-                        logger.info(
-                            "✅ [CRICKET] %d records loaded", len(self.cricket_data)
-                        )
+                        logger.info("✅ [CRICKET] %d records loaded", len(self.cricket_data))
                         return
         except Exception as e:
             logger.debug("[CRICKET] Download error: %s", str(e)[:80])
@@ -1386,9 +1384,7 @@ def get_mlb_stats(self, team: str) -> dict:
         )
         result = {"matches_found": len(m), "form_sample": len(recent)}
         if run_col:
-            result["avg_runs_recent"] = round(
-                float(recent[run_col].dropna().mean()), 1
-            )
+            result["avg_runs_recent"] = round(float(recent[run_col].dropna().mean()), 1)
         return result
 
     # ──────────────────────────────────────────────────────
@@ -1427,253 +1423,443 @@ class MLPredictionEngine:
         self.de = de
         self.football_pipeline: Optional[dict] = None
         self.tennis_pipeline: Optional[dict] = None
-        self.nba_pipeline: Optional[dict] = None
-        self.is_football_trained = self.is_tennis_trained = self.is_nba_trained = False
+        self.is_football_trained = False
+        self.is_tennis_trained = False
+        self.is_nba_trained = False  # همیشه False - از matchup استفاده میشه
         self._football_team_stats: dict = {}
         self._rng = np.random.RandomState(42)
 
-    # ── Football ─────────────────────────────────────────
+    # ──────────────────────────────────────────────────────
+    # FOOTBALL
+    # ──────────────────────────────────────────────────────
     def load_or_train_football_model(self):
-        path = CFG.ML_DIR/"football_model_v7.pkl"
-        if path.exists() and (time.time()-path.stat().st_mtime)/3600 < 24:
+        path = CFG.ML_DIR / "football_model_v7.pkl"
+        if path.exists() and (time.time() - path.stat().st_mtime) / 3600 < 24:
             try:
-                d=pickle.loads(path.read_bytes())
-                self.football_pipeline=d["pipeline"]; self._football_team_stats=d["stats"]
-                self.is_football_trained=True; logger.info("⚡ [ML FOOTBALL] Loaded from cache")
+                d = pickle.loads(path.read_bytes())
+                self.football_pipeline = d["pipeline"]
+                self._football_team_stats = d["stats"]
+                self.is_football_trained = True
+                logger.info("⚡ [ML FOOTBALL] Loaded from cache")
                 return
-            except Exception: pass
+            except Exception:
+                pass
         self._train_football()
         if self.is_football_trained:
-            try: path.write_bytes(pickle.dumps({"pipeline":self.football_pipeline,"stats":self._football_team_stats})); logger.info("💾 [ML FOOTBALL] Saved")
-            except Exception: pass
+            try:
+                path.write_bytes(
+                    pickle.dumps({
+                        "pipeline": self.football_pipeline,
+                        "stats": self._football_team_stats,
+                    })
+                )
+                logger.info("💾 [ML FOOTBALL] Saved")
+            except Exception:
+                pass
 
     def _train_football(self):
         df = self.de.football_data.get("all")
-        if df is None or len(df)<300: return
+        if df is None or len(df) < 300:
+            logger.warning("[ML FOOTBALL] Insufficient data (%d rows)",
+                           len(df) if df is not None else 0)
+            return
+
         result_lookup, self._football_team_stats = self._build_fb_rolling(df)
         X, y = self._build_fb_features(result_lookup)
-        if len(X)<200 or len(np.unique(y))<2: return
-        scaler=RobustScaler(); Xs=scaler.fit_transform(X)
-        # FIX: استفاده از Pipeline داخلی برای جلوگیری از data leakage
-        model=CalibratedClassifierCV(
+
+        if len(X) < 200 or len(np.unique(y)) < 2:
+            logger.warning("[ML FOOTBALL] Too few samples or classes")
+            return
+
+        scaler = RobustScaler()
+        Xs = scaler.fit_transform(X)
+
+        model = CalibratedClassifierCV(
             StackingClassifier(
-                estimators=[("gb",GradientBoostingClassifier(n_estimators=200,max_depth=3,learning_rate=0.05,random_state=42)),
-                             ("rf",RandomForestClassifier(n_estimators=100,max_depth=5,random_state=42,n_jobs=-1))],
-                final_estimator=LogisticRegression(max_iter=1000,C=0.1,random_state=42), cv=3),
-            cv=3, method="isotonic")
+                estimators=[
+                    ("gb", GradientBoostingClassifier(
+                        n_estimators=200, max_depth=3,
+                        learning_rate=0.05, random_state=42
+                    )),
+                    ("rf", RandomForestClassifier(
+                        n_estimators=100, max_depth=5,
+                        random_state=42, n_jobs=-1
+                    )),
+                ],
+                final_estimator=LogisticRegression(
+                    max_iter=1000, C=0.1, random_state=42
+                ),
+                cv=3,
+            ),
+            cv=3,
+            method="isotonic",
+        )
         try:
             model.fit(Xs, y)
-            self.football_pipeline={"model":model,"scaler":scaler}
-            self.is_football_trained=True
+            self.football_pipeline = {"model": model, "scaler": scaler}
+            self.is_football_trained = True
             logger.info("✅ [ML FOOTBALL] Trained on %d samples", len(X))
-        except Exception as e: logger.error("[ML FOOTBALL] %s", e)
+        except Exception as e:
+            logger.error("[ML FOOTBALL] Training failed: %s", e)
 
-    def _build_fb_rolling(self, df: pd.DataFrame) -> Tuple[dict,dict]:
-        ts: Dict[str,deque] = defaultdict(lambda: deque(maxlen=10))
+    def _build_fb_rolling(self, df: pd.DataFrame) -> Tuple[dict, dict]:
+        ts: Dict[str, deque] = defaultdict(lambda: deque(maxlen=10))
         lookup = {}
+
         for idx, row in df.iterrows():
-            ht=str(row.get("HomeTeam","") or ""); at=str(row.get("AwayTeam","") or "")
-            ftr=str(row.get("FTR","") or "")
-            if not ht or not at or ftr not in ["H","D","A"]: continue
-            try: hg=float(row.get("FTHG",0) or 0); ag=float(row.get("FTAG",0) or 0)
-            except (ValueError,TypeError): continue
+            ht = str(row.get("HomeTeam", "") or "")
+            at = str(row.get("AwayTeam", "") or "")
+            ftr = str(row.get("FTR", "") or "")
+            if not ht or not at or ftr not in ["H", "D", "A"]:
+                continue
+            try:
+                hg = float(row.get("FTHG", 0) or 0)
+                ag = float(row.get("FTAG", 0) or 0)
+            except (ValueError, TypeError):
+                continue
+
             def gs(team):
-                h=list(ts[team])
-                if len(h)<3: return None
-                w=np.array([1/(i+1) for i in range(len(h))][::-1]); w/=w.sum()
-                return {"avg_gs":float(np.dot(w,[x["gs"] for x in h])),"avg_gc":float(np.dot(w,[x["gc"] for x in h])),
-                        "form_pts":float(np.dot(w,[x["pts"] for x in h])),"win_rate":sum(1 for x in h if x["pts"]==3)/len(h)}
-            hs=gs(ht); aws=gs(at)
+                h = list(ts[team])
+                if len(h) < 3:
+                    return None
+                w = np.array([1 / (i + 1) for i in range(len(h))][::-1])
+                w /= w.sum()
+                return {
+                    "avg_gs":   float(np.dot(w, [x["gs"]  for x in h])),
+                    "avg_gc":   float(np.dot(w, [x["gc"]  for x in h])),
+                    "form_pts": float(np.dot(w, [x["pts"] for x in h])),
+                    "win_rate": sum(1 for x in h if x["pts"] == 3) / len(h),
+                }
+
+            hs = gs(ht)
+            aws = gs(at)
             if hs and aws:
-                lookup[idx]={"home_stats":hs,"away_stats":aws,"label":{"H":0,"D":1,"A":2}[ftr]}
-            ts[ht].appendleft({"gs":hg,"gc":ag,"pts":3 if ftr=="H" else(1 if ftr=="D" else 0)})
-            ts[at].appendleft({"gs":ag,"gc":hg,"pts":3 if ftr=="A" else(1 if ftr=="D" else 0)})
+                lookup[idx] = {
+                    "home_stats": hs,
+                    "away_stats": aws,
+                    "label": {"H": 0, "D": 1, "A": 2}[ftr],
+                }
+
+            ts[ht].appendleft({
+                "gs": hg, "gc": ag,
+                "pts": 3 if ftr == "H" else (1 if ftr == "D" else 0),
+            })
+            ts[at].appendleft({
+                "gs": ag, "gc": hg,
+                "pts": 3 if ftr == "A" else (1 if ftr == "D" else 0),
+            })
+
         return lookup, dict(ts)
 
-    def _build_fb_features(self, lookup: dict) -> Tuple[np.ndarray,np.ndarray]:
-        feats,labels=[],[]
-        for _,d in lookup.items():
-            hs=d["home_stats"]; aws=d["away_stats"]
-            if not hs or not aws: continue
-            feats.append([hs.get("avg_gs",0),hs.get("avg_gc",0),hs.get("form_pts",0),hs.get("win_rate",0),
-                          aws.get("avg_gs",0),aws.get("avg_gc",0),aws.get("form_pts",0),aws.get("win_rate",0),
-                          hs.get("avg_gs",0)-aws.get("avg_gc",0),aws.get("avg_gs",0)-hs.get("avg_gc",0)])
+    def _build_fb_features(self, lookup: dict) -> Tuple[np.ndarray, np.ndarray]:
+        feats, labels = [], []
+        for _, d in lookup.items():
+            hs = d["home_stats"]
+            aws = d["away_stats"]
+            if not hs or not aws:
+                continue
+            feats.append([
+                hs.get("avg_gs",   0), hs.get("avg_gc",   0),
+                hs.get("form_pts", 0), hs.get("win_rate", 0),
+                aws.get("avg_gs",   0), aws.get("avg_gc",   0),
+                aws.get("form_pts", 0), aws.get("win_rate", 0),
+                hs.get("avg_gs", 0) - aws.get("avg_gc", 0),
+                aws.get("avg_gs", 0) - hs.get("avg_gc",  0),
+            ])
             labels.append(d["label"])
-        if not feats: return np.array([]),np.array([])
-        return np.nan_to_num(np.array(feats,dtype=np.float64)), np.array(labels,dtype=np.int32)
+        if not feats:
+            return np.array([]), np.array([])
+        return (
+            np.nan_to_num(np.array(feats,  dtype=np.float64)),
+            np.array(labels, dtype=np.int32),
+        )
 
     def predict_football(self, home: str, away: str) -> Optional[dict]:
-        if not self.is_football_trained: return None
-        def ft(team):
-            cl=team.lower().strip()
-            bm=next((k for k in self._football_team_stats if cl in k.lower() or k.lower() in cl),None)
-            if not bm: return None
-            h=list(self._football_team_stats[bm])
-            if len(h)<3: return None
-            w=np.array([1/(i+1) for i in range(len(h))][::-1]); w/=w.sum()
-            return {"avg_gs":float(np.dot(w,[x["gs"] for x in h])),"avg_gc":float(np.dot(w,[x["gc"] for x in h])),
-                    "form_pts":float(np.dot(w,[x["pts"] for x in h])),"win_rate":sum(1 for x in h if x["pts"]==3)/len(h)}
-        hs=ft(home); aws=ft(away)
-        if not hs or not aws: return None
-        fv=[hs["avg_gs"],hs["avg_gc"],hs["form_pts"],hs["win_rate"],
-            aws["avg_gs"],aws["avg_gc"],aws["form_pts"],aws["win_rate"],
-            hs["avg_gs"]-aws["avg_gc"],aws["avg_gs"]-hs["avg_gc"]]
-        X=np.nan_to_num(np.array([fv],dtype=np.float64))
-        Xs=self.football_pipeline["scaler"].transform(X)
-        try:
-            probs=self.football_pipeline["model"].predict_proba(Xs)[0]
-            classes=self.football_pipeline["model"].classes_
-            lm={0:"home_win",1:"draw",2:"away_win"}
-            return {lm.get(int(c),f"c{c}"):round(float(p),4) for c,p in zip(classes,probs)}
-        except Exception as e: logger.warning("[ML FOOTBALL] %s",e); return None
+        if not self.is_football_trained:
+            return None
 
-    # ── Tennis ───────────────────────────────────────────
+        def ft(team):
+            cl = team.lower().strip()
+            bm = next(
+                (k for k in self._football_team_stats
+                 if cl in k.lower() or k.lower() in cl),
+                None,
+            )
+            if not bm:
+                return None
+            h = list(self._football_team_stats[bm])
+            if len(h) < 3:
+                return None
+            w = np.array([1 / (i + 1) for i in range(len(h))][::-1])
+            w /= w.sum()
+            return {
+                "avg_gs":   float(np.dot(w, [x["gs"]  for x in h])),
+                "avg_gc":   float(np.dot(w, [x["gc"]  for x in h])),
+                "form_pts": float(np.dot(w, [x["pts"] for x in h])),
+                "win_rate": sum(1 for x in h if x["pts"] == 3) / len(h),
+            }
+
+        hs = ft(home)
+        aws = ft(away)
+        if not hs or not aws:
+            return None
+
+        fv = [
+            hs["avg_gs"],  hs["avg_gc"],  hs["form_pts"],  hs["win_rate"],
+            aws["avg_gs"], aws["avg_gc"], aws["form_pts"], aws["win_rate"],
+            hs["avg_gs"]  - aws["avg_gc"],
+            aws["avg_gs"] - hs["avg_gc"],
+        ]
+        X = np.nan_to_num(np.array([fv], dtype=np.float64))
+        Xs = self.football_pipeline["scaler"].transform(X)
+        try:
+            probs = self.football_pipeline["model"].predict_proba(Xs)[0]
+            classes = self.football_pipeline["model"].classes_
+            lm = {0: "home_win", 1: "draw", 2: "away_win"}
+            return {lm.get(int(c), f"c{c}"): round(float(p), 4)
+                    for c, p in zip(classes, probs)}
+        except Exception as e:
+            logger.warning("[ML FOOTBALL] Predict error: %s", e)
+            return None
+
+    # ──────────────────────────────────────────────────────
+    # TENNIS
+    # ──────────────────────────────────────────────────────
     def load_or_train_tennis_model(self, is_wta: bool = False):
-        tour="wta" if is_wta else "atp"
-        path=CFG.ML_DIR/f"tennis_model_{tour}_v7.pkl"
-        if path.exists() and (time.time()-path.stat().st_mtime)/3600<24:
+        tour = "wta" if is_wta else "atp"
+        path = CFG.ML_DIR / f"tennis_model_{tour}_v7.pkl"
+        if path.exists() and (time.time() - path.stat().st_mtime) / 3600 < 24:
             try:
-                d=pickle.loads(path.read_bytes())
-                self.tennis_pipeline=d["pipeline"]; self.is_tennis_trained=True
-                logger.info("⚡ [ML TENNIS %s] Loaded from cache", tour.upper()); return
-            except Exception: pass
+                d = pickle.loads(path.read_bytes())
+                self.tennis_pipeline = d["pipeline"]
+                self.is_tennis_trained = True
+                logger.info("⚡ [ML TENNIS %s] Loaded from cache", tour.upper())
+                return
+            except Exception:
+                pass
         self._train_tennis(is_wta)
         if self.is_tennis_trained:
-            try: path.write_bytes(pickle.dumps({"pipeline":self.tennis_pipeline})); logger.info("💾 [ML TENNIS] Saved")
-            except Exception: pass
+            try:
+                path.write_bytes(pickle.dumps({"pipeline": self.tennis_pipeline}))
+                logger.info("💾 [ML TENNIS %s] Saved", tour.upper())
+            except Exception:
+                pass
 
-    def _build_tennis_features(self, df: pd.DataFrame) -> Tuple[np.ndarray,np.ndarray,np.ndarray]:
-        feats,labels,wts=[],[],[]
-        for _,row in df.iterrows():
-            wr=float(row.get("winner_rank",0) or 0); lr=float(row.get("loser_rank",0) or 0)
-            if wr<=0 or lr<=0: continue
-            surf=str(row.get("surface","Hard") or "Hard").lower()
-            bo=float(row.get("best_of",3) or 3)
-            def sf(v,d=0.0):
-                try: return float(v or d)
-                except: return d
-            ws=[sf(row.get("w_ace")),sf(row.get("w_df")),sf(row.get("w_svpt",50)),
-                sf(row.get("w_1stIn")),sf(row.get("w_1stWon")),sf(row.get("w_2ndWon")),
-                sf(row.get("w_bpSaved")),sf(row.get("w_bpFaced"))]
-            ls=[sf(row.get("l_ace")),sf(row.get("l_df")),sf(row.get("l_svpt",50)),
-                sf(row.get("l_1stIn")),sf(row.get("l_1stWon")),sf(row.get("l_2ndWon")),
-                sf(row.get("l_bpSaved")),sf(row.get("l_bpFaced"))]
+    def _build_tennis_features(
+        self, df: pd.DataFrame
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        feats, labels, wts = [], [], []
+
+        for _, row in df.iterrows():
+            wr = float(row.get("winner_rank", 0) or 0)
+            lr = float(row.get("loser_rank",  0) or 0)
+            if wr <= 0 or lr <= 0:
+                continue
+
+            surf = str(row.get("surface", "Hard") or "Hard").lower()
+            bo   = float(row.get("best_of", 3) or 3)
+
+            def sf(v, d=0.0):
+                try:
+                    return float(v or d)
+                except Exception:
+                    return d
+
+            ws = [
+                sf(row.get("w_ace")),       sf(row.get("w_df")),
+                sf(row.get("w_svpt", 50)),  sf(row.get("w_1stIn")),
+                sf(row.get("w_1stWon")),    sf(row.get("w_2ndWon")),
+                sf(row.get("w_bpSaved")),   sf(row.get("w_bpFaced")),
+            ]
+            ls = [
+                sf(row.get("l_ace")),       sf(row.get("l_df")),
+                sf(row.get("l_svpt", 50)),  sf(row.get("l_1stIn")),
+                sf(row.get("l_1stWon")),    sf(row.get("l_2ndWon")),
+                sf(row.get("l_bpSaved")),   sf(row.get("l_bpFaced")),
+            ]
+
             def ns(s):
-                sv=max(s[2],1.); i1=max(s[3],1.); bpf=max(s[7],1.)
-                return [s[0]/sv,s[1]/sv,s[3]/sv,s[4]/i1,s[5]/max(sv-s[3],1.),s[6]/bpf]
-            wn=ns(ws); ln=ns(ls)
-            is_p1=self._rng.rand()>0.5
-            p1r,p2r=( wr,lr) if is_p1 else (lr,wr)
-            p1s,p2s=(wn,ln) if is_p1 else (ln,wn)
-            label=1 if is_p1 else 0
-            fv=[p1r,p2r,p2r-p1r,p2r/max(p1r,1.),25.,25.,
-                1. if surf=="hard" else 0.,1. if surf=="clay" else 0.,1. if surf=="grass" else 0.,bo,
-                *p1s,*p2s,p1s[0]-p2s[0],p1s[3]-p2s[3],p1s[5]-p2s[5]]
-            feats.append(fv); labels.append(label)
-            td=sf(row.get("tourney_date"),20200101)
-            wts.append(float(np.clip(0.5+0.5*(td-20200101)/max(20260101-20200101,1),0.5,1.0)))
-        if not feats: return np.array([]),np.array([]),np.array([])
-        return np.nan_to_num(np.array(feats,dtype=np.float64)),np.array(labels,dtype=np.int32),np.array(wts,dtype=np.float64)
+                sv  = max(s[2], 1.0)
+                i1  = max(s[3], 1.0)
+                bpf = max(s[7], 1.0)
+                return [
+                    s[0] / sv,
+                    s[1] / sv,
+                    s[3] / sv,
+                    s[4] / i1,
+                    s[5] / max(sv - s[3], 1.0),
+                    s[6] / bpf,
+                ]
+
+            wn = ns(ws)
+            ln = ns(ls)
+
+            is_p1 = self._rng.rand() > 0.5
+            p1r, p2r = (wr, lr) if is_p1 else (lr, wr)
+            p1s, p2s = (wn, ln) if is_p1 else (ln, wn)
+            label = 1 if is_p1 else 0
+
+            fv = [
+                p1r, p2r, p2r - p1r, p2r / max(p1r, 1.0),
+                25.0, 25.0,
+                1.0 if surf == "hard"  else 0.0,
+                1.0 if surf == "clay"  else 0.0,
+                1.0 if surf == "grass" else 0.0,
+                bo,
+                *p1s, *p2s,
+                p1s[0] - p2s[0],
+                p1s[3] - p2s[3],
+                p1s[5] - p2s[5],
+            ]
+            feats.append(fv)
+            labels.append(label)
+
+            td = sf(row.get("tourney_date"), 20200101)
+            wts.append(float(np.clip(
+                0.5 + 0.5 * (td - 20200101) / max(20260101 - 20200101, 1),
+                0.5, 1.0,
+            )))
+
+        if not feats:
+            return np.array([]), np.array([]), np.array([])
+        return (
+            np.nan_to_num(np.array(feats,  dtype=np.float64)),
+            np.array(labels, dtype=np.int32),
+            np.array(wts,    dtype=np.float64),
+        )
 
     def _train_tennis(self, is_wta: bool = False):
-        df=self.de.wta_matches if is_wta else self.de.atp_matches
-        tour="WTA" if is_wta else "ATP"
-        if df is None or len(df)<500: logger.warning("[ML TENNIS %s] Insufficient data",tour); return
-        X,y,sw=self._build_tennis_features(df)
-        if len(X)<200 or len(np.unique(y))<2: return
-        scaler=RobustScaler(); Xs=scaler.fit_transform(X)
-        # FIX: cv="prefit" بعد از fit با sample_weight - جلوگیری از data leakage
-        gb=GradientBoostingClassifier(n_estimators=200,max_depth=3,learning_rate=0.05,random_state=42,subsample=0.8)
-        try:
-            gb.fit(Xs,y,sample_weight=sw)
-            # FIX: برای calibration از داده validation جداگانه استفاده کن
-            from sklearn.model_selection import train_test_split
-            X_cal,X_val,y_cal,y_val=train_test_split(Xs,y,test_size=0.2,random_state=42,stratify=y)
-            gb2=GradientBoostingClassifier(n_estimators=200,max_depth=3,learning_rate=0.05,random_state=42,subsample=0.8)
-            sw_cal=sw[:len(X_cal)] if len(sw)>=len(X_cal) else sw
-            gb2.fit(X_cal,y_cal,sample_weight=sw_cal[:len(X_cal)])
-            cal=CalibratedClassifierCV(gb2,cv="prefit",method="isotonic")
-            cal.fit(X_val,y_val)
-            self.tennis_pipeline={"model":cal,"scaler":scaler}
-            self.is_tennis_trained=True
-            logger.info("✅ [ML TENNIS %s] Trained on %d samples",tour,len(X))
-        except Exception as e: logger.error("[ML TENNIS %s] %s",tour,e)
+        df   = self.de.wta_matches if is_wta else self.de.atp_matches
+        tour = "WTA" if is_wta else "ATP"
 
-    def predict_tennis(self, pa: str, pb: str, stats: dict, surface: str = "hard") -> Optional[dict]:
-        if not self.is_tennis_trained: return None
-        pas=stats.get("player_a",{}); pbs=stats.get("player_b",{})
-        ra=float(pas.get("current_ranking",100) or 100); rb=float(pbs.get("current_ranking",100) or 100)
+        if df is None or len(df) < 500:
+            logger.warning("[ML TENNIS %s] Insufficient data", tour)
+            return
+
+        X, y, sw = self._build_tennis_features(df)
+        if len(X) < 200 or len(np.unique(y)) < 2:
+            logger.warning("[ML TENNIS %s] Too few samples or classes", tour)
+            return
+
+        scaler = RobustScaler()
+        Xs = scaler.fit_transform(X)
+
+        from sklearn.model_selection import train_test_split
+
+        try:
+            # split برای جلوگیری از data leakage در calibration
+            X_tr, X_val, y_tr, y_val, sw_tr, _ = train_test_split(
+                Xs, y, sw,
+                test_size=0.2, random_state=42, stratify=y,
+            )
+            gb = GradientBoostingClassifier(
+                n_estimators=200, max_depth=3,
+                learning_rate=0.05, random_state=42, subsample=0.8,
+            )
+            gb.fit(X_tr, y_tr, sample_weight=sw_tr)
+
+            cal = CalibratedClassifierCV(gb, cv="prefit", method="isotonic")
+            cal.fit(X_val, y_val)
+
+            self.tennis_pipeline = {"model": cal, "scaler": scaler}
+            self.is_tennis_trained = True
+            logger.info("✅ [ML TENNIS %s] Trained on %d samples", tour, len(X))
+        except Exception as e:
+            logger.error("[ML TENNIS %s] Training failed: %s", tour, e)
+
+    def predict_tennis(
+        self, pa: str, pb: str, stats: dict, surface: str = "hard"
+    ) -> Optional[dict]:
+        if not self.is_tennis_trained:
+            return None
+
+        pas = stats.get("player_a", {})
+        pbs = stats.get("player_b", {})
+        ra  = float(pas.get("current_ranking", 100) or 100)
+        rb  = float(pbs.get("current_ranking", 100) or 100)
+
         def gs(p):
-            sv=max(float(p.get("svpt_per_match",50) or 50),1.)
-            return [float(p.get("aces_per_match",5) or 5)/sv,
-                    float(p.get("df_per_match",2) or 2)/sv,
-                    float(p.get("first_serve_in_pct",0.6) or 0.6),
-                    float(p.get("first_serve_win_pct",0.7) or 0.7),0.5,
-                    float(p.get("bp_saved_pct",0.6) or 0.6)]
-        wa=gs(pas); wb=gs(pbs)
-        fv=[ra,rb,rb-ra,rb/max(ra,1.),25.,25.,
-            1. if surface=="hard" else 0.,1. if surface=="clay" else 0.,1. if surface=="grass" else 0.,3.,
-            *wa,*wb,wa[0]-wb[0],wa[3]-wb[3],wa[5]-wb[5]]
-        try:
-            X=np.nan_to_num(np.array([fv],dtype=np.float64))
-            Xs=self.tennis_pipeline["scaler"].transform(X)
-            probs=self.tennis_pipeline["model"].predict_proba(Xs)[0]
-            classes=self.tennis_pipeline["model"].classes_
-            pm={int(c):float(p) for c,p in zip(classes,probs)}
-            pa_p=pm.get(1,0.5)
-            return {f"{pa}_win_prob":round(pa_p,4),f"{pb}_win_prob":round(1-pa_p,4)}
-        except Exception as e: logger.warning("[ML TENNIS] %s",e); return None
+            sv = max(float(p.get("svpt_per_match",      50)  or 50),  1.0)
+            return [
+                float(p.get("aces_per_match",       5)   or 5)   / sv,
+                float(p.get("df_per_match",         2)   or 2)   / sv,
+                float(p.get("first_serve_in_pct",   0.6) or 0.6),
+                float(p.get("first_serve_win_pct",  0.7) or 0.7),
+                0.5,
+                float(p.get("bp_saved_pct",         0.6) or 0.6),
+            ]
 
-    # ── NBA ML ───────────────────────────────────────────
+        wa = gs(pas)
+        wb = gs(pbs)
+
+        fv = [
+            ra, rb, rb - ra, rb / max(ra, 1.0),
+            25.0, 25.0,
+            1.0 if surface == "hard"  else 0.0,
+            1.0 if surface == "clay"  else 0.0,
+            1.0 if surface == "grass" else 0.0,
+            3.0,
+            *wa, *wb,
+            wa[0] - wb[0],
+            wa[3] - wb[3],
+            wa[5] - wb[5],
+        ]
+
+        try:
+            X  = np.nan_to_num(np.array([fv], dtype=np.float64))
+            Xs = self.tennis_pipeline["scaler"].transform(X)
+            probs   = self.tennis_pipeline["model"].predict_proba(Xs)[0]
+            classes = self.tennis_pipeline["model"].classes_
+            pm  = {int(c): float(p) for c, p in zip(classes, probs)}
+            pa_p = pm.get(1, 0.5)
+            return {
+                f"{pa}_win_prob": round(pa_p,       4),
+                f"{pb}_win_prob": round(1 - pa_p,   4),
+            }
+        except Exception as e:
+            logger.warning("[ML TENNIS] Predict error: %s", e)
+            return None
+
+    # ──────────────────────────────────────────────────────
+    # NBA  (بدون ML - از matchup stats استفاده میشه)
+    # ──────────────────────────────────────────────────────
     def load_or_train_nba_model(self):
-        path = CFG.ML_DIR/"nba_model_v7.pkl"
-        if path.exists() and (time.time()-path.stat().st_mtime)/3600<24:
-            try:
-                d=pickle.loads(path.read_bytes())
-                self.nba_pipeline=d["pipeline"]; self.is_nba_trained=True
-                logger.info("⚡ [ML NBA] Loaded from cache"); return
-            except Exception: pass
-        self._train_nba()
-        if self.is_nba_trained:
-            try: path.write_bytes(pickle.dumps({"pipeline":self.nba_pipeline}))
-            except Exception: pass
+        """
+        NBA standings data برای game-level ML کافی نیست.
+        از predict_nba که بر اساس win_pct و pt_diff کار میکنه استفاده میشه.
+        """
+        logger.info("[ML NBA] Using standings-based matchup prediction (no ML training needed)")
+        self.is_nba_trained = False
 
     def _train_nba(self):
-        df = self.de.nba_data
-        if df is None or len(df) < 200: logger.warning("[ML NBA] Insufficient data"); return
-        # ستون‌های مورد نیاز: elo_i, opp_elo_i, pts, opp_pts
-        need = ["elo_i","opp_elo_i","pts","opp_pts"]
-        if not all(c in df.columns for c in need): logger.warning("[ML NBA] Missing columns"); return
-        sub = df[need].dropna()
-        if len(sub)<100: return
-        X = sub[["elo_i","opp_elo_i"]].values
-        X = np.hstack([X, (X[:,0]-X[:,1]).reshape(-1,1)])  # elo diff
-        y = (sub["pts"].values > sub["opp_pts"].values).astype(int)
-        if len(np.unique(y))<2: return
-        scaler=RobustScaler(); Xs=scaler.fit_transform(X)
-        model=CalibratedClassifierCV(
-            GradientBoostingClassifier(n_estimators=100,max_depth=3,random_state=42),
-            cv=3, method="isotonic")
-        try:
-            model.fit(Xs,y)
-            self.nba_pipeline={"model":model,"scaler":scaler}
-            self.is_nba_trained=True
-            logger.info("✅ [ML NBA] Trained on %d samples",len(X))
-        except Exception as e: logger.error("[ML NBA] %s",e)
+        # نیازی به train نیست - predict_nba مستقیم از stats کار میکنه
+        self.is_nba_trained = False
 
-    def predict_nba(self, home_stats: dict, away_stats: dict) -> Optional[dict]:
-        if not self.is_nba_trained: return None
-        he=float(home_stats.get("elo_rating",1500)); ae=float(away_stats.get("elo_rating",1500))
-        fv=[[he,ae,he-ae]]
-        try:
-            X=np.nan_to_num(np.array(fv,dtype=np.float64))
-            Xs=self.nba_pipeline["scaler"].transform(X)
-            probs=self.nba_pipeline["model"].predict_proba(Xs)[0]
-            classes=self.nba_pipeline["model"].classes_
-            pm={int(c):float(p) for c,p in zip(classes,probs)}
-            hp=pm.get(1,0.5)
-            return {"home_win_prob":round(hp,4),"away_win_prob":round(1-hp,4)}
-        except Exception as e: logger.warning("[ML NBA] %s",e); return None
+    def predict_nba(
+        self, home_stats: dict, away_stats: dict
+    ) -> Optional[dict]:
+        """
+        بجای ML model، از win_pct و pt_diff محاسبه احتمال میکنه.
+        نیازی به is_nba_trained نیست.
+        """
+        if not home_stats or not away_stats:
+            return None
+
+        h_str = home_stats.get("win_pct", 0.5) * 0.6 + max(
+            min(home_stats.get("pt_diff", 0) / 20, 0.3), -0.3
+        )
+        a_str = away_stats.get("win_pct", 0.5) * 0.6 + max(
+            min(away_stats.get("pt_diff", 0) / 20, 0.3), -0.3
+        )
+        total = h_str + a_str
+        if total <= 0:
+            return None
+
+        home_prob = min(0.85, max(0.15, (h_str / total) + 0.02))
+        return {
+            "home_win_prob": round(home_prob,       4),
+            "away_win_prob": round(1 - home_prob,   4),
+        }
 
 # =========================================================
 # 11. POISSON ENGINE
@@ -2274,15 +2460,23 @@ async def async_main():
             poisson_pred=PoissonEngine.calculate_match_probabilities(home,away,de.football_data.get("all"))
             if poisson_pred: stats["poisson_prediction"]=poisson_pred
 
-        elif sport_key=="basketball":
-            hs=de.get_nba_stats(home); aws=de.get_nba_stats(away)
-            nb_matchup=de.get_nba_matchup(home,away)
-            if nb_matchup: stats["nba_matchup"]=nb_matchup
-            us={"home":hs,"away":aws}
-            if hs or aws: stats["us_sports"]=us
-            if ml.is_nba_trained and hs and aws:
-                ml_pred=ml.predict_nba(hs,aws)
-                if ml_pred: stats["ml_prediction"]=ml_pred
+        elif sport_key == "basketball":
+            hs        = de.get_nba_stats(home)
+            aws       = de.get_nba_stats(away)
+            nb_matchup = de.get_nba_matchup(home, away)
+
+            if nb_matchup:
+                stats["nba_matchup"] = nb_matchup
+
+            if hs or aws:
+                stats["us_sports"] = {"home": hs, "away": aws}
+
+            # FIX: predict_nba نیازی به is_nba_trained ندارد
+            if hs and aws:
+                nba_pred = ml.predict_nba(hs, aws)
+                if nba_pred:
+                    ml_pred = nba_pred
+                    stats["ml_prediction"] = ml_pred
 
         elif sport_key in ["baseball","hockey","cricket"]:
             hs=de.get_us_sports_stats(sport,home); aws=de.get_us_sports_stats(sport,away)
