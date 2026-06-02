@@ -189,8 +189,8 @@
       "ev": 0.0243,
       "confidence": 62,
       "implied_prob": 0.3013,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0
     },
     {
       "id": "8db1666c",
@@ -221,8 +221,8 @@
       "ev": 0.0297,
       "confidence": 62,
       "implied_prob": 0.407,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "win",
+      "profit_loss": 1.53
     },
     {
       "id": "150c8224",
@@ -237,8 +237,8 @@
       "ev": 0.0228,
       "confidence": 62,
       "implied_prob": 0.562,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0
     },
     {
       "id": "308bb8e0",
@@ -371,10 +371,10 @@
   ],
   "summary": {
     "total_signals": 23,
-    "resolved": 2,
-    "win_rate": 0.0,
-    "total_profit_loss_units": -2.0,
-    "roi_pct": -100.0,
-    "last_updated": "2026-06-01T23:53:59.900299+00:00"
+    "resolved": 5,
+    "win_rate": 0.2,
+    "total_profit_loss_units": -2.47,
+    "roi_pct": -49.4,
+    "last_updated": "2026-06-02T02:38:07.646197+00:00"
   }
 }
