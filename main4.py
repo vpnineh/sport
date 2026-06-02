@@ -26,7 +26,6 @@ from collections import defaultdict, deque
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 
-# ── Google AI SDK (جایگزین requests خام) ──────────────
 from google import genai
 from google.genai import types
 
@@ -42,7 +41,6 @@ from sklearn.metrics import brier_score_loss
 from sklearn.pipeline import Pipeline
 import scipy.stats as stats_scipy
 
-# ── Optional: MLB Stats API ───────────────────────────
 try:
     import statsapi as mlb_statsapi
     HAS_STATSAPI = True
@@ -70,61 +68,53 @@ class Config:
     API_USAGE_FILE: Path = Path("api_cache/api_usage_tracker.json")
     PERFORMANCE_FILE: Path = Path("api_cache/performance_tracker.json")
 
-    # ── Window & Timing ──────────────────────────────────
     MATCH_WINDOW_HOURS: float = 6.0
     TELEGRAM_SLEEP_BETWEEN: float = 3.0
 
-    # ── Odds API ─────────────────────────────────────────
     ODDS_API_MARKETS: list = field(default_factory=lambda: ["h2h", "totals"])
     ODDS_API_REGIONS: str = "eu,us,uk,au"
     TTL_ODDS_CACHE_MINUTES: float = 6.0
 
-    # ── Cache TTLs ───────────────────────────────────────
     TTL_SENT_HISTORY: float = 48.0
     TTL_MATCH_ID: float = 24.0
     TTL_TEAM_FORM: float = 6.0
     TTL_H2H: float = 24.0
     TTL_GITHUB_DATA: float = 12.0
 
-    # ── EV Filters ───────────────────────────────────────
-    H2H_MIN_ODDS: float = 1.50
-    H2H_MIN_EV: float = 0.015
-    TOTALS_MIN_ODDS: float = 1.60
-    TOTALS_MIN_EV: float = 0.020
-    MAX_REALISTIC_EV: float = 0.18
+    # ── EV Filters - کمی آرام‌تر برای دریافت سیگنال بیشتر ──
+    H2H_MIN_ODDS: float = 1.40
+    H2H_MIN_EV: float = 0.010
+    TOTALS_MIN_ODDS: float = 1.50
+    TOTALS_MIN_EV: float = 0.012
+    MAX_REALISTIC_EV: float = 0.25
 
-    # ── Market Validation ────────────────────────────────
     MARKET_EXPECTED_OUTCOMES: dict = field(default_factory=lambda: {
         "h2h": {"min": 2, "max": 3},
         "totals": {"min": 2, "max": 2}
     })
-    MAX_VALID_IMPLIED_SUM: float = 1.25
-    MIN_VALID_IMPLIED_SUM: float = 0.80
+    MAX_VALID_IMPLIED_SUM: float = 1.30
+    MIN_VALID_IMPLIED_SUM: float = 0.75
 
-    # ── Kelly Criterion ──────────────────────────────────
     KELLY_FRACTION: float = 0.25
     MAX_KELLY_PCT: float = 5.0
 
-    # ── Confidence Thresholds ────────────────────────────
-    MIN_CONFIDENCE_TO_SEND: int = 58
+    # ── Confidence - پایین‌تر برای سیگنال بیشتر ──
+    MIN_CONFIDENCE_TO_SEND: int = 52
     HIGH_CONFIDENCE: int = 75
-    MEDIUM_CONFIDENCE: int = 65
+    MEDIUM_CONFIDENCE: int = 62
 
-    # ── AI Models ────────────────────────────────────────
-    # FIX: مدل صحیح Gemini با SDK رسمی
-    AI_MODEL_ANALYST: str = "gemini-flash-latest"
+    # ── AI Model - مدل صحیح ──
+    AI_MODEL_ANALYST: str = "gemini-2.0-flash"
     AI_MAX_TOKENS: int = 2048
     AI_TEMPERATURE: float = 0.1
 
     TELEGRAM_ID: str = "@zBET90"
 
-    # ── Sharp Bookmakers ─────────────────────────────────
     SHARP_BOOKMAKERS: list = field(default_factory=lambda: [
         "pinnacle", "betfair_ex_eu", "matchbook",
         "betfair_ex_uk", "sport888", "betsson",
     ])
 
-    # ── Data Sources ─────────────────────────────────────
     GITHUB_SOURCES: dict = field(default_factory=lambda: {
         "atp": "https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master/atp_matches_{year}.csv",
         "wta": "https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master/wta_matches_{year}.csv",
@@ -176,16 +166,9 @@ logger.addHandler(file_handler)
 
 
 # =========================================================
-# 3. GOOGLE AI SDK MANAGER (Updated to google-genai)
+# 3. GOOGLE AI SDK MANAGER
 # =========================================================
 class GeminiManager:
-    """
-    مدیریت Google GenAI SDK با:
-    - Connection pooling
-    - Retry با exponential backoff
-    - Thread-safe
-    """
-    
     _instance: Optional["GeminiManager"] = None
     _lock = threading.Lock()
 
@@ -199,25 +182,21 @@ class GeminiManager:
     def __init__(self):
         if self._initialized:
             return
-        
-        # خواندن تمام کلیدهای تعریف شده
+
         raw_keys = [
             os.getenv("GEMINI", ""),
             os.getenv("GEMINI1", ""),
             os.getenv("GEMINI2", ""),
             os.getenv("GEMINI3", ""),
         ]
-        # فیلتر کردن کلیدهای خالی
         valid_keys = [k.strip() for k in raw_keys if k.strip()]
 
         if not valid_keys:
             logger.critical("FATAL: No GEMINI API keys found!")
             sys.exit(1)
 
-        # ساخت یک کلاینت مجزا برای هر کلید
         self.clients = [genai.Client(api_key=k) for k in valid_keys]
 
-        # بقیه تنظیمات مثل قبل...
         self._safety_settings = [
             types.SafetySetting(
                 category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -238,7 +217,10 @@ class GeminiManager:
         ]
 
         self._initialized = True
-        logger.info("✅ [GEMINI SDK] Initialized with %d API keys for Load Balancing", len(self.clients))
+        logger.info(
+            "✅ [GEMINI SDK] Initialized with %d API keys for Load Balancing",
+            len(self.clients)
+        )
 
     def generate(
         self,
@@ -248,10 +230,10 @@ class GeminiManager:
         temperature: Optional[float] = None,
         max_retries: int = 3,
     ) -> Optional[dict]:
-        
+
         target_model = model_name or CFG.AI_MODEL_ANALYST
-        
-        config_kwargs = {
+
+        config_kwargs: dict = {
             "temperature": temperature if temperature is not None else CFG.AI_TEMPERATURE,
             "max_output_tokens": CFG.AI_MAX_TOKENS,
             "response_mime_type": "application/json",
@@ -259,22 +241,24 @@ class GeminiManager:
         }
         if system_instruction:
             config_kwargs["system_instruction"] = system_instruction
-            
+
         gen_config = types.GenerateContentConfig(**config_kwargs)
 
         last_error = None
         for attempt in range(max_retries):
             try:
-                # 🎯 انتخاب رندوم یک کلاینت (کلید) در هر تلاش
                 client = random.choice(self.clients)
-                
+
                 response = client.models.generate_content(
                     model=target_model,
                     contents=prompt,
-                    config=gen_config
+                    config=gen_config,
                 )
-                
-                if getattr(response, "prompt_feedback", None) and response.prompt_feedback.block_reason:
+
+                if (
+                    getattr(response, "prompt_feedback", None)
+                    and response.prompt_feedback.block_reason
+                ):
                     logger.warning("[GEMINI] Safety block!")
                     return None
 
@@ -283,12 +267,9 @@ class GeminiManager:
                     last_error = "Empty response"
                     continue
 
-                # Parse JSON
                 try:
-                    result = json.loads(raw_text)
-                    return result
+                    return json.loads(raw_text)
                 except json.JSONDecodeError:
-                    # fallback به extractor شما
                     result = robust_json_extractor(raw_text)
                     if result:
                         return result
@@ -297,12 +278,12 @@ class GeminiManager:
             except Exception as e:
                 error_str = str(e)
                 last_error = error_str
-                
+
                 if "429" in error_str or "quota" in error_str.lower():
                     wait_time = (attempt + 1) * 10
                     logger.warning(
                         "[GEMINI] Rate limited, waiting %ds (attempt %d/%d)",
-                        wait_time, attempt + 1, max_retries
+                        wait_time, attempt + 1, max_retries,
                     )
                     time.sleep(wait_time)
                     continue
@@ -312,15 +293,18 @@ class GeminiManager:
                 else:
                     logger.warning(
                         "[GEMINI] Error (attempt %d/%d): %s",
-                        attempt + 1, max_retries, error_str[:200]
+                        attempt + 1, max_retries, error_str[:200],
                     )
                     if attempt < max_retries - 1:
                         time.sleep(2 ** attempt)
 
-        logger.error("[GEMINI] All %d attempts failed. Last error: %s", max_retries, last_error)
+        logger.error(
+            "[GEMINI] All %d attempts failed. Last error: %s",
+            max_retries, last_error,
+        )
         return None
 
-# ─── Singleton ──────────────────────────────────────────
+
 gemini_manager = GeminiManager()
 
 
@@ -392,7 +376,7 @@ class OddsAPIKeyManager:
             self.keys[key_index]["fail_time"] = datetime.now(timezone.utc).isoformat()
             logger.warning(
                 "🔑❌ [API KEY] %s marked FAILED: %s",
-                self.keys[key_index]["label"], reason
+                self.keys[key_index]["label"], reason,
             )
 
     def get_active_keys(self) -> List[Dict]:
@@ -484,7 +468,7 @@ NATIONALITY_FLAGS: dict = {
     "porto": "PT", "benfica": "PT", "sporting": "PT",
     "lakers": "US", "celtics": "US", "warriors": "US",
     "cuiabá": "BR", "cruzeiro": "BR", "fluminense": "BR", "flamengo": "BR",
-    "palmeiras": "BR", "santos": "BR", "corinthians": "BR", "atletico mineiro": "BR",
+    "palmeiras": "BR", "santos": "BR", "corinthians": "BR",
     "palestino": "CL", "audax italiano": "CL", "colo-colo": "CL",
     "river plate": "AR", "boca juniors": "AR", "independiente": "AR",
     "nacional": "UY", "penarol": "UY",
@@ -518,7 +502,7 @@ def validate_flag(flag: str, fallback_name: str) -> str:
 
 
 # =========================================================
-# 6. CACHE MANAGEMENT  ← Thread-safe با Lock
+# 6. CACHE MANAGEMENT
 # =========================================================
 _cache_lock = threading.Lock()
 
@@ -538,7 +522,6 @@ class CacheManager:
 
     @staticmethod
     def save(filepath: Path, data: dict) -> None:
-        """Atomic write با thread lock برای جلوگیری از race condition."""
         try:
             filepath.parent.mkdir(parents=True, exist_ok=True)
             tmp = filepath.with_suffix(".tmp")
@@ -576,7 +559,10 @@ class CacheManager:
             cached_time = datetime.fromisoformat(entry["timestamp"])
             if cached_time.tzinfo is None:
                 cached_time = cached_time.replace(tzinfo=timezone.utc)
-            return datetime.now(timezone.utc) - cached_time < timedelta(minutes=ttl_minutes)
+            return (
+                datetime.now(timezone.utc) - cached_time
+                < timedelta(minutes=ttl_minutes)
+            )
         except Exception:
             return False
 
@@ -605,9 +591,10 @@ class PerformanceTracker:
             self.data["summary"] = {}
 
     def record_signal(
-        self, home: str, away: str, pick: str, market: str,
+        self,
+        home: str, away: str, pick: str, market: str,
         odds: float, ev: float, confidence: int, prob: float,
-        sport: str = "other", api_sport_key: str = ""
+        sport: str = "other", api_sport_key: str = "",
     ):
         signal = {
             "id": hashlib.md5(
@@ -624,7 +611,6 @@ class PerformanceTracker:
         }
         self.data["signals"].append(signal)
 
-        # فقط ۵۰۰ سیگنال آخر
         if len(self.data["signals"]) > 500:
             self.data["signals"] = self.data["signals"][-500:]
 
@@ -730,7 +716,7 @@ class FreeDataEngine:
         try:
             res = requests.get(
                 url, timeout=timeout,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; ZBET90/6.5)"}
+                headers={"User-Agent": "Mozilla/5.0 (compatible; ZBET90/6.5)"},
             )
             if res.status_code == 200 and len(res.content) > 100:
                 with open(filepath, "wb") as f:
@@ -741,7 +727,9 @@ class FreeDataEngine:
         except requests.exceptions.Timeout:
             logger.warning("[FREE DATA] Timeout: %s", url.split("/")[-1])
         except requests.exceptions.RequestException as e:
-            logger.warning("[FREE DATA] Error %s: %s", url.split("/")[-1], str(e)[:100])
+            logger.warning(
+                "[FREE DATA] Error %s: %s", url.split("/")[-1], str(e)[:100]
+            )
         return False
 
     def load_tennis_data(self):
@@ -760,13 +748,18 @@ class FreeDataEngine:
         ]
 
         for year in self.years_to_fetch:
-            for tour, dfs_list, key in [("atp", atp_dfs, "atp"), ("wta", wta_dfs, "wta")]:
+            for tour, dfs_list, key in [
+                ("atp", atp_dfs, "atp"),
+                ("wta", wta_dfs, "wta"),
+            ]:
                 url = CFG.GITHUB_SOURCES[key].format(year=year)
                 path = CFG.HISTORICAL_DIR / f"{key}_{year}.csv"
                 if self._download_csv(url, path):
                     try:
-                        df = pd.read_csv(path, low_memory=False, encoding="utf-8",
-                                         encoding_errors="replace")
+                        df = pd.read_csv(
+                            path, low_memory=False, encoding="utf-8",
+                            encoding_errors="replace",
+                        )
                         available = [c for c in match_cols if c in df.columns]
                         sub = df[available].copy()
                         if "tourney_date" in sub.columns:
@@ -804,12 +797,15 @@ class FreeDataEngine:
                     else:
                         self.wta_rankings = df
                     logger.info(
-                        "✅ [RANKINGS] %s loaded: %d entries", tour.upper(), len(df)
+                        "✅ [RANKINGS] %s loaded: %d entries",
+                        tour.upper(), len(df),
                     )
                 except Exception as e:
                     logger.error("Rankings parse error: %s", e)
 
-    def get_player_ranking(self, player_name: str, is_wta: bool = False) -> Optional[int]:
+    def get_player_ranking(
+        self, player_name: str, is_wta: bool = False
+    ) -> Optional[int]:
         df = self.wta_rankings if is_wta else self.atp_rankings
         if df is None or df.empty:
             return None
@@ -817,17 +813,21 @@ class FreeDataEngine:
         clean = player_name.split()[-1].lower()
         try:
             name_col = next(
-                (c for c in ["player", "name", "player_name"] if c in df.columns), None
+                (c for c in ["player", "name", "player_name"] if c in df.columns),
+                None,
             )
             if not name_col:
                 return None
-            matches = df[df[name_col].str.lower().str.contains(
-                re.escape(clean), na=False
-            )]
+            matches = df[
+                df[name_col].str.lower().str.contains(re.escape(clean), na=False)
+            ]
             if not matches.empty:
                 rank_col = next(
-                    (c for c in ["rank", "ranking", "player_rank"] if c in matches.columns),
-                    None
+                    (
+                        c for c in ["rank", "ranking", "player_rank"]
+                        if c in matches.columns
+                    ),
+                    None,
                 )
                 if rank_col:
                     val = matches.iloc[0][rank_col]
@@ -839,12 +839,16 @@ class FreeDataEngine:
     def _compute_player_rolling_stats(
         self, df: pd.DataFrame, player_clean: str, n_recent: int = 20
     ) -> dict:
-        wins = df[df["winner_name"].str.lower().str.contains(
-            re.escape(player_clean), na=False
-        )].copy()
-        losses = df[df["loser_name"].str.lower().str.contains(
-            re.escape(player_clean), na=False
-        )].copy()
+        wins = df[
+            df["winner_name"].str.lower().str.contains(
+                re.escape(player_clean), na=False
+            )
+        ].copy()
+        losses = df[
+            df["loser_name"].str.lower().str.contains(
+                re.escape(player_clean), na=False
+            )
+        ].copy()
 
         total = len(wins) + len(losses)
         if total == 0:
@@ -909,10 +913,16 @@ class FreeDataEngine:
 
             surface_stats = {}
             for surface in ["Hard", "Clay", "Grass"]:
-                sw = wins[wins["surface"].str.lower() == surface.lower()] \
-                    if "surface" in wins.columns else pd.DataFrame()
-                sl = losses[losses["surface"].str.lower() == surface.lower()] \
-                    if "surface" in losses.columns else pd.DataFrame()
+                sw = (
+                    wins[wins["surface"].str.lower() == surface.lower()]
+                    if "surface" in wins.columns
+                    else pd.DataFrame()
+                )
+                sl = (
+                    losses[losses["surface"].str.lower() == surface.lower()]
+                    if "surface" in losses.columns
+                    else pd.DataFrame()
+                )
                 st = len(sw) + len(sl)
                 if st >= 5:
                     surface_stats[surface] = {
@@ -942,7 +952,8 @@ class FreeDataEngine:
         }
 
         for p_clean, key, p_full in [
-            (pa, "player_a", player_a), (pb, "player_b", player_b)
+            (pa, "player_a", player_a),
+            (pb, "player_b", player_b),
         ]:
             p_stats = self._compute_player_rolling_stats(df, p_clean)
             if p_stats:
@@ -976,8 +987,12 @@ class FreeDataEngine:
             if "surface" in h2h_a.columns:
                 h2h_surfaces = {}
                 for surface in ["Hard", "Clay", "Grass"]:
-                    sa = h2h_a[h2h_a["surface"].str.lower() == surface.lower()]
-                    sb = h2h_b[h2h_b["surface"].str.lower() == surface.lower()]
+                    sa = h2h_a[
+                        h2h_a["surface"].str.lower() == surface.lower()
+                    ]
+                    sb = h2h_b[
+                        h2h_b["surface"].str.lower() == surface.lower()
+                    ]
                     if len(sa) + len(sb) > 0:
                         h2h_surfaces[surface] = {
                             f"{player_a}_wins": len(sa),
@@ -987,7 +1002,8 @@ class FreeDataEngine:
                     stats["h2h"]["by_surface"] = h2h_surfaces
 
             logger.info(
-                "✅ [H2H] %s vs %s: %d H2H matches", player_a, player_b, total_h2h
+                "✅ [H2H] %s vs %s: %d H2H matches",
+                player_a, player_b, total_h2h,
             )
 
         return stats
@@ -1011,7 +1027,9 @@ class FreeDataEngine:
                 path = CFG.HISTORICAL_DIR / f"football_{league_code}_{season}.csv"
                 if self._download_csv(url, path):
                     try:
-                        df = pd.read_csv(path, low_memory=False, encoding="latin-1")
+                        df = pd.read_csv(
+                            path, low_memory=False, encoding="latin-1"
+                        )
                         available = [c for c in football_cols if c in df.columns]
                         if len(available) >= 5:
                             sub = df[available].copy()
@@ -1021,12 +1039,13 @@ class FreeDataEngine:
                                 sub["Date"] = pd.to_datetime(
                                     sub["Date"], dayfirst=True, errors="coerce"
                                 )
-                            # فقط ردیف‌های معتبر
                             if "HomeTeam" in sub.columns:
                                 sub = sub.dropna(subset=["HomeTeam", "AwayTeam"])
                             all_dfs.append(sub)
                     except Exception as e:
-                        logger.debug("Football parse error %s: %s", path.name, e)
+                        logger.debug(
+                            "Football parse error %s: %s", path.name, e
+                        )
 
         if all_dfs:
             combined = pd.concat(all_dfs, ignore_index=True)
@@ -1059,7 +1078,7 @@ class FreeDataEngine:
         if df is None or df.empty:
             return {}
 
-        stats = {"home": {}, "away": {}, "h2h": {}}
+        stats: dict = {"home": {}, "away": {}, "h2h": {}}
 
         for team, key, is_home in [
             (home_team, "home", True),
@@ -1074,9 +1093,8 @@ class FreeDataEngine:
 
             for _, row in team_home.iterrows():
                 ftr = row.get("FTR", "")
-                # FIX: مقادیر NaN را به 0 تبدیل
-                hg = int(row.get("FTHG", 0) or 0) if pd.notna(row.get("FTHG")) else 0
-                ag = int(row.get("FTAG", 0) or 0) if pd.notna(row.get("FTAG")) else 0
+                hg = int(row["FTHG"]) if pd.notna(row.get("FTHG")) else 0
+                ag = int(row["FTAG"]) if pd.notna(row.get("FTAG")) else 0
                 all_results.append({
                     "date": row.get("Date"),
                     "result": "W" if ftr == "H" else ("D" if ftr == "D" else "L"),
@@ -1089,8 +1107,8 @@ class FreeDataEngine:
 
             for _, row in team_away.iterrows():
                 ftr = row.get("FTR", "")
-                hg = int(row.get("FTHG", 0) or 0) if pd.notna(row.get("FTHG")) else 0
-                ag = int(row.get("FTAG", 0) or 0) if pd.notna(row.get("FTAG")) else 0
+                hg = int(row["FTHG"]) if pd.notna(row.get("FTHG")) else 0
+                ag = int(row["FTAG"]) if pd.notna(row.get("FTAG")) else 0
                 all_results.append({
                     "date": row.get("Date"),
                     "result": "W" if ftr == "A" else ("D" if ftr == "D" else "L"),
@@ -1103,7 +1121,8 @@ class FreeDataEngine:
 
             all_results.sort(
                 key=lambda x: (
-                    x["date"] if isinstance(x["date"], pd.Timestamp)
+                    x["date"]
+                    if isinstance(x["date"], pd.Timestamp)
                     else pd.Timestamp.min
                 ),
                 reverse=True,
@@ -1118,8 +1137,7 @@ class FreeDataEngine:
             conceded_list = [r["conceded"] for r in recent]
             shots_list = [r["shots"] for r in recent]
 
-            # FIX: division by zero guard
-            avg_shots = np.mean(shots_list) if shots_list else 1.0
+            avg_shots = float(np.mean(shots_list)) if shots_list else 1.0
             if avg_shots == 0:
                 avg_shots = 1.0
 
@@ -1140,21 +1158,24 @@ class FreeDataEngine:
                 "std_scored": round(float(np.std(scored_list)), 2),
                 "btts_rate": round(
                     sum(
-                        1 for r in recent if r["scored"] > 0 and r["conceded"] > 0
+                        1 for r in recent
+                        if r["scored"] > 0 and r["conceded"] > 0
                     ) / n,
-                    3
+                    3,
                 ),
                 "over25_rate": round(
                     sum(
-                        1 for r in recent if r["scored"] + r["conceded"] > 2.5
+                        1 for r in recent
+                        if r["scored"] + r["conceded"] > 2.5
                     ) / n,
-                    3
+                    3,
                 ),
                 "over35_rate": round(
                     sum(
-                        1 for r in recent if r["scored"] + r["conceded"] > 3.5
+                        1 for r in recent
+                        if r["scored"] + r["conceded"] > 3.5
                     ) / n,
-                    3
+                    3,
                 ),
                 "clean_sheet_rate": round(
                     sum(1 for r in recent if r["conceded"] == 0) / n, 3
@@ -1173,7 +1194,6 @@ class FreeDataEngine:
                 "total_historical": len(all_results),
             }
 
-            # venue-specific
             venue_key_str = "home" if is_home else "away"
             venue_matches = [
                 r for r in all_results[:20] if r["venue"] == venue_key_str
@@ -1184,24 +1204,28 @@ class FreeDataEngine:
                     sum(1 for r in venue_matches if r["result"] == "W") / vn, 3
                 )
                 stats[key]["venue_avg_goals"] = round(
-                    float(np.mean([r["scored"] + r["conceded"] for r in venue_matches])),
-                    2
+                    float(
+                        np.mean([r["scored"] + r["conceded"] for r in venue_matches])
+                    ),
+                    2,
                 )
                 stats[key]["venue_btts"] = round(
                     sum(
                         1 for r in venue_matches
                         if r["scored"] > 0 and r["conceded"] > 0
                     ) / vn,
-                    3
+                    3,
                 )
 
-            # weighted form
             weights = np.array([1 / (i + 1) for i in range(n)])
             weights /= weights.sum()
-            result_pts = np.array([
-                3 if r["result"] == "W" else (1 if r["result"] == "D" else 0)
-                for r in recent
-            ], dtype=np.float64)
+            result_pts = np.array(
+                [
+                    3 if r["result"] == "W" else (1 if r["result"] == "D" else 0)
+                    for r in recent
+                ],
+                dtype=np.float64,
+            )
             stats[key]["weighted_form_points"] = round(
                 float(np.dot(weights, result_pts)), 3
             )
@@ -1217,8 +1241,8 @@ class FreeDataEngine:
             if len(h2h_df) > 0:
                 h2h_results = []
                 for _, row in h2h_df.iterrows():
-                    hg = int(row.get("FTHG", 0) or 0) if pd.notna(row.get("FTHG")) else 0
-                    ag = int(row.get("FTAG", 0) or 0) if pd.notna(row.get("FTAG")) else 0
+                    hg = int(row["FTHG"]) if pd.notna(row.get("FTHG")) else 0
+                    ag = int(row["FTAG"]) if pd.notna(row.get("FTAG")) else 0
                     h2h_results.append({
                         "total_goals": hg + ag,
                         "btts": hg > 0 and ag > 0,
@@ -1243,7 +1267,7 @@ class FreeDataEngine:
                 }
                 logger.info(
                     "✅ [FOOTBALL H2H] %s vs %s: %d matches",
-                    home_team, away_team, hn
+                    home_team, away_team, hn,
                 )
 
         return stats
@@ -1259,8 +1283,9 @@ class FreeDataEngine:
 
         try:
             url = CFG.GITHUB_SOURCES["club_elo"].format(team=clean)
-            res = requests.get(url, timeout=8,
-                               headers={"User-Agent": "Mozilla/5.0"})
+            res = requests.get(
+                url, timeout=8, headers={"User-Agent": "Mozilla/5.0"}
+            )
             if res.status_code == 200 and res.text.strip():
                 lines = [l for l in res.text.strip().split("\n") if l.strip()]
                 if len(lines) > 1:
@@ -1300,7 +1325,6 @@ class FreeDataEngine:
         return None
 
     def get_us_sports_stats(self, sport: str, team: str) -> dict:
-        """آمار MLB با statsapi اگه موجود باشه."""
         if not HAS_STATSAPI:
             return {}
 
@@ -1309,7 +1333,7 @@ class FreeDataEngine:
             cached = CacheManager.get(self.american_sports_cache, cache_key)
             return cached if cached else {}
 
-        stats = {}
+        stats: dict = {}
         try:
             if "baseball" in sport.lower() or "mlb" in sport.lower():
                 teams = mlb_statsapi.lookup_team(team)
@@ -1320,7 +1344,6 @@ class FreeDataEngine:
                     sched = mlb_statsapi.schedule(
                         team=team_id, start_date=start_d, end_date=end_d
                     )
-
                     wins, losses = 0, 0
                     runs_scored, runs_allowed = 0, 0
                     finished_games = [
@@ -1357,7 +1380,7 @@ class FreeDataEngine:
             )
             CacheManager.save(
                 CFG.CACHE_DIR / "us_sports_cache.json",
-                self.american_sports_cache
+                self.american_sports_cache,
             )
 
         return stats
@@ -1376,12 +1399,9 @@ class MLPredictionEngine:
         self._football_team_stats: dict = {}
         self._football_metrics: dict = {}
         self._tennis_metrics: dict = {}
-        # FIX: ثابت برای reproducibility تنیس
         self._rng = np.random.RandomState(42)
 
-    # ─────────────────────────────────────────────────────
-    # Football
-    # ─────────────────────────────────────────────────────
+    # ── Football ─────────────────────────────────────────
     def load_or_train_football_model(self):
         path = CFG.ML_DIR / "football_model_v6.pkl"
         if path.exists():
@@ -1393,7 +1413,9 @@ class MLPredictionEngine:
                     self.football_pipeline = data["pipeline"]
                     self._football_team_stats = data["stats"]
                     self.is_football_trained = True
-                    logger.info("⚡ [ML FOOTBALL] Loaded pre-trained model from cache!")
+                    logger.info(
+                        "⚡ [ML FOOTBALL] Loaded pre-trained model from cache!"
+                    )
                     return
                 except Exception as e:
                     logger.warning("Football model cache corrupt: %s", e)
@@ -1427,7 +1449,6 @@ class MLPredictionEngine:
             if not ht or not at or ftr not in ["H", "D", "A"]:
                 continue
 
-            # FIX: safe numeric conversion
             try:
                 hg = float(row.get("FTHG", 0) or 0)
                 ag = float(row.get("FTAG", 0) or 0)
@@ -1457,7 +1478,6 @@ class MLPredictionEngine:
                     "label": {"H": 0, "D": 1, "A": 2}[ftr],
                 }
 
-            # آپدیت stats AFTER feature capture (prevent lookahead)
             team_stats[ht].appendleft({
                 "gs": hg, "gc": ag,
                 "pts": 3 if ftr == "H" else (1 if ftr == "D" else 0),
@@ -1499,7 +1519,10 @@ class MLPredictionEngine:
     def train_football_model(self):
         df = self.data_engine.football_data.get("all")
         if df is None or len(df) < 300:
-            logger.warning("[ML FOOTBALL] Insufficient data (%d rows)", len(df) if df is not None else 0)
+            logger.warning(
+                "[ML FOOTBALL] Insufficient data (%d rows)",
+                len(df) if df is not None else 0,
+            )
             return
 
         result_lookup, self._football_team_stats = self._build_team_stats_rolling(df)
@@ -1509,10 +1532,11 @@ class MLPredictionEngine:
             logger.warning("[ML FOOTBALL] Too few features (%d)", len(X))
             return
 
-        # FIX: بررسی unique classes - CalibratedClassifierCV نیاز به ≥2 class دارد
         unique_classes = np.unique(y)
         if len(unique_classes) < 2:
-            logger.warning("[ML FOOTBALL] Only 1 class found, skipping training.")
+            logger.warning(
+                "[ML FOOTBALL] Only 1 class found, skipping training."
+            )
             return
 
         gb = GradientBoostingClassifier(
@@ -1550,9 +1574,11 @@ class MLPredictionEngine:
         def find_team(team: str) -> Optional[dict]:
             clean = team.lower().strip()
             best_match = next(
-                (k for k in self._football_team_stats
-                 if clean in k.lower() or k.lower() in clean),
-                None
+                (
+                    k for k in self._football_team_stats
+                    if clean in k.lower() or k.lower() in clean
+                ),
+                None,
             )
             if not best_match:
                 return None
@@ -1584,7 +1610,6 @@ class MLPredictionEngine:
 
         try:
             probs = self.football_pipeline["model"].predict_proba(X_scaled)[0]
-            # FIX: استفاده از classes_ واقعی مدل
             classes = self.football_pipeline["model"].classes_
             label_map = {0: "home_win", 1: "draw", 2: "away_win"}
             return {
@@ -1595,9 +1620,7 @@ class MLPredictionEngine:
             logger.warning("[ML FOOTBALL] Predict error: %s", e)
             return None
 
-    # ─────────────────────────────────────────────────────
-    # Tennis  ← FIX: balanced labels + instance RNG
-    # ─────────────────────────────────────────────────────
+    # ── Tennis ───────────────────────────────────────────
     def load_or_train_tennis_model(self, is_wta: bool = False):
         tour = "wta" if is_wta else "atp"
         path = CFG.ML_DIR / f"tennis_model_{tour}_v6.pkl"
@@ -1612,7 +1635,7 @@ class MLPredictionEngine:
                     self.is_tennis_trained = True
                     logger.info(
                         "⚡ [ML TENNIS %s] Loaded pre-trained model from cache!",
-                        tour.upper()
+                        tour.upper(),
                     )
                     return
                 except Exception as e:
@@ -1649,25 +1672,31 @@ class MLPredictionEngine:
             surface = str(row.get("surface", "Hard") or "Hard").lower()
             best_of = float(row.get("best_of", 3) or 3)
 
-            def safe_float(v, default=0.0) -> float:
+            def safe_float(v, default: float = 0.0) -> float:
                 try:
                     return float(v or default)
                 except (TypeError, ValueError):
                     return default
 
             w_stats = [
-                safe_float(row.get("w_ace")), safe_float(row.get("w_df")),
+                safe_float(row.get("w_ace")),
+                safe_float(row.get("w_df")),
                 safe_float(row.get("w_svpt", 50)),
-                safe_float(row.get("w_1stIn")), safe_float(row.get("w_1stWon")),
+                safe_float(row.get("w_1stIn")),
+                safe_float(row.get("w_1stWon")),
                 safe_float(row.get("w_2ndWon")),
-                safe_float(row.get("w_bpSaved")), safe_float(row.get("w_bpFaced")),
+                safe_float(row.get("w_bpSaved")),
+                safe_float(row.get("w_bpFaced")),
             ]
             l_stats = [
-                safe_float(row.get("l_ace")), safe_float(row.get("l_df")),
+                safe_float(row.get("l_ace")),
+                safe_float(row.get("l_df")),
                 safe_float(row.get("l_svpt", 50)),
-                safe_float(row.get("l_1stIn")), safe_float(row.get("l_1stWon")),
+                safe_float(row.get("l_1stIn")),
+                safe_float(row.get("l_1stWon")),
                 safe_float(row.get("l_2ndWon")),
-                safe_float(row.get("l_bpSaved")), safe_float(row.get("l_bpFaced")),
+                safe_float(row.get("l_bpSaved")),
+                safe_float(row.get("l_bpFaced")),
             ]
 
             def normalize_serve(s: list) -> list:
@@ -1675,12 +1704,12 @@ class MLPredictionEngine:
                 in1st = max(s[3], 1.0)
                 bpf = max(s[7], 1.0)
                 return [
-                    s[0] / svpt,            # ace rate
-                    s[1] / svpt,            # df rate
-                    s[3] / svpt,            # 1st serve in
-                    s[4] / in1st,           # 1st serve won
-                    s[5] / max(svpt - s[3], 1.0),  # 2nd serve won
-                    s[6] / bpf,             # bp saved
+                    s[0] / svpt,
+                    s[1] / svpt,
+                    s[3] / svpt,
+                    s[4] / in1st,
+                    s[5] / max(svpt - s[3], 1.0),
+                    s[6] / bpf,
                 ]
 
             wn = normalize_serve(w_stats)
@@ -1688,7 +1717,6 @@ class MLPredictionEngine:
             w_age = safe_float(row.get("winner_age"), 25.0)
             l_age = safe_float(row.get("loser_age"), 25.0)
 
-            # FIX: استفاده از instance RNG (نه global seed)
             is_p1_winner = self._rng.rand() > 0.5
 
             if is_p1_winner:
@@ -1725,7 +1753,8 @@ class MLPredictionEngine:
             weight = float(
                 np.clip(
                     0.5 + 0.5 * (td - 20200101) / max(20260101 - 20200101, 1),
-                    0.5, 1.0
+                    0.5,
+                    1.0,
                 )
             )
             weights.append(weight)
@@ -1740,7 +1769,11 @@ class MLPredictionEngine:
         )
 
     def train_tennis_model(self, is_wta: bool = False):
-        df = self.data_engine.wta_matches if is_wta else self.data_engine.atp_matches
+        df = (
+            self.data_engine.wta_matches
+            if is_wta
+            else self.data_engine.atp_matches
+        )
         tour = "WTA" if is_wta else "ATP"
 
         if df is None or len(df) < 500:
@@ -1749,10 +1782,11 @@ class MLPredictionEngine:
 
         X, y, sample_weights = self._build_tennis_features(df)
         if len(X) < 200:
-            logger.warning("[ML TENNIS %s] Too few features (%d)", tour, len(X))
+            logger.warning(
+                "[ML TENNIS %s] Too few features (%d)", tour, len(X)
+            )
             return
 
-        # FIX: بررسی class balance
         unique, counts = np.unique(y, return_counts=True)
         if len(unique) < 2:
             logger.warning(
@@ -1761,24 +1795,30 @@ class MLPredictionEngine:
             return
 
         class_balance = dict(zip(unique.tolist(), counts.tolist()))
-        logger.info("[ML TENNIS %s] Class distribution: %s", tour, class_balance)
+        logger.info(
+            "[ML TENNIS %s] Class distribution: %s", tour, class_balance
+        )
 
         scaler = RobustScaler()
         X_scaled = scaler.fit_transform(X)
 
+        # FIX: sample_weights را در fit استفاده کن
         gb = GradientBoostingClassifier(
             n_estimators=200, max_depth=3, learning_rate=0.05,
             random_state=42, subsample=0.8,
         )
-
         try:
-            # sample_weight در fit
-            calibrated = CalibratedClassifierCV(gb, cv=3, method="isotonic")
+            # ابتدا GB را با وزن‌ها train می‌کنیم
+            gb.fit(X_scaled, y, sample_weight=sample_weights)
+            # سپس calibrate می‌کنیم (cv="prefit" چون مدل آماده است)
+            calibrated = CalibratedClassifierCV(gb, cv="prefit", method="isotonic")
             calibrated.fit(X_scaled, y)
 
             self.tennis_pipeline = {"model": calibrated, "scaler": scaler}
             self.is_tennis_trained = True
-            logger.info("✅ [ML TENNIS %s] Trained on %d samples", tour, len(X))
+            logger.info(
+                "✅ [ML TENNIS %s] Trained on %d samples", tour, len(X)
+            )
         except Exception as e:
             logger.error("[ML TENNIS %s] Training failed: %s", tour, e)
 
@@ -1825,7 +1865,6 @@ class MLPredictionEngine:
             X_scaled = self.tennis_pipeline["scaler"].transform(X)
             probs = self.tennis_pipeline["model"].predict_proba(X_scaled)[0]
 
-            # FIX: classes_ ممکن است [0] یا [1] باشد
             classes = self.tennis_pipeline["model"].classes_
             prob_map = {int(c): float(p) for c, p in zip(classes, probs)}
             prob_a = prob_map.get(1, 0.5)
@@ -1859,7 +1898,6 @@ class PoissonEngine:
         if len(recent_df) < 50:
             return {}
 
-        # FIX: safe mean calculation
         league_avg_home = recent_df["FTHG"].astype(float).mean()
         league_avg_away = recent_df["FTAG"].astype(float).mean()
 
@@ -1891,12 +1929,18 @@ class PoissonEngine:
         away_atk = away_matches["FTAG"].astype(float).mean() / league_avg_away
         away_def = away_matches["FTHG"].astype(float).mean() / league_avg_home
 
-        # FIX: NaN guard
-        if any(pd.isna(v) or v == 0 for v in [home_atk, home_def, away_atk, away_def]):
+        if any(
+            pd.isna(v) or v == 0
+            for v in [home_atk, home_def, away_atk, away_def]
+        ):
             return {}
 
-        home_xg = float(np.clip(home_atk * away_def * league_avg_home, 0.1, 8.0))
-        away_xg = float(np.clip(away_atk * home_def * league_avg_away, 0.1, 8.0))
+        home_xg = float(
+            np.clip(home_atk * away_def * league_avg_home, 0.1, 8.0)
+        )
+        away_xg = float(
+            np.clip(away_atk * home_def * league_avg_away, 0.1, 8.0)
+        )
 
         max_goals = 6
         prob_matrix = np.zeros((max_goals + 1, max_goals + 1))
@@ -1958,13 +2002,18 @@ class EVEngine:
 
         try:
             from scipy.optimize import brentq
-            # FIX: fallback اگه f(0.5) و f(3.0) هم‌علامت باشند
-            if f(0.5) * f(3.0) >= 0:
+
+            fa, fb = f(0.5), f(3.0)
+            if fa * fb >= 0:
                 return [p / total for p in implied]
             k = brentq(f, 0.5, 3.0, xtol=1e-6)
             true_probs = [p ** k for p in implied]
             s = sum(true_probs)
-            return [p / s for p in true_probs] if s > 0 else [p / total for p in implied]
+            return (
+                [p / s for p in true_probs]
+                if s > 0
+                else [p / total for p in implied]
+            )
         except Exception:
             return [p / total for p in implied]
 
@@ -1994,7 +2043,11 @@ class EVEngine:
             true_probs.append(numerator / denom)
 
         s = sum(true_probs)
-        return [p / s for p in true_probs] if s > 0 else [p / total for p in implied]
+        return (
+            [p / s for p in true_probs]
+            if s > 0
+            else [p / total for p in implied]
+        )
 
     @staticmethod
     def kelly_criterion(
@@ -2012,18 +2065,30 @@ class EVEngine:
 def calculate_sharp_ev_advanced(
     markets_data: dict, bookmakers_raw: list
 ) -> list:
+    """
+    FIX: markets_data حاوی ساختار صحیح است:
+    {market_key: [{bookmaker, bookmaker_key, outcomes}, ...]}
+    """
     best_per_market: dict = {}
 
     for market_key, market_data_list in markets_data.items():
+        if not isinstance(market_data_list, list):
+            continue
+
         sharp_odds_all: Dict[str, List[float]] = defaultdict(list)
         soft_odds_all: Dict[str, List[float]] = defaultdict(list)
         best_market_odds: Dict[str, Tuple[float, str]] = {}
 
         for entry in market_data_list:
+            if not isinstance(entry, dict):
+                continue
             bk = entry.get("bookmaker_key", "")
+            bk_name = entry.get("bookmaker", bk)
             is_sharp = bk in CFG.SHARP_BOOKMAKERS
 
             for o in entry.get("outcomes", []):
+                if not isinstance(o, dict):
+                    continue
                 name = (
                     f"{o['name']} {o.get('point')}"
                     if o.get("point") is not None
@@ -2044,8 +2109,11 @@ def calculate_sharp_ev_advanced(
                 else:
                     soft_odds_all[name].append(price)
 
-                if name not in best_market_odds or price > best_market_odds[name][0]:
-                    best_market_odds[name] = (price, entry.get("bookmaker", "Unknown"))
+                if (
+                    name not in best_market_odds
+                    or price > best_market_odds[name][0]
+                ):
+                    best_market_odds[name] = (price, bk_name)
 
         if not best_market_odds:
             continue
@@ -2055,14 +2123,13 @@ def calculate_sharp_ev_advanced(
             for name, prices in sharp_odds_all.items()
             if prices
         }
-        soft_best = {
-            name: max(prices)
-            for name, prices in soft_odds_all.items()
-            if prices
-        }
 
         if not sharp_best:
-            sharp_best = dict(soft_best)
+            sharp_best = {
+                name: max(prices)
+                for name, prices in soft_odds_all.items()
+                if prices
+            }
 
         if not sharp_best:
             continue
@@ -2071,16 +2138,19 @@ def calculate_sharp_ev_advanced(
         outcomes = list(sharp_best.keys())
         odds_list = [sharp_best[o] for o in outcomes]
 
-        # Validation
         implied_sum = sum(1 / o for o in odds_list if o > 0)
         if not (CFG.MIN_VALID_IMPLIED_SUM <= implied_sum <= CFG.MAX_VALID_IMPLIED_SUM):
+            logger.debug(
+                "[EV] Implied sum %.3f out of range [%.2f, %.2f] for %s",
+                implied_sum, CFG.MIN_VALID_IMPLIED_SUM,
+                CFG.MAX_VALID_IMPLIED_SUM, market_key,
+            )
             continue
 
         min_outcomes = CFG.MARKET_EXPECTED_OUTCOMES.get(market_key, {}).get("min", 2)
         if len(outcomes) < min_outcomes:
             continue
 
-        # Triple devigging
         try:
             true_probs_power = EVEngine.remove_vig_power(odds_list)
             true_probs_shin = EVEngine.remove_vig_shin(odds_list)
@@ -2099,10 +2169,14 @@ def calculate_sharp_ev_advanced(
                 for i in range(len(outcomes))
             }
 
-        min_odds = CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
-        min_ev = CFG.H2H_MIN_EV if market_key == "h2h" else CFG.TOTALS_MIN_EV
+        min_odds = (
+            CFG.H2H_MIN_ODDS if market_key == "h2h" else CFG.TOTALS_MIN_ODDS
+        )
+        min_ev = (
+            CFG.H2H_MIN_EV if market_key == "h2h" else CFG.TOTALS_MIN_EV
+        )
         if not has_real_sharp:
-            min_ev *= 1.8
+            min_ev *= 1.5  # کمی سخت‌گیرانه‌تر بدون sharp line
 
         best_opp = None
 
@@ -2111,7 +2185,9 @@ def calculate_sharp_ev_advanced(
             if true_prob <= 0 or true_prob >= 1:
                 continue
 
-            best_price, best_bm = best_market_odds.get(outcome_name, (0, "Unknown"))
+            best_price, best_bm = best_market_odds.get(
+                outcome_name, (0, "Unknown")
+            )
             if best_price <= 1.0:
                 continue
 
@@ -2125,7 +2201,11 @@ def calculate_sharp_ev_advanced(
             kelly_pct = EVEngine.kelly_criterion(true_prob, best_price)
 
             sharp_price = sharp_best.get(outcome_name, best_price)
-            clv = (best_price / sharp_price - 1) * 100 if sharp_price > 0 else 0.0
+            clv = (
+                (best_price / sharp_price - 1) * 100
+                if sharp_price > 0
+                else 0.0
+            )
 
             opp = {
                 "pick": outcome_name,
@@ -2149,11 +2229,13 @@ def calculate_sharp_ev_advanced(
         if best_opp:
             best_per_market[market_key] = best_opp
 
-    all_opps = sorted(best_per_market.values(), key=lambda x: x["ev"], reverse=True)
-    return all_opps[:1]
+    all_opps = sorted(
+        best_per_market.values(), key=lambda x: x["ev"], reverse=True
+    )
+    return all_opps
 
 
-# FIX: backward compat alias
+# backward compat
 def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
     return calculate_sharp_ev_advanced(markets_data, bookmakers_raw)
 
@@ -2163,19 +2245,22 @@ def calculate_sharp_ev(markets_data: dict, bookmakers_raw: list) -> list:
 # =========================================================
 class ConfidenceEngine:
     WEIGHTS = {
-        "base": 40,
+        "base": 42,
         "ev_high": 15, "ev_medium": 10, "ev_low": 5,
-        "sharp_line": 10, "football_stats": 5,
-        "elo_high": 10, "elo_medium": 5,
-        "ml_strong": 10, "ml_medium": 5,
+        "sharp_line": 8, "football_stats": 5,
+        "elo_high": 8, "elo_medium": 4,
+        "ml_strong": 8, "ml_medium": 4,
         "poisson_confirm": 5,
-        "smart_money_steam": 10,
+        "smart_money_steam": 8,
         "kelly_high": 5, "kelly_medium": 3,
     }
 
     @classmethod
     def calculate_math_score(
-        cls, opp: dict, stats: dict, market: str,
+        cls,
+        opp: dict,
+        stats: dict,
+        market: str,
         ml_prediction: Optional[dict] = None,
         poisson_prediction: Optional[dict] = None,
     ) -> int:
@@ -2186,7 +2271,7 @@ class ConfidenceEngine:
             score += cls.WEIGHTS["ev_high"]
         elif ev_pct > 3.0:
             score += cls.WEIGHTS["ev_medium"]
-        elif ev_pct > 1.5:
+        elif ev_pct > 1.0:
             score += cls.WEIGHTS["ev_low"]
 
         if opp.get("has_sharp_line"):
@@ -2241,10 +2326,16 @@ def retry_request(max_retries: int = 3, delay: float = 2, backoff: float = 2):
                 try:
                     return func(*args, **kwargs)
                 except requests.exceptions.HTTPError as e:
-                    status = e.response.status_code if e.response is not None else 0
+                    status = (
+                        e.response.status_code
+                        if e.response is not None
+                        else 0
+                    )
                     if status == 429:
                         wait = int(
-                            e.response.headers.get("Retry-After", current_delay * 3)
+                            e.response.headers.get(
+                                "Retry-After", current_delay * 3
+                            )
                         )
                         logger.warning("Rate limit 429, sleeping %ds", wait)
                         time.sleep(wait)
@@ -2262,7 +2353,9 @@ def retry_request(max_retries: int = 3, delay: float = 2, backoff: float = 2):
                 time.sleep(current_delay)
                 current_delay *= backoff
             return None
+
         return wrapper
+
     return decorator
 
 
@@ -2270,8 +2363,12 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
     if not raw_text:
         return None
 
-    clean = re.sub(r"<think>[\s\S]*?</think>", "", raw_text, flags=re.IGNORECASE)
-    clean = re.sub(r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE).strip()
+    clean = re.sub(
+        r"<think>[\s\S]*?</think>", "", raw_text, flags=re.IGNORECASE
+    )
+    clean = re.sub(
+        r"<think>[\s\S]*", "", clean, flags=re.IGNORECASE
+    ).strip()
     clean = re.sub(r"```(?:json)?", "", clean).strip().rstrip("`").strip()
 
     try:
@@ -2279,7 +2376,6 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
     except json.JSONDecodeError:
         pass
 
-    # جستجوی JSON در متن
     for match in reversed(list(re.finditer(r"\{[^{}]*\}", clean))):
         try:
             result = json.loads(match.group(0))
@@ -2288,7 +2384,6 @@ def robust_json_extractor(raw_text: str) -> Optional[dict]:
         except json.JSONDecodeError:
             continue
 
-    # تلاش نهایی با greedy match
     try:
         m = re.search(r"\{[\s\S]*\}", clean)
         if m:
@@ -2367,25 +2462,32 @@ class LineMovementTracker:
         self._cleanup_old_entries()
 
     def _cleanup_old_entries(self):
-        """FIX: cleanup را به یک متد جداگانه تبدیل کردیم."""
         now = datetime.now(timezone.utc)
-        to_delete = [
-            k for k, v in self.data.items()
-            if not isinstance(v, dict)
-            or (
-                datetime.now(timezone.utc)
-                - datetime.fromisoformat(
-                    v.get("timestamp", "2000-01-01T00:00:00+00:00")
-                ).replace(tzinfo=timezone.utc)
-                > timedelta(hours=24)
-            )
-        ]
+        to_delete = []
+        for k, v in list(self.data.items()):
+            if not isinstance(v, dict):
+                to_delete.append(k)
+                continue
+            try:
+                ts = v.get("timestamp", "2000-01-01T00:00:00+00:00")
+                dt = datetime.fromisoformat(ts)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                if now - dt > timedelta(hours=24):
+                    to_delete.append(k)
+            except (ValueError, TypeError):
+                to_delete.append(k)
+
         for key in to_delete:
             self.data.pop(key, None)
 
     def record_and_get_movement(
         self,
-        home: str, away: str, market: str, outcome: str, current_odds: float,
+        home: str,
+        away: str,
+        market: str,
+        outcome: str,
+        current_odds: float,
     ) -> float:
         if current_odds <= 1.0:
             return 0.0
@@ -2420,11 +2522,18 @@ line_movement_tracker = LineMovementTracker()
 
 
 # =========================================================
-# 16. DUAL AI ANALYSIS  ← بازنویسی با Google AI SDK
+# 16. DUAL AI ANALYSIS
 # =========================================================
 def generate_dual_ai_analysis(
-    home: str, away: str, sport: str, pick: str, market: str,
-    opp: dict, stats: dict, has_real_stats: bool, math_score: int,
+    home: str,
+    away: str,
+    sport: str,
+    pick: str,
+    market: str,
+    opp: dict,
+    stats: dict,
+    has_real_stats: bool,
+    math_score: int,
     ml_prediction: Optional[dict] = None,
     poisson_prediction: Optional[dict] = None,
     sport_key: str = "other",
@@ -2439,7 +2548,6 @@ def generate_dual_ai_analysis(
         "logic": "Quantitative edge detected via mathematical variance analysis.",
     }
 
-    # Build context string
     context_parts = []
 
     if stats.get("historical_data"):
@@ -2486,7 +2594,9 @@ def generate_dual_ai_analysis(
         f"Kelly={opp.get('kelly_pct', 0):.1f}%"
     )
 
-    stats_str = "\n".join(context_parts) if context_parts else "NO EXTERNAL CONTEXT."
+    stats_str = (
+        "\n".join(context_parts) if context_parts else "NO EXTERNAL CONTEXT."
+    )
 
     system_instruction = (
         "ROLE: Elite Quantitative Sports Betting Analyst (Machine-like objectivity).\n"
@@ -2506,10 +2616,10 @@ def generate_dual_ai_analysis(
         f"TARGET PICK: {pick}\n"
         f"MARKET TYPE: {get_market_label(market)}\n\n"
         f"=== DATA CONTEXT ===\n{stats_str}\n==================\n\n"
-        "Return a JSON object with keys: ai_confidence (int), logic (string), sport_emoji (string)"
+        "Return a JSON object with keys: "
+        "ai_confidence (int), logic (string), sport_emoji (string)"
     )
 
-    # FIX: استفاده از Google AI SDK با system_instruction
     ai_data = gemini_manager.generate(
         prompt=user_prompt,
         system_instruction=system_instruction,
@@ -2520,7 +2630,6 @@ def generate_dual_ai_analysis(
         logger.warning("[AI] Gemini returned no valid data, using math fallback")
         return default_response
 
-    # Extract and validate fields
     try:
         ai_score_raw = ai_data.get("ai_confidence", math_score)
         ai_score = int(np.clip(float(ai_score_raw), 0, 100))
@@ -2529,15 +2638,20 @@ def generate_dual_ai_analysis(
 
     final_conf = int(np.clip((math_score + ai_score) / 2, 0, 100))
     risk_level = (
-        "Low" if final_conf >= CFG.HIGH_CONFIDENCE
+        "Low"
+        if final_conf >= CFG.HIGH_CONFIDENCE
         else ("Medium" if final_conf >= CFG.MEDIUM_CONFIDENCE else "High")
     )
 
     logic_raw = ai_data.get("logic", default_response["logic"])
     logic = str(logic_raw)[:600] if logic_raw else default_response["logic"]
 
-    sport_emoji_raw = ai_data.get("sport_emoji", _get_sport_emoji(sport_key))
-    sport_emoji = str(sport_emoji_raw) if sport_emoji_raw else _get_sport_emoji(sport_key)
+    sport_emoji_raw = ai_data.get(
+        "sport_emoji", _get_sport_emoji(sport_key)
+    )
+    sport_emoji = (
+        str(sport_emoji_raw) if sport_emoji_raw else _get_sport_emoji(sport_key)
+    )
 
     return {
         "sport_emoji": sport_emoji,
@@ -2550,7 +2664,7 @@ def generate_dual_ai_analysis(
 
 
 # =========================================================
-# 17. TELEGRAM  ← FIX: تمام فیلدها escape شده
+# 17. TELEGRAM
 # =========================================================
 def send_telegram(message_html: str) -> bool:
     MAX_LEN = 4000
@@ -2586,7 +2700,9 @@ def send_telegram(message_html: str) -> bool:
             )
             if not res.ok:
                 logger.error(
-                    "Telegram error [%d]: %s", res.status_code, res.text[:200]
+                    "Telegram error [%d]: %s",
+                    res.status_code,
+                    res.text[:200],
                 )
                 success = False
         except requests.RequestException as e:
@@ -2597,27 +2713,30 @@ def send_telegram(message_html: str) -> bool:
 
 
 def build_signal_message(
-    home: str, away: str, sport: str, sport_key: str,
-    opp: dict, ai_data: dict, stats: dict,
-    math_score: int, ml_prediction: Optional[dict],
+    home: str,
+    away: str,
+    sport: str,
+    sport_key: str,
+    opp: dict,
+    ai_data: dict,
+    stats: dict,
+    math_score: int,
+    ml_prediction: Optional[dict],
     poisson_prediction: Optional[dict],
-    now_utc: datetime, commence_time: str,
+    now_utc: datetime,
+    commence_time: str,
 ) -> str:
-    """
-    ساخت پیام HTML با تمام escape های لازم.
-    FIX: جداسازی منطق پیام از async_main برای خوانایی بهتر
-    """
     final_confidence = ai_data["final_confidence"]
 
     conf_icon = (
-        "🔥" if final_confidence >= CFG.HIGH_CONFIDENCE
+        "🔥"
+        if final_confidence >= CFG.HIGH_CONFIDENCE
         else ("✅" if final_confidence >= CFG.MEDIUM_CONFIDENCE else "⚡")
     )
     risk_icon = {"Low": "🟢", "Medium": "🟠", "High": "🔴"}.get(
         ai_data["risk_level"], "🟠"
     )
 
-    # FIX: همه مقادیر string با html_lib.escape
     h_esc = html_lib.escape(home)
     a_esc = html_lib.escape(away)
     sport_esc = html_lib.escape(sport)
@@ -2626,19 +2745,24 @@ def build_signal_message(
     logic_esc = html_lib.escape(str(ai_data["logic"]))
 
     ev_line = f"📈 <b>Edge:</b> {opp['edge_pct']:.2f}%"
-    kelly_line = f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
+    kelly_line = (
+        f" | 💰 <b>Stake:</b> {opp.get('kelly_pct', 0):.1f}% bankroll"
+    )
     steam_line = (
         f" | 📉 <b>Steam:</b> -{opp['steam_pct']:.1f}%"
-        if opp.get("steam_pct", 0) > 2.0 else ""
+        if opp.get("steam_pct", 0) > 2.0
+        else ""
     )
     clv_line = (
         f" | 📊 <b>CLV:</b> {opp.get('clv_pct', 0):+.1f}%"
-        if abs(opp.get("clv_pct", 0)) > 0.5 else ""
+        if abs(opp.get("clv_pct", 0)) > 0.5
+        else ""
     )
 
     ml_line = (
         "\n🧠 <b>Math Models:</b> Verified"
-        if ml_prediction or poisson_prediction else ""
+        if ml_prediction or poisson_prediction
+        else ""
     )
 
     data_badge = ""
@@ -2650,11 +2774,16 @@ def build_signal_message(
 
     if has_historical or has_football or has_elo or has_ml or has_us:
         badges = []
-        if has_historical: badges.append("📚 Historical")
-        if has_football:   badges.append("⚽ Match Data")
-        if has_elo:        badges.append("📊 Elo")
-        if has_ml:         badges.append("🧠 ML")
-        if has_us:         badges.append("🇺🇸 US Stats")
+        if has_historical:
+            badges.append("📚 Historical")
+        if has_football:
+            badges.append("⚽ Match Data")
+        if has_elo:
+            badges.append("📊 Elo")
+        if has_ml:
+            badges.append("🧠 ML")
+        if has_us:
+            badges.append("🇺🇸 US Stats")
         data_badge = "\n📋 <b>Sources:</b> " + " | ".join(badges)
 
     countdown = get_countdown_str(commence_time, now_utc)
@@ -2690,24 +2819,31 @@ class SmartOddsCache:
 
     def get_cached(self, markets: list, window_hours: float) -> Optional[list]:
         key = self._make_key(markets, window_hours)
-        if CacheManager.is_valid_minutes(self.cache, key, CFG.TTL_ODDS_CACHE_MINUTES):
+        if CacheManager.is_valid_minutes(
+            self.cache, key, CFG.TTL_ODDS_CACHE_MINUTES
+        ):
             data = CacheManager.get(self.cache, key)
             if data:
                 logger.info(
                     "💾 [ODDS CACHE] HIT! %d events (TTL=%.0fm)",
-                    len(data), CFG.TTL_ODDS_CACHE_MINUTES
+                    len(data), CFG.TTL_ODDS_CACHE_MINUTES,
                 )
                 return data
         return None
 
-    def save_cached(self, markets: list, window_hours: float, events: list):
+    def save_cached(
+        self, markets: list, window_hours: float, events: list
+    ):
         key = self._make_key(markets, window_hours)
         self.cache = CacheManager.set(self.cache, key, events)
         CacheManager.save(CFG.ODDS_CACHE_FILE, self.cache)
         logger.info("💾 [ODDS CACHE] SAVED %d events", len(events))
 
     def get_stale(
-        self, markets: list, window_hours: float, max_ttl_hours: float = 2.0
+        self,
+        markets: list,
+        window_hours: float,
+        max_ttl_hours: float = 2.0,
     ) -> Optional[list]:
         key = self._make_key(markets, window_hours)
         if CacheManager.is_valid(self.cache, key, max_ttl_hours):
@@ -2748,7 +2884,7 @@ async def fetch_market_with_fallback(
                 odds_key_manager.record_usage(key_label, used, remaining)
                 logger.info(
                     "🔑 [%s] OK | Remaining: %d | Market: %s | Events: %d",
-                    key_label, remaining, market, len(events)
+                    key_label, remaining, market, len(events),
                 )
 
                 valid = []
@@ -2774,8 +2910,11 @@ async def fetch_market_with_fallback(
                 422: "Invalid params",
             }
             return (
-                [], res.status,
-                reasons.get(res.status, f"HTTP {res.status}: {error_body[:80]}")
+                [],
+                res.status,
+                reasons.get(
+                    res.status, f"HTTP {res.status}: {error_body[:80]}"
+                ),
             )
 
     except asyncio.TimeoutError:
@@ -2789,12 +2928,16 @@ async def fetch_market_with_fallback(
 async def fetch_all_odds_async() -> list:
     now_utc = datetime.now(timezone.utc)
 
-    cached = odds_cache.get_cached(CFG.ODDS_API_MARKETS, CFG.MATCH_WINDOW_HOURS)
+    cached = odds_cache.get_cached(
+        CFG.ODDS_API_MARKETS, CFG.MATCH_WINDOW_HOURS
+    )
     if cached is not None:
         return cached
 
     logger.info("💾 [ODDS CACHE] MISS - Calling API...")
     active_keys = odds_key_manager.get_active_keys()
+
+    # FIX: ساختار صحیح - نگه‌داری bookmakers برای هر event
     all_events: Dict[str, dict] = {}
     success = False
 
@@ -2806,7 +2949,9 @@ async def fetch_all_odds_async() -> list:
         connector = aiohttp.TCPConnector(limit=10, ssl=False)
         async with aiohttp.ClientSession(connector=connector) as session:
             tasks = [
-                fetch_market_with_fallback(session, m, now_utc, api_key, key_label)
+                fetch_market_with_fallback(
+                    session, m, now_utc, api_key, key_label
+                )
                 for m in CFG.ODDS_API_MARKETS
             ]
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -2816,28 +2961,36 @@ async def fetch_all_odds_async() -> list:
 
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                logger.error("🔑❌ [%s] Exception: %s", key_label, result)
+                logger.error(
+                    "🔑❌ [%s] Exception: %s", key_label, result
+                )
                 continue
 
             events, status, error = result
 
             if status == 200:
                 any_success = True
-                market_key = CFG.ODDS_API_MARKETS[i]
                 for e in events:
                     eid = e.get("id")
                     if not eid:
                         continue
-                    if eid not in all_events:
-                        # کپی کامل event بدون bookmakers
-                        all_events[eid] = {
-                            k: v for k, v in e.items()
-                            if k != "bookmakers"
-                        }
-                        all_events[eid]["_markets_data"] = {}
 
-                    # FIX: ساختار صحیح _markets_data
+                    if eid not in all_events:
+                        # FIX: ساختار کامل event را نگه دار
+                        all_events[eid] = {
+                            "id": eid,
+                            "sport_key": e.get("sport_key", ""),
+                            "sport_title": e.get("sport_title", ""),
+                            "commence_time": e.get("commence_time", ""),
+                            "home_team": e.get("home_team", ""),
+                            "away_team": e.get("away_team", ""),
+                            "_markets_data": {},
+                        }
+
+                    # FIX: ساختار صحیح _markets_data از bookmakers
                     for bm in e.get("bookmakers", []):
+                        bm_key = bm.get("key", "")
+                        bm_title = bm.get("title", bm_key)
                         for m_data in bm.get("markets", []):
                             mk = m_data.get("key", "")
                             if not mk:
@@ -2845,15 +2998,17 @@ async def fetch_all_odds_async() -> list:
                             if mk not in all_events[eid]["_markets_data"]:
                                 all_events[eid]["_markets_data"][mk] = []
                             all_events[eid]["_markets_data"][mk].append({
-                                "bookmaker": bm.get("title", ""),
-                                "bookmaker_key": bm.get("key", ""),
+                                "bookmaker": bm_title,
+                                "bookmaker_key": bm_key,
                                 "outcomes": m_data.get("outcomes", []),
                             })
             else:
                 logger.warning(
                     "🔑⚠️ [%s] %s: %s",
                     key_label,
-                    CFG.ODDS_API_MARKETS[i] if i < len(CFG.ODDS_API_MARKETS) else "?",
+                    CFG.ODDS_API_MARKETS[i]
+                    if i < len(CFG.ODDS_API_MARKETS)
+                    else "?",
                     error,
                 )
                 if status in [401, 402, 429]:
@@ -2861,21 +3016,29 @@ async def fetch_all_odds_async() -> list:
 
         if any_success:
             success = True
-            logger.info("✅ [%s] Fetched %d events", key_label, len(all_events))
+            logger.info(
+                "✅ [%s] Fetched %d unique events", key_label, len(all_events)
+            )
             break
         else:
             key_index = next(
-                (idx for idx, k in enumerate(odds_key_manager.keys)
-                 if k["label"] == key_label),
+                (
+                    idx
+                    for idx, k in enumerate(odds_key_manager.keys)
+                    if k["label"] == key_label
+                ),
                 -1,
             )
             if key_index >= 0:
                 reason = (
                     f"HTTP {hard_fail_status}"
-                    if hard_fail_status else "All markets failed"
+                    if hard_fail_status
+                    else "All markets failed"
                 )
                 odds_key_manager.mark_failed(key_index, reason)
-            logger.warning("🔑🔄 [%s] Failed → trying next key", key_label)
+            logger.warning(
+                "🔑🔄 [%s] Failed → trying next key", key_label
+            )
 
     if not success:
         logger.error("🔑❌ ALL KEYS FAILED!")
@@ -2883,13 +3046,19 @@ async def fetch_all_odds_async() -> list:
             CFG.ODDS_API_MARKETS, CFG.MATCH_WINDOW_HOURS, 2.0
         )
         if stale:
-            logger.warning("💾 [STALE CACHE] Using %d cached events", len(stale))
+            logger.warning(
+                "💾 [STALE CACHE] Using %d cached events", len(stale)
+            )
             return stale
         return []
 
     final_events = list(all_events.values())
-    odds_cache.save_cached(CFG.ODDS_API_MARKETS, CFG.MATCH_WINDOW_HOURS, final_events)
-    logger.info("📊 [API USAGE] %s", odds_key_manager.get_usage_summary())
+    odds_cache.save_cached(
+        CFG.ODDS_API_MARKETS, CFG.MATCH_WINDOW_HOURS, final_events
+    )
+    logger.info(
+        "📊 [API USAGE] %s", odds_key_manager.get_usage_summary()
+    )
     return final_events
 
 
@@ -2898,9 +3067,13 @@ async def fetch_all_odds_async() -> list:
 # =========================================================
 async def async_main():
     logger.info("=" * 65)
-    logger.info("  ZBET90 ENGINE v6.5 | Dual Confirmation (Math + Gemini 50/50)")
+    logger.info(
+        "  ZBET90 ENGINE v6.5 | Dual Confirmation (Math + Gemini 50/50)"
+    )
     logger.info("=" * 65)
-    logger.info("🔑 [KEYS STATUS] %s", odds_key_manager.get_usage_summary())
+    logger.info(
+        "🔑 [KEYS STATUS] %s", odds_key_manager.get_usage_summary()
+    )
 
     sent_history = SentHistory()
     now_utc = datetime.now(timezone.utc)
@@ -2919,13 +3092,18 @@ async def async_main():
 
     # Phase 3: Fetch Odds
     logger.info(
-        "📡 [PHASE 3] Fetching odds (window=%.1fh)...", CFG.MATCH_WINDOW_HOURS
+        "📡 [PHASE 3] Fetching odds (window=%.1fh)...",
+        CFG.MATCH_WINDOW_HOURS,
     )
     events = await fetch_all_odds_async()
 
     if not events:
-        logger.info("❌ No events in the %.1fh window.", CFG.MATCH_WINDOW_HOURS)
-        logger.info("📊 [FINAL USAGE] %s", odds_key_manager.get_usage_summary())
+        logger.info(
+            "❌ No events in the %.1fh window.", CFG.MATCH_WINDOW_HOURS
+        )
+        logger.info(
+            "📊 [FINAL USAGE] %s", odds_key_manager.get_usage_summary()
+        )
         return
 
     logger.info("🔍 [PHASE 4] Analyzing %d events...", len(events))
@@ -2944,17 +3122,33 @@ async def async_main():
         if not home or not away:
             continue
 
-        opportunities = calculate_sharp_ev_advanced(
-            event.get("_markets_data", {}),
-            event.get("bookmakers", []),
-        )
+        # FIX: markets_data را از _markets_data بخوان
+        markets_data = event.get("_markets_data", {})
+
+        # Debug: نشان بده چند market داریم
+        if DEBUG_MODE:
+            for mk, entries in markets_data.items():
+                bk_count = len(entries)
+                outcome_count = sum(
+                    len(e.get("outcomes", [])) for e in entries
+                )
+                logger.debug(
+                    "[DEBUG] %s vs %s | Market: %s | BKs: %d | Outcomes: %d",
+                    home, away, mk, bk_count, outcome_count,
+                )
+
+        opportunities = calculate_sharp_ev_advanced(markets_data, [])
         if not opportunities:
             continue
 
+        # بهترین فرصت را انتخاب کن
         opp = opportunities[0]
         total_analyzed += 1
 
         if sent_history.was_sent(home, away, opp["market"]):
+            logger.debug(
+                "⏭️ Already sent: %s vs %s | %s", home, away, opp["market"]
+            )
             continue
 
         # Smart Money
@@ -2976,7 +3170,11 @@ async def async_main():
             ):
                 stats["historical_data"] = tennis_stats
             if ml_engine.is_tennis_trained and tennis_stats:
-                surface = "hard"
+                surface = "clay"  # French Open default
+                if "wimbledon" in sport.lower():
+                    surface = "grass"
+                elif "us open" in sport.lower() or "hard" in sport.lower():
+                    surface = "hard"
                 ml_prediction = ml_engine.predict_tennis(
                     home, away, tennis_stats, surface
                 )
@@ -2985,7 +3183,9 @@ async def async_main():
 
         elif sport_key == "football":
             fb_stats = data_engine.get_football_stats(home, away)
-            if fb_stats and (fb_stats.get("home") or fb_stats.get("away")):
+            if fb_stats and (
+                fb_stats.get("home") or fb_stats.get("away")
+            ):
                 stats["football_stats"] = fb_stats
 
             elo_data = data_engine.get_elo_delta(home, away)
@@ -3003,34 +3203,53 @@ async def async_main():
             if poisson_prediction:
                 stats["poisson_prediction"] = poisson_prediction
 
-            # Dual confirmation filter
-            if ml_prediction and poisson_prediction and opp["market"] == "h2h":
+            # Dual confirmation filter - فقط اگر هر دو مدل داریم
+            if (
+                ml_prediction
+                and poisson_prediction
+                and opp["market"] == "h2h"
+            ):
                 pick_lower = opp["pick"].lower()
                 home_lower = home.lower()
                 away_lower = away.lower()
 
-                is_home_pick = any(
-                    part in pick_lower for part in home_lower.split() if len(part) > 2
-                )
-                is_away_pick = any(
-                    part in pick_lower for part in away_lower.split() if len(part) > 2
-                )
-
-                ml_prob = (
-                    ml_prediction.get("home_win", 0) if is_home_pick
-                    else (ml_prediction.get("away_win", 0) if is_away_pick else 0.5)
-                )
-                poisson_prob = (
-                    poisson_prediction.get("home_win_prob_poisson", 0) if is_home_pick
-                    else (poisson_prediction.get("away_win_prob_poisson", 0) if is_away_pick else 0.5)
-                )
-
-                if ml_prob < 0.42 or poisson_prob < 0.42:
-                    logger.info(
-                        "⏭️ SKIP (Dual Filter): %s vs %s | ML=%.2f | Poisson=%.2f",
-                        home, away, ml_prob, poisson_prob
+                # FIX: handle Draw
+                if "draw" in pick_lower:
+                    pass  # Draw را از filter رد کن
+                else:
+                    is_home_pick = any(
+                        part in pick_lower
+                        for part in home_lower.split()
+                        if len(part) > 2
                     )
-                    continue
+                    is_away_pick = any(
+                        part in pick_lower
+                        for part in away_lower.split()
+                        if len(part) > 2
+                    )
+
+                    if is_home_pick:
+                        ml_prob = ml_prediction.get("home_win", 0.5)
+                        poisson_prob = poisson_prediction.get(
+                            "home_win_prob_poisson", 0.5
+                        )
+                    elif is_away_pick:
+                        ml_prob = ml_prediction.get("away_win", 0.5)
+                        poisson_prob = poisson_prediction.get(
+                            "away_win_prob_poisson", 0.5
+                        )
+                    else:
+                        ml_prob = 0.5
+                        poisson_prob = 0.5
+
+                    # FIX: threshold پایین‌تر برای filter کمتر
+                    if ml_prob < 0.38 or poisson_prob < 0.38:
+                        logger.info(
+                            "⏭️ SKIP (Dual Filter): %s vs %s | ML=%.2f | "
+                            "Poisson=%.2f",
+                            home, away, ml_prob, poisson_prob,
+                        )
+                        continue
 
         elif sport_key in ["baseball", "basketball"]:
             us_stats = {
@@ -3049,9 +3268,17 @@ async def async_main():
         ai_data = generate_dual_ai_analysis(
             home, away, sport, opp["pick"], opp["market"],
             opp, stats,
-            bool(stats.get("historical_data") or stats.get("football_stats")
-                 or stats.get("elo_data") or ml_prediction or stats.get("us_sports")),
-            math_score, ml_prediction, poisson_prediction, sport_key,
+            bool(
+                stats.get("historical_data")
+                or stats.get("football_stats")
+                or stats.get("elo_data")
+                or ml_prediction
+                or stats.get("us_sports")
+            ),
+            math_score,
+            ml_prediction,
+            poisson_prediction,
+            sport_key,
         )
 
         final_confidence = ai_data["final_confidence"]
@@ -3059,15 +3286,25 @@ async def async_main():
         if final_confidence < CFG.MIN_CONFIDENCE_TO_SEND:
             skipped_confidence += 1
             logger.info(
-                "⏭️ SKIP (Math:%d | AI:%d | Final:%d < %d): %s vs %s | %s",
-                math_score, ai_data["ai_confidence"], final_confidence,
-                CFG.MIN_CONFIDENCE_TO_SEND, home, away, opp["pick"],
+                "⏭️ SKIP (Math:%d | AI:%d | Final:%d < %d): "
+                "%s vs %s | %s | EV=%.2f%%",
+                math_score,
+                ai_data["ai_confidence"],
+                final_confidence,
+                CFG.MIN_CONFIDENCE_TO_SEND,
+                home,
+                away,
+                opp["pick"],
+                opp["edge_pct"],
             )
             continue
 
         logger.info(
             "✅ [APPROVED] Math:%d | AI:%d | EV=%.2f%% | Conf=%d%%",
-            math_score, ai_data["ai_confidence"], opp["edge_pct"], final_confidence,
+            math_score,
+            ai_data["ai_confidence"],
+            opp["edge_pct"],
+            final_confidence,
         )
 
         # Build and send message
@@ -3101,14 +3338,20 @@ async def async_main():
         total_analyzed, total_sent, skipped_confidence,
     )
     if total_sent == 0 and total_analyzed == 0:
-        logger.info("ℹ️  No qualifying +EV opportunities in current window.")
+        logger.info(
+            "ℹ️  No qualifying +EV opportunities in current window."
+        )
     elif total_sent == 0:
         logger.info(
-            "ℹ️  %d opportunities found but filtered by confidence threshold (%d).",
-            total_analyzed, CFG.MIN_CONFIDENCE_TO_SEND,
+            "ℹ️  %d opportunities found but filtered by confidence "
+            "threshold (%d).",
+            total_analyzed,
+            CFG.MIN_CONFIDENCE_TO_SEND,
         )
 
-    logger.info("📊 [FINAL API USAGE] %s", odds_key_manager.get_usage_summary())
+    logger.info(
+        "📊 [FINAL API USAGE] %s", odds_key_manager.get_usage_summary()
+    )
 
     perf = performance_tracker.data.get("summary", {})
     if perf.get("resolved", 0) > 0:
