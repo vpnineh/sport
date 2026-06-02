@@ -6634,3 +6634,95 @@
 2026-06-02 21:02:33 | INFO     | 📊 ✅ primary: 16 calls (rem:280) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
 2026-06-02 21:02:33 | INFO     | 📈 WR=30.0% ROI=-20.1% Signals=29
 2026-06-02 21:02:33 | INFO     | =================================================================
+2026-06-02 22:21:48 | INFO     | ✅ [AI MANAGER] Loaded 4 Gemini keys, 1 Groq keys
+2026-06-02 22:21:48 | INFO     | 🔑 [API KEY] primary: Loaded ✓
+2026-06-02 22:21:48 | INFO     | 🔑 [API KEY] backup_1: Loaded ✓
+2026-06-02 22:21:48 | INFO     | 🔑 [API KEY] backup_2: Loaded ✓
+2026-06-02 22:21:48 | INFO     | =================================================================
+2026-06-02 22:21:48 | INFO     |   ZBET90 ENGINE v7.1 | Multi-Sport | AI 70%% + Math 30%%
+2026-06-02 22:21:48 | INFO     | =================================================================
+2026-06-02 22:21:48 | INFO     | 🔑 ✅ primary: 16 calls (rem:280) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 22:21:48 | INFO     | 📥 [PHASE 1] Loading data...
+2026-06-02 22:21:48 | INFO     | [FREE DATA] Downloading: atp_2022.csv
+2026-06-02 22:21:48 | INFO     | [FREE DATA] Downloading: wta_2022.csv
+2026-06-02 22:21:48 | INFO     | [FREE DATA] Downloading: atp_2023.csv
+2026-06-02 22:21:48 | INFO     | [FREE DATA] Downloading: wta_2023.csv
+2026-06-02 22:21:49 | INFO     | [FREE DATA] Downloading: atp_2024.csv
+2026-06-02 22:21:49 | INFO     | [FREE DATA] Downloading: wta_2024.csv
+2026-06-02 22:21:49 | INFO     | [FREE DATA] Downloading: atp_2025.csv
+2026-06-02 22:21:50 | INFO     | [FREE DATA] Downloading: wta_2025.csv
+2026-06-02 22:21:50 | INFO     | ✅ [TENNIS] ATP: 11923 matches
+2026-06-02 22:21:50 | INFO     | ✅ [TENNIS] WTA: 10888 matches
+2026-06-02 22:21:50 | INFO     | [FREE DATA] Downloading: atp_rankings.csv
+2026-06-02 22:21:50 | INFO     | ✅ [RANKINGS] ATP loaded
+2026-06-02 22:21:50 | INFO     | [FREE DATA] Downloading: wta_rankings.csv
+2026-06-02 22:21:50 | INFO     | ✅ [RANKINGS] WTA loaded
+2026-06-02 22:21:50 | INFO     | [FREE DATA] Downloading: football_E0_2223.csv
+2026-06-02 22:21:52 | INFO     | [FREE DATA] Downloading: football_E1_2223.csv
+2026-06-02 22:21:53 | INFO     | [FREE DATA] Downloading: football_D1_2223.csv
+2026-06-02 22:21:54 | INFO     | [FREE DATA] Downloading: football_SP1_2223.csv
+2026-06-02 22:21:56 | INFO     | [FREE DATA] Downloading: football_I1_2223.csv
+2026-06-02 22:21:57 | INFO     | [FREE DATA] Downloading: football_F1_2223.csv
+2026-06-02 22:21:58 | INFO     | [FREE DATA] Downloading: football_N1_2223.csv
+2026-06-02 22:21:59 | INFO     | [FREE DATA] Downloading: football_P1_2223.csv
+2026-06-02 22:22:01 | INFO     | [FREE DATA] Downloading: football_T1_2223.csv
+2026-06-02 22:22:02 | INFO     | [FREE DATA] Downloading: football_B1_2223.csv
+2026-06-02 22:22:03 | INFO     | [FREE DATA] Downloading: football_E0_2324.csv
+2026-06-02 22:22:04 | INFO     | [FREE DATA] Downloading: football_E1_2324.csv
+2026-06-02 22:22:06 | INFO     | [FREE DATA] Downloading: football_D1_2324.csv
+2026-06-02 22:22:07 | INFO     | [FREE DATA] Downloading: football_SP1_2324.csv
+2026-06-02 22:22:08 | INFO     | [FREE DATA] Downloading: football_I1_2324.csv
+2026-06-02 22:22:09 | INFO     | [FREE DATA] Downloading: football_F1_2324.csv
+2026-06-02 22:22:10 | INFO     | [FREE DATA] Downloading: football_N1_2324.csv
+2026-06-02 22:22:11 | INFO     | [FREE DATA] Downloading: football_P1_2324.csv
+2026-06-02 22:22:12 | INFO     | [FREE DATA] Downloading: football_T1_2324.csv
+2026-06-02 22:22:13 | INFO     | [FREE DATA] Downloading: football_B1_2324.csv
+2026-06-02 22:22:14 | INFO     | [FREE DATA] Downloading: football_E0_2425.csv
+2026-06-02 22:22:16 | INFO     | [FREE DATA] Downloading: football_E1_2425.csv
+2026-06-02 22:22:17 | INFO     | [FREE DATA] Downloading: football_D1_2425.csv
+2026-06-02 22:22:18 | INFO     | [FREE DATA] Downloading: football_SP1_2425.csv
+2026-06-02 22:22:19 | INFO     | [FREE DATA] Downloading: football_I1_2425.csv
+2026-06-02 22:22:20 | INFO     | [FREE DATA] Downloading: football_F1_2425.csv
+2026-06-02 22:22:21 | INFO     | [FREE DATA] Downloading: football_N1_2425.csv
+2026-06-02 22:22:22 | INFO     | [FREE DATA] Downloading: football_P1_2425.csv
+2026-06-02 22:22:23 | INFO     | [FREE DATA] Downloading: football_T1_2425.csv
+2026-06-02 22:22:24 | INFO     | [FREE DATA] Downloading: football_B1_2425.csv
+2026-06-02 22:22:25 | INFO     | ✅ [FOOTBALL] 10816 matches
+2026-06-02 22:22:36 | WARNING  | [NBA] nba_api error: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-02 22:22:36 | WARNING  | [NBA] No data available
+2026-06-02 22:22:36 | INFO     | ✅ [NHL] 32 teams
+2026-06-02 22:22:36 | INFO     | ✅ [MLB] 30 teams
+2026-06-02 22:22:37 | WARNING  | [CRICKET] No data
+2026-06-02 22:22:37 | INFO     | 🧠 [PHASE 2] ML models...
+2026-06-02 22:22:37 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-02 22:22:37 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-02 22:22:37 | INFO     | [ML NBA] Using standings-based matchup prediction
+2026-06-02 22:22:37 | INFO     | 📡 [PHASE 3] Fetching odds (6.0h window)...
+2026-06-02 22:22:37 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-02 22:22:37 | INFO     | 🔑 [TRYING] primary for ['h2h', 'totals']
+2026-06-02 22:22:37 | INFO     | 🔑 [primary] OK rem:268 market:h2h events:8
+2026-06-02 22:22:37 | INFO     | 🔑 [primary] OK rem:264 market:totals events:8
+2026-06-02 22:22:37 | INFO     | 💾 [ODDS CACHE] SAVED 8 events
+2026-06-02 22:22:37 | INFO     | 📊 [API USAGE] ✅ primary: 18 calls (rem:264) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 22:22:37 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-02 22:22:37 | INFO     | ⏭️ NO_OPP: Gwinnett Stripers vs Norfolk Tides (no EV opportunity)
+2026-06-02 22:22:37 | INFO     | ⏭️ NO_OPP: Syracuse Mets vs Scranton/Wilkes-Barre RailRiders (no EV opportunity)
+2026-06-02 22:22:37 | INFO     | ⏭️ NO_OPP: Tampa Bay Rays vs Detroit Tigers (no EV opportunity)
+2026-06-02 22:22:37 | WARNING  | [GEMINI ERROR] Key 1: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 22:22:38 | WARNING  | [GEMINI ERROR] Key 3: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 22:22:38 | INFO     | 🔄 [AI MANAGER] Switching to Groq Fallback...
+2026-06-02 22:22:38 | INFO     | [AI JUDGE] Philadelphia Phillies vs San Diego Padres | SKIP | AI:45 Math:55 Final:48 | Flags:['Low Kelly', 'EV below 3%']
+2026-06-02 22:22:38 | INFO     | ⏭️ AI SKIP: Philadelphia Phillies vs San Diego Padres Math:55 AI:45 Final:48 Flags:['Low Kelly', 'EV below 3%']
+2026-06-02 22:22:41 | WARNING  | [GEMINI ERROR] Key 0: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 22:22:41 | WARNING  | [GEMINI ERROR] Key 2: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 22:22:41 | INFO     | 🔄 [AI MANAGER] Switching to Groq Fallback...
+2026-06-02 22:22:42 | INFO     | [AI JUDGE] Boston Red Sox vs Baltimore Orioles | SKIP | AI:55 Math:55 Final:55 | Flags:['Low Kelly', 'Insufficient EV', 'Low confidence']
+2026-06-02 22:22:42 | INFO     | ⏭️ AI SKIP: Boston Red Sox vs Baltimore Orioles Math:55 AI:55 Final:55 Flags:['Low Kelly', 'Insufficient EV', 'Low confidence']
+2026-06-02 22:22:42 | INFO     | ⏭️ NO_OPP: Durham Bulls vs Charlotte Knights (no EV opportunity)
+2026-06-02 22:22:42 | INFO     | ⏭️ NO_OPP: Lehigh Valley IronPigs vs Rochester Red Wings (no EV opportunity)
+2026-06-02 22:22:42 | INFO     | ⏭️ NO_OPP: Washington Nationals vs Miami Marlins (no EV opportunity)
+2026-06-02 22:22:42 | INFO     | =================================================================
+2026-06-02 22:22:42 | INFO     | 📊 SUMMARY | Events:8 Analyzed:2 Sent:0 | Skip(no_opp):6 Skip(ev):0 Skip(sent):0 Skip(math):0 Skip(AI):2 Skip(conf):0
+2026-06-02 22:22:42 | INFO     | 📊 ✅ primary: 18 calls (rem:264) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 22:22:42 | INFO     | 📈 WR=30.0% ROI=-20.1% Signals=29
+2026-06-02 22:22:42 | INFO     | =================================================================
