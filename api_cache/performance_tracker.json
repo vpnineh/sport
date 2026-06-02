@@ -415,14 +415,62 @@
       "implied_prob": 0.3476,
       "outcome": null,
       "profit_loss": null
+    },
+    {
+      "id": "13cf8a68",
+      "timestamp": "2026-06-02T20:39:15.851417+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
+      "home": "Tampa Bay Rays",
+      "away": "Detroit Tigers",
+      "pick": "Detroit Tigers",
+      "market": "h2h_lay",
+      "odds": 2.36,
+      "ev": 0.0219,
+      "confidence": 67,
+      "implied_prob": 0.433,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "9462bc03",
+      "timestamp": "2026-06-02T20:39:38.097026+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
+      "home": "Philadelphia Phillies",
+      "away": "San Diego Padres",
+      "pick": "Philadelphia Phillies",
+      "market": "h2h_lay",
+      "odds": 1.74,
+      "ev": 0.0164,
+      "confidence": 67,
+      "implied_prob": 0.5841,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "611d7ab1",
+      "timestamp": "2026-06-02T20:40:00.446145+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
+      "home": "Boston Red Sox",
+      "away": "Baltimore Orioles",
+      "pick": "Boston Red Sox",
+      "market": "h2h_lay",
+      "odds": 1.82,
+      "ev": 0.0165,
+      "confidence": 64,
+      "implied_prob": 0.5585,
+      "outcome": null,
+      "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 26,
+    "total_signals": 29,
     "resolved": 10,
     "win_rate": 0.3,
     "total_profit_loss_units": -2.01,
     "roi_pct": -20.1,
-    "last_updated": "2026-06-02T13:46:31.557008+00:00"
+    "last_updated": "2026-06-02T20:40:00.446172+00:00"
   }
 }

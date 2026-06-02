@@ -6461,3 +6461,99 @@
 2026-06-02 20:00:04 | INFO     | 📊 ✅ primary: 12 calls (rem:328) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
 2026-06-02 20:00:04 | INFO     | 📈 WR=30.0% ROI=-20.1% Signals=26
 2026-06-02 20:00:04 | INFO     | =================================================================
+2026-06-02 20:37:40 | INFO     | ✅ [AI MANAGER] Loaded 4 Gemini keys, 1 Groq keys
+2026-06-02 20:37:40 | INFO     | 🔑 [API KEY] primary: Loaded ✓
+2026-06-02 20:37:40 | INFO     | 🔑 [API KEY] backup_1: Loaded ✓
+2026-06-02 20:37:40 | INFO     | 🔑 [API KEY] backup_2: Loaded ✓
+2026-06-02 20:37:40 | INFO     | =================================================================
+2026-06-02 20:37:40 | INFO     |   ZBET90 ENGINE v7.0 | Multi-Sport | AI 70%% + Math 30%%
+2026-06-02 20:37:40 | INFO     | =================================================================
+2026-06-02 20:37:40 | INFO     | 🔑 ✅ primary: 12 calls (rem:328) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 20:37:40 | INFO     | 📥 [PHASE 1] Loading data...
+2026-06-02 20:37:40 | INFO     | [FREE DATA] Downloading: atp_2022.csv
+2026-06-02 20:37:40 | INFO     | [FREE DATA] Downloading: wta_2022.csv
+2026-06-02 20:37:40 | INFO     | [FREE DATA] Downloading: atp_2023.csv
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: wta_2023.csv
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: atp_2024.csv
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: wta_2024.csv
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: atp_2025.csv
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: wta_2025.csv
+2026-06-02 20:37:41 | INFO     | ✅ [TENNIS] ATP: 11923 matches
+2026-06-02 20:37:41 | INFO     | ✅ [TENNIS] WTA: 10888 matches
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: atp_rankings.csv
+2026-06-02 20:37:41 | INFO     | ✅ [RANKINGS] ATP loaded
+2026-06-02 20:37:41 | INFO     | [FREE DATA] Downloading: wta_rankings.csv
+2026-06-02 20:37:42 | INFO     | ✅ [RANKINGS] WTA loaded
+2026-06-02 20:37:42 | INFO     | [FREE DATA] Downloading: football_E0_2223.csv
+2026-06-02 20:37:43 | INFO     | [FREE DATA] Downloading: football_E1_2223.csv
+2026-06-02 20:37:44 | INFO     | [FREE DATA] Downloading: football_D1_2223.csv
+2026-06-02 20:37:45 | INFO     | [FREE DATA] Downloading: football_SP1_2223.csv
+2026-06-02 20:37:46 | INFO     | [FREE DATA] Downloading: football_I1_2223.csv
+2026-06-02 20:37:46 | INFO     | [FREE DATA] Downloading: football_F1_2223.csv
+2026-06-02 20:37:47 | INFO     | [FREE DATA] Downloading: football_N1_2223.csv
+2026-06-02 20:37:48 | INFO     | [FREE DATA] Downloading: football_P1_2223.csv
+2026-06-02 20:37:48 | INFO     | [FREE DATA] Downloading: football_T1_2223.csv
+2026-06-02 20:37:49 | INFO     | [FREE DATA] Downloading: football_B1_2223.csv
+2026-06-02 20:37:50 | INFO     | [FREE DATA] Downloading: football_E0_2324.csv
+2026-06-02 20:37:51 | INFO     | [FREE DATA] Downloading: football_E1_2324.csv
+2026-06-02 20:37:51 | INFO     | [FREE DATA] Downloading: football_D1_2324.csv
+2026-06-02 20:37:52 | INFO     | [FREE DATA] Downloading: football_SP1_2324.csv
+2026-06-02 20:37:53 | INFO     | [FREE DATA] Downloading: football_I1_2324.csv
+2026-06-02 20:37:54 | INFO     | [FREE DATA] Downloading: football_F1_2324.csv
+2026-06-02 20:37:54 | INFO     | [FREE DATA] Downloading: football_N1_2324.csv
+2026-06-02 20:37:55 | INFO     | [FREE DATA] Downloading: football_P1_2324.csv
+2026-06-02 20:37:56 | INFO     | [FREE DATA] Downloading: football_T1_2324.csv
+2026-06-02 20:37:57 | INFO     | [FREE DATA] Downloading: football_B1_2324.csv
+2026-06-02 20:37:58 | INFO     | [FREE DATA] Downloading: football_E0_2425.csv
+2026-06-02 20:37:59 | INFO     | [FREE DATA] Downloading: football_E1_2425.csv
+2026-06-02 20:37:59 | INFO     | [FREE DATA] Downloading: football_D1_2425.csv
+2026-06-02 20:38:00 | INFO     | [FREE DATA] Downloading: football_SP1_2425.csv
+2026-06-02 20:38:01 | INFO     | [FREE DATA] Downloading: football_I1_2425.csv
+2026-06-02 20:38:02 | INFO     | [FREE DATA] Downloading: football_F1_2425.csv
+2026-06-02 20:38:03 | INFO     | [FREE DATA] Downloading: football_N1_2425.csv
+2026-06-02 20:38:03 | INFO     | [FREE DATA] Downloading: football_P1_2425.csv
+2026-06-02 20:38:04 | INFO     | [FREE DATA] Downloading: football_T1_2425.csv
+2026-06-02 20:38:05 | INFO     | [FREE DATA] Downloading: football_B1_2425.csv
+2026-06-02 20:38:05 | INFO     | ✅ [FOOTBALL] 10816 matches from 10 leagues × 3 seasons
+2026-06-02 20:38:36 | WARNING  | [NBA] nba_api error: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-02 20:38:36 | WARNING  | [NBA] No data available
+2026-06-02 20:38:36 | INFO     | ✅ [NHL] 32 teams from official API
+2026-06-02 20:38:36 | INFO     | ✅ [MLB] 30 teams from official API
+2026-06-02 20:38:39 | INFO     | ✅ [CRICKET] 215 records loaded
+2026-06-02 20:38:39 | INFO     | 🧠 [PHASE 2] ML models...
+2026-06-02 20:38:39 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-02 20:38:56 | INFO     | ✅ [ML TENNIS ATP] Trained on 11923 samples
+2026-06-02 20:38:56 | INFO     | 💾 [ML TENNIS ATP] Saved
+2026-06-02 20:38:56 | INFO     | [ML NBA] Using standings-based matchup prediction (no ML training needed)
+2026-06-02 20:38:56 | INFO     | 📡 [PHASE 3] Fetching odds (6.0h window)...
+2026-06-02 20:38:56 | INFO     | 💾 [ODDS CACHE] MISS - Calling API...
+2026-06-02 20:38:56 | INFO     | 🔑 [TRYING] primary...
+2026-06-02 20:38:56 | INFO     | 🔑 [primary] OK rem:316 market:totals events:8
+2026-06-02 20:38:56 | INFO     | 🔑 [primary] OK rem:312 market:h2h events:8
+2026-06-02 20:38:56 | INFO     | ✅ [primary] 8 events
+2026-06-02 20:38:56 | INFO     | 💾 [ODDS CACHE] SAVED 8 events
+2026-06-02 20:38:56 | INFO     | 📊 [API USAGE] ✅ primary: 14 calls (rem:312) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 20:38:56 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-02 20:38:59 | WARNING  | [GEMINI ERROR] Attempt 1: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:04 | WARNING  | [GEMINI ERROR] Attempt 2: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:14 | INFO     | 🔄 [AI MANAGER] Switching to Groq Fallback...
+2026-06-02 20:39:15 | INFO     | [AI JUDGE] Tampa Bay Rays vs Detroit Tigers | BET | AI:75 Math:55 Final:67 | Flags:['Low Kelly Criterion value']
+2026-06-02 20:39:15 | INFO     | ✅ APPROVED Tampa Bay Rays vs Detroit Tigers | BET | Math:55 AI:75 Final:67 EV=2.19%
+2026-06-02 20:39:15 | INFO     | 📤 SENT: Tampa Bay Rays vs Detroit Tigers EV=2.19% Conf=67%
+2026-06-02 20:39:21 | WARNING  | [GEMINI ERROR] Attempt 1: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:27 | WARNING  | [GEMINI ERROR] Attempt 2: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:37 | INFO     | 🔄 [AI MANAGER] Switching to Groq Fallback...
+2026-06-02 20:39:37 | INFO     | [AI JUDGE] Philadelphia Phillies vs San Diego Padres | BET | AI:75 Math:55 Final:67 | Flags:['Recent form of Philadelphia Phillies is not extremely strong']
+2026-06-02 20:39:37 | INFO     | ✅ APPROVED Philadelphia Phillies vs San Diego Padres | BET | Math:55 AI:75 Final:67 EV=1.64%
+2026-06-02 20:39:38 | INFO     | 📤 SENT: Philadelphia Phillies vs San Diego Padres EV=1.64% Conf=67%
+2026-06-02 20:39:44 | WARNING  | [GEMINI ERROR] Attempt 1: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:49 | WARNING  | [GEMINI ERROR] Attempt 2: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please 
+2026-06-02 20:39:59 | INFO     | 🔄 [AI MANAGER] Switching to Groq Fallback...
+2026-06-02 20:40:00 | INFO     | [AI JUDGE] Boston Red Sox vs Baltimore Orioles | BET | AI:68 Math:55 Final:64 | Flags:["Orioles' strong recent form"]
+2026-06-02 20:40:00 | INFO     | ✅ APPROVED Boston Red Sox vs Baltimore Orioles | BET | Math:55 AI:68 Final:64 EV=1.65%
+2026-06-02 20:40:00 | INFO     | 📤 SENT: Boston Red Sox vs Baltimore Orioles EV=1.65% Conf=64%
+2026-06-02 20:40:03 | INFO     | =================================================================
+2026-06-02 20:40:03 | INFO     | 📊 SUMMARY | Analyzed:3 Sent:3 Skip(math):0 Skip(AI):0 Skip(conf):0
+2026-06-02 20:40:03 | INFO     | 📊 ✅ primary: 14 calls (rem:312) | ✅ backup_1: 0 calls (rem:?) | ✅ backup_2: 0 calls (rem:?)
+2026-06-02 20:40:03 | INFO     | 📈 WR=30.0% ROI=-20.1% Signals=29
+2026-06-02 20:40:03 | INFO     | =================================================================

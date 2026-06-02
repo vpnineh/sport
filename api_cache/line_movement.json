@@ -77,16 +77,21 @@
   "8e30136f71821dae650627e26ce142f9": {
     "initial_odds": 2.36,
     "current_odds": 2.36,
-    "timestamp": "2026-06-02T19:57:00.455975+00:00"
+    "timestamp": "2026-06-02T20:38:56.527160+00:00"
   },
   "1f1d13717f9b88455ded034d4e18e854": {
     "initial_odds": 1.76,
-    "current_odds": 1.76,
-    "timestamp": "2026-06-02T19:58:01.956408+00:00"
+    "current_odds": 1.74,
+    "timestamp": "2026-06-02T20:39:18.855929+00:00"
   },
   "8636e480081f9492a4194b0b94147951": {
     "initial_odds": 2.32,
     "current_odds": 2.32,
     "timestamp": "2026-06-02T19:59:03.294200+00:00"
+  },
+  "6749e72b10f298ed352b1a999fde3289": {
+    "initial_odds": 1.82,
+    "current_odds": 1.82,
+    "timestamp": "2026-06-02T20:39:41.101385+00:00"
   }
 }
