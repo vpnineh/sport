@@ -511,6 +511,861 @@ def _normalize_name(name: str) -> str:
         s = re.sub(rf"\b{noise}\b", "", s)
     return re.sub(r"\s+", " ", s).strip()
 
+# =========================================================
+# 3b. API-FOOTBALL CLIENT (api-football.com)
+# Free: 100 calls/day — cache aggressively
+# =========================================================
+class APIFootballClient:
+    BASE = "https://v3.football.api-sports.io"
+    HEADERS_KEY = "x-apisports-key"
+
+    # Map our sport_key/league names to API-Football league IDs
+    LEAGUE_MAP = {
+        "Premier League": 39,
+        "Championship": 40,
+        "La Liga": 140,
+        "Bundesliga": 78,
+        "Serie A": 135,
+        "Ligue 1": 61,
+        "Eredivisie": 88,
+        "Liga Portugal": 94,
+        "Champions League": 2,
+        "Europa League": 3,
+        "MLS": 253,
+        "Brasileirao": 71,
+        "Argentine Liga": 128,
+        "Super Lig": 203,
+        "Jupiler League": 144,
+    }
+
+    def __init__(self):
+        self._key = CFG.API_FOOTBALL_KEY
+        self._cache_file = CFG.CACHE_DIR / "api_football_cache.json"
+        self._usage_file = CFG.CACHE_DIR / "api_football_usage.json"
+        self._cache: dict = {}
+        self._calls_today = 0
+        self._load_cache()
+        self._load_usage()
+        if self._key:
+            logger.info("✅ [API-FOOTBALL] Key loaded (calls today: %d/%d)",
+                        self._calls_today, CFG.API_FOOTBALL_MAX_CALLS)
+        else:
+            logger.warning("⚠️ [API-FOOTBALL] No key — skipping")
+
+    def _load_cache(self):
+        try:
+            if self._cache_file.exists():
+                raw = json.loads(self._cache_file.read_text())
+                now = datetime.now(timezone.utc)
+                for k, v in raw.items():
+                    if isinstance(v, dict) and "ts" in v:
+                        ts = datetime.fromisoformat(v["ts"])
+                        if ts.tzinfo is None:
+                            ts = ts.replace(tzinfo=timezone.utc)
+                        if (now - ts) < timedelta(hours=CFG.API_FOOTBALL_TTL):
+                            self._cache[k] = v
+        except Exception:
+            pass
+
+    def _save_cache(self):
+        try:
+            self._cache_file.write_text(
+                json.dumps(self._cache, ensure_ascii=False, default=str)
+            )
+        except Exception:
+            pass
+
+    def _load_usage(self):
+        try:
+            if self._usage_file.exists():
+                u = json.loads(self._usage_file.read_text())
+                today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                if u.get("date") == today:
+                    self._calls_today = u.get("calls", 0)
+                    return
+        except Exception:
+            pass
+        self._calls_today = 0
+
+    def _save_usage(self):
+        try:
+            self._usage_file.write_text(json.dumps({
+                "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "calls": self._calls_today
+            }))
+        except Exception:
+            pass
+
+    def _get(self, endpoint: str, params: dict = None,
+             ttl_hours: float = None) -> Optional[dict]:
+        if not self._key:
+            return None
+        if self._calls_today >= CFG.API_FOOTBALL_MAX_CALLS:
+            logger.warning("[API-FOOTBALL] Daily limit reached (%d)", self._calls_today)
+            return None
+
+        ttl = ttl_hours or CFG.API_FOOTBALL_TTL
+        ck = hashlib.md5(
+            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
+        ).hexdigest()
+
+        # Check cache
+        if ck in self._cache:
+            try:
+                ts = datetime.fromisoformat(self._cache[ck]["ts"])
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl):
+                    return self._cache[ck].get("data")
+            except Exception:
+                pass
+
+        try:
+            r = requests.get(
+                f"{self.BASE}/{endpoint}",
+                params=params,
+                headers={
+                    self.HEADERS_KEY: self._key,
+                    "Accept": "application/json"
+                },
+                timeout=15
+            )
+            self._calls_today += 1
+            self._save_usage()
+
+            remaining = r.headers.get("x-ratelimit-requests-remaining", "?")
+            logger.debug("[API-FOOTBALL] %s → HTTP %d (rem: %s)",
+                         endpoint, r.status_code, remaining)
+
+            if r.status_code == 200:
+                data = r.json()
+                if data.get("errors") and data["errors"] != []:
+                    logger.warning("[API-FOOTBALL] API error: %s", data["errors"])
+                    return None
+                self._cache[ck] = {
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "data": data
+                }
+                self._save_cache()
+                return data
+            elif r.status_code == 429:
+                logger.warning("[API-FOOTBALL] Rate limited")
+            else:
+                logger.debug("[API-FOOTBALL] HTTP %d for %s", r.status_code, endpoint)
+        except Exception as e:
+            logger.debug("[API-FOOTBALL] %s: %s", endpoint, str(e)[:60])
+        return None
+
+    def get_team_id(self, team_name: str, league_id: int = None) -> Optional[int]:
+        params = {"search": team_name}
+        if league_id:
+            params["league"] = league_id
+        data = self._get("teams", params, ttl_hours=24.0)
+        if data and data.get("response"):
+            return data["response"][0]["team"]["id"]
+        return None
+
+    def get_team_stats(self, team_name: str,
+                       league_id: int = None,
+                       season: int = None) -> dict:
+        """Get comprehensive team stats from API-Football."""
+        if not self._key:
+            return {}
+
+        season = season or datetime.now().year
+        # Try to find team ID
+        team_id = self.get_team_id(team_name, league_id)
+        if not team_id:
+            return {}
+
+        # If no league_id, try to find it
+        if not league_id:
+            league_data = self._get("teams/leagues",
+                                     {"team": team_id}, ttl_hours=24.0)
+            if league_data and league_data.get("response"):
+                # Get most recent active league
+                for lg in league_data["response"]:
+                    lgs = lg.get("league", {})
+                    if lgs.get("type") == "League":
+                        league_id = lgs.get("id")
+                        season = lg.get("seasons", [{}])[-1].get("year", season)
+                        break
+
+        if not league_id:
+            return {}
+
+        data = self._get("teams/statistics",
+                          {"team": team_id, "league": league_id, "season": season},
+                          ttl_hours=CFG.API_FOOTBALL_TTL)
+        if not data or not data.get("response"):
+            return {}
+
+        resp = data["response"]
+        fixtures = resp.get("fixtures", {})
+        goals = resp.get("goals", {})
+        form_str = resp.get("form", "") or ""
+
+        played = fixtures.get("played", {}).get("total", 0) or 0
+        wins   = fixtures.get("wins", {}).get("total", 0) or 0
+        draws  = fixtures.get("draws", {}).get("total", 0) or 0
+        losses = fixtures.get("loses", {}).get("total", 0) or 0
+
+        gf_total = goals.get("for", {}).get("total", {}).get("total", 0) or 0
+        ga_total = goals.get("against", {}).get("total", {}).get("total", 0) or 0
+
+        gf_home = goals.get("for", {}).get("total", {}).get("home", 0) or 0
+        gf_away = goals.get("for", {}).get("total", {}).get("away", 0) or 0
+        ga_home = goals.get("against", {}).get("total", {}).get("home", 0) or 0
+        ga_away = goals.get("against", {}).get("total", {}).get("away", 0) or 0
+
+        # Biggest wins/losses
+        biggest = resp.get("biggest", {})
+
+        # Clean sheets
+        cs = resp.get("clean_sheet", {})
+        cs_total = cs.get("total", 0) or 0
+
+        # Failed to score
+        fts = resp.get("failed_to_score", {})
+        fts_total = fts.get("total", 0) or 0
+
+        safe_played = max(played, 1)
+
+        result = {
+            "team_id": team_id,
+            "league_id": league_id,
+            "season": season,
+            "played": played,
+            "wins": wins,
+            "draws": draws,
+            "losses": losses,
+            "win_rate": round(wins / safe_played, 3),
+            "draw_rate": round(draws / safe_played, 3),
+            "avg_scored": round(gf_total / safe_played, 2),
+            "avg_conceded": round(ga_total / safe_played, 2),
+            "avg_scored_home": round(gf_home / max(played // 2, 1), 2),
+            "avg_scored_away": round(gf_away / max(played // 2, 1), 2),
+            "avg_conceded_home": round(ga_home / max(played // 2, 1), 2),
+            "avg_conceded_away": round(ga_away / max(played // 2, 1), 2),
+            "clean_sheet_rate": round(cs_total / safe_played, 3),
+            "failed_to_score_rate": round(fts_total / safe_played, 3),
+            "form": form_str[-10:] if form_str else "N/A",
+            "recent_form_5": form_str[-5:] if form_str else "N/A",
+            "data_quality": (
+                "good" if played >= 15
+                else "limited" if played >= 8
+                else "poor"
+            ),
+            "source": "api_football"
+        }
+
+        # Add biggest results
+        if biggest:
+            result["biggest_win"] = biggest.get("wins", {}).get("total", "?")
+            result["biggest_loss"] = biggest.get("loses", {}).get("total", "?")
+
+        return result
+
+    def get_h2h(self, team1_name: str, team2_name: str,
+                last_n: int = 10) -> dict:
+        """Get head-to-head stats between two teams."""
+        if not self._key:
+            return {}
+
+        t1_id = self.get_team_id(team1_name)
+        t2_id = self.get_team_id(team2_name)
+        if not t1_id or not t2_id:
+            return {}
+
+        data = self._get("fixtures/headtohead",
+                          {"h2h": f"{t1_id}-{t2_id}", "last": last_n},
+                          ttl_hours=12.0)
+        if not data or not data.get("response"):
+            return {}
+
+        matches = data["response"]
+        if not matches:
+            return {}
+
+        t1_wins = t2_wins = draws = 0
+        total_goals = []
+
+        for m in matches:
+            teams = m.get("teams", {})
+            goals = m.get("goals", {})
+            hg = goals.get("home", 0) or 0
+            ag = goals.get("away", 0) or 0
+            total_goals.append(hg + ag)
+
+            home_id = teams.get("home", {}).get("id")
+            winner_id = None
+            if teams.get("home", {}).get("winner"):
+                winner_id = home_id
+            elif teams.get("away", {}).get("winner"):
+                winner_id = teams.get("away", {}).get("id")
+            else:
+                draws += 1
+                continue
+
+            if winner_id == t1_id:
+                t1_wins += 1
+            else:
+                t2_wins += 1
+
+        total = len(matches)
+        avg_goals = round(sum(total_goals) / max(total, 1), 2)
+
+        return {
+            "total": total,
+            f"{team1_name}_wins": t1_wins,
+            f"{team2_name}_wins": t2_wins,
+            "draws": draws,
+            "avg_goals": avg_goals,
+            "over25_rate": round(
+                sum(1 for g in total_goals if g > 2.5) / max(total, 1), 3
+            ),
+            "btts_rate": round(
+                sum(1 for m in matches
+                    if (m.get("goals", {}).get("home", 0) or 0) > 0
+                    and (m.get("goals", {}).get("away", 0) or 0) > 0
+                    ) / max(total, 1), 3
+            ),
+            "dominance": (
+                f"{team1_name}_dominant" if t1_wins > t2_wins * 1.5
+                else f"{team2_name}_dominant" if t2_wins > t1_wins * 1.5
+                else "balanced"
+            ),
+            "source": "api_football"
+        }
+
+    def get_fixture_stats(self, home: str, away: str,
+                          date_str: str = None) -> dict:
+        """Get pre-match stats for a specific fixture."""
+        if not self._key:
+            return {}
+
+        if not date_str:
+            date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+        # Search for the fixture
+        home_id = self.get_team_id(home)
+        away_id = self.get_team_id(away)
+        if not home_id or not away_id:
+            return {}
+
+        data = self._get("fixtures",
+                          {"team": home_id, "date": date_str},
+                          ttl_hours=2.0)
+        if not data or not data.get("response"):
+            return {}
+
+        # Find matching fixture
+        for fix in data["response"]:
+            teams = fix.get("teams", {})
+            away_match = teams.get("away", {}).get("id") == away_id
+            if away_match:
+                fixture_id = fix.get("fixture", {}).get("id")
+                venue = fix.get("fixture", {}).get("venue", {})
+                return {
+                    "fixture_id": fixture_id,
+                    "venue": venue.get("name", ""),
+                    "city": venue.get("city", ""),
+                    "referee": fix.get("fixture", {}).get("referee", ""),
+                    "status": fix.get("fixture", {}).get("status", {}).get("long", ""),
+                }
+        return {}
+
+    def get_standings(self, league_id: int,
+                      season: int = None) -> List[dict]:
+        """Get current league standings."""
+        season = season or datetime.now().year
+        data = self._get("standings",
+                          {"league": league_id, "season": season},
+                          ttl_hours=4.0)
+        if not data or not data.get("response"):
+            return []
+
+        try:
+            standings = data["response"][0]["league"]["standings"][0]
+            result = []
+            for team in standings:
+                result.append({
+                    "rank": team.get("rank", 0),
+                    "team": team.get("team", {}).get("name", ""),
+                    "team_id": team.get("team", {}).get("id"),
+                    "points": team.get("points", 0),
+                    "played": team.get("all", {}).get("played", 0),
+                    "wins": team.get("all", {}).get("win", 0),
+                    "draws": team.get("all", {}).get("draw", 0),
+                    "losses": team.get("all", {}).get("lose", 0),
+                    "gf": team.get("all", {}).get("goals", {}).get("for", 0),
+                    "ga": team.get("all", {}).get("goals", {}).get("against", 0),
+                    "form": team.get("form", ""),
+                    "description": team.get("description", ""),
+                })
+            return result
+        except (KeyError, IndexError):
+            return []
+
+    def get_team_standing(self, team_name: str,
+                          league_id: int = None) -> dict:
+        """Get a specific team's standing in their league."""
+        if not league_id:
+            # Try to detect league
+            team_id = self.get_team_id(team_name)
+            if not team_id:
+                return {}
+            league_data = self._get("teams/leagues",
+                                     {"team": team_id}, ttl_hours=24.0)
+            if league_data and league_data.get("response"):
+                for lg in league_data["response"]:
+                    if lg.get("league", {}).get("type") == "League":
+                        league_id = lg["league"]["id"]
+                        break
+
+        if not league_id:
+            return {}
+
+        standings = self.get_standings(league_id)
+        name_lower = team_name.lower()
+        for s in standings:
+            if _fuzzy_match_name(team_name, s["team"]):
+                return {**s, "total_teams": len(standings)}
+        return {}
+
+    def get_injuries(self, team_name: str,
+                     fixture_id: int = None) -> List[dict]:
+        """Get injury/suspension list for a team."""
+        if not self._key or not fixture_id:
+            return []
+        team_id = self.get_team_id(team_name)
+        if not team_id:
+            return []
+        data = self._get("injuries",
+                          {"fixture": fixture_id, "team": team_id},
+                          ttl_hours=2.0)
+        if not data or not data.get("response"):
+            return []
+        injuries = []
+        for p in data["response"]:
+            player = p.get("player", {})
+            injuries.append({
+                "name": player.get("name", ""),
+                "type": p.get("type", ""),
+                "reason": p.get("reason", ""),
+            })
+        return injuries
+
+
+# =========================================================
+# 3c. FOOTBALL-DATA.ORG CLIENT (Free backup)
+# No strict call limits for free tier
+# =========================================================
+class FootballDataOrgClient:
+    BASE = "https://api.football-data.org/v4"
+
+    COMPETITION_MAP = {
+        "Premier League": "PL",
+        "Championship": "ELC",
+        "La Liga": "PD",
+        "Bundesliga": "BL1",
+        "Serie A": "SA",
+        "Ligue 1": "FL1",
+        "Eredivisie": "DED",
+        "Champions League": "CL",
+        "Europa League": "EL",
+        "MLS": "MLS",
+    }
+
+    def __init__(self):
+        self._key = CFG.FOOTBALL_DATA_ORG_KEY
+        self._cache_file = CFG.CACHE_DIR / "football_data_org_cache.json"
+        self._cache: dict = {}
+        self._last_call = 0.0
+        self._min_interval = 6.0  # free tier: 10 calls/min
+        self._load_cache()
+        if self._key:
+            logger.info("✅ [FOOTBALL-DATA.ORG] Key loaded")
+        else:
+            logger.info("ℹ️ [FOOTBALL-DATA.ORG] No key — limited access")
+
+    def _load_cache(self):
+        try:
+            if self._cache_file.exists():
+                raw = json.loads(self._cache_file.read_text())
+                now = datetime.now(timezone.utc)
+                for k, v in raw.items():
+                    if isinstance(v, dict) and "ts" in v:
+                        ts = datetime.fromisoformat(v["ts"])
+                        if ts.tzinfo is None:
+                            ts = ts.replace(tzinfo=timezone.utc)
+                        if (now - ts) < timedelta(hours=CFG.FOOTBALL_DATA_ORG_TTL):
+                            self._cache[k] = v
+        except Exception:
+            pass
+
+    def _save_cache(self):
+        try:
+            self._cache_file.write_text(
+                json.dumps(self._cache, ensure_ascii=False, default=str)
+            )
+        except Exception:
+            pass
+
+    def _get(self, endpoint: str, params: dict = None,
+             ttl_hours: float = 6.0) -> Optional[dict]:
+        ck = hashlib.md5(
+            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
+        ).hexdigest()
+
+        if ck in self._cache:
+            try:
+                ts = datetime.fromisoformat(self._cache[ck]["ts"])
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl_hours):
+                    return self._cache[ck].get("data")
+            except Exception:
+                pass
+
+        elapsed = time.time() - self._last_call
+        if elapsed < self._min_interval:
+            time.sleep(self._min_interval - elapsed)
+
+        headers = {"Accept": "application/json"}
+        if self._key:
+            headers["X-Auth-Token"] = self._key
+
+        try:
+            r = requests.get(
+                f"{self.BASE}/{endpoint}",
+                params=params,
+                headers=headers,
+                timeout=15
+            )
+            self._last_call = time.time()
+
+            if r.status_code == 200:
+                data = r.json()
+                self._cache[ck] = {
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "data": data
+                }
+                self._save_cache()
+                return data
+            elif r.status_code == 429:
+                logger.warning("[FOOTBALL-DATA.ORG] Rate limited — sleeping 60s")
+                time.sleep(60)
+            else:
+                logger.debug("[FOOTBALL-DATA.ORG] HTTP %d: %s",
+                             r.status_code, endpoint)
+        except Exception as e:
+            logger.debug("[FOOTBALL-DATA.ORG] %s: %s", endpoint, str(e)[:60])
+        return None
+
+    def get_team_matches(self, team_name: str,
+                         last_n: int = 10) -> dict:
+        """Get recent matches for a team."""
+        # Search for team
+        data = self._get(f"teams", {"name": team_name}, ttl_hours=24.0)
+        if not data or not data.get("teams"):
+            return {}
+
+        team = data["teams"][0]
+        team_id = team.get("id")
+        if not team_id:
+            return {}
+
+        matches_data = self._get(
+            f"teams/{team_id}/matches",
+            {"status": "FINISHED", "limit": last_n},
+            ttl_hours=4.0
+        )
+        if not matches_data or not matches_data.get("matches"):
+            return {}
+
+        matches = matches_data["matches"]
+        wins = draws = losses = 0
+        gf = ga = 0
+        form = []
+
+        for m in matches:
+            home_team = m.get("homeTeam", {}).get("name", "")
+            away_team = m.get("awayTeam", {}).get("name", "")
+            score = m.get("score", {}).get("fullTime", {})
+            h_score = score.get("home", 0) or 0
+            a_score = score.get("away", 0) or 0
+
+            is_home = _fuzzy_match_name(team_name, home_team)
+            t_score = h_score if is_home else a_score
+            o_score = a_score if is_home else h_score
+
+            gf += t_score
+            ga += o_score
+
+            if t_score > o_score:
+                wins += 1
+                form.append("W")
+            elif t_score == o_score:
+                draws += 1
+                form.append("D")
+            else:
+                losses += 1
+                form.append("L")
+
+        total = len(matches)
+        safe_total = max(total, 1)
+
+        return {
+            "team_id": team_id,
+            "team_name": team.get("name", team_name),
+            "competition": team.get("runningCompetitions", [{}])[0].get("name", "?") if team.get("runningCompetitions") else "?",
+            "played": total,
+            "wins": wins,
+            "draws": draws,
+            "losses": losses,
+            "win_rate": round(wins / safe_total, 3),
+            "avg_scored": round(gf / safe_total, 2),
+            "avg_conceded": round(ga / safe_total, 2),
+            "form": "".join(reversed(form)),
+            "data_quality": (
+                "good" if total >= 8
+                else "limited" if total >= 4
+                else "poor"
+            ),
+            "source": "football_data_org"
+        }
+
+    def get_standings(self, competition_code: str,
+                      season: int = None) -> List[dict]:
+        """Get standings for a competition."""
+        params = {}
+        if season:
+            params["season"] = season
+        data = self._get(
+            f"competitions/{competition_code}/standings",
+            params, ttl_hours=4.0
+        )
+        if not data:
+            return []
+        try:
+            table = data["standings"][0]["table"]
+            return [{
+                "rank": t["position"],
+                "team": t["team"]["name"],
+                "points": t["points"],
+                "played": t["playedGames"],
+                "wins": t["won"],
+                "draws": t["draw"],
+                "losses": t["lost"],
+                "gf": t["goalsFor"],
+                "ga": t["goalsAgainst"],
+                "gd": t["goalDifference"],
+                "form": t.get("form", ""),
+            } for t in table]
+        except (KeyError, IndexError):
+            return []
+
+
+# =========================================================
+# 3d. BALLDONTLIE CLIENT (NBA — Free, no strict limits)
+# =========================================================
+class BallDontLieClient:
+    BASE = "https://api.balldontlie.io/v1"
+
+    def __init__(self):
+        self._key = CFG.BALLDONTLIE_API_KEY
+        self._cache_file = CFG.CACHE_DIR / "balldontlie_cache.json"
+        self._cache: dict = {}
+        self._last_call = 0.0
+        self._min_interval = 1.0
+        self._load_cache()
+        logger.info("✅ [BALLDONTLIE] NBA client ready")
+
+    def _load_cache(self):
+        try:
+            if self._cache_file.exists():
+                raw = json.loads(self._cache_file.read_text())
+                now = datetime.now(timezone.utc)
+                for k, v in raw.items():
+                    if isinstance(v, dict) and "ts" in v:
+                        ts = datetime.fromisoformat(v["ts"])
+                        if ts.tzinfo is None:
+                            ts = ts.replace(tzinfo=timezone.utc)
+                        if (now - ts) < timedelta(hours=6):
+                            self._cache[k] = v
+        except Exception:
+            pass
+
+    def _save_cache(self):
+        try:
+            self._cache_file.write_text(
+                json.dumps(self._cache, ensure_ascii=False, default=str)
+            )
+        except Exception:
+            pass
+
+    def _get(self, endpoint: str, params: dict = None,
+             ttl_hours: float = 6.0) -> Optional[dict]:
+        ck = hashlib.md5(
+            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
+        ).hexdigest()
+
+        if ck in self._cache:
+            try:
+                ts = datetime.fromisoformat(self._cache[ck]["ts"])
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl_hours):
+                    return self._cache[ck].get("data")
+            except Exception:
+                pass
+
+        elapsed = time.time() - self._last_call
+        if elapsed < self._min_interval:
+            time.sleep(self._min_interval - elapsed)
+
+        headers = {"Accept": "application/json"}
+        if self._key:
+            headers["Authorization"] = self._key
+
+        try:
+            r = requests.get(
+                f"{self.BASE}/{endpoint}",
+                params=params,
+                headers=headers,
+                timeout=15
+            )
+            self._last_call = time.time()
+            if r.status_code == 200:
+                data = r.json()
+                self._cache[ck] = {
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "data": data
+                }
+                self._save_cache()
+                return data
+            else:
+                logger.debug("[BALLDONTLIE] HTTP %d: %s", r.status_code, endpoint)
+        except Exception as e:
+            logger.debug("[BALLDONTLIE] %s: %s", endpoint, str(e)[:60])
+        return None
+
+    def get_team_stats(self, team_name: str) -> dict:
+        """Get NBA team season averages."""
+        # Find team
+        data = self._get("teams", {"search": team_name}, ttl_hours=24.0)
+        if not data or not data.get("data"):
+            return {}
+
+        team = data["data"][0]
+        team_id = team.get("id")
+        if not team_id:
+            return {}
+
+        # Get season averages
+        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
+        stats_data = self._get(
+            "season_averages",
+            {"season": season, "team_ids[]": team_id},
+            ttl_hours=4.0
+        )
+
+        result = {
+            "team_id": team_id,
+            "team_name": team.get("full_name", team_name),
+            "abbreviation": team.get("abbreviation", ""),
+            "conference": team.get("conference", ""),
+            "division": team.get("division", ""),
+            "source": "balldontlie"
+        }
+
+        if stats_data and stats_data.get("data"):
+            s = stats_data["data"][0]
+            result.update({
+                "avg_pts": round(float(s.get("pts", 0) or 0), 1),
+                "avg_reb": round(float(s.get("reb", 0) or 0), 1),
+                "avg_ast": round(float(s.get("ast", 0) or 0), 1),
+                "fg_pct": round(float(s.get("fg_pct", 0) or 0), 3),
+                "fg3_pct": round(float(s.get("fg3_pct", 0) or 0), 3),
+                "ft_pct": round(float(s.get("ft_pct", 0) or 0), 3),
+            })
+            result["data_quality"] = "limited"
+        else:
+            result["data_quality"] = "poor"
+
+        return result
+
+    def get_recent_games(self, team_name: str, last_n: int = 10) -> dict:
+        """Get recent game results for an NBA team."""
+        team_data = self._get("teams", {"search": team_name}, ttl_hours=24.0)
+        if not team_data or not team_data.get("data"):
+            return {}
+
+        team_id = team_data["data"][0].get("id")
+        if not team_id:
+            return {}
+
+        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
+        games_data = self._get(
+            "games",
+            {
+                "seasons[]": season,
+                "team_ids[]": team_id,
+                "per_page": last_n,
+                "postseason": False
+            },
+            ttl_hours=4.0
+        )
+
+        if not games_data or not games_data.get("data"):
+            return {}
+
+        games = sorted(
+            [g for g in games_data["data"] if g.get("status") == "Final"],
+            key=lambda x: x.get("date", ""),
+            reverse=True
+        )[:last_n]
+
+        wins = losses = pts_for = pts_against = 0
+        form = []
+
+        for g in games:
+            home_id = g.get("home_team", {}).get("id")
+            is_home = home_id == team_id
+            t_pts = g.get("home_team_score", 0) if is_home else g.get("visitor_team_score", 0)
+            o_pts = g.get("visitor_team_score", 0) if is_home else g.get("home_team_score", 0)
+            t_pts = t_pts or 0
+            o_pts = o_pts or 0
+            pts_for += t_pts
+            pts_against += o_pts
+            if t_pts > o_pts:
+                wins += 1
+                form.append("W")
+            else:
+                losses += 1
+                form.append("L")
+
+        total = len(games)
+        safe_total = max(total, 1)
+
+        return {
+            "recent_record": f"{wins}W-{losses}L",
+            "win_rate": round(wins / safe_total, 3),
+            "avg_pts_scored": round(pts_for / safe_total, 1),
+            "avg_pts_allowed": round(pts_against / safe_total, 1),
+            "pt_diff": round((pts_for - pts_against) / safe_total, 1),
+            "form": "".join(reversed(form)),
+            "games_analyzed": total,
+            "data_quality": "good" if total >= 8 else "limited",
+            "source": "balldontlie"
+        }
+
+
+# Singletons
+api_football = APIFootballClient()
+football_data_org = FootballDataOrgClient()
+balldontlie = BallDontLieClient()
 
 # =========================================================
 # 4. AI MANAGER
@@ -2275,861 +3130,6 @@ def get_confidence_label(fc: int) -> str:
         return "متوسط ✅"
     return "استاندارد ⚡"
 
-# =========================================================
-# 3b. API-FOOTBALL CLIENT (api-football.com)
-# Free: 100 calls/day — cache aggressively
-# =========================================================
-class APIFootballClient:
-    BASE = "https://v3.football.api-sports.io"
-    HEADERS_KEY = "x-apisports-key"
-
-    # Map our sport_key/league names to API-Football league IDs
-    LEAGUE_MAP = {
-        "Premier League": 39,
-        "Championship": 40,
-        "La Liga": 140,
-        "Bundesliga": 78,
-        "Serie A": 135,
-        "Ligue 1": 61,
-        "Eredivisie": 88,
-        "Liga Portugal": 94,
-        "Champions League": 2,
-        "Europa League": 3,
-        "MLS": 253,
-        "Brasileirao": 71,
-        "Argentine Liga": 128,
-        "Super Lig": 203,
-        "Jupiler League": 144,
-    }
-
-    def __init__(self):
-        self._key = CFG.API_FOOTBALL_KEY
-        self._cache_file = CFG.CACHE_DIR / "api_football_cache.json"
-        self._usage_file = CFG.CACHE_DIR / "api_football_usage.json"
-        self._cache: dict = {}
-        self._calls_today = 0
-        self._load_cache()
-        self._load_usage()
-        if self._key:
-            logger.info("✅ [API-FOOTBALL] Key loaded (calls today: %d/%d)",
-                        self._calls_today, CFG.API_FOOTBALL_MAX_CALLS)
-        else:
-            logger.warning("⚠️ [API-FOOTBALL] No key — skipping")
-
-    def _load_cache(self):
-        try:
-            if self._cache_file.exists():
-                raw = json.loads(self._cache_file.read_text())
-                now = datetime.now(timezone.utc)
-                for k, v in raw.items():
-                    if isinstance(v, dict) and "ts" in v:
-                        ts = datetime.fromisoformat(v["ts"])
-                        if ts.tzinfo is None:
-                            ts = ts.replace(tzinfo=timezone.utc)
-                        if (now - ts) < timedelta(hours=CFG.API_FOOTBALL_TTL):
-                            self._cache[k] = v
-        except Exception:
-            pass
-
-    def _save_cache(self):
-        try:
-            self._cache_file.write_text(
-                json.dumps(self._cache, ensure_ascii=False, default=str)
-            )
-        except Exception:
-            pass
-
-    def _load_usage(self):
-        try:
-            if self._usage_file.exists():
-                u = json.loads(self._usage_file.read_text())
-                today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-                if u.get("date") == today:
-                    self._calls_today = u.get("calls", 0)
-                    return
-        except Exception:
-            pass
-        self._calls_today = 0
-
-    def _save_usage(self):
-        try:
-            self._usage_file.write_text(json.dumps({
-                "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                "calls": self._calls_today
-            }))
-        except Exception:
-            pass
-
-    def _get(self, endpoint: str, params: dict = None,
-             ttl_hours: float = None) -> Optional[dict]:
-        if not self._key:
-            return None
-        if self._calls_today >= CFG.API_FOOTBALL_MAX_CALLS:
-            logger.warning("[API-FOOTBALL] Daily limit reached (%d)", self._calls_today)
-            return None
-
-        ttl = ttl_hours or CFG.API_FOOTBALL_TTL
-        ck = hashlib.md5(
-            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
-        ).hexdigest()
-
-        # Check cache
-        if ck in self._cache:
-            try:
-                ts = datetime.fromisoformat(self._cache[ck]["ts"])
-                if ts.tzinfo is None:
-                    ts = ts.replace(tzinfo=timezone.utc)
-                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl):
-                    return self._cache[ck].get("data")
-            except Exception:
-                pass
-
-        try:
-            r = requests.get(
-                f"{self.BASE}/{endpoint}",
-                params=params,
-                headers={
-                    self.HEADERS_KEY: self._key,
-                    "Accept": "application/json"
-                },
-                timeout=15
-            )
-            self._calls_today += 1
-            self._save_usage()
-
-            remaining = r.headers.get("x-ratelimit-requests-remaining", "?")
-            logger.debug("[API-FOOTBALL] %s → HTTP %d (rem: %s)",
-                         endpoint, r.status_code, remaining)
-
-            if r.status_code == 200:
-                data = r.json()
-                if data.get("errors") and data["errors"] != []:
-                    logger.warning("[API-FOOTBALL] API error: %s", data["errors"])
-                    return None
-                self._cache[ck] = {
-                    "ts": datetime.now(timezone.utc).isoformat(),
-                    "data": data
-                }
-                self._save_cache()
-                return data
-            elif r.status_code == 429:
-                logger.warning("[API-FOOTBALL] Rate limited")
-            else:
-                logger.debug("[API-FOOTBALL] HTTP %d for %s", r.status_code, endpoint)
-        except Exception as e:
-            logger.debug("[API-FOOTBALL] %s: %s", endpoint, str(e)[:60])
-        return None
-
-    def get_team_id(self, team_name: str, league_id: int = None) -> Optional[int]:
-        params = {"search": team_name}
-        if league_id:
-            params["league"] = league_id
-        data = self._get("teams", params, ttl_hours=24.0)
-        if data and data.get("response"):
-            return data["response"][0]["team"]["id"]
-        return None
-
-    def get_team_stats(self, team_name: str,
-                       league_id: int = None,
-                       season: int = None) -> dict:
-        """Get comprehensive team stats from API-Football."""
-        if not self._key:
-            return {}
-
-        season = season or datetime.now().year
-        # Try to find team ID
-        team_id = self.get_team_id(team_name, league_id)
-        if not team_id:
-            return {}
-
-        # If no league_id, try to find it
-        if not league_id:
-            league_data = self._get("teams/leagues",
-                                     {"team": team_id}, ttl_hours=24.0)
-            if league_data and league_data.get("response"):
-                # Get most recent active league
-                for lg in league_data["response"]:
-                    lgs = lg.get("league", {})
-                    if lgs.get("type") == "League":
-                        league_id = lgs.get("id")
-                        season = lg.get("seasons", [{}])[-1].get("year", season)
-                        break
-
-        if not league_id:
-            return {}
-
-        data = self._get("teams/statistics",
-                          {"team": team_id, "league": league_id, "season": season},
-                          ttl_hours=CFG.API_FOOTBALL_TTL)
-        if not data or not data.get("response"):
-            return {}
-
-        resp = data["response"]
-        fixtures = resp.get("fixtures", {})
-        goals = resp.get("goals", {})
-        form_str = resp.get("form", "") or ""
-
-        played = fixtures.get("played", {}).get("total", 0) or 0
-        wins   = fixtures.get("wins", {}).get("total", 0) or 0
-        draws  = fixtures.get("draws", {}).get("total", 0) or 0
-        losses = fixtures.get("loses", {}).get("total", 0) or 0
-
-        gf_total = goals.get("for", {}).get("total", {}).get("total", 0) or 0
-        ga_total = goals.get("against", {}).get("total", {}).get("total", 0) or 0
-
-        gf_home = goals.get("for", {}).get("total", {}).get("home", 0) or 0
-        gf_away = goals.get("for", {}).get("total", {}).get("away", 0) or 0
-        ga_home = goals.get("against", {}).get("total", {}).get("home", 0) or 0
-        ga_away = goals.get("against", {}).get("total", {}).get("away", 0) or 0
-
-        # Biggest wins/losses
-        biggest = resp.get("biggest", {})
-
-        # Clean sheets
-        cs = resp.get("clean_sheet", {})
-        cs_total = cs.get("total", 0) or 0
-
-        # Failed to score
-        fts = resp.get("failed_to_score", {})
-        fts_total = fts.get("total", 0) or 0
-
-        safe_played = max(played, 1)
-
-        result = {
-            "team_id": team_id,
-            "league_id": league_id,
-            "season": season,
-            "played": played,
-            "wins": wins,
-            "draws": draws,
-            "losses": losses,
-            "win_rate": round(wins / safe_played, 3),
-            "draw_rate": round(draws / safe_played, 3),
-            "avg_scored": round(gf_total / safe_played, 2),
-            "avg_conceded": round(ga_total / safe_played, 2),
-            "avg_scored_home": round(gf_home / max(played // 2, 1), 2),
-            "avg_scored_away": round(gf_away / max(played // 2, 1), 2),
-            "avg_conceded_home": round(ga_home / max(played // 2, 1), 2),
-            "avg_conceded_away": round(ga_away / max(played // 2, 1), 2),
-            "clean_sheet_rate": round(cs_total / safe_played, 3),
-            "failed_to_score_rate": round(fts_total / safe_played, 3),
-            "form": form_str[-10:] if form_str else "N/A",
-            "recent_form_5": form_str[-5:] if form_str else "N/A",
-            "data_quality": (
-                "good" if played >= 15
-                else "limited" if played >= 8
-                else "poor"
-            ),
-            "source": "api_football"
-        }
-
-        # Add biggest results
-        if biggest:
-            result["biggest_win"] = biggest.get("wins", {}).get("total", "?")
-            result["biggest_loss"] = biggest.get("loses", {}).get("total", "?")
-
-        return result
-
-    def get_h2h(self, team1_name: str, team2_name: str,
-                last_n: int = 10) -> dict:
-        """Get head-to-head stats between two teams."""
-        if not self._key:
-            return {}
-
-        t1_id = self.get_team_id(team1_name)
-        t2_id = self.get_team_id(team2_name)
-        if not t1_id or not t2_id:
-            return {}
-
-        data = self._get("fixtures/headtohead",
-                          {"h2h": f"{t1_id}-{t2_id}", "last": last_n},
-                          ttl_hours=12.0)
-        if not data or not data.get("response"):
-            return {}
-
-        matches = data["response"]
-        if not matches:
-            return {}
-
-        t1_wins = t2_wins = draws = 0
-        total_goals = []
-
-        for m in matches:
-            teams = m.get("teams", {})
-            goals = m.get("goals", {})
-            hg = goals.get("home", 0) or 0
-            ag = goals.get("away", 0) or 0
-            total_goals.append(hg + ag)
-
-            home_id = teams.get("home", {}).get("id")
-            winner_id = None
-            if teams.get("home", {}).get("winner"):
-                winner_id = home_id
-            elif teams.get("away", {}).get("winner"):
-                winner_id = teams.get("away", {}).get("id")
-            else:
-                draws += 1
-                continue
-
-            if winner_id == t1_id:
-                t1_wins += 1
-            else:
-                t2_wins += 1
-
-        total = len(matches)
-        avg_goals = round(sum(total_goals) / max(total, 1), 2)
-
-        return {
-            "total": total,
-            f"{team1_name}_wins": t1_wins,
-            f"{team2_name}_wins": t2_wins,
-            "draws": draws,
-            "avg_goals": avg_goals,
-            "over25_rate": round(
-                sum(1 for g in total_goals if g > 2.5) / max(total, 1), 3
-            ),
-            "btts_rate": round(
-                sum(1 for m in matches
-                    if (m.get("goals", {}).get("home", 0) or 0) > 0
-                    and (m.get("goals", {}).get("away", 0) or 0) > 0
-                    ) / max(total, 1), 3
-            ),
-            "dominance": (
-                f"{team1_name}_dominant" if t1_wins > t2_wins * 1.5
-                else f"{team2_name}_dominant" if t2_wins > t1_wins * 1.5
-                else "balanced"
-            ),
-            "source": "api_football"
-        }
-
-    def get_fixture_stats(self, home: str, away: str,
-                          date_str: str = None) -> dict:
-        """Get pre-match stats for a specific fixture."""
-        if not self._key:
-            return {}
-
-        if not date_str:
-            date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-        # Search for the fixture
-        home_id = self.get_team_id(home)
-        away_id = self.get_team_id(away)
-        if not home_id or not away_id:
-            return {}
-
-        data = self._get("fixtures",
-                          {"team": home_id, "date": date_str},
-                          ttl_hours=2.0)
-        if not data or not data.get("response"):
-            return {}
-
-        # Find matching fixture
-        for fix in data["response"]:
-            teams = fix.get("teams", {})
-            away_match = teams.get("away", {}).get("id") == away_id
-            if away_match:
-                fixture_id = fix.get("fixture", {}).get("id")
-                venue = fix.get("fixture", {}).get("venue", {})
-                return {
-                    "fixture_id": fixture_id,
-                    "venue": venue.get("name", ""),
-                    "city": venue.get("city", ""),
-                    "referee": fix.get("fixture", {}).get("referee", ""),
-                    "status": fix.get("fixture", {}).get("status", {}).get("long", ""),
-                }
-        return {}
-
-    def get_standings(self, league_id: int,
-                      season: int = None) -> List[dict]:
-        """Get current league standings."""
-        season = season or datetime.now().year
-        data = self._get("standings",
-                          {"league": league_id, "season": season},
-                          ttl_hours=4.0)
-        if not data or not data.get("response"):
-            return []
-
-        try:
-            standings = data["response"][0]["league"]["standings"][0]
-            result = []
-            for team in standings:
-                result.append({
-                    "rank": team.get("rank", 0),
-                    "team": team.get("team", {}).get("name", ""),
-                    "team_id": team.get("team", {}).get("id"),
-                    "points": team.get("points", 0),
-                    "played": team.get("all", {}).get("played", 0),
-                    "wins": team.get("all", {}).get("win", 0),
-                    "draws": team.get("all", {}).get("draw", 0),
-                    "losses": team.get("all", {}).get("lose", 0),
-                    "gf": team.get("all", {}).get("goals", {}).get("for", 0),
-                    "ga": team.get("all", {}).get("goals", {}).get("against", 0),
-                    "form": team.get("form", ""),
-                    "description": team.get("description", ""),
-                })
-            return result
-        except (KeyError, IndexError):
-            return []
-
-    def get_team_standing(self, team_name: str,
-                          league_id: int = None) -> dict:
-        """Get a specific team's standing in their league."""
-        if not league_id:
-            # Try to detect league
-            team_id = self.get_team_id(team_name)
-            if not team_id:
-                return {}
-            league_data = self._get("teams/leagues",
-                                     {"team": team_id}, ttl_hours=24.0)
-            if league_data and league_data.get("response"):
-                for lg in league_data["response"]:
-                    if lg.get("league", {}).get("type") == "League":
-                        league_id = lg["league"]["id"]
-                        break
-
-        if not league_id:
-            return {}
-
-        standings = self.get_standings(league_id)
-        name_lower = team_name.lower()
-        for s in standings:
-            if _fuzzy_match_name(team_name, s["team"]):
-                return {**s, "total_teams": len(standings)}
-        return {}
-
-    def get_injuries(self, team_name: str,
-                     fixture_id: int = None) -> List[dict]:
-        """Get injury/suspension list for a team."""
-        if not self._key or not fixture_id:
-            return []
-        team_id = self.get_team_id(team_name)
-        if not team_id:
-            return []
-        data = self._get("injuries",
-                          {"fixture": fixture_id, "team": team_id},
-                          ttl_hours=2.0)
-        if not data or not data.get("response"):
-            return []
-        injuries = []
-        for p in data["response"]:
-            player = p.get("player", {})
-            injuries.append({
-                "name": player.get("name", ""),
-                "type": p.get("type", ""),
-                "reason": p.get("reason", ""),
-            })
-        return injuries
-
-
-# =========================================================
-# 3c. FOOTBALL-DATA.ORG CLIENT (Free backup)
-# No strict call limits for free tier
-# =========================================================
-class FootballDataOrgClient:
-    BASE = "https://api.football-data.org/v4"
-
-    COMPETITION_MAP = {
-        "Premier League": "PL",
-        "Championship": "ELC",
-        "La Liga": "PD",
-        "Bundesliga": "BL1",
-        "Serie A": "SA",
-        "Ligue 1": "FL1",
-        "Eredivisie": "DED",
-        "Champions League": "CL",
-        "Europa League": "EL",
-        "MLS": "MLS",
-    }
-
-    def __init__(self):
-        self._key = CFG.FOOTBALL_DATA_ORG_KEY
-        self._cache_file = CFG.CACHE_DIR / "football_data_org_cache.json"
-        self._cache: dict = {}
-        self._last_call = 0.0
-        self._min_interval = 6.0  # free tier: 10 calls/min
-        self._load_cache()
-        if self._key:
-            logger.info("✅ [FOOTBALL-DATA.ORG] Key loaded")
-        else:
-            logger.info("ℹ️ [FOOTBALL-DATA.ORG] No key — limited access")
-
-    def _load_cache(self):
-        try:
-            if self._cache_file.exists():
-                raw = json.loads(self._cache_file.read_text())
-                now = datetime.now(timezone.utc)
-                for k, v in raw.items():
-                    if isinstance(v, dict) and "ts" in v:
-                        ts = datetime.fromisoformat(v["ts"])
-                        if ts.tzinfo is None:
-                            ts = ts.replace(tzinfo=timezone.utc)
-                        if (now - ts) < timedelta(hours=CFG.FOOTBALL_DATA_ORG_TTL):
-                            self._cache[k] = v
-        except Exception:
-            pass
-
-    def _save_cache(self):
-        try:
-            self._cache_file.write_text(
-                json.dumps(self._cache, ensure_ascii=False, default=str)
-            )
-        except Exception:
-            pass
-
-    def _get(self, endpoint: str, params: dict = None,
-             ttl_hours: float = 6.0) -> Optional[dict]:
-        ck = hashlib.md5(
-            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
-        ).hexdigest()
-
-        if ck in self._cache:
-            try:
-                ts = datetime.fromisoformat(self._cache[ck]["ts"])
-                if ts.tzinfo is None:
-                    ts = ts.replace(tzinfo=timezone.utc)
-                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl_hours):
-                    return self._cache[ck].get("data")
-            except Exception:
-                pass
-
-        elapsed = time.time() - self._last_call
-        if elapsed < self._min_interval:
-            time.sleep(self._min_interval - elapsed)
-
-        headers = {"Accept": "application/json"}
-        if self._key:
-            headers["X-Auth-Token"] = self._key
-
-        try:
-            r = requests.get(
-                f"{self.BASE}/{endpoint}",
-                params=params,
-                headers=headers,
-                timeout=15
-            )
-            self._last_call = time.time()
-
-            if r.status_code == 200:
-                data = r.json()
-                self._cache[ck] = {
-                    "ts": datetime.now(timezone.utc).isoformat(),
-                    "data": data
-                }
-                self._save_cache()
-                return data
-            elif r.status_code == 429:
-                logger.warning("[FOOTBALL-DATA.ORG] Rate limited — sleeping 60s")
-                time.sleep(60)
-            else:
-                logger.debug("[FOOTBALL-DATA.ORG] HTTP %d: %s",
-                             r.status_code, endpoint)
-        except Exception as e:
-            logger.debug("[FOOTBALL-DATA.ORG] %s: %s", endpoint, str(e)[:60])
-        return None
-
-    def get_team_matches(self, team_name: str,
-                         last_n: int = 10) -> dict:
-        """Get recent matches for a team."""
-        # Search for team
-        data = self._get(f"teams", {"name": team_name}, ttl_hours=24.0)
-        if not data or not data.get("teams"):
-            return {}
-
-        team = data["teams"][0]
-        team_id = team.get("id")
-        if not team_id:
-            return {}
-
-        matches_data = self._get(
-            f"teams/{team_id}/matches",
-            {"status": "FINISHED", "limit": last_n},
-            ttl_hours=4.0
-        )
-        if not matches_data or not matches_data.get("matches"):
-            return {}
-
-        matches = matches_data["matches"]
-        wins = draws = losses = 0
-        gf = ga = 0
-        form = []
-
-        for m in matches:
-            home_team = m.get("homeTeam", {}).get("name", "")
-            away_team = m.get("awayTeam", {}).get("name", "")
-            score = m.get("score", {}).get("fullTime", {})
-            h_score = score.get("home", 0) or 0
-            a_score = score.get("away", 0) or 0
-
-            is_home = _fuzzy_match_name(team_name, home_team)
-            t_score = h_score if is_home else a_score
-            o_score = a_score if is_home else h_score
-
-            gf += t_score
-            ga += o_score
-
-            if t_score > o_score:
-                wins += 1
-                form.append("W")
-            elif t_score == o_score:
-                draws += 1
-                form.append("D")
-            else:
-                losses += 1
-                form.append("L")
-
-        total = len(matches)
-        safe_total = max(total, 1)
-
-        return {
-            "team_id": team_id,
-            "team_name": team.get("name", team_name),
-            "competition": team.get("runningCompetitions", [{}])[0].get("name", "?") if team.get("runningCompetitions") else "?",
-            "played": total,
-            "wins": wins,
-            "draws": draws,
-            "losses": losses,
-            "win_rate": round(wins / safe_total, 3),
-            "avg_scored": round(gf / safe_total, 2),
-            "avg_conceded": round(ga / safe_total, 2),
-            "form": "".join(reversed(form)),
-            "data_quality": (
-                "good" if total >= 8
-                else "limited" if total >= 4
-                else "poor"
-            ),
-            "source": "football_data_org"
-        }
-
-    def get_standings(self, competition_code: str,
-                      season: int = None) -> List[dict]:
-        """Get standings for a competition."""
-        params = {}
-        if season:
-            params["season"] = season
-        data = self._get(
-            f"competitions/{competition_code}/standings",
-            params, ttl_hours=4.0
-        )
-        if not data:
-            return []
-        try:
-            table = data["standings"][0]["table"]
-            return [{
-                "rank": t["position"],
-                "team": t["team"]["name"],
-                "points": t["points"],
-                "played": t["playedGames"],
-                "wins": t["won"],
-                "draws": t["draw"],
-                "losses": t["lost"],
-                "gf": t["goalsFor"],
-                "ga": t["goalsAgainst"],
-                "gd": t["goalDifference"],
-                "form": t.get("form", ""),
-            } for t in table]
-        except (KeyError, IndexError):
-            return []
-
-
-# =========================================================
-# 3d. BALLDONTLIE CLIENT (NBA — Free, no strict limits)
-# =========================================================
-class BallDontLieClient:
-    BASE = "https://api.balldontlie.io/v1"
-
-    def __init__(self):
-        self._key = CFG.BALLDONTLIE_API_KEY
-        self._cache_file = CFG.CACHE_DIR / "balldontlie_cache.json"
-        self._cache: dict = {}
-        self._last_call = 0.0
-        self._min_interval = 1.0
-        self._load_cache()
-        logger.info("✅ [BALLDONTLIE] NBA client ready")
-
-    def _load_cache(self):
-        try:
-            if self._cache_file.exists():
-                raw = json.loads(self._cache_file.read_text())
-                now = datetime.now(timezone.utc)
-                for k, v in raw.items():
-                    if isinstance(v, dict) and "ts" in v:
-                        ts = datetime.fromisoformat(v["ts"])
-                        if ts.tzinfo is None:
-                            ts = ts.replace(tzinfo=timezone.utc)
-                        if (now - ts) < timedelta(hours=6):
-                            self._cache[k] = v
-        except Exception:
-            pass
-
-    def _save_cache(self):
-        try:
-            self._cache_file.write_text(
-                json.dumps(self._cache, ensure_ascii=False, default=str)
-            )
-        except Exception:
-            pass
-
-    def _get(self, endpoint: str, params: dict = None,
-             ttl_hours: float = 6.0) -> Optional[dict]:
-        ck = hashlib.md5(
-            f"{endpoint}|{json.dumps(params or {}, sort_keys=True)}".encode()
-        ).hexdigest()
-
-        if ck in self._cache:
-            try:
-                ts = datetime.fromisoformat(self._cache[ck]["ts"])
-                if ts.tzinfo is None:
-                    ts = ts.replace(tzinfo=timezone.utc)
-                if (datetime.now(timezone.utc) - ts) < timedelta(hours=ttl_hours):
-                    return self._cache[ck].get("data")
-            except Exception:
-                pass
-
-        elapsed = time.time() - self._last_call
-        if elapsed < self._min_interval:
-            time.sleep(self._min_interval - elapsed)
-
-        headers = {"Accept": "application/json"}
-        if self._key:
-            headers["Authorization"] = self._key
-
-        try:
-            r = requests.get(
-                f"{self.BASE}/{endpoint}",
-                params=params,
-                headers=headers,
-                timeout=15
-            )
-            self._last_call = time.time()
-            if r.status_code == 200:
-                data = r.json()
-                self._cache[ck] = {
-                    "ts": datetime.now(timezone.utc).isoformat(),
-                    "data": data
-                }
-                self._save_cache()
-                return data
-            else:
-                logger.debug("[BALLDONTLIE] HTTP %d: %s", r.status_code, endpoint)
-        except Exception as e:
-            logger.debug("[BALLDONTLIE] %s: %s", endpoint, str(e)[:60])
-        return None
-
-    def get_team_stats(self, team_name: str) -> dict:
-        """Get NBA team season averages."""
-        # Find team
-        data = self._get("teams", {"search": team_name}, ttl_hours=24.0)
-        if not data or not data.get("data"):
-            return {}
-
-        team = data["data"][0]
-        team_id = team.get("id")
-        if not team_id:
-            return {}
-
-        # Get season averages
-        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
-        stats_data = self._get(
-            "season_averages",
-            {"season": season, "team_ids[]": team_id},
-            ttl_hours=4.0
-        )
-
-        result = {
-            "team_id": team_id,
-            "team_name": team.get("full_name", team_name),
-            "abbreviation": team.get("abbreviation", ""),
-            "conference": team.get("conference", ""),
-            "division": team.get("division", ""),
-            "source": "balldontlie"
-        }
-
-        if stats_data and stats_data.get("data"):
-            s = stats_data["data"][0]
-            result.update({
-                "avg_pts": round(float(s.get("pts", 0) or 0), 1),
-                "avg_reb": round(float(s.get("reb", 0) or 0), 1),
-                "avg_ast": round(float(s.get("ast", 0) or 0), 1),
-                "fg_pct": round(float(s.get("fg_pct", 0) or 0), 3),
-                "fg3_pct": round(float(s.get("fg3_pct", 0) or 0), 3),
-                "ft_pct": round(float(s.get("ft_pct", 0) or 0), 3),
-            })
-            result["data_quality"] = "limited"
-        else:
-            result["data_quality"] = "poor"
-
-        return result
-
-    def get_recent_games(self, team_name: str, last_n: int = 10) -> dict:
-        """Get recent game results for an NBA team."""
-        team_data = self._get("teams", {"search": team_name}, ttl_hours=24.0)
-        if not team_data or not team_data.get("data"):
-            return {}
-
-        team_id = team_data["data"][0].get("id")
-        if not team_id:
-            return {}
-
-        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
-        games_data = self._get(
-            "games",
-            {
-                "seasons[]": season,
-                "team_ids[]": team_id,
-                "per_page": last_n,
-                "postseason": False
-            },
-            ttl_hours=4.0
-        )
-
-        if not games_data or not games_data.get("data"):
-            return {}
-
-        games = sorted(
-            [g for g in games_data["data"] if g.get("status") == "Final"],
-            key=lambda x: x.get("date", ""),
-            reverse=True
-        )[:last_n]
-
-        wins = losses = pts_for = pts_against = 0
-        form = []
-
-        for g in games:
-            home_id = g.get("home_team", {}).get("id")
-            is_home = home_id == team_id
-            t_pts = g.get("home_team_score", 0) if is_home else g.get("visitor_team_score", 0)
-            o_pts = g.get("visitor_team_score", 0) if is_home else g.get("home_team_score", 0)
-            t_pts = t_pts or 0
-            o_pts = o_pts or 0
-            pts_for += t_pts
-            pts_against += o_pts
-            if t_pts > o_pts:
-                wins += 1
-                form.append("W")
-            else:
-                losses += 1
-                form.append("L")
-
-        total = len(games)
-        safe_total = max(total, 1)
-
-        return {
-            "recent_record": f"{wins}W-{losses}L",
-            "win_rate": round(wins / safe_total, 3),
-            "avg_pts_scored": round(pts_for / safe_total, 1),
-            "avg_pts_allowed": round(pts_against / safe_total, 1),
-            "pt_diff": round((pts_for - pts_against) / safe_total, 1),
-            "form": "".join(reversed(form)),
-            "games_analyzed": total,
-            "data_quality": "good" if total >= 8 else "limited",
-            "source": "balldontlie"
-        }
-
-
-# Singletons
-api_football = APIFootballClient()
-football_data_org = FootballDataOrgClient()
-balldontlie = BallDontLieClient()
 
 # =========================================================
 # 14. LINE MOVEMENT TRACKER
