@@ -16,9 +16,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "0e770396f510",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662674+00:00",
-      "_last_retry": "2026-06-03T14:39:49.010615+00:00"
+      "_last_retry": "2026-06-03T16:59:25.761255+00:00"
     },
     {
       "id": "6d04e00d",
@@ -36,9 +36,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "f5fd4be69c11",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662687+00:00",
-      "_last_retry": "2026-06-03T14:39:49.010790+00:00"
+      "_last_retry": "2026-06-03T16:59:26.847601+00:00"
     },
     {
       "id": "ac44cd45",
@@ -56,49 +56,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "c4f72aec9636",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662696+00:00",
-      "_last_retry": "2026-06-03T14:39:49.010919+00:00"
-    },
-    {
-      "id": "8db1666c",
-      "timestamp": "2026-06-01T20:38:14.591329+00:00",
-      "sport": "baseball",
-      "api_sport_key": "baseball_ncaa",
-      "home": "Florida Gators",
-      "away": "Troy Trojans",
-      "pick": "Over 15.5",
-      "market": "totals",
-      "odds": 2.2,
-      "ev": 0.0631,
-      "confidence": 73,
-      "implied_prob": 0.4832,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "b0c34c094542",
-      "_retry_count": 2,
-      "_pending_since": "2026-06-03T12:29:21.662705+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011040+00:00"
-    },
-    {
-      "id": "308bb8e0",
-      "timestamp": "2026-06-01T20:38:27.530247+00:00",
-      "sport": "icehockey",
-      "api_sport_key": "icehockey_ahl",
-      "home": "Toronto Marlies",
-      "away": "W-B/Scranton Penguins",
-      "pick": "Toronto Marlies",
-      "market": "h2h_lay",
-      "odds": 2.6,
-      "ev": 0.1425,
-      "confidence": 68,
-      "implied_prob": 0.4394,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "9b5593ac623c",
-      "_retry_count": 2,
-      "_pending_since": "2026-06-03T12:29:21.662713+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011162+00:00"
+      "_last_retry": "2026-06-03T16:59:28.165188+00:00"
     },
     {
       "id": "de321cdf",
@@ -116,9 +76,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "187bf0e5e9d9",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662724+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011281+00:00"
+      "_last_retry": "2026-06-03T16:59:33.315358+00:00"
     },
     {
       "id": "38b99e7f",
@@ -136,9 +96,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "6abd15e1579e",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662734+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011403+00:00"
+      "_last_retry": "2026-06-03T16:59:33.331153+00:00"
     },
     {
       "id": "b02883ef",
@@ -156,29 +116,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "834583df9c80",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662746+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011527+00:00"
-    },
-    {
-      "id": "942eea95",
-      "timestamp": "2026-06-02T08:38:11.857895+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_npb",
-      "home": "Yomiuri Giants",
-      "away": "Orix Buffaloes",
-      "pick": "Yomiuri Giants",
-      "market": "h2h",
-      "odds": 2.08,
-      "ev": 0.0502,
-      "confidence": 73,
-      "implied_prob": 0.5049,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "9b789737588b",
-      "_retry_count": 2,
-      "_pending_since": "2026-06-03T12:29:21.662758+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011656+00:00"
+      "_last_retry": "2026-06-03T16:59:34.932709+00:00"
     },
     {
       "id": "6b61c21d",
@@ -196,10 +136,10 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "efe8226b6127",
-      "_retry_count": 2,
+      "_retry_count": 3,
       "_pending_since": "2026-06-03T12:29:21.662770+00:00",
-      "_last_retry": "2026-06-03T14:39:49.011802+00:00"
+      "_last_retry": "2026-06-03T16:59:37.879290+00:00"
     }
   ],
-  "last_updated": "2026-06-03T14:39:49.011860+00:00"
+  "last_updated": "2026-06-03T16:59:37.879383+00:00"
 }

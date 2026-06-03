@@ -373,3 +373,29 @@
 2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Yomiuri Giants vs Orix Buffaloes
 2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Jakub Mensik vs Joao Fonseca
 2026-06-03 14:39:49 | INFO     | ⏳ No new settlements this session.
+2026-06-03 16:59:19 | INFO     | ============================================================
+2026-06-03 16:59:19 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-03 16:59:19 | INFO     | ============================================================
+2026-06-03 16:59:19 | INFO     | 📋 Pending: 10 | New: 0
+2026-06-03 16:59:22 | INFO     | ✅ [ESPN] 60 results loaded
+2026-06-03 16:59:25 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 3 (rem:160)
+2026-06-03 16:59:25 | INFO     | ⏳ RETRY 3: Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-03 16:59:26 | INFO     | ⏳ RETRY 3: Frances Tiafoe vs Matteo Arnaldi
+2026-06-03 16:59:28 | INFO     | 📡 [ODDS-API] tennis_wta_french_open → 2 (rem:158)
+2026-06-03 16:59:28 | INFO     | ⏳ RETRY 3: Aryna Sabalenka vs Naomi Osaka
+2026-06-03 16:59:29 | INFO     | ✅ [TSDB] Florida Gators vs Troy Trojans → 40-21
+2026-06-03 16:59:29 | INFO     | 💰 Florida Gators vs Troy Trojans → WIN (1.20u) [thesportsdb]
+2026-06-03 16:59:31 | INFO     | ✅ [TSDB] Toronto Marlies vs W-B/Scranton Penguins → 3-5
+2026-06-03 16:59:31 | INFO     | 💰 Toronto Marlies vs W-B/Scranton Penguins → VOID (0.00u) [thesportsdb]
+2026-06-03 16:59:33 | INFO     | 📡 [ODDS-API] baseball_ncaa → 8 (rem:156)
+2026-06-03 16:59:33 | INFO     | ⏳ RETRY 3: Texas A&M Aggies vs USC Trojans
+2026-06-03 16:59:33 | INFO     | ⏳ RETRY 3: Texas A&M Aggies vs USC Trojans
+2026-06-03 16:59:34 | INFO     | ⏳ RETRY 3: Mirra Andreeva vs Sorana Cirstea
+2026-06-03 16:59:36 | INFO     | ✅ [TSDB] Yomiuri Giants vs Orix Buffaloes → 3-2
+2026-06-03 16:59:36 | INFO     | 💰 Yomiuri Giants vs Orix Buffaloes → WIN (1.08u) [thesportsdb]
+2026-06-03 16:59:37 | INFO     | ⏳ RETRY 3: Jakub Mensik vs Joao Fonseca
+2026-06-03 16:59:37 | INFO     | 💾 Synced 3/3 bets.
+2026-06-03 16:59:38 | INFO     | 📤 Report sent.
+2026-06-03 16:59:38 | INFO     | ============================================================
+2026-06-03 16:59:38 | INFO     | 📊 Settled:3 Pending:7 WR:40.0% ROI:-6.1%
+2026-06-03 16:59:38 | INFO     | ============================================================
