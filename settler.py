@@ -7,7 +7,7 @@ import os, sys, json, logging, asyncio, re, unicodedata
 import hashlib, time, requests
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
 PERFORMANCE_FILE = Path("api_cache/performance_tracker.json")
