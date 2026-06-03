@@ -1,25 +1,24 @@
-name: ZBET90 Enterprise v5.0
+name: ZBET90 Engine v9.0
 
 on:
   #schedule:
-    #- cron: '*/15 * * * *' # اجرای خودکار هر ۱۵ دقیقه (در صورت نیاز تغییر دهید)
+   # - cron: '0 */4 * * *'
   workflow_dispatch:
     inputs:
-      force_bootstrap:
-        description: 'Force re-download datasets'
+      run_mode:
+        description: 'engine_only | settler_only | both'
         required: false
-        default: 'false'
+        default: 'both'
 
 jobs:
   run-engine:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     permissions:
       contents: write
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -29,14 +28,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' # سیستم کش را روشن کردیم تا سرعت اجرای اکشن بالا برود
+          cache: 'pip'
 
       - name: 📦 Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: 🚀 Run ZBET90 Engine
+
+      - name: 🚀 Run Engine
+        if: >
+          github.event_name == 'schedule' ||
+          github.event.inputs.run_mode == 'both' ||
+          github.event.inputs.run_mode == 'engine_only'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ODDS_API_KEY2: ${{ secrets.ODDS_API_KEY2 }}
@@ -46,23 +49,33 @@ jobs:
           GEMINI2: ${{ secrets.GEMINI2 }}
           GEMINI3: ${{ secrets.GEMINI3 }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
-          RAPIDAPI_KEY2: ${{ secrets.RAPIDAPI_KEY2 }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
-          FORCE_BOOTSTRAP: ${{ github.event.inputs.force_bootstrap || 'false' }}
-        run: |
-          python main4.py
-          python settler.py
+          API_FOOTBALL: ${{ secrets.API_FOOTBALL }}
+          FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          BALLDONTLIE_API_KEY: ${{ secrets.BALLDONTLIE_API_KEY }}
+          TSDB_API_KEY: ${{ secrets.TSDB_API_KEY }}
+        run: python main4.py
 
-      - name: 💾 Commit Cache Files
+      - name: ⏳ Run Settler
+        if: >
+          github.event_name == 'schedule' ||
+          github.event.inputs.run_mode == 'both' ||
+          github.event.inputs.run_mode == 'settler_only'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          ODDS_API_KEY2: ${{ secrets.ODDS_API_KEY2 }}
+          ODDS_API_KEY3: ${{ secrets.ODDS_API_KEY3 }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python settler.py
+
+      - name: 💾 Commit Cache
+        if: always()
         run: |
           git config --local user.email "zbet90-bot@github.com"
           git config --local user.name "ZBET90 Bot"
-          # اضافه کردن پوشه کش به گیت
           git add api_cache/ || true
-          # اگر تغییری وجود داشت کامیت کن و در غیر این صورت با آرامش رد شو
           git diff --staged --quiet || git commit -m "bot: update cache [skip ci]"
           git push || true
 
