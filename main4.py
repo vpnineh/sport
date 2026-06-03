@@ -92,7 +92,7 @@ class Config:
     FOOTBALL_DATA_ORG_TTL: float = 6.0
 
     # TheSportsDB
-    TSDB_API_KEY: str = "3"
+    TSDB_API_KEY: str = "123"
 
     # BallDontLie (NBA)
     BALLDONTLIE_API_KEY: str = ""
