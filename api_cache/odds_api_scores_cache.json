@@ -1,0 +1,225 @@
+{
+  "tennis_atp_french_open": {
+    "_cached_at": "2026-06-03T12:29:23.080456+00:00",
+    "data": [
+      {
+        "id": "82e09c833f76f59f4e640b27b7d2f275",
+        "sport_key": "tennis_atp_french_open",
+        "sport_title": "ATP French Open",
+        "commence_time": "2026-06-03T13:00:00Z",
+        "completed": false,
+        "home_team": "Felix Auger-Aliassime",
+        "away_team": "Flavio Cobolli",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "4e85167bd9712cd0b65e8feae60412ff",
+        "sport_key": "tennis_atp_french_open",
+        "sport_title": "ATP French Open",
+        "commence_time": "2026-06-03T18:15:00Z",
+        "completed": false,
+        "home_team": "Matteo Berrettini",
+        "away_team": "Matteo Arnaldi",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "a4c247a3021a7854b7dc23b9d67524c6",
+        "sport_key": "tennis_atp_french_open",
+        "sport_title": "ATP French Open",
+        "commence_time": "2026-06-05T12:30:00Z",
+        "completed": false,
+        "home_team": "Jakub Mensik",
+        "away_team": "Alexander Zverev",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "tennis_wta_french_open": {
+    "_cached_at": "2026-06-03T12:29:23.080469+00:00",
+    "data": [
+      {
+        "id": "fb3c48ec9e43553a586c48f1a5e6c5a7",
+        "sport_key": "tennis_wta_french_open",
+        "sport_title": "WTA French Open",
+        "commence_time": "2026-06-03T11:30:00Z",
+        "completed": false,
+        "home_team": "Aryna Sabalenka",
+        "away_team": "Diana Shnaider",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "88386b9afa0bb2d85d19320d0d453ae3",
+        "sport_key": "tennis_wta_french_open",
+        "sport_title": "WTA French Open",
+        "commence_time": "2026-06-04T13:00:00Z",
+        "completed": false,
+        "home_team": "Marta Kostyuk",
+        "away_team": "Mirra Andreeva",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "baseball_ncaa": {
+    "_cached_at": "2026-06-03T12:29:23.080471+00:00",
+    "data": [
+      {
+        "id": "17062b897253db388064333b150d00e4",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-05T16:00:00Z",
+        "completed": false,
+        "home_team": "West Virginia Mountaineers",
+        "away_team": "Cal Poly Mustangs",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "6527dafc5a1021bdcc6796a7acc47f7c",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-05T19:00:00Z",
+        "completed": false,
+        "home_team": "North Carolina Tar Heels",
+        "away_team": "USC Trojans",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "9f62999128a2b96c92475c3cf744811d",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-05T21:00:00Z",
+        "completed": false,
+        "home_team": "Troy Trojans",
+        "away_team": "Arkansas-Little Rock Trojans",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "7121f244401ddbf415f59a7e60333346",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-06T00:00:00Z",
+        "completed": false,
+        "home_team": "Auburn Tigers",
+        "away_team": "Ole Miss Rebels",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "2c901d81c9188cbc1d23326d05075c64",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-06T15:00:00Z",
+        "completed": false,
+        "home_team": "Georgia Bulldogs",
+        "away_team": "Mississippi St Bulldogs",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "10e1c7d224045faa529d9f7dac58501f",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-06T22:00:00Z",
+        "completed": false,
+        "home_team": "Kansas Jayhawks",
+        "away_team": "Oklahoma Sooners",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "25f256aa97f41ce5ac624796cac62f59",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-07T00:00:00Z",
+        "completed": false,
+        "home_team": "Texas Longhorns",
+        "away_team": "Oregon Ducks",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "7db492af2c555bf8b5824d9c082de763",
+        "sport_key": "baseball_ncaa",
+        "sport_title": "NCAA Baseball",
+        "commence_time": "2026-06-07T01:00:00Z",
+        "completed": false,
+        "home_team": "Alabama Crimson Tide",
+        "away_team": "St. John's Red Storm",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "icehockey_ahl": {
+    "_cached_at": "2026-06-03T12:29:23.080472+00:00",
+    "data": [
+      {
+        "id": "abbdc73ed5eb4c07ac843c0971000ffa",
+        "sport_key": "icehockey_ahl",
+        "sport_title": "AHL",
+        "commence_time": "2026-06-03T23:00:00Z",
+        "completed": false,
+        "home_team": "Toronto Marlies",
+        "away_team": "W-B/Scranton Penguins",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "73c2541fca76d605d8ebe0b8ad57544d",
+        "sport_key": "icehockey_ahl",
+        "sport_title": "AHL",
+        "commence_time": "2026-06-04T00:00:00Z",
+        "completed": false,
+        "home_team": "Chicago Wolves",
+        "away_team": "Colorado Eagles",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "baseball_npb": {
+    "_cached_at": "2026-06-03T12:29:23.080473+00:00",
+    "data": [
+      {
+        "id": "c64bfe6eb90708f634aec5fde3434f32",
+        "sport_key": "baseball_npb",
+        "sport_title": "NPB",
+        "commence_time": "2026-06-03T09:00:22Z",
+        "completed": false,
+        "home_team": "Yokohama DeNA BayStars",
+        "away_team": "Tohoku Rakuten Golden Eagles",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "62ab350530923a975b777148cd91df3d",
+        "sport_key": "baseball_npb",
+        "sport_title": "NPB",
+        "commence_time": "2026-06-03T09:00:24Z",
+        "completed": false,
+        "home_team": "Hiroshima Toyo Carp",
+        "away_team": "Hokkaido Nippon-Ham Fighters",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "b781e505a41d7c380041f6fbf1e65be6",
+        "sport_key": "baseball_npb",
+        "sport_title": "NPB",
+        "commence_time": "2026-06-03T09:00:27Z",
+        "completed": false,
+        "home_team": "Chunichi Dragons",
+        "away_team": "Fukuoka SoftBank Hawks",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  }
+}
