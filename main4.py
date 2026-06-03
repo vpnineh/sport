@@ -3875,12 +3875,38 @@ async def async_main():
         ml_pred      = None
         poisson_pred = None
 
+        logger.info("📊 [DATA] Gathering stats: %s vs %s [%s]",
+                    home, away, sport_key)
+
+        # ── TENNIS ────────────────────────────────────────────
         if sport_key == "tennis":
             is_wta = "wta" in sport.lower()
+
+            # 1. GitHub CSV stats (primary for tennis)
             ts = de.get_tennis_stats(home, away, is_wta)
             if ts:
                 ts["tour"] = "wta" if is_wta else "atp"
                 stats["historical_data"] = ts
+                dq = ts.get("data_quality_summary", {}).get("overall", "?")
+                logger.info("  ✅ GitHub tennis: Q=%s", dq)
+            else:
+                logger.info("  ⚠️ GitHub tennis: no data")
+
+            # 2. TSDB player lookup (ranking, nationality)
+            for p_name, p_key in [(home, "player_a"), (away, "player_b")]:
+                try:
+                    tp = tsdb.get_player_stats(p_name)
+                    if tp and tp.get("player_id"):
+                        if "historical_data" in stats:
+                            stats["historical_data"][p_key]["tsdb_nationality"] = \
+                                tp.get("nationality", "")
+                            stats["historical_data"][p_key]["tsdb_sport"] = \
+                                tp.get("sport", "")
+                        logger.debug("  ✅ TSDB player: %s", p_name)
+                except Exception as e:
+                    logger.debug("  [TSDB player] %s: %s", p_name, e)
+
+            # 3. ML prediction
             if ml.is_tennis_trained and ts:
                 sport_lower = sport.lower()
                 if any(k in sport_lower for k in ["wimbledon", "grass", "queens"]):
@@ -3893,41 +3919,277 @@ async def async_main():
                 ml_pred = ml.predict_tennis(home, away, ts, surf)
                 if ml_pred:
                     stats["ml_prediction"] = ml_pred
+                    logger.info("  ✅ ML tennis: %s",
+                                {k: f"{v*100:.1f}%" for k, v in ml_pred.items()
+                                 if isinstance(v, float)})
 
+        # ── FOOTBALL ──────────────────────────────────────────
         elif sport_key == "football":
-            fs = de.get_football_stats(home, away)
-            if fs:
-                stats["football_stats"] = fs
+
+            # 1. API-Football (primary — best stats)
+            if CFG.API_FOOTBALL_KEY:
+                try:
+                    h_apif = api_football.get_team_stats(home)
+                    a_apif = api_football.get_team_stats(away)
+                    h2h_apif = {}
+                    if h_apif and a_apif:
+                        h2h_apif = api_football.get_h2h(home, away)
+                    if h_apif or a_apif:
+                        stats["football_stats"] = {
+                            "home": h_apif or {},
+                            "away": a_apif or {},
+                            "h2h":  h2h_apif or {}
+                        }
+                        logger.info("  ✅ API-Football: H=%s A=%s H2H=%d",
+                                    h_apif.get("data_quality", "?") if h_apif else "none",
+                                    a_apif.get("data_quality", "?") if a_apif else "none",
+                                    h2h_apif.get("total", 0) if h2h_apif else 0)
+                        # Standings
+                        if h_apif and h_apif.get("league_id"):
+                            h_st = api_football.get_team_standing(
+                                home, h_apif["league_id"])
+                            if h_st:
+                                stats["football_stats"]["home"]["standing"] = h_st
+                        if a_apif and a_apif.get("league_id"):
+                            a_st = api_football.get_team_standing(
+                                away, a_apif["league_id"])
+                            if a_st:
+                                stats["football_stats"]["away"]["standing"] = a_st
+                except Exception as e:
+                    logger.warning("  [API-Football] %s", str(e)[:80])
+
+            # 2. Football-Data.org (if API-Football missing)
+            if not stats.get("football_stats") and CFG.FOOTBALL_DATA_ORG_KEY:
+                try:
+                    h_fdo = football_data_org.get_team_matches(home)
+                    a_fdo = football_data_org.get_team_matches(away)
+                    if h_fdo or a_fdo:
+                        stats["football_stats"] = {
+                            "home": h_fdo or {},
+                            "away": a_fdo or {},
+                            "h2h":  {}
+                        }
+                        logger.info("  ✅ Football-Data.org: H=%s A=%s",
+                                    h_fdo.get("data_quality","?") if h_fdo else "none",
+                                    a_fdo.get("data_quality","?") if a_fdo else "none")
+                except Exception as e:
+                    logger.debug("  [Football-Data.org] %s", str(e)[:60])
+
+            # 3. GitHub CSV (always — historical baseline + H2H)
+            try:
+                fs_github = de.get_football_stats(home, away)
+                if fs_github:
+                    if "football_stats" not in stats:
+                        stats["football_stats"] = fs_github
+                        logger.info("  ✅ GitHub football: H=%s A=%s",
+                                    fs_github.get("home",{}).get("data_quality","?"),
+                                    fs_github.get("away",{}).get("data_quality","?"))
+                    else:
+                        # Supplement: add GitHub data as extra field
+                        stats["football_stats"]["github"] = fs_github
+                        # Fill H2H if missing
+                        if not stats["football_stats"].get("h2h"):
+                            stats["football_stats"]["h2h"] = \
+                                fs_github.get("h2h", {})
+                        logger.info("  ✅ GitHub football: supplemented")
+            except Exception as e:
+                logger.debug("  [GitHub football] %s", str(e)[:60])
+
+            # 4. TSDB team form (quick enrich)
+            try:
+                h_tsdb = tsdb.get_team_stats(home)
+                a_tsdb = tsdb.get_team_stats(away)
+                if h_tsdb or a_tsdb:
+                    if "football_stats" not in stats:
+                        stats["football_stats"] = {
+                            "home": h_tsdb or {},
+                            "away": a_tsdb or {},
+                            "h2h":  {}
+                        }
+                    else:
+                        # Add TSDB form if not already present
+                        if h_tsdb and not stats["football_stats"]["home"].get("form"):
+                            stats["football_stats"]["home"]["tsdb_form"] = \
+                                h_tsdb.get("form", "")
+                            stats["football_stats"]["home"]["tsdb_win_rate"] = \
+                                h_tsdb.get("win_rate", 0)
+                        if a_tsdb and not stats["football_stats"]["away"].get("form"):
+                            stats["football_stats"]["away"]["tsdb_form"] = \
+                                a_tsdb.get("form", "")
+                            stats["football_stats"]["away"]["tsdb_win_rate"] = \
+                                a_tsdb.get("win_rate", 0)
+                    logger.info("  ✅ TSDB football: H=%s A=%s",
+                                h_tsdb.get("data_quality","?") if h_tsdb else "none",
+                                a_tsdb.get("data_quality","?") if a_tsdb else "none")
+            except Exception as e:
+                logger.debug("  [TSDB football] %s", str(e)[:60])
+
+            # 5. ML model
             if ml.is_football_trained:
-                ml_pred = ml.predict_football(home, away)
-                if ml_pred:
-                    stats["ml_prediction"] = ml_pred
-            poisson_pred = PoissonEngine.calculate(
-                home, away, de.football_data.get("all"))
-            if poisson_pred:
-                stats["poisson_prediction"] = poisson_pred
+                try:
+                    ml_pred = ml.predict_football(home, away)
+                    if ml_pred:
+                        stats["ml_prediction"] = ml_pred
+                        logger.info("  ✅ ML football: %s",
+                                    {k: f"{v*100:.1f}%" for k, v in ml_pred.items()
+                                     if isinstance(v, float)})
+                except Exception as e:
+                    logger.debug("  [ML football] %s", e)
 
-        elif sport_key in ["basketball", "baseball", "hockey"]:
-            hs  = de.get_us_sports_stats(sport, home)
-            aws = de.get_us_sports_stats(sport, away)
-            if hs or aws:
-                stats["us_sports"] = {"home": hs, "away": aws}
-            # BallDontLie ML for NBA
-            if "basketball" in sport.lower() and hs and aws:
-                h_wr = hs.get("win_rate", 0.5)
-                a_wr = aws.get("win_rate", 0.5)
-                total_wr = h_wr + a_wr
-                if total_wr > 0:
-                    home_prob = min(0.80, max(0.20,
-                                              (h_wr / total_wr) * 0.95 + 0.025))
-                    ml_pred = {
-                        f"{home}_win_prob": round(home_prob, 4),
-                        f"{away}_win_prob": round(1 - home_prob, 4)
+            # 6. Poisson
+            try:
+                poisson_pred = PoissonEngine.calculate(
+                    home, away, de.football_data.get("all"))
+                if poisson_pred:
+                    stats["poisson_prediction"] = poisson_pred
+                    logger.info("  ✅ Poisson: H=%.0f%% D=%.0f%% A=%.0f%%",
+                                poisson_pred.get("home_win_prob_poisson",0)*100,
+                                poisson_pred.get("draw_prob_poisson",0)*100,
+                                poisson_pred.get("away_win_prob_poisson",0)*100)
+            except Exception as e:
+                logger.debug("  [Poisson] %s", e)
+
+        # ── BASKETBALL ────────────────────────────────────────
+        elif sport_key == "basketball":
+
+            # 1. BallDontLie (NBA recent games)
+            try:
+                h_bdl = balldontlie.get_recent_games(home)
+                a_bdl = balldontlie.get_recent_games(away)
+                if h_bdl or a_bdl:
+                    h_avg = balldontlie.get_team_stats(home)
+                    a_avg = balldontlie.get_team_stats(away)
+                    stats["us_sports"] = {
+                        "home": {**(h_bdl or {}), **(h_avg or {})},
+                        "away": {**(a_bdl or {}), **(a_avg or {})}
                     }
-                    stats["ml_prediction"] = ml_pred
+                    logger.info("  ✅ BallDontLie: H=%s A=%s",
+                                h_bdl.get("data_quality","?") if h_bdl else "none",
+                                a_bdl.get("data_quality","?") if a_bdl else "none")
+            except Exception as e:
+                logger.debug("  [BallDontLie] %s", e)
 
+            # 2. Fallback: nba_api standings
+            if not stats.get("us_sports"):
+                try:
+                    hs  = de.get_us_sports_stats(sport, home)
+                    aws = de.get_us_sports_stats(sport, away)
+                    if hs or aws:
+                        stats["us_sports"] = {"home": hs, "away": aws}
+                        logger.info("  ✅ NBA standings fallback")
+                except Exception as e:
+                    logger.debug("  [NBA fallback] %s", e)
+
+            # 3. ML from win rates
+            us = stats.get("us_sports", {})
+            hs  = us.get("home", {})
+            aws = us.get("away", {})
+            h_wr = hs.get("win_rate", hs.get("win_pct", 0))
+            a_wr = aws.get("win_rate", aws.get("win_pct", 0))
+            if h_wr and a_wr:
+                total = h_wr + a_wr
+                home_prob = min(0.80, max(0.20, (h_wr / total) * 0.95 + 0.025))
+                ml_pred = {
+                    f"{home}_win_prob": round(home_prob, 4),
+                    f"{away}_win_prob": round(1 - home_prob, 4)
+                }
+                stats["ml_prediction"] = ml_pred
+                logger.info("  ✅ NBA ML: H=%.0f%% A=%.0f%%",
+                            home_prob*100, (1-home_prob)*100)
+
+        # ── BASEBALL ──────────────────────────────────────────
+        elif sport_key == "baseball":
+
+            # MLB official API
+            try:
+                hs  = de.get_us_sports_stats(sport, home)
+                aws = de.get_us_sports_stats(sport, away)
+                if hs or aws:
+                    stats["us_sports"] = {"home": hs, "away": aws}
+                    logger.info("  ✅ MLB: H=%s A=%s",
+                                hs.get("source","?") if hs else "none",
+                                aws.get("source","?") if aws else "none")
+            except Exception as e:
+                logger.debug("  [MLB] %s", e)
+
+            # TSDB as backup
+            if not stats.get("us_sports"):
+                try:
+                    h_ts = tsdb.get_team_stats(home)
+                    a_ts = tsdb.get_team_stats(away)
+                    if h_ts or a_ts:
+                        stats["us_sports"] = {
+                            "home": h_ts or {},
+                            "away": a_ts or {}
+                        }
+                        logger.info("  ✅ TSDB baseball fallback")
+                except Exception as e:
+                    logger.debug("  [TSDB baseball] %s", e)
+
+            # Simple ML from win rates
+            us = stats.get("us_sports", {})
+            h_wr = us.get("home", {}).get("win_pct",
+                   us.get("home", {}).get("win_rate", 0))
+            a_wr = us.get("away", {}).get("win_pct",
+                   us.get("away", {}).get("win_rate", 0))
+            if h_wr and a_wr:
+                total = h_wr + a_wr
+                home_prob = min(0.75, max(0.25, (h_wr / total) * 0.90 + 0.05))
+                ml_pred = {
+                    f"{home}_win_prob": round(home_prob, 4),
+                    f"{away}_win_prob": round(1 - home_prob, 4)
+                }
+                stats["ml_prediction"] = ml_pred
+                logger.info("  ✅ MLB ML: H=%.0f%% A=%.0f%%",
+                            home_prob*100, (1-home_prob)*100)
+
+        # ── HOCKEY ────────────────────────────────────────────
+        elif sport_key == "hockey":
+
+            try:
+                hs  = de.get_us_sports_stats(sport, home)
+                aws = de.get_us_sports_stats(sport, away)
+                if hs or aws:
+                    stats["us_sports"] = {"home": hs, "away": aws}
+                    logger.info("  ✅ NHL: H=%s A=%s",
+                                hs.get("source","?") if hs else "none",
+                                aws.get("source","?") if aws else "none")
+            except Exception as e:
+                logger.debug("  [NHL] %s", e)
+
+            # TSDB backup
+            if not stats.get("us_sports"):
+                try:
+                    h_ts = tsdb.get_team_stats(home)
+                    a_ts = tsdb.get_team_stats(away)
+                    if h_ts or a_ts:
+                        stats["us_sports"] = {
+                            "home": h_ts or {},
+                            "away": a_ts or {}
+                        }
+                        logger.info("  ✅ TSDB hockey fallback")
+                except Exception as e:
+                    logger.debug("  [TSDB hockey] %s", e)
+
+            # ML from win rates
+            us = stats.get("us_sports", {})
+            h_wr = us.get("home", {}).get("win_pct",
+                   us.get("home", {}).get("win_rate", 0))
+            a_wr = us.get("away", {}).get("win_pct",
+                   us.get("away", {}).get("win_rate", 0))
+            if h_wr and a_wr:
+                total = h_wr + a_wr
+                home_prob = min(0.75, max(0.25, (h_wr / total) * 0.90 + 0.05))
+                ml_pred = {
+                    f"{home}_win_prob": round(home_prob, 4),
+                    f"{away}_win_prob": round(1 - home_prob, 4)
+                }
+                stats["ml_prediction"] = ml_pred
+                logger.info("  ✅ NHL ML: H=%.0f%% A=%.0f%%",
+                            home_prob*100, (1-home_prob)*100)
+
+        # ── CRICKET / OTHER ───────────────────────────────────
         else:
-            # Other sports: try TSDB
             try:
                 h_ts = tsdb.get_team_stats(home)
                 a_ts = tsdb.get_team_stats(away)
@@ -3936,8 +4198,19 @@ async def async_main():
                         "home": h_ts or {},
                         "away": a_ts or {}
                     }
-            except Exception:
-                pass
+                    logger.info("  ✅ TSDB other sport")
+            except Exception as e:
+                logger.debug("  [TSDB other] %s", e)
+
+        # Log data summary
+        data_sources = []
+        if stats.get("historical_data"):   data_sources.append("GitHub-Tennis")
+        if stats.get("football_stats"):    data_sources.append("Football-Stats")
+        if stats.get("us_sports"):         data_sources.append("US-Sports")
+        if stats.get("tsdb_stats"):        data_sources.append("TSDB")
+        if ml_pred:                        data_sources.append("ML")
+        if poisson_pred:                   data_sources.append("Poisson")
+        logger.info("  📦 Data: [%s]", ", ".join(data_sources) if data_sources else "NONE")
 
         # ── Math score ─────────────────────────────────────────
         math_score = ConfidenceEngine.score(opp, stats, ml_pred, poisson_pred)
