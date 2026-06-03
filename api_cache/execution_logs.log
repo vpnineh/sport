@@ -7460,3 +7460,89 @@
 2026-06-03 19:14:51 | INFO     |    Skip → {'no_opp': 5, 'ev': 0, 'sent': 0, 'math': 0, 'ai': 3, 'conf': 0}
 2026-06-03 19:14:51 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
 2026-06-03 19:14:51 | INFO     | =================================================================
+2026-06-03 19:23:23 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-03 19:23:23 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-03 19:23:23 | INFO     | ✅ [BALLDONTLIE] NBA client ready
+2026-06-03 19:23:24 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-03 19:23:24 | INFO     | 🔑 [KEY] primary loaded
+2026-06-03 19:23:24 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-03 19:23:24 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-03 19:23:24 | INFO     | =================================================================
+2026-06-03 19:23:24 | INFO     |   ZBET90 ENGINE v9.0 | Multi-Source | API-Football+TSDB+GitHub
+2026-06-03 19:23:24 | INFO     | =================================================================
+2026-06-03 19:23:24 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-03 19:23:24 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-03 19:23:24 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-03 19:23:24 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-03 19:23:25 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-03 19:23:25 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-03 19:23:25 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-03 19:23:25 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-03 19:23:25 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-03 19:23:25 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-03 19:23:26 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-03 19:23:26 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-03 19:23:26 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-03 19:23:26 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-03 19:23:26 | INFO     | ✅ [RANKINGS] ATP
+2026-06-03 19:23:26 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-03 19:23:26 | INFO     | ✅ [RANKINGS] WTA
+2026-06-03 19:23:26 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-03 19:23:27 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-03 19:23:29 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-03 19:23:30 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-03 19:23:31 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-03 19:23:31 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-03 19:23:33 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-03 19:23:33 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-03 19:23:34 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-03 19:23:35 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-03 19:23:36 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-03 19:23:37 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-03 19:23:38 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-03 19:23:39 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-03 19:23:40 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-03 19:23:40 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-03 19:23:41 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-03 19:23:42 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-03 19:23:43 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-03 19:23:44 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-03 19:23:45 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-03 19:23:46 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-03 19:23:47 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-03 19:23:47 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-03 19:23:48 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-03 19:23:59 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read ti
+2026-06-03 19:23:59 | INFO     | ✅ [NHL] 32 teams
+2026-06-03 19:23:59 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-03 19:23:59 | INFO     | 🧠 [PHASE 2] Training ML models...
+2026-06-03 19:23:59 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-03 19:23:59 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-03 19:23:59 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-03 19:23:59 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-03 19:23:59 | INFO     | 💾 [ODDS CACHE] HIT 8 events
+2026-06-03 19:23:59 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-03 19:23:59 | INFO     | 📊 [DATA] Gathering stats: Seattle Mariners vs New York Mets [baseball]
+2026-06-03 19:23:59 | INFO     |   ✅ MLB: H=mlb_api A=mlb_api
+2026-06-03 19:23:59 | INFO     |   ✅ MLB ML: H=55% A=45%
+2026-06-03 19:23:59 | INFO     |   📦 Data: [US-Sports, ML]
+2026-06-03 19:24:01 | WARNING  | [AI] No data at all → cap 60
+2026-06-03 19:24:01 | INFO     | [AI] Seattle Mariners vs New York Mets | SKIP | AI:60 Math:46 Final:53 | groq
+2026-06-03 19:24:01 | INFO     | ⏭️ AI_SKIP: Seattle Mariners vs New York Mets Math:46 AI:60 Final:53
+2026-06-03 19:24:01 | INFO     | 📊 [DATA] Gathering stats: Philadelphia Phillies vs San Diego Padres [baseball]
+2026-06-03 19:24:01 | INFO     |   ✅ MLB: H=mlb_api A=mlb_api
+2026-06-03 19:24:01 | INFO     |   ✅ MLB ML: H=49% A=51%
+2026-06-03 19:24:01 | INFO     |   📦 Data: [US-Sports, ML]
+2026-06-03 19:24:05 | INFO     | [AI] Philadelphia Phillies vs San Diego Padres | SKIP | AI:58 Math:38 Final:48 | groq
+2026-06-03 19:24:05 | INFO     | ⏭️ AI_SKIP: Philadelphia Phillies vs San Diego Padres Math:38 AI:58 Final:48
+2026-06-03 19:24:05 | INFO     | 📊 [DATA] Gathering stats: Boston Red Sox vs Baltimore Orioles [baseball]
+2026-06-03 19:24:05 | INFO     |   ✅ MLB: H=mlb_api A=mlb_api
+2026-06-03 19:24:05 | INFO     |   ✅ MLB ML: H=47% A=53%
+2026-06-03 19:24:05 | INFO     |   📦 Data: [US-Sports, ML]
+2026-06-03 19:24:34 | INFO     | [AI] Boston Red Sox vs Baltimore Orioles | SKIP | AI:58 Math:35 Final:46 | groq
+2026-06-03 19:24:34 | INFO     | ⏭️ AI_SKIP: Boston Red Sox vs Baltimore Orioles Math:35 AI:58 Final:46
+2026-06-03 19:24:34 | INFO     | =================================================================
+2026-06-03 19:24:34 | INFO     | 📊 Events:8  Analyzed:3  Sent:0
+2026-06-03 19:24:34 | INFO     |    Skip → {'no_opp': 5, 'ev': 0, 'sent': 0, 'math': 0, 'ai': 3, 'conf': 0}
+2026-06-03 19:24:34 | INFO     | 📊 ✅ primary(0calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-03 19:24:34 | INFO     | =================================================================
