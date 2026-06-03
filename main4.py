@@ -1740,7 +1740,6 @@ class EVEngine:
         if abs(total - 1.) < 0.001:
             return implied
 
-        # Power method
         def f(k):
             return sum(p ** k for p in implied) - 1.
 
@@ -1805,7 +1804,6 @@ def calculate_ev(markets_data: dict) -> list:
         if not best_mkt:
             continue
 
-        # Use sharp prices if available, else soft
         ref_prices = {k: max(p) for k, p in sharp_prices.items() if p}
         has_sharp = bool(ref_prices)
         if not ref_prices:
@@ -1829,11 +1827,12 @@ def calculate_ev(markets_data: dict) -> list:
                 raise ValueError()
             tp = dict(zip(comp_keys, tp_list))
         except Exception:
-            tp = {comp_keys[i]: (1 / odds_list[i]) / max(impl_sum, 1e-10)
-                  for i in range(len(comp_keys))}
+            tp = {
+                comp_keys[i]: (1 / odds_list[i]) / max(impl_sum, 1e-10)
+                for i in range(len(comp_keys))
+            }
 
         min_odds = CFG.H2H_MIN_ODDS if mk == "h2h" else CFG.TOTALS_MIN_ODDS
-        # Sharp lines get relaxed EV threshold
         sharp_mult = 0.75 if has_sharp else 1.0
         min_ev = (CFG.H2H_MIN_EV if mk == "h2h" else CFG.TOTALS_MIN_EV) * sharp_mult
 
@@ -1845,12 +1844,33 @@ def calculate_ev(markets_data: dict) -> list:
             bp, bbm, disp_name = best_mkt.get(ck, (0, "?", "?"))
             if bp <= 1.:
                 continue
+
             ev = true_p * bp - 1.
-            if ev < min_ev or ev > CFG.MAX_REALISTIC_EV or bp < min_odds:
+
+            # Sanity check — EV > 20% almost always means bad/thin market data
+            if ev > 0.20:
+                logger.warning(
+                    "[EV] Suspicious EV=%.1f%% for %s (odds=%.2f prob=%.3f bk_count=%d) — skip",
+                    ev * 100, disp_name, bp, true_p,
+                    len(soft_prices.get(ck, []) + sharp_prices.get(ck, []))
+                )
                 continue
+
+            if ev < min_ev or bp < min_odds:
+                continue
+
             kelly_p = EVEngine.kelly(true_p, bp)
             sp = ref_prices.get(ck, bp)
             clv = (bp / sp - 1) * 100 if sp > 0 else 0.
+            bk_count = len(soft_prices.get(ck, []) + sharp_prices.get(ck, []))
+
+            # Thin market penalty — fewer than 3 books = unreliable
+            if bk_count < 3 and not has_sharp:
+                logger.debug(
+                    "[EV] Thin market %s: only %d books — skip",
+                    disp_name, bk_count
+                )
+                continue
 
             opp = {
                 "pick": disp_name,
@@ -1865,9 +1885,7 @@ def calculate_ev(markets_data: dict) -> list:
                 "clv_pct": round(clv, 2),
                 "has_sharp_line": has_sharp,
                 "steam_pct": None,
-                "bookmaker_count": len(
-                    soft_prices.get(ck, []) + sharp_prices.get(ck, [])
-                )
+                "bookmaker_count": bk_count
             }
             if best_opp is None or opp["ev"] > best_opp["ev"]:
                 best_opp = opp
@@ -1886,25 +1904,31 @@ class ConfidenceEngine:
     def score(cls, opp: dict, stats: dict,
                ml_pred: Optional[dict] = None,
                poisson_pred: Optional[dict] = None) -> int:
-        s = 45  # base
+        s = 42  # base
 
         ev = opp.get("ev", 0) * 100
 
-        # EV contribution
-        if ev > 5:
-            s += 18
-        elif ev > 3:
-            s += 12
-        elif ev > 2:
-            s += 8
-        elif ev > 1:
-            s += 4
-        else:
-            s -= 5
+        # Hard cap on suspicious EV
+        if ev > 20:
+            return 20
 
-        # Sharp line
+        # EV tiers
+        if ev > 8:
+            s += 16
+        elif ev > 5:
+            s += 13
+        elif ev > 3:
+            s += 9
+        elif ev > 2:
+            s += 6
+        elif ev > 1:
+            s += 3
+        else:
+            s -= 8
+
+        # Sharp line — strongest signal
         if opp.get("has_sharp_line"):
-            s += 12
+            s += 14
 
         # CLV
         clv = opp.get("clv_pct", 0)
@@ -1919,16 +1943,22 @@ class ConfidenceEngine:
             s += 6
         elif kelly > 1:
             s += 3
+        elif kelly < 0.5:
+            s -= 4
 
         # Book count
         bk_count = opp.get("bookmaker_count", 1)
-        if bk_count >= 6:
+        if bk_count >= 8:
+            s += 7
+        elif bk_count >= 5:
             s += 4
         elif bk_count >= 3:
-            s += 2
+            s += 1
+        else:
+            s -= 6  # very thin market
 
-        # Data quality
-        dq = "poor"
+        # ── Historical data quality (GitHub) ─────────────────
+        dq = "none"
         if stats.get("historical_data"):
             dq = stats["historical_data"].get(
                 "data_quality_summary", {}
@@ -1940,34 +1970,84 @@ class ConfidenceEngine:
                 dq = "good"
             elif hq != "poor" or aq != "poor":
                 dq = "limited"
+            else:
+                dq = "poor"
 
         if dq == "good":
-            s += 8
+            s += 10
         elif dq == "limited":
+            s += 5
+        elif dq == "poor":
+            s -= 3
+        elif dq == "none":
+            s -= 9
+
+        # ── TSDB live data ────────────────────────────────────
+        tsdb_stats = stats.get("tsdb_stats", {})
+        h_tsdb = tsdb_stats.get("home", {})
+        a_tsdb = tsdb_stats.get("away", {})
+        h_tsdb_q = h_tsdb.get("data_quality", "none")
+        a_tsdb_q = a_tsdb.get("data_quality", "none")
+
+        if h_tsdb_q == "good" and a_tsdb_q == "good":
+            s += 9
+        elif h_tsdb_q in ("good", "limited") and a_tsdb_q in ("good", "limited"):
+            s += 5
+        elif h_tsdb_q in ("good", "limited") or a_tsdb_q in ("good", "limited"):
             s += 2
-        else:
-            s -= 5
 
-        # ML model
+        # Form alignment check
+        h_wr = h_tsdb.get("win_rate", 0)
+        a_wr = a_tsdb.get("win_rate", 0)
+        h_name = h_tsdb.get("team_name", "")
+        if h_wr and a_wr and abs(h_wr - a_wr) > 0.20 and h_name:
+            pick_lower = opp.get("pick", "").lower()
+            pick_favors_home = any(
+                w in pick_lower
+                for w in h_name.lower().split()
+                if len(w) > 3
+            )
+            stronger_is_home = h_wr > a_wr
+            if pick_favors_home == stronger_is_home:
+                s += 5   # pick aligned with better form team
+            else:
+                s -= 4   # pick against form
+
+        # ── ML model ─────────────────────────────────────────
         if ml_pred:
-            mx = max((v for v in ml_pred.values()
-                      if isinstance(v, (float, int)) and 0 < v <= 1), default=0)
-            if mx > 0.65:
-                s += 9
+            mx = max(
+                (v for v in ml_pred.values()
+                 if isinstance(v, (float, int)) and 0 < v <= 1),
+                default=0
+            )
+            if mx > 0.68:
+                s += 11
+            elif mx > 0.62:
+                s += 7
             elif mx > 0.55:
-                s += 5
+                s += 3
 
-        # Poisson
+        # ── Poisson ───────────────────────────────────────────
         if poisson_pred:
-            s += 6
+            s += 5
+            if ml_pred:
+                s += 3  # consensus bonus
 
-        # Steam
+        # ── US sports: standings-only penalty ─────────────────
+        us = stats.get("us_sports", {})
+        h_src = us.get("home", {}).get("source", "")
+        if h_src in ["mlb_api", "nhl_api"] and dq == "none":
+            s -= 7
+
+        # ── Steam / line movement ─────────────────────────────
         steam = opp.get("steam_pct")
         if steam is not None:
-            if steam >= 2.0:
-                s += 8
+            if steam >= 3.0:
+                s += 9
+            elif steam >= 1.5:
+                s += 5
             elif steam <= -5:
-                s -= 6
+                s -= 8
 
         return int(np.clip(s, 0, 100))
 
@@ -2166,70 +2246,152 @@ def make_ai_decision(home: str, away: str, sport: str, sport_key: str,
             "logic": f"Math score {math_score} < threshold {CFG.MIN_MATH_SCORE_TO_CALL_AI}"
         }
 
-    # Build compact prompt
+    # ── Build structured prompt ────────────────────────────
     lines = [
-        f"MATCH: {home} vs {away} | SPORT: {sport}",
-        f"PICK: {opp['pick']} | MARKET: {opp['market_label']} | ODDS: {opp['odds']}",
-        f"TRUE_PROB: {opp['prob']*100:.1f}% | EV: {opp['edge_pct']:+.2f}% | "
-        f"KELLY: {opp.get('kelly_pct',0):.1f}% | SHARP: {opp.get('has_sharp_line',False)} | "
-        f"CLV: {opp.get('clv_pct',0):+.1f}% | BOOKS: {opp.get('bookmaker_count',1)} | "
-        f"MATH_SCORE: {math_score}/100",
+        f"MATCH: {home} vs {away}",
+        f"SPORT: {sport} | MARKET: {opp['market_label']}",
+        f"PICK: {opp['pick']} @ {opp['odds']}",
+        f"",
+        f"MARKET DATA:",
+        f"  True Prob: {opp['prob']*100:.1f}%",
+        f"  EV: {opp['edge_pct']:+.2f}%",
+        f"  Kelly: {opp.get('kelly_pct',0):.1f}%",
+        f"  Sharp Line: {opp.get('has_sharp_line', False)}",
+        f"  CLV: {opp.get('clv_pct',0):+.1f}%",
+        f"  Books: {opp.get('bookmaker_count',1)}",
+        f"  Steam: {opp.get('steam_pct','first_obs')}",
+        f"  Math Score: {math_score}/100",
     ]
 
+    # Tennis stats
     if stats.get("historical_data"):
         pa = stats["historical_data"].get("player_a", {})
         pb = stats["historical_data"].get("player_b", {})
         h2h = stats["historical_data"].get("h2h", {})
         dq = stats["historical_data"].get("data_quality_summary", {})
         lines += [
-            f"\nTENNIS:",
-            f"  {home}: Rank={pa.get('current_ranking','?')} WR={pa.get('recent_win_rate',0)*100:.1f}% "
-            f"Form={pa.get('recent_form','?')} Q={pa.get('data_quality','?')}",
-            f"  {away}: Rank={pb.get('current_ranking','?')} WR={pb.get('recent_win_rate',0)*100:.1f}% "
-            f"Form={pb.get('recent_form','?')} Q={pb.get('data_quality','?')}",
-            f"  H2H: {h2h.get('total',0)} matches | {h2h.get('dominance','balanced')} | "
-            f"Overall: {dq.get('overall','?')}",
+            f"",
+            f"TENNIS DATA (quality={dq.get('overall','?')}):",
+            f"  {home}:",
+            f"    Ranking: #{pa.get('current_ranking','?')}",
+            f"    Win Rate (recent): {pa.get('recent_win_rate',0)*100:.1f}%",
+            f"    Form (last 10): {pa.get('recent_form','N/A')}",
+            f"    Total Matches: {pa.get('total_matches',0)}",
+            f"    Aces/Match: {pa.get('aces_per_match','?')}",
+            f"    1st Serve In: {pa.get('first_serve_in_pct',0)*100:.1f}%",
+            f"    BP Saved: {pa.get('bp_saved_pct',0)*100:.1f}%",
+            f"  {away}:",
+            f"    Ranking: #{pb.get('current_ranking','?')}",
+            f"    Win Rate (recent): {pb.get('recent_win_rate',0)*100:.1f}%",
+            f"    Form (last 10): {pb.get('recent_form','N/A')}",
+            f"    Total Matches: {pb.get('total_matches',0)}",
+            f"    Aces/Match: {pb.get('aces_per_match','?')}",
+            f"    1st Serve In: {pb.get('first_serve_in_pct',0)*100:.1f}%",
+            f"    BP Saved: {pb.get('bp_saved_pct',0)*100:.1f}%",
+            f"  H2H: {h2h.get('total',0)} matches | {h2h.get('dominance','balanced')}",
+            f"    {home} wins: {h2h.get(home+'_wins', h2h.get('home_wins',0))}",
+            f"    {away} wins: {h2h.get(away+'_wins', h2h.get('away_wins',0))}",
         ]
+        if h2h.get("by_surface"):
+            lines.append(f"  H2H by surface: {json.dumps(h2h['by_surface'])}")
 
+    # Football stats
     if stats.get("football_stats"):
         hm = stats["football_stats"].get("home", {})
         aw = stats["football_stats"].get("away", {})
+        h2h = stats["football_stats"].get("h2h", {})
         lines += [
-            f"\nFOOTBALL:",
-            f"  {home}(H): Form={hm.get('github_form',hm.get('form','?'))} "
-            f"GS={hm.get('github_avg_scored',hm.get('avg_scored',0)):.2f} "
-            f"GC={hm.get('github_avg_conceded',hm.get('avg_conceded',0)):.2f} "
-            f"Q={hm.get('data_quality','?')}",
-            f"  {away}(A): Form={aw.get('github_form',aw.get('form','?'))} "
-            f"GS={aw.get('github_avg_scored',aw.get('avg_scored',0)):.2f} "
-            f"GC={aw.get('github_avg_conceded',aw.get('avg_conceded',0)):.2f} "
-            f"Q={aw.get('data_quality','?')}",
+            f"",
+            f"FOOTBALL DATA:",
+            f"  {home} (Home):",
+            f"    Form: {hm.get('github_form', hm.get('form','N/A'))}",
+            f"    Goals Scored/Game: {hm.get('github_avg_scored', hm.get('avg_scored',0)):.2f}",
+            f"    Goals Conceded/Game: {hm.get('github_avg_conceded', hm.get('avg_conceded',0)):.2f}",
+            f"    Win Rate: {hm.get('github_win_rate', hm.get('win_rate',0))*100:.1f}%",
+            f"    Over 2.5 Rate: {hm.get('github_over25_rate', hm.get('over25_rate',0))*100:.1f}%",
+            f"    Data Quality: {hm.get('data_quality','?')}",
+            f"    Matches Analyzed: {hm.get('github_matches', hm.get('matches_analyzed',0))}",
+            f"  {away} (Away):",
+            f"    Form: {aw.get('github_form', aw.get('form','N/A'))}",
+            f"    Goals Scored/Game: {aw.get('github_avg_scored', aw.get('avg_scored',0)):.2f}",
+            f"    Goals Conceded/Game: {aw.get('github_avg_conceded', aw.get('avg_conceded',0)):.2f}",
+            f"    Win Rate: {aw.get('github_win_rate', aw.get('win_rate',0))*100:.1f}%",
+            f"    Over 2.5 Rate: {aw.get('github_over25_rate', aw.get('over25_rate',0))*100:.1f}%",
+            f"    Data Quality: {aw.get('data_quality','?')}",
+            f"    Matches Analyzed: {aw.get('github_matches', aw.get('matches_analyzed',0))}",
+        ]
+        if h2h:
+            lines += [
+                f"  H2H ({h2h.get('total_matches',0)} matches):",
+                f"    Avg Goals: {h2h.get('avg_goals',0):.2f}",
+                f"    Over 2.5 Rate: {h2h.get('over25_rate',0)*100:.1f}%",
+                f"    BTTS Rate: {h2h.get('btts_rate',0)*100:.1f}%",
+            ]
+    # Poisson
+    if poisson_pred:
+        lines += [
+            f"",
+            f"POISSON MODEL:",
+            f"  Home xG: {poisson_pred.get('home_xg','?')}",
+            f"  Away xG: {poisson_pred.get('away_xg','?')}",
+            f"  Home Win: {poisson_pred.get('home_win_prob_poisson',0)*100:.1f}%",
+            f"  Draw: {poisson_pred.get('draw_prob_poisson',0)*100:.1f}%",
+            f"  Away Win: {poisson_pred.get('away_win_prob_poisson',0)*100:.1f}%",
         ]
 
+    # ML model
     if ml_pred:
-        lines.append(f"\nML: {json.dumps(ml_pred)}")
+        lines += [f"", f"ML MODEL:"]
+        for k, v in ml_pred.items():
+            if isinstance(v, float):
+                lines.append(f"  {k}: {v*100:.1f}%")
 
-    if poisson_pred:
-        lines.append(
-            f"\nPOISSON: xG {poisson_pred.get('home_xg')} vs {poisson_pred.get('away_xg')} | "
-            f"H:{poisson_pred.get('home_win_prob_poisson',0)*100:.1f}% "
-            f"D:{poisson_pred.get('draw_prob_poisson',0)*100:.1f}% "
-            f"A:{poisson_pred.get('away_win_prob_poisson',0)*100:.1f}%"
-        )
+    # TSDB live stats
+    if stats.get("tsdb_stats"):
+        h_ts = stats["tsdb_stats"].get("home", {})
+        a_ts = stats["tsdb_stats"].get("away", {})
+        if h_ts or a_ts:
+            lines += [f"", f"LIVE TEAM DATA (TheSportsDB):"]
+            if h_ts:
+                lines += [
+                    f"  {home}:",
+                    f"    League: {h_ts.get('league','?')}",
+                    f"    Form: {h_ts.get('form','?')}",
+                    f"    Win Rate: {h_ts.get('win_rate',0)*100:.1f}%",
+                    f"    Avg Scored: {h_ts.get('avg_scored',0):.2f}",
+                    f"    Avg Conceded: {h_ts.get('avg_conceded',0):.2f}",
+                    f"    Matches: {h_ts.get('matches_analyzed',0)}",
+                ]
+            if a_ts:
+                lines += [
+                    f"  {away}:",
+                    f"    League: {a_ts.get('league','?')}",
+                    f"    Form: {a_ts.get('form','?')}",
+                    f"    Win Rate: {a_ts.get('win_rate',0)*100:.1f}%",
+                    f"    Avg Scored: {a_ts.get('avg_scored',0):.2f}",
+                    f"    Avg Conceded: {a_ts.get('avg_conceded',0):.2f}",
+                    f"    Matches: {a_ts.get('matches_analyzed',0)}",
+                ]
 
+    # US Sports
     if stats.get("us_sports"):
-        lines.append(f"\nUS_SPORTS: {json.dumps(stats['us_sports'])}")
+        us = stats["us_sports"]
+        lines += [
+            f"",
+            f"US SPORTS DATA:",
+            f"  {home}: {json.dumps(us.get('home',{}))}",
+            f"  {away}: {json.dumps(us.get('away',{}))}",
+        ]
 
     prompt = "\n".join(lines)
     ai_data = ai_manager.generate(prompt)
 
     if not ai_data or not isinstance(ai_data, dict):
-        # Math-only fallback
-        fb_decision = "BET" if math_score >= 55 else "SKIP"
+        fb_decision = "BET" if math_score >= 58 else "SKIP"
         return {
             **default,
             "decision": fb_decision,
-            "logic": "AI unavailable — math decision."
+            "logic": "AI unavailable — math fallback."
         }
 
     decision = str(ai_data.get("decision", "SKIP")).upper().strip()
@@ -2241,8 +2403,8 @@ def make_ai_decision(home: str, away: str, sport: str, sport_key: str,
     except Exception:
         ai_conf = math_score
 
-    # Data quality cap
-    dq_overall = "unknown"
+    # ── Data quality caps ──────────────────────────────────
+    dq_overall = "none"
     if stats.get("historical_data"):
         dq_overall = stats["historical_data"].get(
             "data_quality_summary", {}
@@ -2257,17 +2419,31 @@ def make_ai_decision(home: str, away: str, sport: str, sport_key: str,
         else:
             dq_overall = "poor"
 
-    if dq_overall == "poor" and ai_conf > 65:
-        ai_conf = 65
-    elif dq_overall == "limited" and ai_conf > 73:
-        ai_conf = 73
+    # TSDB can upgrade dq if GitHub has none
+    if dq_overall == "none":
+        h_tsdb_q = stats.get("tsdb_stats", {}).get("home", {}).get("data_quality", "none")
+        a_tsdb_q = stats.get("tsdb_stats", {}).get("away", {}).get("data_quality", "none")
+        if h_tsdb_q == "good" and a_tsdb_q == "good":
+            dq_overall = "limited"  # TSDB alone = limited
+        elif h_tsdb_q in ("good", "limited") or a_tsdb_q in ("good", "limited"):
+            dq_overall = "poor"
 
-    # Groq calibration adjustment
+    if dq_overall == "none" and ai_conf > 60:
+        ai_conf = 60
+        logger.warning("[AI] No data at all → cap 60")
+    elif dq_overall == "poor" and ai_conf > 65:
+        ai_conf = 65
+        logger.warning("[AI] Poor data → cap 65")
+    elif dq_overall == "limited" and ai_conf > 74:
+        ai_conf = 74
+        logger.warning("[AI] Limited data → cap 74")
+
+    # Groq calibration
     if (ai_manager._last_provider == "groq" and
             ai_conf >= 70 and opp.get("ev", 0) * 100 < 2.5):
         ai_conf = min(ai_conf - 7, 68)
 
-    # Blend AI + Math
+    # ── Blend AI + Math 50/50 ──────────────────────────────
     hybrid = ai_conf * CFG.AI_WEIGHT + math_score * CFG.MATH_WEIGHT
     ai_delta = hybrid - math_score
     if ai_delta > CFG.MAX_AI_BOOST:
@@ -2279,7 +2455,7 @@ def make_ai_decision(home: str, away: str, sport: str, sport_key: str,
     # Consistency check
     if decision == "BET" and ai_conf < 50:
         decision = "SKIP"
-        logger.warning("[AI] BET with conf=%d — forcing SKIP", ai_conf)
+        logger.warning("[AI] BET conf=%d too low → SKIP", ai_conf)
 
     # Sharp line override
     if (decision == "SKIP" and
@@ -2367,70 +2543,162 @@ def build_message(home, away, sport, sport_key, opp, ai_data, stats,
     ae = html_lib.escape(away)
 
     sport_labels = {
-        "tennis": "🎾 تنیس", "football": "⚽ فوتبال",
-        "basketball": "🏀 بسکتبال", "baseball": "⚾ بیسبال",
-        "hockey": "🏒 هاکی روی یخ", "cricket": "🏏 کریکت"
+        "tennis": "Tennis 🎾",
+        "football": "Football ⚽",
+        "basketball": "Basketball 🏀",
+        "baseball": "Baseball ⚾",
+        "hockey": "Ice Hockey 🏒",
+        "cricket": "Cricket 🏏"
     }
-    sport_fa = sport_labels.get(sport_key, f"🏆 {sport}")
+    sport_en = sport_labels.get(sport_key, f"{sport} 🏆")
 
     public_pick = translate_pick(opp["pick"], opp["market"], home, away)
     pick_escaped = html_lib.escape(public_pick)
-    conf_label = get_confidence_label(fc)
 
-    risk_labels = {"Low": "پایین 🟢", "Medium": "متوسط 🟠", "High": "بالا 🔴"}
-    risk_fa = risk_labels.get(ai_data["risk_level"], "متوسط 🟠")
+    if fc >= 78:
+        conf_label = "Very Strong 🔥🔥"
+    elif fc >= 70:
+        conf_label = "Strong 🔥"
+    elif fc >= 63:
+        conf_label = "Good ✅"
+    else:
+        conf_label = "Standard ⚡"
+
+    risk_labels = {"Low": "Low 🟢", "Medium": "Medium 🟠", "High": "High 🔴"}
+    risk_en = risk_labels.get(ai_data["risk_level"], "Medium 🟠")
 
     countdown = get_countdown_str(commence_time, now_utc)
-
-    badges = []
-    if stats.get("historical_data"):
-        badges.append("📚 آمار تاریخی")
-    if stats.get("football_stats"):
-        badges.append("⚽ آمار بازی")
-    if ml_pred:
-        badges.append("🤖 ML")
-    if poisson_pred:
-        badges.append("📐 Poisson")
-    if opp.get("has_sharp_line"):
-        badges.append("🔪 Sharp")
-    sources = " | ".join(badges) if badges else "بازار عمومی"
-
-    logic = html_lib.escape(str(ai_data.get("logic", ""))[:400])
-    kf = ai_data.get("key_factors", [])
-    kf_section = ""
-    if kf:
-        kf_section = "\n\n📌 <b>دلایل:</b>\n"
-        kf_section += "".join(f"  • {html_lib.escape(str(f)[:100])}\n" for f in kf[:3])
-
-    rf = ai_data.get("red_flags", [])
-    rf_section = ""
-    if rf:
-        rf_section = (f"\n⚠️ <b>نکته:</b> <i>"
-                      + " | ".join(html_lib.escape(str(f)[:80]) for f in rf)
-                      + "</i>")
-
     sharp_badge = "🔪 " if opp.get("has_sharp_line") else ""
     conf_icon = "🔥🔥" if fc >= 78 else ("🔥" if fc >= 70 else "✅")
 
-    return (
-        f"{ai_data.get('sport_emoji', '🏆')} <b>{sport_fa}</b>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"⚔️ <b>{he}</b>  vs  <b>{ae}</b>\n"
-        f"⏰ <b>شروع:</b> {countdown} دیگه\n\n"
-        f"🎯 <b>پیش‌بینی:</b>\n"
-        f"<code>{sharp_badge}{pick_escaped}</code>\n\n"
-        f"💰 <b>اندازه شرط:</b> {opp.get('kelly_pct',0):.1f}% از سرمایه\n"
-        f"📈 <b>مزیت بازار:</b> {opp['edge_pct']:.1f}%\n\n"
-        f"{conf_icon} <b>قدرت سیگنال:</b> {conf_label} ({fc}%)\n"
-        f"⚖️ <b>ریسک:</b> {risk_fa}\n\n"
-        f"🔬 <b>تحلیل:</b>\n"
-        f"<blockquote>{logic}</blockquote>"
-        f"{kf_section}{rf_section}\n\n"
-        f"📋 <b>منابع:</b> {sources}\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"🔍 <i>{html_lib.escape(CFG.TELEGRAM_ID)} | v9.0</i>"
-    )
+    # Sources
+    badges = []
+    if stats.get("historical_data"):
+        badges.append("Historical Data")
+    if stats.get("football_stats"):
+        badges.append("Match Stats")
+    if stats.get("tsdb_stats"):
+        tsdb_h_q = stats["tsdb_stats"].get("home", {}).get("data_quality", "none")
+        tsdb_a_q = stats["tsdb_stats"].get("away", {}).get("data_quality", "none")
+        if tsdb_h_q != "none" or tsdb_a_q != "none":
+            badges.append("Live TSDB")
+    if ml_pred:
+        badges.append("ML Model")
+    if poisson_pred:
+        badges.append("Poisson")
+    if opp.get("has_sharp_line"):
+        badges.append("Sharp Line")
+    sources = " · ".join(badges) if badges else "Market Only"
 
+    logic = html_lib.escape(str(ai_data.get("logic", ""))[:400])
+
+    # Key factors
+    kf = ai_data.get("key_factors", [])
+    kf_section = ""
+    if kf:
+        kf_section = "\n<b>Key Factors:</b>\n"
+        kf_section += "".join(
+            f"  • {html_lib.escape(str(f)[:100])}\n" for f in kf[:3]
+        )
+
+    # Red flags
+    rf = ai_data.get("red_flags", [])
+    rf_section = ""
+    if rf:
+        rf_section = "\n⚠️ <b>Note:</b> " + " | ".join(
+            html_lib.escape(str(f)[:80]) for f in rf
+        ) + "\n"
+
+    # Stat block
+    stat_lines = ""
+
+    if stats.get("football_stats"):
+        hm = stats["football_stats"].get("home", {})
+        aw = stats["football_stats"].get("away", {})
+        h_form = hm.get("github_form", hm.get("form", "N/A"))
+        a_form = aw.get("github_form", aw.get("form", "N/A"))
+        h_gs   = hm.get("github_avg_scored", hm.get("avg_scored", 0))
+        h_gc   = hm.get("github_avg_conceded", hm.get("avg_conceded", 0))
+        a_gs   = aw.get("github_avg_scored", aw.get("avg_scored", 0))
+        a_gc   = aw.get("github_avg_conceded", aw.get("avg_conceded", 0))
+        stat_lines += (
+            f"\n<b>Recent Form (last 10):</b>\n"
+            f"  {he}: {h_form}  GS {h_gs:.1f}  GC {h_gc:.1f}\n"
+            f"  {ae}: {a_form}  GS {a_gs:.1f}  GC {a_gc:.1f}\n"
+        )
+        if poisson_pred:
+            stat_lines += (
+                f"  xG: {poisson_pred.get('home_xg','?')} — {poisson_pred.get('away_xg','?')}"
+                f"  H {poisson_pred.get('home_win_prob_poisson',0)*100:.0f}%"
+                f"  D {poisson_pred.get('draw_prob_poisson',0)*100:.0f}%"
+                f"  A {poisson_pred.get('away_win_prob_poisson',0)*100:.0f}%\n"
+            )
+
+    if stats.get("historical_data"):
+        pa  = stats["historical_data"].get("player_a", {})
+        pb  = stats["historical_data"].get("player_b", {})
+        h2h = stats["historical_data"].get("h2h", {})
+        stat_lines += (
+            f"\n<b>Player Stats:</b>\n"
+            f"  {he}: #{pa.get('current_ranking','?')}  "
+            f"WR {pa.get('recent_win_rate',0)*100:.0f}%  "
+            f"Form {pa.get('recent_form','?')[:6]}\n"
+            f"  {ae}: #{pb.get('current_ranking','?')}  "
+            f"WR {pb.get('recent_win_rate',0)*100:.0f}%  "
+            f"Form {pb.get('recent_form','?')[:6]}\n"
+        )
+        if h2h.get("total", 0) > 0:
+            stat_lines += (
+                f"  H2H: {h2h.get('total',0)} matches  "
+                f"{h2h.get('dominance','balanced')}\n"
+            )
+
+    if ml_pred:
+        ml_parts = [
+            f"{k.replace('_win_prob','').replace('_',' ').title()} {v*100:.0f}%"
+            for k, v in ml_pred.items()
+            if isinstance(v, float) and "prob" in k
+        ]
+        if ml_parts:
+            stat_lines += f"  ML: {' | '.join(ml_parts)}\n"
+
+    if stats.get("tsdb_stats"):
+        h_ts = stats["tsdb_stats"].get("home", {})
+        a_ts = stats["tsdb_stats"].get("away", {})
+        h_q  = h_ts.get("data_quality", "none")
+        a_q  = a_ts.get("data_quality", "none")
+        if h_q != "none" or a_q != "none":
+            stat_lines += f"\n<b>Live Form (TSDB):</b>\n"
+            if h_q != "none":
+                stat_lines += (
+                    f"  {he}: {h_ts.get('form','?')}  "
+                    f"WR {h_ts.get('win_rate',0)*100:.0f}%  "
+                    f"GS {h_ts.get('avg_scored',0):.1f}\n"
+                )
+            if a_q != "none":
+                stat_lines += (
+                    f"  {ae}: {a_ts.get('form','?')}  "
+                    f"WR {a_ts.get('win_rate',0)*100:.0f}%  "
+                    f"GS {a_ts.get('avg_scored',0):.1f}\n"
+                )
+
+    return (
+        f"{ai_data.get('sport_emoji','🏆')} <b>{sport_en}</b>\n\n"
+        f"<b>{he}</b> vs <b>{ae}</b>\n"
+        f"Starts in: <b>{countdown}</b>\n\n"
+        f"🎯 <b>Pick:</b> <code>{sharp_badge}{pick_escaped}</code>\n\n"
+        f"Stake: <b>{opp.get('kelly_pct',0):.1f}%</b> of bankroll\n"
+        f"Edge: <b>{opp['edge_pct']:.1f}%</b>   Odds: <b>{opp['odds']:.2f}</b>\n\n"
+        f"{conf_icon} Signal: <b>{conf_label}</b> ({fc}%)\n"
+        f"Risk: <b>{risk_en}</b>\n\n"
+        f"💡 <b>Analysis:</b>\n"
+        f"<i>{logic}</i>\n"
+        f"{kf_section}"
+        f"{rf_section}"
+        f"{stat_lines}\n"
+        f"Sources: {sources}\n"
+        f"<i>{html_lib.escape(CFG.TELEGRAM_ID)} | v9.0</i>"
+    )
 
 # =========================================================
 # 18. ODDS FETCHER
@@ -2606,7 +2874,7 @@ async def async_main():
     logger.info("=" * 65)
 
     sent = SentHistory()
-    now = datetime.now(timezone.utc)
+    now  = datetime.now(timezone.utc)
 
     logger.info("📥 [PHASE 1] Loading data sources...")
     de = FreeDataEngine()
@@ -2639,9 +2907,9 @@ async def async_main():
     }
 
     for event in events:
-        home = clean_team_name(event.get("home_team", ""))
-        away = clean_team_name(event.get("away_team", ""))
-        sport = event.get("sport_title", "Unknown")
+        home      = clean_team_name(event.get("home_team", ""))
+        away      = clean_team_name(event.get("away_team", ""))
+        sport     = event.get("sport_title", "Unknown")
         sport_key = normalize_sport_key(sport)
         if not home or not away:
             continue
@@ -2668,11 +2936,29 @@ async def async_main():
             home, away, opp["market"], opp["pick"], opp["odds"]
         )
 
-        # Gather stats
-        stats: dict = {}
-        ml_pred = None
+        # ── Gather stats ───────────────────────────────────
+        stats: dict  = {}
+        ml_pred      = None
         poisson_pred = None
 
+        # TSDB enrichment for ALL sports (runs first, always)
+        try:
+            tsdb_home = tsdb.get_team_stats(home)
+            tsdb_away = tsdb.get_team_stats(away)
+            if tsdb_home or tsdb_away:
+                stats["tsdb_stats"] = {
+                    "home": tsdb_home or {},
+                    "away": tsdb_away or {}
+                }
+                logger.debug("[TSDB] %s Q=%s | %s Q=%s",
+                             home,
+                             (tsdb_home or {}).get("data_quality", "?"),
+                             away,
+                             (tsdb_away or {}).get("data_quality", "?"))
+        except Exception as e:
+            logger.debug("[TSDB] Error for %s vs %s: %s", home, away, e)
+
+        # Sport-specific stats
         if sport_key == "tennis":
             is_wta = "wta" in sport.lower()
             ts = de.get_tennis_stats(home, away, is_wta)
@@ -2683,7 +2969,8 @@ async def async_main():
                 sport_lower = sport.lower()
                 if any(k in sport_lower for k in ["wimbledon", "grass", "queens"]):
                     surf = "grass"
-                elif any(k in sport_lower for k in ["clay", "roland garros", "monte carlo"]):
+                elif any(k in sport_lower
+                          for k in ["clay", "roland garros", "monte carlo"]):
                     surf = "clay"
                 else:
                     surf = "hard"
@@ -2706,12 +2993,12 @@ async def async_main():
                 stats["poisson_prediction"] = poisson_pred
 
         elif sport_key in ["basketball", "baseball", "hockey"]:
-            hs = de.get_us_sports_stats(sport, home)
+            hs  = de.get_us_sports_stats(sport, home)
             aws = de.get_us_sports_stats(sport, away)
             if hs or aws:
                 stats["us_sports"] = {"home": hs, "away": aws}
 
-        # Math score
+        # ── Math score ────────────────────────────────────
         math_score = ConfidenceEngine.score(opp, stats, ml_pred, poisson_pred)
 
         min_math = 50 if sport_key == "other" else CFG.MIN_MATH_SCORE_TO_CALL_AI
@@ -2721,10 +3008,10 @@ async def async_main():
                         math_score, min_math, home, away, opp["edge_pct"])
             continue
 
-        # AI decision
+        # ── AI decision ───────────────────────────────────
         ai = make_ai_decision(
-            home, away, sport, sport_key, opp, stats,
-            math_score, ml_pred, poisson_pred
+            home, away, sport, sport_key,
+            opp, stats, math_score, ml_pred, poisson_pred
         )
         fc = ai["final_confidence"]
 
@@ -2741,12 +3028,14 @@ async def async_main():
             continue
 
         logger.info("✅ SIGNAL: %s vs %s | Math:%d AI:%d Final:%d EV=%.2f%%",
-                    home, away, math_score, ai["ai_confidence"], fc, opp["edge_pct"])
+                    home, away, math_score, ai["ai_confidence"],
+                    fc, opp["edge_pct"])
 
         msg = build_message(
-            home, away, sport, sport_key, opp, ai, stats,
-            math_score, ml_pred, poisson_pred, now,
-            event.get("commence_time", "")
+            home, away, sport, sport_key,
+            opp, ai, stats, math_score,
+            ml_pred, poisson_pred,
+            now, event.get("commence_time", "")
         )
 
         if send_telegram(msg):
@@ -2765,7 +3054,7 @@ async def async_main():
         await asyncio.sleep(CFG.TELEGRAM_SLEEP_BETWEEN)
 
     logger.info("=" * 65)
-    logger.info("📊 Events:%d Analyzed:%d Sent:%d",
+    logger.info("📊 Events:%d  Analyzed:%d  Sent:%d",
                 len(events), total_analyzed, total_sent)
     logger.info("   Skip → %s", skip_counts)
     logger.info("📊 %s", odds_key_manager.get_summary())
