@@ -1,3 +1,6 @@
+# =========================================================
+# ZBET90 SETTLER ENGINE v5.0 | Production Grade
+# =========================================================
 import os
 import sys
 import json
@@ -5,42 +8,37 @@ import logging
 import asyncio
 import re
 import unicodedata
+import hashlib
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Optional, List, Dict, Tuple
 import requests
-from curl_cffi.requests import AsyncSession
 
-# =========================================================
-# CONFIGURATION
-# =========================================================
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
 PERFORMANCE_FILE = Path("api_cache/performance_tracker.json")
-PENDING_FILE = Path("api_cache/pending_settlement.json")
-LOG_FILE = Path("api_cache/settler_logs.log")
+PENDING_FILE     = Path("api_cache/pending_settlement.json")
+LOG_FILE         = Path("api_cache/settler_logs.log")
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
 ODDS_KEYS = [k for k in [
-    os.getenv("ODDS_API_KEY", "").strip(),
+    os.getenv("ODDS_API_KEY",  "").strip(),
     os.getenv("ODDS_API_KEY2", "").strip(),
     os.getenv("ODDS_API_KEY3", "").strip(),
 ] if k]
 
-# ─── Logging ──────────────────────────────────────────────
+# ── Logging ───────────────────────────────────────────────
 logger = logging.getLogger("SETTLER")
 logger.setLevel(logging.DEBUG if DEBUG_MODE else logging.INFO)
-formatter = logging.Formatter(
-    "%(asctime)s | %(levelname)-8s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-for h in [
-    logging.StreamHandler(sys.stdout),
-    logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8"),
-]:
-    h.setFormatter(formatter)
-    logger.addHandler(h)
+_fmt = logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s",
+                         datefmt="%Y-%m-%d %H:%M:%S")
+for _h in [logging.StreamHandler(sys.stdout),
+           logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8")]:
+    _h.setFormatter(_fmt)
+    logger.addHandler(_h)
 
 if not ODDS_KEYS:
     logger.critical("FATAL: No ODDS_API_KEY found!")
@@ -48,10 +46,184 @@ if not ODDS_KEYS:
 
 
 # =========================================================
+# UTILITIES
+# =========================================================
+def normalize_str(s: str) -> str:
+    """Lowercase, strip accents, remove non-alpha chars."""
+    if not s:
+        return ""
+    s = str(s).lower().strip()
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+    # remove common suffixes / prefixes that differ between sources
+    for noise in ["fc", "cf", "sc", "ac", "bk", "fk", "if", "rsc", "afc", "rfc"]:
+        s = re.sub(rf"\b{noise}\b", "", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def tokenize(s: str) -> set:
+    return {t for t in normalize_str(s).split() if len(t) > 2}
+
+
+def team_similarity(a: str, b: str) -> float:
+    """
+    0-1 similarity between two team/player name strings.
+    Uses token overlap + substring bonus.
+    """
+    na, nb = normalize_str(a), normalize_str(b)
+    if na == nb:
+        return 1.0
+    if na in nb or nb in na:
+        return 0.9
+    ta, tb = tokenize(a), tokenize(b)
+    if not ta or not tb:
+        return 0.0
+    overlap = len(ta & tb)
+    score = overlap / max(len(ta), len(tb))
+    return round(score, 3)
+
+
+def save_json_safe(filepath: Path, data: dict):
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    tmp = filepath.with_suffix(f".tmp_{os.getpid()}")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+    tmp.replace(filepath)
+
+
+def is_tennis_sport(sport: str) -> bool:
+    return any(k in sport.lower() for k in ("tennis", "atp", "wta"))
+
+
+def is_soccer_sport(sport: str) -> bool:
+    return any(k in sport.lower() for k in ("football", "soccer"))
+
+
+# =========================================================
+# BET RESOLVER  —  sport-aware, market-aware
+# =========================================================
+def resolve_bet(bet: dict,
+                h_score: int,
+                a_score: int,
+                api_h: str,
+                api_a: str) -> str:
+    """
+    Determine win/loss/void for a settled match.
+
+    For TENNIS:
+      - h_score / a_score = sets won by home / away player
+        (some APIs give games; we treat >0 as indicator)
+      - h2h market: pick matches winner name → win
+      - totals: total games in match (use games field if available)
+
+    For all other sports:
+      - h_score / a_score = goals / points / runs
+    """
+    pick   = normalize_str(bet.get("pick", ""))
+    market = bet.get("market", "h2h").lower().strip()
+    sport  = bet.get("sport", "")
+
+    api_h_n = normalize_str(api_h)
+    api_a_n = normalize_str(api_a)
+
+    # ── determine actual winner ──────────────────────────
+    if h_score > a_score:
+        winner_n = api_h_n
+    elif a_score > h_score:
+        winner_n = api_a_n
+    else:
+        winner_n = "draw"   # only valid for non-tennis
+
+    def pick_matches(team_n: str) -> bool:
+        """Does our pick string refer to this team/player?"""
+        if not team_n or team_n == "draw":
+            return "draw" in pick or "tie" in pick
+        sim = team_similarity(pick, team_n)
+        if sim >= 0.5:
+            return True
+        # token overlap with raw pick
+        pt = tokenize(pick)
+        tt = tokenize(team_n)
+        if pt and tt and len(pt & tt) / max(len(pt), len(tt)) >= 0.5:
+            return True
+        return False
+
+    # ── h2h / match winner ───────────────────────────────
+    if market == "h2h":
+        if winner_n == "draw":
+            return "win" if pick_matches("draw") else "loss"
+        if pick_matches(winner_n):
+            return "win"
+        return "loss"
+
+    # ── h2h lay ──────────────────────────────────────────
+    if market == "h2h_lay":
+        if winner_n == "draw":
+            return "loss" if pick_matches("draw") else "win"
+        return "loss" if pick_matches(winner_n) else "win"
+
+    # ── totals / over-under ──────────────────────────────
+    if market in ("totals", "over/under", "totals"):
+        nums = re.findall(r"\d+\.?\d*", pick)
+        if not nums:
+            return "void"
+        line  = float(nums[0])
+        total = h_score + a_score
+
+        # For tennis totals the line is usually in games (e.g. 22.5)
+        # APIs often give sets; if total looks like sets (≤6) and line>10,
+        # we can't reliably resolve → void
+        if is_tennis_sport(sport) and total <= 6 and line > 10:
+            logger.warning("[RESOLVE] Tennis totals: set-score (%d) vs game-line (%.1f) → void", total, line)
+            return "void"
+
+        is_over  = "over"  in pick or pick.startswith("o ")
+        is_under = "under" in pick or pick.startswith("u ")
+
+        if total == line:
+            return "void"          # push / no action
+        if is_over:
+            return "win" if total > line else "loss"
+        if is_under:
+            return "win" if total < line else "loss"
+        return "void"
+
+    # ── spreads / handicap ───────────────────────────────
+    if market in ("spreads", "handicap"):
+        nums = re.findall(r"[+-]?\d+\.?\d*", pick)
+        if not nums:
+            return "void"
+        hcap = float(nums[0])
+        if pick_matches(api_h_n):
+            adjusted = h_score + hcap
+            if adjusted > a_score:  return "win"
+            if adjusted < a_score:  return "loss"
+            return "void"
+        elif pick_matches(api_a_n):
+            adjusted = a_score + hcap
+            if adjusted > h_score:  return "win"
+            if adjusted < h_score:  return "loss"
+            return "void"
+        return "void"
+
+    return "void"
+
+
+def calculate_profit(odds: float, outcome: str) -> float:
+    if outcome == "win":
+        return round(float(odds) - 1.0, 2)
+    if outcome == "loss":
+        return -1.0
+    return 0.0
+
+
+# =========================================================
 # PENDING MANAGER
 # =========================================================
 class PendingManager:
-    """مدیریت بت‌های در انتظار تسویه"""
+    MAX_RETRIES = 6          # give up after 6 retry cycles (~6 runs × 4h = 24h)
+    MAX_AGE_DAYS = 5
+
     def __init__(self):
         self.data = self._load()
 
@@ -60,12 +232,13 @@ class PendingManager:
             if PENDING_FILE.exists():
                 with open(PENDING_FILE, "r", encoding="utf-8") as f:
                     d = json.load(f)
-                    now = datetime.now(timezone.utc)
-                    d["pending"] = [
-                        p for p in d.get("pending", [])
-                        if self._is_recent(p.get("timestamp", ""), days=5, now=now)
-                    ]
-                    return d
+                now = datetime.now(timezone.utc)
+                d["pending"] = [
+                    p for p in d.get("pending", [])
+                    if self._is_recent(p.get("timestamp", ""), self.MAX_AGE_DAYS, now)
+                    and p.get("_retry_count", 0) < self.MAX_RETRIES
+                ]
+                return d
         except Exception:
             pass
         return {"pending": [], "last_updated": ""}
@@ -80,570 +253,717 @@ class PendingManager:
         except Exception:
             return False
 
+    def _make_id(self, b: dict) -> str:
+        raw = f"{b.get('home','')}|{b.get('away','')}|{b.get('market','')}|{b.get('timestamp','')}"
+        return hashlib.md5(raw.encode()).hexdigest()[:12]
+
     def save(self):
         self.data["last_updated"] = datetime.now(timezone.utc).isoformat()
         save_json_safe(PENDING_FILE, self.data)
 
     def add(self, bet: dict):
-        bet_id = bet.get("id") or f"{bet.get('home')}|{bet.get('away')}|{bet.get('timestamp')}"
-        existing_ids = {
-            (p.get("id") or f"{p.get('home')}|{p.get('away')}|{p.get('timestamp')}")
-            for p in self.data["pending"]
-        }
-        if bet_id not in existing_ids:
-            self.data["pending"].append({**bet, "_pending_since": datetime.now(timezone.utc).isoformat()})
+        bid = self._make_id(bet)
+        existing = {self._make_id(p) for p in self.data["pending"]}
+        if bid not in existing:
+            self.data["pending"].append({**bet,
+                                         "_pending_id": bid,
+                                         "_retry_count": 0,
+                                         "_pending_since": datetime.now(timezone.utc).isoformat()})
 
     def remove(self, bet: dict):
-        bet_id = bet.get("id")
-        ts = bet.get("timestamp")
-        home = bet.get("home")
+        bid = self._make_id(bet)
+        self.data["pending"] = [p for p in self.data["pending"]
+                                 if self._make_id(p) != bid]
 
-        self.data["pending"] = [
-            p for p in self.data["pending"]
-            if not (
-                (bet_id and p.get("id") == bet_id)
-                or (ts and p.get("timestamp") == ts and p.get("home") == home)
-            )
-        ]
+    def increment_retry(self, bet: dict):
+        bid = self._make_id(bet)
+        for p in self.data["pending"]:
+            if self._make_id(p) == bid:
+                p["_retry_count"] = p.get("_retry_count", 0) + 1
+                p["_last_retry"]  = datetime.now(timezone.utc).isoformat()
+                break
 
     def get_all(self) -> list:
         return list(self.data["pending"])
 
-    def increment_retry(self, bet: dict):
-        bet_id = bet.get("id")
-        ts = bet.get("timestamp")
-        home = bet.get("home")
-        for p in self.data["pending"]:
-            if (bet_id and p.get("id") == bet_id) or (ts and p.get("timestamp") == ts and p.get("home") == home):
-                p["_retry_count"] = p.get("_retry_count", 0) + 1
-                p["_last_retry"] = datetime.now(timezone.utc).isoformat()
-                break
-
 
 # =========================================================
-# HELPER FUNCTIONS & BET RESOLVER
-# =========================================================
-def normalize_str(s: str) -> str:
-    if not s:
-        return ""
-    s = str(s).lower().strip()
-    return "".join(
-        c for c in unicodedata.normalize("NFD", s)
-        if unicodedata.category(c) != "Mn"
-    )
-
-def resolve_bet(bet: dict, h_score: int, a_score: int, api_h: str, api_a: str) -> str:
-    """
-    بررسی دقیق نتیجه بر اساس نوع مارکت (h2h, h2h_lay, totals)
-    """
-    pick = normalize_str(bet.get("pick", ""))
-    market = bet.get("market", "h2h").lower()
-    
-    # پیدا کردن برنده واقعی در دنیای واقعی
-    winner = "draw"
-    if h_score > a_score:
-        winner = normalize_str(api_h)
-    elif a_score > h_score:
-        winner = normalize_str(api_a)
-        
-    def is_match(p_str, w_str):
-        if w_str == "draw":
-            return "draw" in p_str
-        p_tokens = {t for t in p_str.split() if len(t) > 2}
-        w_tokens = set(w_str.split())
-        if not p_tokens: 
-            return p_str == w_str
-        return (len(p_tokens & w_tokens) / len(p_tokens)) >= 0.5
-
-    # ── ۱. مارکت برد مستقیم (Match Winner) ──
-    if market == "h2h":
-        return "win" if is_match(pick, winner) else "loss"
-        
-    # ── ۲. مارکت ضدِ برد (Lay) ──
-    elif market == "h2h_lay":
-        # در Lay، اگر تیمی که انتخاب کردیم ببرد، شرط را باخته‌ایم!
-        return "loss" if is_match(pick, winner) else "win"
-        
-    # ── ۳. مارکت مجموع گل/امتیاز (Over/Under) ──
-    elif market in ["totals", "over/under"]:
-        total_points = h_score + a_score
-        # استخراج عدد لاین از پیک (مثل Over 2.5 -> 2.5)
-        numbers = re.findall(r"\d+\.?\d*", pick)
-        
-        if not numbers:
-            return "void"
-        
-        line = float(numbers[0])
-        is_over = "over" in pick or "ov" in pick
-        is_under = "under" in pick or "un" in pick
-        
-        if is_over:
-            if total_points > line: return "win"
-            if total_points < line: return "loss"
-            return "void" # Push
-            
-        elif is_under:
-            if total_points < line: return "win"
-            if total_points > line: return "loss"
-            return "void"
-            
-    # مارکت پشتیبانی نشده
-    return "void"
-
-def match_teams_in_fallback(bet_home: str, bet_away: str, api_h: str, api_a: str) -> bool:
-    h_norm = normalize_str(bet_home)
-    a_norm = normalize_str(bet_away)
-    score = 0
-    if h_norm in api_h or api_h in h_norm:
-        score += 2
-    if a_norm in api_a or api_a in a_norm:
-        score += 2
-    score += sum(1 for t in h_norm.split() if len(t) > 2 and t in api_h)
-    score += sum(1 for t in a_norm.split() if len(t) > 2 and t in api_a)
-    return score >= 3
-
-def find_score_in_fallback(scores: list, team_name: str) -> int:
-    team_norm = normalize_str(team_name)
-    for s in scores:
-        s_norm = normalize_str(s.get("name", ""))
-        if s_norm in team_norm or team_norm in s_norm:
-            try:
-                return int(float(s["score"]))
-            except (ValueError, KeyError):
-                pass
-    return 0
-
-def save_json_safe(filepath: Path, data: dict):
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = filepath.with_suffix(".tmp")
-    with open(tmp_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False, default=str)
-    tmp_path.replace(filepath)
-
-def sync_bet_to_tracker(bet: dict, tracker: dict):
-    bet_id = bet.get("id")
-    for signal in tracker["signals"]:
-        if (bet_id and signal.get("id") == bet_id) or (not bet_id and signal.get("timestamp") == bet.get("timestamp") and signal.get("home") == bet.get("home")):
-            signal["outcome"] = bet["outcome"]
-            signal["profit_loss"] = bet["profit_loss"]
-            signal["_settled_by"] = bet.get("_settled_by", "system")
-            signal["_settled_at"] = datetime.now(timezone.utc).isoformat()
-            break
-
-def calculate_profit(odds: float, outcome: str) -> float:
-    if outcome == "win":
-        return round(float(odds) - 1.0, 2)
-    if outcome == "loss":
-        return -1.0
-    return 0.0
-
-
-# =========================================================
-# SCRAPING ENGINES
+# SCRAPING ENGINES  —  async, multi-source, robust
 # =========================================================
 class ResultScraper:
+    """
+    Fetches finished match results from 3 free sources.
+    Results are stored in two pools:
+      self.soccer_pool  — football / soccer
+      self.other_pool   — tennis, basketball, baseball, hockey, cricket
+    """
+
     def __init__(self):
-        self.soccer_results: list = []
-        self.other_sports_results: list = []
+        self.soccer_pool: List[dict] = []
+        self.other_pool:  List[dict] = []
         self._lock = asyncio.Lock()
 
-    async def _add(self, pool_type: str, result: dict):
+    # ── internal adder (dedup by home+away) ─────────────
+    async def _add(self, pool_name: str, result: dict):
         async with self._lock:
-            pool = self.soccer_results if pool_type == "soccer" else self.other_sports_results
-            h, a = result["home"], result["away"]
-            if not any(e["home"] == h and e["away"] == a for e in pool):
+            pool = self.soccer_pool if pool_name == "soccer" else self.other_pool
+            h, a = result["home_n"], result["away_n"]
+            if not any(e["home_n"] == h and e["away_n"] == a for e in pool):
                 pool.append(result)
 
-    async def fetch_fotmob_soccer(self, target_date: datetime):
-        date_str = target_date.strftime("%Y%m%d")
+    def _make_entry(self, home: str, away: str,
+                    h_score: int, a_score: int,
+                    source: str,
+                    raw_home: str = "", raw_away: str = "") -> dict:
+        return {
+            "home_n":   normalize_str(home),
+            "away_n":   normalize_str(away),
+            "raw_home": raw_home or home,
+            "raw_away": raw_away or away,
+            "h_score":  h_score,
+            "a_score":  a_score,
+            "source":   source,
+        }
+
+    # ── FotMob ──────────────────────────────────────────
+    async def _fetch_fotmob(self, date_str: str):
         url = f"https://www.fotmob.com/api/matches?date={date_str}"
         try:
-            async with AsyncSession(impersonate="chrome110") as session:
-                res = await session.get(url, timeout=15)
-                if res.status_code != 200: return
-                for league in res.json().get("leagues", []):
-                    for match in league.get("matches", []):
-                        if not match.get("status", {}).get("finished", False): continue
-                        home = match.get("home", {}).get("name", "")
-                        away = match.get("away", {}).get("name", "")
-                        h_score = match.get("home", {}).get("score", 0) or 0
-                        a_score = match.get("away", {}).get("score", 0) or 0
-                        
-                        await self._add("soccer", {
-                            "home": normalize_str(home),
-                            "away": normalize_str(away),
-                            "home_score": h_score,
-                            "away_score": a_score,
-                            "source": "fotmob",
-                        })
+            import httpx
+            async with httpx.AsyncClient(timeout=15,
+                                         headers={"User-Agent": "Mozilla/5.0"}) as client:
+                r = await client.get(url)
+                if r.status_code != 200:
+                    return
+                for league in r.json().get("leagues", []):
+                    for m in league.get("matches", []):
+                        if not m.get("status", {}).get("finished"):
+                            continue
+                        home    = m.get("home", {}).get("name", "")
+                        away    = m.get("away", {}).get("name", "")
+                        h_score = int(m.get("home", {}).get("score", 0) or 0)
+                        a_score = int(m.get("away", {}).get("score", 0) or 0)
+                        if home and away:
+                            await self._add("soccer",
+                                            self._make_entry(home, away, h_score, a_score,
+                                                             "fotmob", home, away))
         except Exception as e:
-            logger.debug("FotMob error [%s]: %s", date_str, e)
+            logger.debug("[FotMob] %s: %s", date_str, e)
 
-    async def fetch_espn_by_date(self, target_date: datetime):
-        date_str = target_date.strftime("%Y%m%d")
+    # ── ESPN ────────────────────────────────────────────
+    async def _fetch_espn(self, date_str: str):
+        """
+        Fetches multiple ESPN endpoints for both soccer and non-soccer.
+        date_str format: YYYYMMDD
+        """
         endpoints = [
+            # soccer
+            (f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}", "soccer"),
+            # US sports
+            (f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date_str}", "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={date_str}",    "other"),
+            (f"https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard?dates={date_str}",      "other"),
+            # tennis
             (f"https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates={date_str}", "other"),
             (f"https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates={date_str}", "other"),
-            (f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date_str}", "other"),
-            (f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={date_str}", "other"),
-            (f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}", "soccer"),
         ]
         try:
-            async with AsyncSession(impersonate="chrome110") as session:
+            import httpx
+            async with httpx.AsyncClient(timeout=12,
+                                         headers={"User-Agent": "Mozilla/5.0"}) as client:
                 for url, pool in endpoints:
                     try:
-                        res = await session.get(url, timeout=10)
-                        if res.status_code != 200: continue
-                        for event in res.json().get("events", []):
-                            try:
-                                state = event.get("status", {}).get("type", {}).get("state")
-                                if state != "post": continue
-                                comps_list = event.get("competitions", [])
-                                if not comps_list: continue
-                                competitors = comps_list[0].get("competitors", [])
-                                if not competitors: continue
-
-                                home_team, away_team = "", ""
-                                h_score, a_score = 0, 0
-
-                                for comp in competitors:
-                                    name = comp.get("team", {}).get("displayName") or comp.get("athlete", {}).get("displayName", "")
-                                    is_home = comp.get("homeAway") == "home"
-                                    try: score_val = int(float(comp.get("score", "0") or "0"))
-                                    except (ValueError, TypeError): score_val = 0
-
-                                    if is_home:
-                                        home_team = name
-                                        h_score = score_val
-                                    else:
-                                        away_team = name
-                                        a_score = score_val
-
-                                if not home_team or not away_team: continue
-
-                                await self._add(pool, {
-                                    "home": normalize_str(home_team),
-                                    "away": normalize_str(away_team),
-                                    "home_score": h_score,
-                                    "away_score": a_score,
-                                    "source": "espn",
-                                })
-                            except Exception: continue
-                    except Exception: pass
+                        r = await client.get(url)
+                        if r.status_code != 200:
+                            continue
+                        for event in r.json().get("events", []):
+                            state = event.get("status", {}).get("type", {}).get("state")
+                            if state != "post":
+                                continue
+                            comps_list = event.get("competitions", [])
+                            if not comps_list:
+                                continue
+                            competitors = comps_list[0].get("competitors", [])
+                            home_name = away_name = ""
+                            h_score = a_score = 0
+                            for comp in competitors:
+                                name = (comp.get("team", {}).get("displayName")
+                                        or comp.get("athlete", {}).get("displayName", ""))
+                                try:
+                                    score_val = int(float(comp.get("score", "0") or "0"))
+                                except (ValueError, TypeError):
+                                    score_val = 0
+                                if comp.get("homeAway") == "home":
+                                    home_name = name
+                                    h_score   = score_val
+                                else:
+                                    away_name = name
+                                    a_score   = score_val
+                            if home_name and away_name:
+                                await self._add(pool,
+                                                self._make_entry(home_name, away_name,
+                                                                 h_score, a_score,
+                                                                 "espn",
+                                                                 home_name, away_name))
+                    except Exception:
+                        pass
         except Exception as e:
-            logger.debug("ESPN error: %s", e)
+            logger.debug("[ESPN] %s: %s", date_str, e)
 
-    async def fetch_sofascore_by_date(self, target_date: datetime):
-        date_str = target_date.strftime("%Y-%m-%d")
+    # ── SofaScore ────────────────────────────────────────
+    async def _fetch_sofascore(self, date_str: str):
+        """
+        date_str format: YYYY-MM-DD
+        """
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+            "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                           "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"),
             "Referer": "https://www.sofascore.com/",
-            "Origin": "https://www.sofascore.com",
+            "Accept":  "application/json",
         }
-        sports = ["tennis", "baseball", "basketball", "ice-hockey"]
+        sports_pools = [
+            ("football",    "soccer"),
+            ("tennis",      "other"),
+            ("basketball",  "other"),
+            ("baseball",    "other"),
+            ("ice-hockey",  "other"),
+            ("cricket",     "other"),
+        ]
         try:
-            async with AsyncSession(impersonate="chrome110") as session:
-                for sport in sports:
+            import httpx
+            async with httpx.AsyncClient(timeout=12, headers=headers) as client:
+                for sport, pool in sports_pools:
                     try:
-                        url = f"https://api.sofascore.com/api/v1/sport/{sport}/scheduled-events/{date_str}"
-                        res = await session.get(url, headers=headers, timeout=10)
-                        if res.status_code != 200: continue
-                        for event in res.json().get("events", []):
-                            if event.get("status", {}).get("type") != "finished": continue
-                            home = event.get("homeTeam", {}).get("name", "")
-                            away = event.get("awayTeam", {}).get("name", "")
-                            h_score = event.get("homeScore", {}).get("current", 0) or 0
-                            a_score = event.get("awayScore", {}).get("current", 0) or 0
-                            
-                            await self._add("other", {
-                                "home": normalize_str(home),
-                                "away": normalize_str(away),
-                                "home_score": h_score,
-                                "away_score": a_score,
-                                "source": "sofascore",
-                            })
-                    except Exception: pass
+                        url = (f"https://api.sofascore.com/api/v1/sport/"
+                               f"{sport}/scheduled-events/{date_str}")
+                        r = await client.get(url)
+                        if r.status_code != 200:
+                            continue
+                        for ev in r.json().get("events", []):
+                            if ev.get("status", {}).get("type") != "finished":
+                                continue
+                            home = ev.get("homeTeam", {}).get("name", "")
+                            away = ev.get("awayTeam", {}).get("name", "")
+                            # SofaScore: for tennis homeScore.current = sets won
+                            h_score = ev.get("homeScore", {}).get("current", 0) or 0
+                            a_score = ev.get("awayScore", {}).get("current", 0) or 0
+                            if home and away:
+                                await self._add(pool,
+                                                self._make_entry(home, away,
+                                                                 h_score, a_score,
+                                                                 "sofascore",
+                                                                 home, away))
+                    except Exception:
+                        pass
         except Exception as e:
-            logger.debug("SofaScore error: %s", e)
+            logger.debug("[SofaScore] %s: %s", date_str, e)
 
-    async def load_recent_results(self):
-        logger.info("🌍 [SCRAPER] Fetching from FotMob / ESPN / SofaScore...")
-        now = datetime.now(timezone.utc)
+    # ── FlashScore (simple requests fallback) ────────────
+    async def _fetch_thesportsdb(self, date_str_dash: str):
+        """
+        TheSportsDB free tier — broad sport coverage.
+        date_str_dash: YYYY-MM-DD
+        """
+        # Free API, no key needed for basic lookups
+        url = f"https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d={date_str_dash}"
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=12,
+                                         headers={"User-Agent": "Mozilla/5.0"}) as client:
+                r = await client.get(url)
+                if r.status_code != 200:
+                    return
+                events = r.json().get("events") or []
+                for ev in events:
+                    status = (ev.get("strStatus") or "").lower()
+                    if status not in ("ft", "aet", "finished", "complete",
+                                     "match finished", "ht", "fulltime"):
+                        if "final" not in status and "finish" not in status:
+                            continue
+                    home = ev.get("strHomeTeam", "")
+                    away = ev.get("strAwayTeam", "")
+                    try:
+                        h_score = int(float(ev.get("intHomeScore") or 0))
+                        a_score = int(float(ev.get("intAwayScore") or 0))
+                    except (ValueError, TypeError):
+                        continue
+                    sport = (ev.get("strSport") or "").lower()
+                    pool  = "soccer" if "soccer" in sport or "football" in sport else "other"
+                    if home and away:
+                        await self._add(pool,
+                                        self._make_entry(home, away, h_score, a_score,
+                                                         "thesportsdb", home, away))
+        except Exception as e:
+            logger.debug("[TheSportsDB] %s: %s", date_str_dash, e)
+
+    # ── master loader ────────────────────────────────────
+    async def load_recent_results(self, days_back: int = 3):
+        logger.info("🌍 [SCRAPER] Loading results (last %d days)...", days_back)
+        now  = datetime.now(timezone.utc)
         tasks = []
-        for i in range(3):
-            target = now - timedelta(days=i)
+        for i in range(days_back):
+            target    = now - timedelta(days=i)
+            date_fotm = target.strftime("%Y%m%d")
+            date_soft = target.strftime("%Y-%m-%d")
             tasks += [
-                self.fetch_fotmob_soccer(target),
-                self.fetch_espn_by_date(target),
-                self.fetch_sofascore_by_date(target),
+                self._fetch_fotmob(date_fotm),
+                self._fetch_espn(date_fotm),
+                self._fetch_sofascore(date_soft),
+                self._fetch_thesportsdb(date_soft),
             ]
         await asyncio.gather(*tasks, return_exceptions=True)
-        logger.info("✅ [SCRAPER] Soccer: %d | Other: %d", len(self.soccer_results), len(self.other_sports_results))
+        logger.info("✅ [SCRAPER] Soccer pool: %d | Other pool: %d",
+                    len(self.soccer_pool), len(self.other_pool))
 
-    def fuzzy_match(self, home: str, away: str, sport: str) -> dict:
-        is_soccer = any(k in sport.lower() for k in ("football", "soccer"))
-        pool = self.soccer_results if is_soccer else self.other_sports_results
-        if not pool: return {}
+    # ── fuzzy match ──────────────────────────────────────
+    def find_result(self, home: str, away: str, sport: str) -> Optional[dict]:
+        """
+        Returns the best matching result dict or None.
+        Threshold: both home AND away must score >= 0.45 similarity.
+        """
+        pool = self.soccer_pool if is_soccer_sport(sport) else self.other_pool
+        if not pool:
+            return None
 
-        h_norm = normalize_str(home)
-        a_norm = normalize_str(away)
-        best_match, best_score = {}, 0
+        best: Optional[dict] = None
+        best_score            = 0.0
 
-        for match in pool:
-            mh, ma = match["home"], match["away"]
-            score = 0
-            if h_norm in mh or mh in h_norm: score += 2
-            if a_norm in ma or ma in a_norm: score += 2
-            score += sum(1 for t in h_norm.split() if len(t) > 2 and t in mh)
-            score += sum(1 for t in a_norm.split() if len(t) > 2 and t in ma)
-            if score > best_score and score >= 3:
-                best_score = score
-                best_match = match
+        for entry in pool:
+            sh = team_similarity(home, entry["home_n"])
+            sa = team_similarity(away, entry["away_n"])
+            combined = sh * 0.5 + sa * 0.5
+            # also try swapped (some APIs list differently)
+            sh2 = team_similarity(home, entry["away_n"])
+            sa2 = team_similarity(away, entry["home_n"])
+            combined2 = sh2 * 0.5 + sa2 * 0.5
 
-        return best_match
+            if combined2 > combined and combined2 >= 0.45:
+                # home/away swapped in the API response — swap scores
+                swapped = {**entry,
+                           "home_n":  entry["away_n"],
+                           "away_n":  entry["home_n"],
+                           "h_score": entry["a_score"],
+                           "a_score": entry["h_score"],
+                           "raw_home": entry["raw_away"],
+                           "raw_away": entry["raw_home"],
+                           "_swapped": True}
+                if combined2 > best_score:
+                    best_score = combined2
+                    best       = swapped
+            elif combined >= 0.45 and combined > best_score:
+                best_score = combined
+                best       = entry
+
+        if best:
+            logger.debug("[FUZZY] %.2f | %s vs %s → %s vs %s (%s)",
+                         best_score, home, away,
+                         best["raw_home"], best["raw_away"], best["source"])
+        return best
 
 
 # =========================================================
-# ODDS-API ENGINE
+# ODDS-API RESULTS ENGINE  —  minimal calls, cached
 # =========================================================
-def fetch_odds_api_results(sport_key: str, days_from: int = 3) -> list:
-    for key in ODDS_KEYS:
-        url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?daysFrom={days_from}&apiKey={key}"
+class OddsAPIResultsEngine:
+    """
+    Fetches completed scores from the-odds-api.
+    Caches per sport_key to avoid hammering the quota.
+    """
+
+    SUPPORTED_SPORTS = {
+        "soccer_epl", "soccer_spain_la_liga", "soccer_germany_bundesliga",
+        "soccer_italy_serie_a", "soccer_france_ligue_one",
+        "soccer_uefa_champs_league", "soccer_uefa_europa_league",
+        "basketball_nba", "baseball_mlb", "icehockey_nhl",
+        "tennis_atp", "tennis_wta",
+        "cricket_icc_world_cup", "cricket_odi",
+        # broad fallbacks
+        "americanfootball_nfl", "basketball_euroleague",
+    }
+
+    def __init__(self):
+        self._cache: Dict[str, list] = {}
+        self._fetched: set = set()
+        self._cache_file = Path("api_cache/odds_api_scores_cache.json")
+        self._load_cache()
+
+    def _load_cache(self):
         try:
-            res = requests.get(url, timeout=15)
-            if res.status_code == 200:
-                logger.info("🔄 [ODDS-API] Got %d results for %s", len(res.json()), sport_key)
-                return res.json()
-            elif res.status_code == 422:
-                logger.debug("[ODDS-API] sport_key '%s' not supported or no recent events", sport_key)
-                return []
-        except Exception as e:
-            logger.debug("[ODDS-API] Error using key %s: %s", key[:8], e)
-            continue
-    return []
+            if self._cache_file.exists():
+                raw = json.loads(self._cache_file.read_text())
+                now = datetime.now(timezone.utc)
+                for k, v in raw.items():
+                    ts_str = v.get("_cached_at", "")
+                    if ts_str:
+                        ts = datetime.fromisoformat(ts_str)
+                        if ts.tzinfo is None:
+                            ts = ts.replace(tzinfo=timezone.utc)
+                        if (now - ts) < timedelta(hours=4):
+                            self._cache[k] = v.get("data", [])
+                            self._fetched.add(k)
+        except Exception:
+            pass
+
+    def _save_cache(self):
+        try:
+            out = {}
+            for k, data in self._cache.items():
+                out[k] = {"_cached_at": datetime.now(timezone.utc).isoformat(),
+                           "data": data}
+            save_json_safe(self._cache_file, out)
+        except Exception:
+            pass
+
+    def fetch(self, sport_key: str, days_from: int = 3) -> list:
+        if not sport_key:
+            return []
+        # normalise key
+        sk = sport_key.lower().strip()
+        if sk in self._fetched:
+            return self._cache.get(sk, [])
+
+        for key in ODDS_KEYS:
+            url = (f"https://api.the-odds-api.com/v4/sports/{sk}/scores/"
+                   f"?daysFrom={days_from}&apiKey={key}")
+            try:
+                r = requests.get(url, timeout=15)
+                remaining = int(r.headers.get("x-requests-remaining", -1))
+                if r.status_code == 200:
+                    data = r.json()
+                    logger.info("📡 [ODDS-API] %s → %d results (rem:%d)", sk, len(data), remaining)
+                    self._cache[sk] = data
+                    self._fetched.add(sk)
+                    self._save_cache()
+                    return data
+                elif r.status_code == 422:
+                    logger.debug("[ODDS-API] Sport key '%s' unsupported", sk)
+                    self._fetched.add(sk)  # don't retry
+                    return []
+                elif r.status_code in (401, 402):
+                    logger.warning("[ODDS-API] Key exhausted/invalid: %s", key[:8])
+                    continue
+            except Exception as e:
+                logger.debug("[ODDS-API] %s: %s", sk, e)
+                continue
+        return []
+
+    def find_result(self, bet: dict) -> Optional[dict]:
+        """
+        Given a bet dict (with api_sport_key, home, away),
+        return a resolved result or None.
+        """
+        sk = bet.get("api_sport_key", "")
+        results = self.fetch(sk)
+        if not results:
+            return None
+
+        home_n = normalize_str(bet.get("home", ""))
+        away_n = normalize_str(bet.get("away", ""))
+
+        best: Optional[dict] = None
+        best_score            = 0.0
+
+        for match in results:
+            if not match.get("completed"):
+                continue
+            api_h = normalize_str(match.get("home_team", ""))
+            api_a = normalize_str(match.get("away_team", ""))
+            sh    = team_similarity(bet.get("home", ""), api_h)
+            sa    = team_similarity(bet.get("away", ""), api_a)
+            # also try swapped
+            sh2   = team_similarity(bet.get("home", ""), api_a)
+            sa2   = team_similarity(bet.get("away", ""), api_h)
+
+            fwd = (sh + sa) / 2
+            rev = (sh2 + sa2) / 2
+
+            if fwd >= 0.45 and fwd > best_score:
+                best_score = fwd
+                best       = {"match": match, "swapped": False,
+                               "api_h": api_h, "api_a": api_a}
+            if rev >= 0.45 and rev > best_score:
+                best_score = rev
+                best       = {"match": match, "swapped": True,
+                               "api_h": api_a, "api_a": api_h}
+
+        if not best:
+            return None
+
+        match  = best["match"]
+        api_h  = best["api_h"]
+        api_a  = best["api_a"]
+        scores = match.get("scores") or []
+
+        # extract scores  —  try name-matching within scores list
+        h_score = a_score = 0
+        if scores:
+            for s in scores:
+                sn = normalize_str(s.get("name", ""))
+                try:
+                    val = int(float(s.get("score", 0) or 0))
+                except (ValueError, TypeError):
+                    val = 0
+                sim_h = team_similarity(s.get("name", ""), best["match"].get("home_team", ""))
+                sim_a = team_similarity(s.get("name", ""), best["match"].get("away_team", ""))
+                if sim_h >= sim_a:
+                    h_score = val
+                else:
+                    a_score = val
+            if best["swapped"]:
+                h_score, a_score = a_score, h_score
+
+        return {
+            "h_score": h_score,
+            "a_score": a_score,
+            "api_h":   api_h,
+            "api_a":   api_a,
+            "source":  "odds_api",
+        }
+
+
+# =========================================================
+# TRACKER SYNC
+# =========================================================
+def sync_bet_to_tracker(bet: dict, tracker: dict):
+    """Update the signal in the performance tracker in-place."""
+    bid = bet.get("id")
+    bts = bet.get("timestamp")
+    bhm = bet.get("home")
+
+    for signal in tracker.get("signals", []):
+        match_by_id = bid and signal.get("id") == bid
+        match_by_ts = (not bid
+                       and bts
+                       and signal.get("timestamp") == bts
+                       and signal.get("home") == bhm)
+        if match_by_id or match_by_ts:
+            signal["outcome"]      = bet["outcome"]
+            signal["profit_loss"]  = bet["profit_loss"]
+            signal["_settled_by"]  = bet.get("_settled_by", "system")
+            signal["_settled_at"]  = datetime.now(timezone.utc).isoformat()
+            return True
+    return False
 
 
 # =========================================================
 # TELEGRAM REPORT
 # =========================================================
-def send_telegram_report(settled_bets: list, summary: dict):
-    if not settled_bets or not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+def send_telegram_report(settled: list, summary: dict):
+    if not settled or not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         return
 
     import html as html_lib
 
-    lines = ["🧾 <b>ZBET90 SETTLEMENT REPORT</b>\n"]
-    daily_profit = 0.0
+    lines = ["🧾 <b>ZBET90 SETTLEMENT REPORT v5.0</b>\n"]
+    daily_pl = 0.0
 
-    for bet in settled_bets:
+    SOURCE_ICON = {
+        "fotmob":     "⚽",
+        "espn":       "📺",
+        "sofascore":  "📱",
+        "thesportsdb":"🗄️",
+        "odds_api":   "📡",
+        "void":       "⚪️",
+    }
+
+    for bet in settled:
         outcome = bet.get("outcome", "unknown")
-        source = bet.get("_settled_by", "unknown")
-        source_icon = {
-            "scraper": "🌐",
-            "fotmob": "⚽",
-            "espn": "📺",
-            "sofascore": "📱",
-            "odds_api": "📡",
-            "void": "⚪️",
-        }.get(source, "📡")
-        
+        source  = bet.get("_settled_by", "unknown")
+        icon    = SOURCE_ICON.get(source, "📡")
+
         if outcome == "void":
-            icon, profit_str = "⚪️", "0.0u"
+            result_icon, pl_str = "⚪️", "0.0u"
         else:
-            icon = "🟢" if outcome == "win" else "🔴"
-            pl = bet.get("profit_loss", 0.0)
-            profit_str = f"+{pl:.2f}u" if pl > 0 else f"{pl:.2f}u"
-            daily_profit += pl
+            pl = bet.get("profit_loss", 0.0) or 0.0
+            daily_pl   += pl
+            result_icon = "🟢" if outcome == "win" else "🔴"
+            pl_str      = f"+{pl:.2f}u" if pl > 0 else f"{pl:.2f}u"
 
-        lines.append(f"⚔️ <b>{html_lib.escape(str(bet.get('home', '?')))} vs {html_lib.escape(str(bet.get('away', '?')))}</b>")
-        lines.append(f"🎯 Pick: {html_lib.escape(str(bet.get('pick', '?')))} @ {bet.get('odds', '?')}")
-        lines.append(f"🏁 Result: <b>{outcome.upper()}</b> {icon} | PnL: {profit_str} {source_icon}\n")
+        lines.append(
+            f"⚔️ <b>{html_lib.escape(str(bet.get('home','?')))} vs "
+            f"{html_lib.escape(str(bet.get('away','?')))}</b>\n"
+            f"🎯 {html_lib.escape(str(bet.get('pick','?')))} @ {bet.get('odds','?')}\n"
+            f"🏁 <b>{outcome.upper()}</b> {result_icon} | {pl_str} {icon}\n"
+        )
 
-    total_icon = "📈" if daily_profit > 0 else "📉"
+    total_icon = "📈" if daily_pl > 0 else "📉"
     lines += [
         "══════════════════",
-        f"{total_icon} <b>Session PnL:</b> {daily_profit:+.2f} units",
+        f"{total_icon} <b>Session PnL:</b> {daily_pl:+.2f} units",
         f"🏆 <b>Win Rate:</b> {summary.get('win_rate', 0) * 100:.1f}%",
         f"💰 <b>ROI:</b> {summary.get('roi_pct', 0):.1f}%",
         f"📊 <b>Resolved:</b> {summary.get('resolved', 0)} / {summary.get('total_signals', 0)}",
+        f"⏳ <b>Pending:</b> {summary.get('pending_count', 0)}",
     ]
 
-    message_html = "\n".join(lines)
-    
+    msg = "\n".join(lines)
     try:
         requests.post(
             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-            json={"chat_id": TELEGRAM_CHAT_ID, "text": message_html, "parse_mode": "HTML", "disable_web_page_preview": True},
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": msg,
+                  "parse_mode": "HTML", "disable_web_page_preview": True},
             timeout=10,
         )
+        logger.info("📤 Telegram report sent.")
     except Exception as e:
-        logger.error("Telegram send error: %s", e)
+        logger.error("Telegram error: %s", e)
 
 
 # =========================================================
 # MAIN SETTLER
 # =========================================================
 async def async_settle():
-    logger.info("=" * 55)
-    logger.info("⚡ ZBET90 SETTLER ENGINE v4.0 | Scraper -> API Pipeline")
-    logger.info("=" * 55)
+    logger.info("=" * 60)
+    logger.info("⚡ ZBET90 SETTLER v5.0 | Scraper + OddsAPI Pipeline")
+    logger.info("=" * 60)
 
     if not PERFORMANCE_FILE.exists():
-        logger.info("❌ No performance tracker file found. Exiting.")
+        logger.info("❌ No performance_tracker.json found. Exiting.")
         return
 
     with open(PERFORMANCE_FILE, "r", encoding="utf-8") as f:
         tracker = json.load(f)
 
-    now = datetime.now(timezone.utc)
+    now         = datetime.now(timezone.utc)
     pending_mgr = PendingManager()
 
-    fresh_unsettled = []
-    for b in tracker.get("signals", []):
-        if b.get("outcome") is not None:
+    # ── 1. collect unsettled signals older than 3h ──────
+    existing_ids = {pending_mgr._make_id(p) for p in pending_mgr.get_all()}
+    new_added    = 0
+    for sig in tracker.get("signals", []):
+        if sig.get("outcome") is not None:
             continue
         try:
-            bet_time = datetime.fromisoformat(b["timestamp"])
-            if bet_time.tzinfo is None:
-                bet_time = bet_time.replace(tzinfo=timezone.utc)
-            if (now - bet_time) > timedelta(hours=3): 
-                fresh_unsettled.append(b)
+            t = datetime.fromisoformat(sig["timestamp"])
+            if t.tzinfo is None:
+                t = t.replace(tzinfo=timezone.utc)
+            if (now - t) < timedelta(hours=3):
+                continue          # too fresh — match may still be live
         except Exception:
-            pass
-
-    existing_pending_ids = {(p.get("id") or f"{p.get('home')}|{p.get('timestamp')}") for p in pending_mgr.get_all()}
-    for b in fresh_unsettled:
-        bid = b.get("id") or f"{b.get('home')}|{b.get('timestamp')}"
-        if bid not in existing_pending_ids:
-            pending_mgr.add(b)
+            continue
+        bid = pending_mgr._make_id(sig)
+        if bid not in existing_ids:
+            pending_mgr.add(sig)
+            existing_ids.add(bid)
+            new_added += 1
 
     to_check = pending_mgr.get_all()
+    logger.info("📋 Pending: %d total | %d newly added", len(to_check), new_added)
     if not to_check:
-        logger.info("ℹ️ No bets ready to settle.")
+        logger.info("ℹ️ Nothing to settle.")
         return
 
-    logger.info("🔍 %d bets to check.", len(to_check))
-
-    # ─── 1. اجرای Scraper ───
+    # ── 2. Scraper phase ─────────────────────────────────
     scraper = ResultScraper()
-    await scraper.load_recent_results()
+    await scraper.load_recent_results(days_back=3)
 
-    settled_this_session = []
-    need_api_check = []
+    settled_session: list = []
+    need_api: list        = []
 
-    # ─── 2. بررسی نتایج در Scraper ───
     for bet in to_check:
-        match = scraper.fuzzy_match(bet.get("home", ""), bet.get("away", ""), bet.get("sport", "soccer"))
-        
-        if match:
-            h_score = match.get("home_score", 0)
-            a_score = match.get("away_score", 0)
-            
-            outcome = resolve_bet(bet, h_score, a_score, match["home"], match["away"])
-            
-            bet["outcome"] = outcome
-            bet["profit_loss"] = calculate_profit(bet.get("odds", 2.0), outcome)
-            bet["_settled_by"] = match.get("source", "scraper")
-            
-            settled_this_session.append(bet)
+        home  = bet.get("home", "")
+        away  = bet.get("away", "")
+        sport = bet.get("sport", "")
+
+        result = scraper.find_result(home, away, sport)
+        if result:
+            outcome = resolve_bet(bet,
+                                  result["h_score"], result["a_score"],
+                                  result["raw_home"], result["raw_away"])
+            bet["outcome"]      = outcome
+            bet["profit_loss"]  = calculate_profit(bet.get("odds", 2.0), outcome)
+            bet["_settled_by"]  = result["source"]
+            settled_session.append(bet)
             pending_mgr.remove(bet)
-            logger.info("✅ [%s] %s vs %s → %s (%.2f units)", bet["_settled_by"].upper(), bet["home"], bet["away"], outcome.upper(), bet["profit_loss"])
+            logger.info("✅ [%s] %s vs %s → %s (%.2fu)",
+                        result["source"].upper(), home, away,
+                        outcome.upper(), bet["profit_loss"])
         else:
-            need_api_check.append(bet)
+            need_api.append(bet)
 
-    # ─── 3. اجرای Odds-API برای مسابقات باقی‌مانده ───
-    if need_api_check:
-        logger.info("📡 %d matches not found by scraper. Passing to Odds-API...", len(need_api_check))
-        odds_api_cache: dict = {}
-        needed_sports = {bet.get("api_sport_key") for bet in need_api_check if bet.get("api_sport_key")}
-        
-        for sport in needed_sports:
-            odds_api_cache[sport] = fetch_odds_api_results(sport, days_from=3)
+    # ── 3. Odds-API fallback ──────────────────────────────
+    if need_api:
+        logger.info("📡 %d not found by scraper → Odds-API...", len(need_api))
+        api_engine = OddsAPIResultsEngine()
 
-        still_pending = []
-
-        for bet in need_api_check:
-            api_sport_key = bet.get("api_sport_key", "")
-            result_found = False
-            
-            if api_sport_key in odds_api_cache:
-                for api_match in odds_api_cache[api_sport_key]:
-                    api_h = normalize_str(api_match.get("home_team", ""))
-                    api_a = normalize_str(api_match.get("away_team", ""))
-
-                    if not match_teams_in_fallback(bet["home"], bet["away"], api_h, api_a):
-                        continue
-
-                    if not api_match.get("completed"):
-                        logger.info("⏳ [ODDS-API] Not finished yet: %s vs %s", bet["home"], bet["away"])
-                        break
-
-                    scores = api_match.get("scores") or []
-                    if scores:
-                        h_score = find_score_in_fallback(scores, api_match.get("home_team", ""))
-                        a_score = find_score_in_fallback(scores, api_match.get("away_team", ""))
-                        
-                        outcome = resolve_bet(bet, h_score, a_score, api_h, api_a)
-                        
-                        bet["outcome"] = outcome
-                        bet["profit_loss"] = calculate_profit(bet.get("odds", 2.0), outcome)
-                        bet["_settled_by"] = "odds_api"
-
-                        settled_this_session.append(bet)
-                        pending_mgr.remove(bet)
-                        result_found = True
-                        
-                        logger.info("✅ [ODDS-API] %s vs %s → %s (%.2f units)", bet["home"], bet["away"], outcome.upper(), bet["profit_loss"])
-                    break
-
-            if not result_found:
+        for bet in need_api:
+            result = api_engine.find_result(bet)
+            if result:
+                outcome = resolve_bet(bet,
+                                      result["h_score"], result["a_score"],
+                                      result["api_h"],   result["api_a"])
+                bet["outcome"]      = outcome
+                bet["profit_loss"]  = calculate_profit(bet.get("odds", 2.0), outcome)
+                bet["_settled_by"]  = "odds_api"
+                settled_session.append(bet)
+                pending_mgr.remove(bet)
+                logger.info("✅ [ODDS-API] %s vs %s → %s (%.2fu)",
+                            bet["home"], bet["away"],
+                            outcome.upper(), bet["profit_loss"])
+            else:
+                # check age → void or keep pending
                 try:
-                    bet_time = datetime.fromisoformat(bet["timestamp"])
-                    if bet_time.tzinfo is None:
-                        bet_time = bet_time.replace(tzinfo=timezone.utc)
-                    hours_elapsed = (now - bet_time).total_seconds() / 3600
+                    t = datetime.fromisoformat(bet["timestamp"])
+                    if t.tzinfo is None:
+                        t = t.replace(tzinfo=timezone.utc)
+                    age_h = (now - t).total_seconds() / 3600
                 except Exception:
-                    hours_elapsed = 0
+                    age_h = 0
 
-                # اگر 48 ساعت گذشت و پیدا نشد، Void کن
-                if hours_elapsed > 48:
-                    bet["outcome"] = "void"
+                if age_h > 72:                      # 3 days → give up
+                    bet["outcome"]     = "void"
                     bet["profit_loss"] = 0.0
                     bet["_settled_by"] = "void"
-                    settled_this_session.append(bet)
+                    settled_session.append(bet)
                     pending_mgr.remove(bet)
-                    logger.warning("⚪️ [VOID] %s vs %s (%.0fh elapsed)", bet["home"], bet["away"], hours_elapsed)
+                    logger.warning("⚪️ [VOID] %s vs %s (%.0fh old)",
+                                   bet["home"], bet["away"], age_h)
                 else:
                     pending_mgr.increment_retry(bet)
-                    still_pending.append(bet)
+                    logger.info("⏳ [RETRY %d] %s vs %s",
+                                bet.get("_retry_count", 0),
+                                bet["home"], bet["away"])
 
-    # ─── 4. همگام‌سازی و گزارش ───
+    # ── 4. persist & report ──────────────────────────────
     pending_mgr.save()
 
-    if not settled_this_session:
-        logger.info("⏳ No matches settled this session.")
+    if not settled_session:
+        logger.info("⏳ No new settlements this session.")
         return
 
-    for bet in settled_this_session:
-        sync_bet_to_tracker(bet, tracker)
+    synced = 0
+    for bet in settled_session:
+        if sync_bet_to_tracker(bet, tracker):
+            synced += 1
 
-    resolved = [s for s in tracker["signals"] if s.get("outcome") not in (None, "void")]
-    wins = [s for s in resolved if s["outcome"] == "win"]
+    resolved = [s for s in tracker["signals"]
+                if s.get("outcome") and s["outcome"] != "void"]
+    wins     = [s for s in resolved if s["outcome"] == "win"]
     total_pl = sum(s.get("profit_loss", 0) or 0 for s in resolved)
 
     tracker["summary"] = {
-        "total_signals": len(tracker["signals"]),
-        "resolved": len(resolved),
-        "win_rate": round(len(wins) / len(resolved), 3) if resolved else 0.0,
+        "total_signals":         len(tracker["signals"]),
+        "resolved":              len(resolved),
+        "win_rate":              round(len(wins) / max(len(resolved), 1), 3),
         "total_profit_loss_units": round(total_pl, 2),
-        "roi_pct": round((total_pl / len(resolved)) * 100, 2) if resolved else 0.0,
-        "last_updated": now.isoformat(),
-        "pending_count": len(pending_mgr.get_all()),
+        "roi_pct":               round(total_pl / max(len(resolved), 1) * 100, 2),
+        "last_updated":          now.isoformat(),
+        "pending_count":         len(pending_mgr.get_all()),
     }
 
     save_json_safe(PERFORMANCE_FILE, tracker)
-    send_telegram_report(settled_this_session, tracker["summary"])
-    logger.info("=" * 55)
+    logger.info("💾 Synced %d/%d bets to tracker.", synced, len(settled_session))
+
+    send_telegram_report(settled_session, tracker["summary"])
+
+    logger.info("=" * 60)
+    logger.info("📊 Settled:%d | Pending:%d | WR:%.1f%% | ROI:%.1f%%",
+                len(settled_session),
+                len(pending_mgr.get_all()),
+                tracker["summary"]["win_rate"] * 100,
+                tracker["summary"]["roi_pct"])
+    logger.info("=" * 60)
+
 
 if __name__ == "__main__":
     asyncio.run(async_settle())
