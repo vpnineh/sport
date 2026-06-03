@@ -155459,5 +155459,5328 @@
         }
       }
     ]
+  },
+  "645bf8fce47ff609772818beba1ea372": {
+    "timestamp": "2026-06-03T19:14:26.931686+00:00",
+    "data": [
+      {
+        "id": "9e7ec8d783bb18b8a2775b32d91e9824",
+        "sport_key": "baseball_mlb",
+        "sport_title": "MLB",
+        "commence_time": "2026-06-03T19:41:00Z",
+        "home_team": "Seattle Mariners",
+        "away_team": "New York Mets",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.17
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.74
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.74
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.74
+                }
+              ]
+            },
+            {
+              "bookmaker": "Paddy Power",
+              "bookmaker_key": "paddypower",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (FR)",
+              "bookmaker_key": "unibet_fr",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (UK)",
+              "bookmaker_key": "unibet_uk",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.71
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betclic (FR)",
+              "bookmaker_key": "betclic_fr",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.11
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.18
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.18
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.74
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (DE)",
+              "bookmaker_key": "winamax_de",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (FR)",
+              "bookmaker_key": "winamax_fr",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.71
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Right",
+              "bookmaker_key": "betright",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.26
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.73
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.73
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.19
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.18
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Neds",
+              "bookmaker_key": "neds",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_au",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Marathon Bet",
+              "bookmaker_key": "marathonbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.19
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.23
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.23
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas (SE)",
+              "bookmaker_key": "leovegas_se",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.23
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.23
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (SE)",
+              "bookmaker_key": "unibet_se",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.25
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.77
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.22
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.74
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.24
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.73
+                }
+              ]
+            },
+            {
+              "bookmaker": "BoyleSports",
+              "bookmaker_key": "boylesports",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.15
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.26
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.79
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.23
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "TAB",
+              "bookmaker_key": "tab",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.26
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.78
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.28
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.78
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.28
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.78
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.2
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.68
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.32
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.82
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.28
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.3
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.79
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.3
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.79
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "New York Mets",
+                  "price": 2.3
+                },
+                {
+                  "name": "Seattle Mariners",
+                  "price": 1.79
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.99,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.78,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.99,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.84,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.99,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.84,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.93,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.93,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 7.0
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.93,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.85,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.1,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.61,
+                  "point": 6.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.25,
+                  "point": 6.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.81,
+                  "point": 7.0
+                },
+                {
+                  "name": "Under",
+                  "price": 2.03,
+                  "point": 7.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.05,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.05,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 8.0,
+                  "point": 13.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.06,
+                  "point": 13.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 8.0,
+                  "point": 13.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.06,
+                  "point": 13.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.7,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 7.0
+                },
+                {
+                  "name": "Under",
+                  "price": 2.05,
+                  "point": 7.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.83,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.05,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.1,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.86,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.9,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.05,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.8,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 7.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "31eba8fe40243a3e0e029a8b9949d756",
+        "sport_key": "baseball_mlb",
+        "sport_title": "MLB",
+        "commence_time": "2026-06-03T22:41:00Z",
+        "home_team": "Philadelphia Phillies",
+        "away_team": "San Diego Padres",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.47
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.49
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.84
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.49
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.84
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.49
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.78
+                }
+              ]
+            },
+            {
+              "bookmaker": "Paddy Power",
+              "bookmaker_key": "paddypower",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (UK)",
+              "bookmaker_key": "unibet_uk",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.49
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.86
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betclic (FR)",
+              "bookmaker_key": "betclic_fr",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (FR)",
+              "bookmaker_key": "unibet_fr",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.48
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.47
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (DE)",
+              "bookmaker_key": "winamax_de",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (FR)",
+              "bookmaker_key": "winamax_fr",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.47
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Right",
+              "bookmaker_key": "betright",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.51
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.81
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.46
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.79
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.46
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.76
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Neds",
+              "bookmaker_key": "neds",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_au",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.46
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas (SE)",
+              "bookmaker_key": "leovegas_se",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (SE)",
+              "bookmaker_key": "unibet_se",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.43
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "Marathon Bet",
+              "bookmaker_key": "marathonbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.46
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.72
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.48
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.82
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.49
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "TAB",
+              "bookmaker_key": "tab",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.48
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.45
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.78
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.48
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.5
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.86
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.42
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.48
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "BoyleSports",
+              "bookmaker_key": "boylesports",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.44
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.75
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.51
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.94
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.51
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.94
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.51
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.92
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.55
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 3.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.54
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 3.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.52
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.96
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.52
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.96
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Philadelphia Phillies",
+                  "price": 1.52
+                },
+                {
+                  "name": "San Diego Padres",
+                  "price": 2.96
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.03,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.84,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.92,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.91,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.01,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.53,
+                  "point": 6.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.45,
+                  "point": 6.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.89,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 3.0,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.36,
+                  "point": 9.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.91,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 3.0,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.36,
+                  "point": 9.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.84,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.75,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.05,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.01,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.04,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.9,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 7.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "94a6962e86b12a2cc4f6e0cd72d4d426",
+        "sport_key": "baseball_milb",
+        "sport_title": "MiLB",
+        "commence_time": "2026-06-03T22:45:00Z",
+        "home_team": "Durham Bulls",
+        "away_team": "Charlotte Knights",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Charlotte Knights",
+                  "price": 1.68
+                },
+                {
+                  "name": "Durham Bulls",
+                  "price": 2.14
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Charlotte Knights",
+                  "price": 1.68
+                },
+                {
+                  "name": "Durham Bulls",
+                  "price": 2.09
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Charlotte Knights",
+                  "price": 1.71
+                },
+                {
+                  "name": "Durham Bulls",
+                  "price": 2.09
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Charlotte Knights",
+                  "price": 1.67
+                },
+                {
+                  "name": "Durham Bulls",
+                  "price": 2.1
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Charlotte Knights",
+                  "price": 1.65
+                },
+                {
+                  "name": "Durham Bulls",
+                  "price": 2.14
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 9.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.77,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.96,
+                  "point": 9.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 9.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 9.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.88,
+                  "point": 9.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "cea79127c72d029a5d9e4fadfa5123c1",
+        "sport_key": "baseball_milb",
+        "sport_title": "MiLB",
+        "commence_time": "2026-06-03T22:45:00Z",
+        "home_team": "Lehigh Valley IronPigs",
+        "away_team": "Rochester Red Wings",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Lehigh Valley IronPigs",
+                  "price": 2.2
+                },
+                {
+                  "name": "Rochester Red Wings",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Lehigh Valley IronPigs",
+                  "price": 2.11
+                },
+                {
+                  "name": "Rochester Red Wings",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Lehigh Valley IronPigs",
+                  "price": 2.13
+                },
+                {
+                  "name": "Rochester Red Wings",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Lehigh Valley IronPigs",
+                  "price": 2.1
+                },
+                {
+                  "name": "Rochester Red Wings",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Lehigh Valley IronPigs",
+                  "price": 2.2
+                },
+                {
+                  "name": "Rochester Red Wings",
+                  "price": 1.61
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.93,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.79,
+                  "point": 11.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.97,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.76,
+                  "point": 11.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.0,
+                  "point": 10.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.77,
+                  "point": 10.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.92,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.81,
+                  "point": 11.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "3ca053166f16be8d40c5adfe1a2bd8aa",
+        "sport_key": "baseball_mlb",
+        "sport_title": "MLB",
+        "commence_time": "2026-06-03T22:46:00Z",
+        "home_team": "Boston Red Sox",
+        "away_team": "Baltimore Orioles",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.34
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.36
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.34
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Paddy Power",
+              "bookmaker_key": "paddypower",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (FR)",
+              "bookmaker_key": "unibet_fr",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.63
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (UK)",
+              "bookmaker_key": "unibet_uk",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.27
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.38
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betclic (FR)",
+              "bookmaker_key": "betclic_fr",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.63
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.3
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.22
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.22
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (DE)",
+              "bookmaker_key": "winamax_de",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (FR)",
+              "bookmaker_key": "winamax_fr",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.2
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Right",
+              "bookmaker_key": "betright",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.35
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.61
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.29
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.32
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.63
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Neds",
+              "bookmaker_key": "neds",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_au",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.3
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.3
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas (SE)",
+              "bookmaker_key": "leovegas_se",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (SE)",
+              "bookmaker_key": "unibet_se",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.65
+                }
+              ]
+            },
+            {
+              "bookmaker": "Marathon Bet",
+              "bookmaker_key": "marathonbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.28
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.63
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.33
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.38
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "TAB",
+              "bookmaker_key": "tab",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.68
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.27
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.64
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.34
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.67
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.3
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.3
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.6
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.4
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.33
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "BoyleSports",
+              "bookmaker_key": "boylesports",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.25
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.42
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.42
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.69
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.42
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.69
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.46
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.73
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.46
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.72
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_eu",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.44
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_uk",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.44
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.7
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betfair",
+              "bookmaker_key": "betfair_ex_au",
+              "outcomes": [
+                {
+                  "name": "Baltimore Orioles",
+                  "price": 2.46
+                },
+                {
+                  "name": "Boston Red Sox",
+                  "price": 1.7
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LowVig.ag",
+              "bookmaker_key": "lowvig",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.86,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.01,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "SportsBet",
+              "bookmaker_key": "sportsbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "888sport",
+              "bookmaker_key": "sport888",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Nordic Bet",
+              "bookmaker_key": "nordicbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 9.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.76,
+                  "point": 9.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betsson",
+              "bookmaker_key": "betsson",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.02,
+                  "point": 9.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.76,
+                  "point": 9.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "PlayUp",
+              "bookmaker_key": "playup",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.9,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.02,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Victor",
+              "bookmaker_key": "betvictor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.61,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.25,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "DraftKings",
+              "bookmaker_key": "draftkings",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bovada",
+              "bookmaker_key": "bovada",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetMGM",
+              "bookmaker_key": "betmgm",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Ladbrokes",
+              "bookmaker_key": "ladbrokes_uk",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.01,
+                  "point": 3.0
+                },
+                {
+                  "name": "Under",
+                  "price": 17.0,
+                  "point": 3.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coral",
+              "bookmaker_key": "coral",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.01,
+                  "point": 3.0
+                },
+                {
+                  "name": "Under",
+                  "price": 17.0,
+                  "point": 3.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "MyBookie.ag",
+              "bookmaker_key": "mybookieag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.88,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "TABtouch",
+              "bookmaker_key": "tabtouch",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.74,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.82,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.86,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.86,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetUS",
+              "bookmaker_key": "betus",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.83,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Pinnacle",
+              "bookmaker_key": "pinnacle",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.89,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Coolbet",
+              "bookmaker_key": "coolbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetAnything",
+              "bookmaker_key": "betanysports",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.85,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.98,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Tipico",
+              "bookmaker_key": "tipico_de",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.8,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.9,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Matchbook",
+              "bookmaker_key": "matchbook",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.9,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.0,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Everygame",
+              "bookmaker_key": "everygame",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 8.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "abbdc73ed5eb4c07ac843c0971000ffa",
+        "sport_key": "icehockey_ahl",
+        "sport_title": "AHL",
+        "commence_time": "2026-06-03T23:00:00Z",
+        "home_team": "Toronto Marlies",
+        "away_team": "W-B/Scranton Penguins",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.96
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.35
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.23
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.57
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.84
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 2.06
+                },
+                {
+                  "name": "Draw",
+                  "price": 3.98
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.2
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.16
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.62
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.95
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.35
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (UK)",
+              "bookmaker_key": "unibet_uk",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 2.02
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.1
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.95
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.35
+                }
+              ]
+            },
+            {
+              "bookmaker": "PMU (FR)",
+              "bookmaker_key": "pmu_fr",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.95
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.35
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (FR)",
+              "bookmaker_key": "unibet_fr",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.8
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.96
+                },
+                {
+                  "name": "Draw",
+                  "price": 3.95
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.94
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 2.07
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.15
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.95
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.95
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.35
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.85
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.89
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.25
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (FR)",
+              "bookmaker_key": "winamax_fr",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.65
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.9
+                },
+                {
+                  "name": "Draw",
+                  "price": 3.95
+                }
+              ]
+            },
+            {
+              "bookmaker": "Winamax (DE)",
+              "bookmaker_key": "winamax_de",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.8
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.96
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.1
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betclic (FR)",
+              "bookmaker_key": "betclic_fr",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.77
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.97
+                },
+                {
+                  "name": "Draw",
+                  "price": 3.98
+                }
+              ]
+            },
+            {
+              "bookmaker": "Bet Right",
+              "bookmaker_key": "betright",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.22
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.66
+                }
+              ]
+            },
+            {
+              "bookmaker": "PointsBet (AU)",
+              "bookmaker_key": "pointsbetau",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.15
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.6
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betr",
+              "bookmaker_key": "betr_au",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.2
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.61
+                }
+              ]
+            },
+            {
+              "bookmaker": "Betway",
+              "bookmaker_key": "betway",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.85
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 2.0
+                },
+                {
+                  "name": "Draw",
+                  "price": 4.0
+                }
+              ]
+            }
+          ],
+          "h2h_lay": [
+            {
+              "bookmaker": "Smarkets",
+              "bookmaker_key": "smarkets",
+              "outcomes": [
+                {
+                  "name": "Toronto Marlies",
+                  "price": 2.72
+                },
+                {
+                  "name": "W-B/Scranton Penguins",
+                  "price": 1.92
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "Unibet",
+              "bookmaker_key": "unibet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.1,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.7,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.1,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.65,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Grosvenor",
+              "bookmaker_key": "grosvenor",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LiveScore Bet",
+              "bookmaker_key": "livescorebet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Casumo",
+              "bookmaker_key": "casumo",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "GTbets",
+              "bookmaker_key": "gtbets",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.84,
+                  "point": 5.0
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 5.0
+                }
+              ]
+            },
+            {
+              "bookmaker": "Virgin Bet",
+              "bookmaker_key": "virginbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "Unibet (NL)",
+              "bookmaker_key": "unibet_nl",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "LeoVegas",
+              "bookmaker_key": "leovegas",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 2.08,
+                  "point": 5.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.71,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "b4808548fb02c7ca4b53ca5b4872652e",
+        "sport_key": "baseball_milb",
+        "sport_title": "MiLB",
+        "commence_time": "2026-06-03T23:05:00Z",
+        "home_team": "Columbus Clippers",
+        "away_team": "Omaha Storm Chasers",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Columbus Clippers",
+                  "price": 1.71
+                },
+                {
+                  "name": "Omaha Storm Chasers",
+                  "price": 2.1
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Columbus Clippers",
+                  "price": 1.7
+                },
+                {
+                  "name": "Omaha Storm Chasers",
+                  "price": 2.06
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Columbus Clippers",
+                  "price": 1.71
+                },
+                {
+                  "name": "Omaha Storm Chasers",
+                  "price": 2.09
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Columbus Clippers",
+                  "price": 1.7
+                },
+                {
+                  "name": "Omaha Storm Chasers",
+                  "price": 2.05
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Columbus Clippers",
+                  "price": 1.67
+                },
+                {
+                  "name": "Omaha Storm Chasers",
+                  "price": 2.1
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.79,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.93,
+                  "point": 11.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.77,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.95,
+                  "point": 11.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.69,
+                  "point": 10.5
+                },
+                {
+                  "name": "Under",
+                  "price": 2.13,
+                  "point": 10.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.82,
+                  "point": 11.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.89,
+                  "point": 11.5
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "47ba81d29d6be644bfa8ada5ea469493",
+        "sport_key": "baseball_milb",
+        "sport_title": "MiLB",
+        "commence_time": "2026-06-03T23:05:00Z",
+        "home_team": "Jacksonville Jumbo Shrimp",
+        "away_team": "Nashville Sounds",
+        "_markets_data": {
+          "h2h": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Jacksonville Jumbo Shrimp",
+                  "price": 1.93
+                },
+                {
+                  "name": "Nashville Sounds",
+                  "price": 1.85
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Jacksonville Jumbo Shrimp",
+                  "price": 1.89
+                },
+                {
+                  "name": "Nashville Sounds",
+                  "price": 1.83
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Jacksonville Jumbo Shrimp",
+                  "price": 1.91
+                },
+                {
+                  "name": "Nashville Sounds",
+                  "price": 1.83
+                }
+              ]
+            },
+            {
+              "bookmaker": "William Hill",
+              "bookmaker_key": "williamhill",
+              "outcomes": [
+                {
+                  "name": "Jacksonville Jumbo Shrimp",
+                  "price": 1.91
+                },
+                {
+                  "name": "Nashville Sounds",
+                  "price": 1.8
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Jacksonville Jumbo Shrimp",
+                  "price": 1.92
+                },
+                {
+                  "name": "Nashville Sounds",
+                  "price": 1.8
+                }
+              ]
+            }
+          ],
+          "totals": [
+            {
+              "bookmaker": "FanDuel",
+              "bookmaker_key": "fanduel",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.78,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.94,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "1xBet",
+              "bookmaker_key": "onexbet",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.97,
+                  "point": 8.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.76,
+                  "point": 8.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetOnline.ag",
+              "bookmaker_key": "betonlineag",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.87,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.87,
+                  "point": 7.5
+                }
+              ]
+            },
+            {
+              "bookmaker": "BetRivers",
+              "bookmaker_key": "betrivers",
+              "outcomes": [
+                {
+                  "name": "Over",
+                  "price": 1.81,
+                  "point": 7.5
+                },
+                {
+                  "name": "Under",
+                  "price": 1.91,
+                  "point": 7.5
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }
