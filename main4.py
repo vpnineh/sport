@@ -1721,7 +1721,7 @@ class FreeDataEngine:
         self.nba_data: Optional[pd.DataFrame] = None
         self.nhl_data: Optional[pd.DataFrame] = None
         self.mlb_data: Optional[pd.DataFrame] = None
-        self.years = [2022, 2023, 2024, 2025]
+        self.years = [2022, 2023, 2024, 2025, 2026]
 
     def _download_csv(self, url: str, path: Path, timeout: int = 30) -> bool:
         if path.exists() and (time.time() - path.stat().st_mtime) / 3600 < CFG.TTL_GITHUB_DATA:
@@ -1894,7 +1894,6 @@ class FreeDataEngine:
                     else "poor"
                 )
 
-        # TSDB player enrichment
         for p_name, key in [(pa, "player_a"), (pb, "player_b")]:
             try:
                 tp = tsdb.get_player_stats(p_name)
@@ -1903,7 +1902,6 @@ class FreeDataEngine:
             except Exception:
                 pass
 
-        # H2H from GitHub
         h2h_a = df[
             df["winner_name"].str.lower().str.contains(ca, na=False) &
             df["loser_name"].str.lower().str.contains(cb, na=False)
@@ -1979,7 +1977,7 @@ class FreeDataEngine:
                             sub = sub.dropna(subset=["HomeTeam", "AwayTeam"])
                         all_dfs.append(sub)
                     except Exception as e:
-                        logger.debug("[FOOTBALL] %s: %s", path.name, e)
+                        logger.warning("[FOOTBALL] %s: %s", path.name, e)
         if all_dfs:
             comb = pd.concat(all_dfs, ignore_index=True)
             if "Date" in comb.columns:
@@ -2001,35 +1999,21 @@ class FreeDataEngine:
         return pd.Series([False] * len(col), index=col.index)
 
     def get_football_stats(self, home: str, away: str) -> dict:
-        """
-        Multi-source football stats:
-        1. API-Football (primary — best data)
-        2. Football-Data.org (backup)
-        3. TheSportsDB (fallback)
-        4. GitHub CSV (historical baseline)
-        """
         stats: dict = {"home": {}, "away": {}, "h2h": {}}
 
-        # ── 1. API-Football ───────────────────────────────────
         if CFG.API_FOOTBALL_KEY:
             try:
                 h_apif = api_football.get_team_stats(home)
                 a_apif = api_football.get_team_stats(away)
                 if h_apif:
                     stats["home"].update(h_apif)
-                    logger.debug("[API-FOOTBALL] %s: Q=%s",
-                                 home, h_apif.get("data_quality"))
                 if a_apif:
                     stats["away"].update(a_apif)
-                    logger.debug("[API-FOOTBALL] %s: Q=%s",
-                                 away, a_apif.get("data_quality"))
 
-                # H2H from API-Football
                 h2h_apif = api_football.get_h2h(home, away)
                 if h2h_apif:
                     stats["h2h"].update(h2h_apif)
 
-                # Standings
                 if h_apif.get("league_id"):
                     h_standing = api_football.get_team_standing(
                         home, h_apif["league_id"])
@@ -2040,11 +2024,9 @@ class FreeDataEngine:
                         away, a_apif["league_id"])
                     if a_standing:
                         stats["away"]["standing"] = a_standing
-
             except Exception as e:
                 logger.warning("[API-FOOTBALL] get_football_stats: %s", e)
 
-        # ── 2. Football-Data.org (if API-Football missing) ────
         if not stats["home"].get("win_rate") and CFG.FOOTBALL_DATA_ORG_KEY:
             try:
                 h_fdo = football_data_org.get_team_matches(home)
@@ -2054,9 +2036,8 @@ class FreeDataEngine:
                 if a_fdo:
                     stats["away"].update(a_fdo)
             except Exception as e:
-                logger.debug("[FOOTBALL-DATA.ORG] %s", e)
+                logger.warning("[FOOTBALL-DATA.ORG] %s", e)
 
-        # ── 3. TheSportsDB (always enrich form) ───────────────
         try:
             h_tsdb = tsdb.get_team_stats(home)
             a_tsdb = tsdb.get_team_stats(away)
@@ -2067,9 +2048,8 @@ class FreeDataEngine:
                 stats["away"]["tsdb_form"] = a_tsdb.get("form", "")
                 stats["away"]["tsdb_win_rate"] = a_tsdb.get("win_rate", 0)
         except Exception as e:
-            logger.debug("[TSDB] football enrich: %s", e)
+            logger.warning("[TSDB] football enrich: %s", e)
 
-        # ── 4. GitHub CSV (historical baseline always) ─────────
         df = self.football_data.get("all")
         if df is not None and not df.empty:
             for team, key, is_home in [(home, "home", True), (away, "away", False)]:
@@ -2123,14 +2103,11 @@ class FreeDataEngine:
                             else "poor"
                         )
                     }
-                    # Only override if API-Football didn't provide
                     if not stats[key].get("win_rate"):
                         stats[key].update(github_stats)
                     else:
-                        # Add as supplement
                         stats[key]["github"] = github_stats
 
-            # GitHub H2H
             if not stats["h2h"]:
                 hm2 = self._fuzzy_df(home, df["HomeTeam"])
                 am2 = self._fuzzy_df(away, df["AwayTeam"])
@@ -2159,10 +2136,8 @@ class FreeDataEngine:
 
     def load_nhl_data(self):
         url = "https://api-web.nhle.com/v1/standings/now"
-        cache_path = CFG.HISTORICAL_DIR / "nhl_standings.json"
         try:
-            r = requests.get(url, timeout=15,
-                             headers={"User-Agent": "Mozilla/5.0"})
+            r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
             if r.status_code == 200:
                 data = r.json()
                 standings = data.get("standings", [])
@@ -2196,11 +2171,11 @@ class FreeDataEngine:
         self.nhl_data = None
 
     def load_mlb_data(self):
-        url = ("https://statsapi.mlb.com/api/v1/standings"
-               "?leagueId=103,104&season=2025&standingsTypes=regularSeason")
+        season = datetime.now().year
+        url = (f"https://statsapi.mlb.com/api/v1/standings"
+               f"?leagueId=103,104&season={season}&standingsTypes=regularSeason")
         try:
-            r = requests.get(url, timeout=15,
-                             headers={"User-Agent": "Mozilla/5.0"})
+            r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
             if r.status_code == 200:
                 data = r.json()
                 rows = []
@@ -2223,7 +2198,7 @@ class FreeDataEngine:
                         })
                 if rows:
                     self.mlb_data = pd.DataFrame(rows)
-                    logger.info("✅ [MLB] %d teams", len(rows))
+                    logger.info("✅ [MLB] %d teams (Season %s)", len(rows), season)
                     return
         except Exception as e:
             logger.warning("[MLB] %s", str(e)[:60])
@@ -2232,8 +2207,11 @@ class FreeDataEngine:
     def load_nba_data(self):
         try:
             from nba_api.stats.endpoints import leaguestandings
+            now = datetime.now()
+            s_year = now.year if now.month > 8 else now.year - 1
+            season_str = f"{s_year}-{str(s_year+1)[-2:]}"
             standings = leaguestandings.LeagueStandings(
-                season="2024-25", season_type="Regular Season", league_id="00",
+                season=season_str, season_type="Regular Season", league_id="00",
                 headers={
                     "User-Agent": "Mozilla/5.0",
                     "Accept": "application/json",
@@ -2243,7 +2221,7 @@ class FreeDataEngine:
             df = standings.get_data_frames()[0]
             if df is not None and not df.empty:
                 self.nba_data = df
-                logger.info("✅ [NBA] %d teams", len(df))
+                logger.info("✅ [NBA] %d teams (Season %s)", len(df), season_str)
                 return
         except Exception as e:
             logger.warning("[NBA] %s", str(e)[:60])
@@ -2251,63 +2229,88 @@ class FreeDataEngine:
 
     def get_us_sports_stats(self, sport: str, team: str) -> dict:
         sport_lower = sport.lower()
+        clean = str(team).lower().strip()
 
         # NBA
         if "basketball" in sport_lower or "nba" in sport_lower:
-            # Try BallDontLie first
             try:
                 recent = balldontlie.get_recent_games(team)
                 if recent and recent.get("data_quality") != "poor":
                     avg_stats = balldontlie.get_team_stats(team)
                     return {**recent, **avg_stats}
-            except Exception:
-                pass
-            # Fallback to nba_api standings
-            if self.nba_data is not None and not self.nba_data.empty:
-                clean = team.lower().strip()
-                for col in ["TeamName", "TEAM_NAME"]:
-                    if col in self.nba_data.columns:
-                        m = self.nba_data[
-                            self.nba_data[col].astype(str).str.lower()
-                            .str.contains(re.escape(clean), na=False)
-                        ]
-                        if not m.empty:
-                            row = m.iloc[0]
-                            return {
-                                "win_pct": float(
-                                    row.get("WinPCT", row.get("WIN_PCT", 0.5)) or 0.5),
-                                "source": "nba_api"
-                            }
+            except Exception as e:
+                logger.warning("[get_us_sports_stats NBA] BDL error: %s", e)
+
+            try:
+                if self.nba_data is not None and not self.nba_data.empty:
+                    for col in ["TeamName", "TEAM_NAME"]:
+                        if col in self.nba_data.columns:
+                            col_data = self.nba_data[col].astype(str).str.lower()
+                            m = col_data.str.contains(re.escape(clean), na=False) | col_data.apply(lambda x: x in clean)
+                            if m.any():
+                                row = self.nba_data[m].iloc[0]
+                                return {
+                                    "win_pct": float(row.get("WinPCT", row.get("WIN_PCT", 0.5)) or 0.5),
+                                    "source": "nba_api",
+                                    "data_quality": "limited"
+                                }
+                            for _, row in self.nba_data.iterrows():
+                                if _fuzzy_match_name(clean, str(row[col])):
+                                    return {
+                                        "win_pct": float(row.get("WinPCT", row.get("WIN_PCT", 0.5)) or 0.5),
+                                        "source": "nba_api",
+                                        "data_quality": "limited"
+                                    }
+            except Exception as e:
+                logger.warning("[get_us_sports_stats NBA] Fallback error: %s", e)
 
         # MLB
         elif "baseball" in sport_lower or "mlb" in sport_lower:
-            if self.mlb_data is not None:
-                clean = team.lower().strip()
-                m = self.mlb_data[
-                    self.mlb_data["team"].str.lower()
-                    .str.contains(re.escape(clean), na=False)
-                ]
-                if not m.empty:
-                    return m.iloc[0].to_dict()
+            try:
+                if self.mlb_data is not None and not self.mlb_data.empty:
+                    col_data = self.mlb_data["team"].astype(str).str.lower()
+                    m = col_data.str.contains(re.escape(clean), na=False) | col_data.apply(lambda x: x in clean)
+                    if m.any():
+                        d = self.mlb_data[m].iloc[0].to_dict()
+                        d["data_quality"] = "good"
+                        d["source"] = "mlb_api"
+                        return d
+                    for _, row in self.mlb_data.iterrows():
+                        if _fuzzy_match_name(clean, str(row["team"])):
+                            d = row.to_dict()
+                            d["data_quality"] = "good"
+                            d["source"] = "mlb_api"
+                            return d
+            except Exception as e:
+                logger.warning("[get_us_sports_stats MLB] %s", e)
 
         # NHL
         elif "hockey" in sport_lower or "nhl" in sport_lower:
-            if self.nhl_data is not None:
-                clean = team.lower().strip()
-                m = self.nhl_data[
-                    self.nhl_data["team"].str.lower()
-                    .str.contains(re.escape(clean), na=False)
-                ]
-                if not m.empty:
-                    return m.iloc[0].to_dict()
+            try:
+                if self.nhl_data is not None and not self.nhl_data.empty:
+                    col_data = self.nhl_data["team"].astype(str).str.lower()
+                    m = col_data.str.contains(re.escape(clean), na=False) | col_data.apply(lambda x: x in clean)
+                    if m.any():
+                        d = self.nhl_data[m].iloc[0].to_dict()
+                        d["data_quality"] = "good"
+                        d["source"] = "nhl_api"
+                        return d
+                    for _, row in self.nhl_data.iterrows():
+                        if _fuzzy_match_name(clean, str(row["team"])):
+                            d = row.to_dict()
+                            d["data_quality"] = "good"
+                            d["source"] = "nhl_api"
+                            return d
+            except Exception as e:
+                logger.warning("[get_us_sports_stats NHL] %s", e)
 
         # TSDB fallback for any sport
         try:
             ts = tsdb.get_team_stats(team)
             if ts and ts.get("data_quality") in ("good", "limited"):
                 return ts
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("[get_us_sports_stats TSDB Fallback] %s", e)
 
         return {}
 
@@ -3904,7 +3907,7 @@ async def async_main():
                                 tp.get("sport", "")
                         logger.debug("  ✅ TSDB player: %s", p_name)
                 except Exception as e:
-                    logger.debug("  [TSDB player] %s: %s", p_name, e)
+                    logger.warning("  [TSDB player] %s: %s", p_name, e)
 
             # 3. ML prediction
             if ml.is_tennis_trained and ts:
@@ -3956,7 +3959,7 @@ async def async_main():
                             if a_st:
                                 stats["football_stats"]["away"]["standing"] = a_st
                 except Exception as e:
-                    logger.warning("  [API-Football] %s", str(e)[:80])
+                    logger.warning("  [API-Football Pipeline] %s", str(e)[:80])
 
             # 2. Football-Data.org (if API-Football missing)
             if not stats.get("football_stats") and CFG.FOOTBALL_DATA_ORG_KEY:
@@ -3973,7 +3976,7 @@ async def async_main():
                                     h_fdo.get("data_quality","?") if h_fdo else "none",
                                     a_fdo.get("data_quality","?") if a_fdo else "none")
                 except Exception as e:
-                    logger.debug("  [Football-Data.org] %s", str(e)[:60])
+                    logger.warning("  [Football-Data.org Pipeline] %s", str(e)[:60])
 
             # 3. GitHub CSV (always — historical baseline + H2H)
             try:
@@ -3993,7 +3996,7 @@ async def async_main():
                                 fs_github.get("h2h", {})
                         logger.info("  ✅ GitHub football: supplemented")
             except Exception as e:
-                logger.debug("  [GitHub football] %s", str(e)[:60])
+                logger.warning("  [GitHub football Pipeline] %s", str(e)[:60])
 
             # 4. TSDB team form (quick enrich)
             try:
@@ -4022,7 +4025,7 @@ async def async_main():
                                 h_tsdb.get("data_quality","?") if h_tsdb else "none",
                                 a_tsdb.get("data_quality","?") if a_tsdb else "none")
             except Exception as e:
-                logger.debug("  [TSDB football] %s", str(e)[:60])
+                logger.warning("  [TSDB football Pipeline] %s", str(e)[:60])
 
             # 5. ML model
             if ml.is_football_trained:
@@ -4034,7 +4037,7 @@ async def async_main():
                                     {k: f"{v*100:.1f}%" for k, v in ml_pred.items()
                                      if isinstance(v, float)})
                 except Exception as e:
-                    logger.debug("  [ML football] %s", e)
+                    logger.warning("  [ML football Pipeline] %s", e)
 
             # 6. Poisson
             try:
@@ -4047,7 +4050,7 @@ async def async_main():
                                 poisson_pred.get("draw_prob_poisson",0)*100,
                                 poisson_pred.get("away_win_prob_poisson",0)*100)
             except Exception as e:
-                logger.debug("  [Poisson] %s", e)
+                logger.warning("  [Poisson Pipeline] %s", e)
 
         # ── BASKETBALL ────────────────────────────────────────
         elif sport_key == "basketball":
@@ -4067,7 +4070,7 @@ async def async_main():
                                 h_bdl.get("data_quality","?") if h_bdl else "none",
                                 a_bdl.get("data_quality","?") if a_bdl else "none")
             except Exception as e:
-                logger.debug("  [BallDontLie] %s", e)
+                logger.warning("  [BallDontLie Pipeline] %s", e)
 
             # 2. Fallback: nba_api standings
             if not stats.get("us_sports"):
@@ -4078,7 +4081,7 @@ async def async_main():
                         stats["us_sports"] = {"home": hs, "away": aws}
                         logger.info("  ✅ NBA standings fallback")
                 except Exception as e:
-                    logger.debug("  [NBA fallback] %s", e)
+                    logger.warning("  [NBA fallback Pipeline] %s", e)
 
             # 3. ML from win rates
             us = stats.get("us_sports", {})
@@ -4110,7 +4113,7 @@ async def async_main():
                                 hs.get("source","?") if hs else "none",
                                 aws.get("source","?") if aws else "none")
             except Exception as e:
-                logger.debug("  [MLB] %s", e)
+                logger.warning("  [MLB Pipeline] %s", e)
 
             # TSDB as backup
             if not stats.get("us_sports"):
@@ -4124,7 +4127,7 @@ async def async_main():
                         }
                         logger.info("  ✅ TSDB baseball fallback")
                 except Exception as e:
-                    logger.debug("  [TSDB baseball] %s", e)
+                    logger.warning("  [TSDB baseball Pipeline] %s", e)
 
             # Simple ML from win rates
             us = stats.get("us_sports", {})
@@ -4155,7 +4158,7 @@ async def async_main():
                                 hs.get("source","?") if hs else "none",
                                 aws.get("source","?") if aws else "none")
             except Exception as e:
-                logger.debug("  [NHL] %s", e)
+                logger.warning("  [NHL Pipeline] %s", e)
 
             # TSDB backup
             if not stats.get("us_sports"):
@@ -4169,7 +4172,7 @@ async def async_main():
                         }
                         logger.info("  ✅ TSDB hockey fallback")
                 except Exception as e:
-                    logger.debug("  [TSDB hockey] %s", e)
+                    logger.warning("  [TSDB hockey Pipeline] %s", e)
 
             # ML from win rates
             us = stats.get("us_sports", {})
@@ -4200,7 +4203,7 @@ async def async_main():
                     }
                     logger.info("  ✅ TSDB other sport")
             except Exception as e:
-                logger.debug("  [TSDB other] %s", e)
+                logger.warning("  [TSDB other Pipeline] %s", e)
 
         # Log data summary
         data_sources = []
