@@ -429,8 +429,10 @@
       "ev": 0.0219,
       "confidence": 67,
       "implied_prob": 0.433,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "espn",
+      "_settled_at": "2026-06-03T02:38:17.233390+00:00"
     },
     {
       "id": "9462bc03",
@@ -445,8 +447,10 @@
       "ev": 0.0164,
       "confidence": 67,
       "implied_prob": 0.5841,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "espn",
+      "_settled_at": "2026-06-03T02:38:17.233400+00:00"
     },
     {
       "id": "611d7ab1",
@@ -461,16 +465,19 @@
       "ev": 0.0165,
       "confidence": 64,
       "implied_prob": 0.5585,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "win",
+      "profit_loss": 0.82,
+      "_settled_by": "espn",
+      "_settled_at": "2026-06-03T02:38:17.233405+00:00"
     }
   ],
   "summary": {
     "total_signals": 29,
-    "resolved": 10,
-    "win_rate": 0.3,
-    "total_profit_loss_units": -2.01,
-    "roi_pct": -20.1,
-    "last_updated": "2026-06-02T20:40:00.446172+00:00"
+    "resolved": 13,
+    "win_rate": 0.308,
+    "total_profit_loss_units": -3.19,
+    "roi_pct": -24.54,
+    "last_updated": "2026-06-03T02:38:16.414244+00:00",
+    "pending_count": 16
   }
 }
