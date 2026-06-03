@@ -553,32 +553,24 @@ class FreeDataEngine:
     def get_player_ranking(self,name:str,is_wta:bool=False)->Optional[int]:
         df=self.wta_rankings if is_wta else self.atp_rankings
         if df is None or df.empty:return None
-        # BUG-8: Handle compound names (e.g., "Auger-Aliassime", "De Minaur")
         nc=next((c for c in ["player","name","player_name"] if c in df.columns),None)
         if not nc:return None
         name_lower=name.lower().strip()
         col_lower=df[nc].astype(str).str.lower()
-        # Try exact full name match first
         exact=df[col_lower==name_lower]
         if not exact.empty:m=exact
         else:
-            # Try last word match (simple case)
-            last_word=name.split()[-1].lower()
-            # Try full name substring
-            m=df[col_lower.str.contains(re.escape(name_lower),na=False)]
-            if m.empty:
-                # Try hyphenated last name (e.g., Auger-Aliassime)
-                parts=name.split()
-                if len(parts)>1:
-                    # Try last two words joined (De Minaur → "de minaur")
-                    last_two=" ".join(parts[-2:]).lower()
-                    m=df[col_lower.str.contains(re.escape(last_two),na=False)]
+            parts=name.split()
+            if len(parts)>1:
+                last_two=" ".join(parts[-2:]).lower()
+                m=df[col_lower.str.contains(re.escape(last_two),na=False)]
                 if m.empty and "-" in name:
-                    # Try after hyphen (Auger-Aliassime → Aliassime)
                     after_hyphen=name.split("-")[-1].lower()
                     m=df[col_lower.str.contains(re.escape(after_hyphen),na=False)]
                 if m.empty:
-                    m=df[col_lower.str.contains(re.escape(last_word),na=False)]
+                    m=df[col_lower.str.contains(re.escape(parts[-1].lower()),na=False)]
+            else:
+                m=df[col_lower.str.contains(re.escape(name_lower),na=False)]
         if not m.empty:
             rc=next((c for c in ["rank","ranking","player_rank"] if c in m.columns),None)
             if rc:
@@ -625,15 +617,10 @@ class FreeDataEngine:
     def get_tennis_stats(self,pa:str,pb:str,is_wta:bool=False)->dict:
         df=self.wta_matches if is_wta else self.atp_matches
         if df is None or df.empty:return {}
-        # BUG-8: Better name cleaning for compound names
         def cl(n):
-            n=n.strip()
-            # If hyphenated, keep full last name
-            parts=n.split()
+            n=n.strip();parts=n.split()
             if len(parts)>=2:
-                # Return last two parts joined for compound surnames
                 candidate=" ".join(parts[-2:]).lower()
-                # Check if this compound surname exists in data
                 if df is not None:
                     wn=df["winner_name"].astype(str).str.lower()
                     ln=df["loser_name"].astype(str).str.lower()
@@ -642,12 +629,18 @@ class FreeDataEngine:
             return parts[-1].lower()
         ca,cb=cl(pa),cl(pb)
         stats={"player_a":{"name":pa},"player_b":{"name":pb},"h2h":{}}
-        for p_c,key,p_f in [(ca,"player_a",pa),(cb,"player_b",pb)]:
+        for p_c,key,p_f,is_w in [(ca,"player_a",pa,is_wta),(cb,"player_b",pb,is_wta)]:
             s=self._player_rolling(df,p_c)
             if s:
                 stats[key].update(s)
-                r=self.get_player_ranking(p_f,is_wta)
+                r=self.get_player_ranking(p_f,is_w)
                 if r:stats[key]["current_ranking"]=r
+                # ── NEW: add data quality flag ──
+                stats[key]["data_quality"]=(
+                    "good" if s.get("total_matches",0)>=20
+                    else "limited" if s.get("total_matches",0)>=5
+                    else "poor"
+                )
         h2h_a=df[df["winner_name"].str.lower().str.contains(ca,na=False)&df["loser_name"].str.lower().str.contains(cb,na=False)]
         h2h_b=df[df["winner_name"].str.lower().str.contains(cb,na=False)&df["loser_name"].str.lower().str.contains(ca,na=False)]
         t=len(h2h_a)+len(h2h_b)
@@ -662,6 +655,16 @@ class FreeDataEngine:
                     if len(sa)+len(sb):bs[surf]={f"{pa}_wins":len(sa),f"{pb}_wins":len(sb)}
                 if bs:stats["h2h"]["by_surface"]=bs
             logger.info("✅ [H2H TENNIS] %s vs %s: %d matches",pa,pb,t)
+        # ── NEW: overall data quality summary ──
+        qa=stats["player_a"].get("data_quality","poor")
+        qb=stats["player_b"].get("data_quality","poor")
+        stats["data_quality_summary"]={
+            "player_a":qa,"player_b":qb,
+            "h2h_matches":t,
+            "overall":"good" if qa=="good" and qb=="good" and t>=3
+                      else "limited" if qa!="poor" or qb!="poor"
+                      else "poor"
+        }
         return stats
 
     def load_football_data(self):
@@ -685,17 +688,18 @@ class FreeDataEngine:
                     except Exception as e:logger.debug("[FOOTBALL] %s: %s",path.name,e)
         if all_dfs:
             comb=pd.concat(all_dfs,ignore_index=True)
-            # BUG-2: Ensure chronological sort before any rolling calculation
             if "Date" in comb.columns:comb=comb.sort_values("Date").reset_index(drop=True)
             self.football_data["all"]=comb;logger.info("✅ [FOOTBALL] %d matches",len(comb))
 
     def _fuzzy(self,team:str,col:pd.Series)->pd.Series:
         clean=team.lower().strip();m=col.str.lower().str.strip()==clean
         if m.any():return m
+        # try word by word
         for p in clean.split():
             if len(p)>3:
                 m2=col.str.lower().str.contains(re.escape(p),na=False)
-                if m2.any():return m2
+                if m2.sum()<=15:  # avoid overly broad matches
+                    if m2.any():return m2
         return pd.Series([False]*len(col),index=col.index)
 
     def get_football_stats(self,home:str,away:str)->dict:
@@ -747,7 +751,13 @@ class FreeDataEngine:
                         "avg_corners":round(float(np.mean([r["corners"] for r in recent])),1),
                         "shot_conversion":round(float(np.mean(sc))/avg_sh,3),
                         "weighted_form_points":round(float(np.dot(wts,rpts)),3),
-                        "matches_analyzed":n,"total_historical":len(all_r)}
+                        "matches_analyzed":n,"total_historical":len(all_r),
+                        # ── NEW: data quality ──
+                        "data_quality":(
+                            "good" if len(all_r)>=20
+                            else "limited" if len(all_r)>=8
+                            else "poor"
+                        )}
             vk="home" if is_home else "away"
             vm=[r for r in all_r[:20] if r["venue"]==vk]
             if len(vm)>=3:
@@ -1510,10 +1520,13 @@ def calculate_sharp_ev_advanced(markets_data:dict)->list:
 class ConfidenceEngine:
     W={"base":42,"ev_high":15,"ev_medium":10,"ev_low":5,"sharp_line":8,
        "football_stats":5,"elo_high":8,"elo_medium":4,"ml_strong":8,"ml_medium":4,
-       "poisson_confirm":5,"smart_money":8,"kelly_high":5,"kelly_medium":3}
+       "poisson_confirm":5,"smart_money":8,"kelly_high":5,"kelly_medium":3,
+       "data_quality_good":4,"data_quality_poor":-10}
 
     @classmethod
-    def calculate_math_score(cls,opp:dict,stats:dict,market:str,ml_pred:Optional[dict]=None,poisson_pred:Optional[dict]=None)->int:
+    def calculate_math_score(cls,opp:dict,stats:dict,market:str,
+                              ml_pred:Optional[dict]=None,
+                              poisson_pred:Optional[dict]=None)->int:
         s=cls.W["base"]
         ev=opp.get("ev",0)*100
         s+=(cls.W["ev_high"] if ev>5 else cls.W["ev_medium"] if ev>3 else cls.W["ev_low"] if ev>1 else 0)
@@ -1521,14 +1534,29 @@ class ConfidenceEngine:
         if opp.get("has_sharp_line"):s+=cls.W["sharp_line"]
         kelly=opp.get("kelly_pct",0)
         s+=(cls.W["kelly_high"] if kelly>2 else cls.W["kelly_medium"] if kelly>1 else 0)
-        if stats.get("football_stats"):s+=cls.W["football_stats"]
+
+        # ── football stats + data quality ──
+        if stats.get("football_stats"):
+            fs=stats["football_stats"]
+            s+=cls.W["football_stats"]
+            hq=fs.get("home",{}).get("data_quality","poor")
+            aq=fs.get("away",{}).get("data_quality","poor")
+            if hq=="good" and aq=="good":s+=cls.W["data_quality_good"]
+            elif hq=="poor" or aq=="poor":s+=cls.W["data_quality_poor"]
+
+        # ── tennis data quality ──
+        if stats.get("historical_data"):
+            dq=stats["historical_data"].get("data_quality_summary",{})
+            overall=dq.get("overall","poor")
+            if overall=="good":s+=cls.W["data_quality_good"]
+            elif overall=="poor":s+=cls.W["data_quality_poor"]
+
         delta=abs(stats.get("elo_data",{}).get("delta",0))
         s+=(cls.W["elo_high"] if delta>150 else cls.W["elo_medium"] if delta>75 else 0)
         if ml_pred:
             mx=max((v for v in ml_pred.values() if isinstance(v,float) and 0<v<=1),default=0)
             s+=(cls.W["ml_strong"] if mx>0.65 else cls.W["ml_medium"] if mx>0.55 else 0)
         if poisson_pred:s+=cls.W["poisson_confirm"]
-        # BUG-4: Only apply steam if it's a real movement (not first-seen sentinel None/0 from first observation)
         steam=opp.get("steam_pct")
         if steam is not None and steam!=0.:
             if steam>=3:s+=cls.W["smart_money"]
@@ -1725,28 +1753,50 @@ def generate_ai_decision(home:str,away:str,sport:str,sport_key:str,opp:dict,stat
         if math_score<55:
             logger.info("⏭️ SKIP: %s - standings-only data insufficient (math=%d)",sport_key,math_score)
             return {**default,"decision":"SKIP","logic":f"Standings-only data for {sport_key}. Need game logs for reliable signal."}
+
     parts=[]
     steam_val=opp.get("steam_pct")
     steam_str=f"{steam_val:.1f}%" if steam_val is not None else "N/A (first seen)"
+
+    # ── data quality warning ──
+    dq_warnings=[]
+    if stats.get("historical_data"):
+        dq=stats["historical_data"].get("data_quality_summary",{})
+        if dq.get("overall")=="poor":
+            dq_warnings.append("⚠️ TENNIS: Poor historical data coverage for one or both players")
+        elif dq.get("overall")=="limited":
+            dq_warnings.append("⚠️ TENNIS: Limited historical data - lower confidence")
+    if stats.get("football_stats"):
+        hq=stats["football_stats"].get("home",{}).get("data_quality","poor")
+        aq=stats["football_stats"].get("away",{}).get("data_quality","poor")
+        if hq=="poor":dq_warnings.append(f"⚠️ FOOTBALL: Poor data for {home}")
+        if aq=="poor":dq_warnings.append(f"⚠️ FOOTBALL: Poor data for {away}")
+    if dq_warnings:
+        parts.append("=== DATA QUALITY WARNINGS ===\n"+"\n".join(dq_warnings))
+
     parts.append(f"=== MARKET ===\nPick:{opp['pick']} | Market:{opp['market_label']} | "
                  f"Odds:{opp['odds']} | TrueProb:{opp['prob']*100:.1f}% | EV:{opp['edge_pct']:+.2f}% | "
                  f"Kelly:{opp.get('kelly_pct',0):.1f}% | SharpLine:{opp.get('has_sharp_line',False)} | "
                  f"CLV:{opp.get('clv_pct',0):+.1f}% | Steam:{steam_str} | MathScore:{math_score}/100")
+
     if stats.get("historical_data"):
         pa=stats["historical_data"].get("player_a",{});pb=stats["historical_data"].get("player_b",{})
         h2h=stats["historical_data"].get("h2h",{})
+        dq=stats["historical_data"].get("data_quality_summary",{})
         parts.append(f"=== TENNIS ===\n{home}: Rank={pa.get('current_ranking','N/A')} Form={pa.get('recent_form','N/A')} "
-                     f"WR={pa.get('recent_win_rate',0)*100:.1f}%\n{away}: Rank={pb.get('current_ranking','N/A')} "
-                     f"Form={pb.get('recent_form','N/A')} WR={pb.get('recent_win_rate',0)*100:.1f}%\n"
-                     f"H2H:{h2h.get('total',0)} Dominance:{h2h.get('dominance','balanced')}")
+                     f"WR={pa.get('recent_win_rate',0)*100:.1f}% Matches={pa.get('total_matches',0)} Quality={pa.get('data_quality','?')}\n"
+                     f"{away}: Rank={pb.get('current_ranking','N/A')} Form={pb.get('recent_form','N/A')} "
+                     f"WR={pb.get('recent_win_rate',0)*100:.1f}% Matches={pb.get('total_matches',0)} Quality={pb.get('data_quality','?')}\n"
+                     f"H2H:{h2h.get('total',0)} Dominance:{h2h.get('dominance','balanced')} OverallQuality:{dq.get('overall','?')}")
     if stats.get("football_stats"):
         hm=stats["football_stats"].get("home",{});aw=stats["football_stats"].get("away",{})
         h2h=stats["football_stats"].get("h2h",{})
         parts.append(f"=== FOOTBALL ===\n{home}(H): Form={hm.get('form_string','N/A')} "
                      f"GS={hm.get('avg_scored',0):.2f} GC={hm.get('avg_conceded',0):.2f} "
-                     f"WR={hm.get('win_rate',0)*100:.1f}%\n{away}(A): Form={aw.get('form_string','N/A')} "
+                     f"WR={hm.get('win_rate',0)*100:.1f}% Quality={hm.get('data_quality','?')}\n"
+                     f"{away}(A): Form={aw.get('form_string','N/A')} "
                      f"GS={aw.get('avg_scored',0):.2f} GC={aw.get('avg_conceded',0):.2f} "
-                     f"WR={aw.get('win_rate',0)*100:.1f}%\n"
+                     f"WR={aw.get('win_rate',0)*100:.1f}% Quality={aw.get('data_quality','?')}\n"
                      f"H2H({h2h.get('total_matches',0)}): AvgG={h2h.get('avg_goals',0):.2f} Over25={h2h.get('over25_rate',0)*100:.1f}%")
     if stats.get("elo_data"):
         e=stats["elo_data"]
@@ -1761,11 +1811,15 @@ def generate_ai_decision(home:str,away:str,sport:str,sport_key:str,opp:dict,stat
     if stats.get("us_sports"):
         us2=stats["us_sports"]
         parts.append(f"=== US SPORTS ===\n{home}:{json.dumps(us2.get('home',{}))} {away}:{json.dumps(us2.get('away',{}))}")
+
     sys_inst=(
         "You are an elite sports betting analyst. Analyze ALL data and make a BET/SKIP decision.\n\n"
-        "BET when: EV>2.5% AND (sharp line OR strong historical edge) AND models agree\n"
-        "SKIP when: EV<2.5% OR Conflicting signals OR insufficient data OR Kelly<1.5%\n\n"
-        "Confidence: 78-100=Strong BET | 65-77=Moderate BET | 50-64=Weak BET | 0-49=NO BET\n\n"
+        "CRITICAL RULES:\n"
+        "- If DATA QUALITY WARNINGS present → be extra conservative\n"
+        "- If data_quality=poor for either team → max confidence 62\n"
+        "- BET when: EV>2.5% AND (sharp line OR strong historical edge) AND models agree AND data quality ≥ limited\n"
+        "- SKIP when: EV<2.5% OR conflicting signals OR poor data quality OR Kelly<1.5%\n\n"
+        "Confidence: 78-100=Strong BET | 65-77=Moderate BET | 50-64=Weak (SKIP) | 0-49=NO BET\n\n"
         'Output ONLY valid JSON:\n'
         '{"decision":"BET" or "SKIP","confidence":<int 0-100>,"sport_emoji":"<emoji>",'
         '"risk_level":"Low" or "Medium" or "High","key_factors":["fact1","fact2"],"logic":"2-3 sentences","red_flags":["flag1"]}'
@@ -1779,6 +1833,20 @@ def generate_ai_decision(home:str,away:str,sport:str,sport_key:str,opp:dict,stat
     if decision not in ["BET","SKIP"]:decision="SKIP"
     try:ai_conf=int(np.clip(float(ai_data.get("confidence",math_score)),0,100))
     except:ai_conf=math_score
+
+    # ── poor data quality cap ──
+    has_poor_data=False
+    if stats.get("historical_data"):
+        if stats["historical_data"].get("data_quality_summary",{}).get("overall")=="poor":
+            has_poor_data=True
+    if stats.get("football_stats"):
+        hq=stats["football_stats"].get("home",{}).get("data_quality","poor")
+        aq=stats["football_stats"].get("away",{}).get("data_quality","poor")
+        if hq=="poor" or aq=="poor":has_poor_data=True
+    if has_poor_data and ai_conf>62:
+        ai_conf=62
+        logger.warning("[AI] Poor data quality → capped confidence at 62")
+
     if ai_manager._last_provider=="groq" and ai_conf>=70 and opp.get("ev",0)*100<3.:
         ai_conf=min(ai_conf-10,62)
         logger.warning("[GROQ PENALTY] Confidence adjusted to %d",ai_conf)
