@@ -78,5 +78,25 @@
       "run_diff": -3.4,
       "source": "statsapi_live"
     }
+  },
+  "mlb_washingtonnationals": {
+    "timestamp": "2026-06-03T14:39:13.725827+00:00",
+    "data": {
+      "recent_form": "3W-4L",
+      "avg_runs_scored": 4.6,
+      "avg_runs_allowed": 4.7,
+      "run_diff": -0.1,
+      "source": "statsapi_live"
+    }
+  },
+  "mlb_miamimarlins": {
+    "timestamp": "2026-06-03T14:39:14.242062+00:00",
+    "data": {
+      "recent_form": "2W-5L",
+      "avg_runs_scored": 3.6,
+      "avg_runs_allowed": 5.9,
+      "run_diff": -2.3,
+      "source": "statsapi_live"
+    }
   }
 }

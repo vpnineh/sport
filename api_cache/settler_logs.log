@@ -355,3 +355,21 @@
 2026-06-03 12:29:23 | INFO     | ⏳ [RETRY 1] Yomiuri Giants vs Orix Buffaloes
 2026-06-03 12:29:23 | INFO     | ⏳ [RETRY 1] Jakub Mensik vs Joao Fonseca
 2026-06-03 12:29:23 | INFO     | ⏳ No new settlements this session.
+2026-06-03 14:39:47 | INFO     | ============================================================
+2026-06-03 14:39:47 | INFO     | ⚡ ZBET90 SETTLER v5.0 | Scraper + OddsAPI Pipeline
+2026-06-03 14:39:47 | INFO     | ============================================================
+2026-06-03 14:39:47 | INFO     | 📋 Pending: 10 total | 0 newly added
+2026-06-03 14:39:47 | INFO     | 🌍 [SCRAPER] Loading results (last 3 days)...
+2026-06-03 14:39:48 | INFO     | ✅ [SCRAPER] Soccer pool: 34 | Other pool: 16
+2026-06-03 14:39:49 | INFO     | 📡 10 not found by scraper → Odds-API...
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Frances Tiafoe vs Matteo Arnaldi
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Aryna Sabalenka vs Naomi Osaka
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Florida Gators vs Troy Trojans
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Toronto Marlies vs W-B/Scranton Penguins
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Texas A&M Aggies vs USC Trojans
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Texas A&M Aggies vs USC Trojans
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Mirra Andreeva vs Sorana Cirstea
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Yomiuri Giants vs Orix Buffaloes
+2026-06-03 14:39:49 | INFO     | ⏳ [RETRY 2] Jakub Mensik vs Joao Fonseca
+2026-06-03 14:39:49 | INFO     | ⏳ No new settlements this session.
