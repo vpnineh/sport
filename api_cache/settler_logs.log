@@ -399,3 +399,16 @@
 2026-06-03 16:59:38 | INFO     | ============================================================
 2026-06-03 16:59:38 | INFO     | 📊 Settled:3 Pending:7 WR:40.0% ROI:-6.1%
 2026-06-03 16:59:38 | INFO     | ============================================================
+2026-06-03 18:10:48 | INFO     | ============================================================
+2026-06-03 18:10:48 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-03 18:10:48 | INFO     | ============================================================
+2026-06-03 18:10:48 | INFO     | 📋 Pending: 7 | New: 0
+2026-06-03 18:10:51 | INFO     | ✅ [ESPN] 60 results loaded
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Frances Tiafoe vs Matteo Arnaldi
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Aryna Sabalenka vs Naomi Osaka
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Texas A&M Aggies vs USC Trojans
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Texas A&M Aggies vs USC Trojans
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Mirra Andreeva vs Sorana Cirstea
+2026-06-03 18:10:51 | INFO     | ⏳ RETRY 4: Jakub Mensik vs Joao Fonseca
+2026-06-03 18:10:51 | INFO     | ⏳ No new settlements.

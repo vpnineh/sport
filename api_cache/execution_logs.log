@@ -7298,3 +7298,82 @@
 2026-06-03 16:59:19 | INFO     |    Skip → {'no_opp': 3, 'ev': 0, 'sent': 0, 'math': 0, 'ai': 3, 'conf': 0}
 2026-06-03 16:59:19 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
 2026-06-03 16:59:19 | INFO     | =================================================================
+2026-06-03 18:09:13 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-03 18:09:13 | INFO     | 🔑 [KEY] primary loaded
+2026-06-03 18:09:13 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-03 18:09:13 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-03 18:09:13 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-03 18:09:13 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-03 18:09:13 | INFO     | ✅ [BALLDONTLIE] NBA client ready
+2026-06-03 18:09:13 | INFO     | =================================================================
+2026-06-03 18:09:13 | INFO     |   ZBET90 ENGINE v9.0 | Multi-Source | API-Football+TSDB+GitHub
+2026-06-03 18:09:13 | INFO     | =================================================================
+2026-06-03 18:09:13 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-03 18:09:13 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-03 18:09:13 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-03 18:09:13 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-03 18:09:14 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-03 18:09:14 | INFO     | ✅ [TENNIS] ATP: 11923 matches
+2026-06-03 18:09:14 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-03 18:09:14 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-03 18:09:14 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-03 18:09:15 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-03 18:09:15 | INFO     | ✅ [TENNIS] WTA: 10888 matches
+2026-06-03 18:09:15 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-03 18:09:15 | INFO     | ✅ [RANKINGS] ATP
+2026-06-03 18:09:15 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-03 18:09:15 | INFO     | ✅ [RANKINGS] WTA
+2026-06-03 18:09:15 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-03 18:09:17 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-03 18:09:18 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-03 18:09:19 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-03 18:09:19 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-03 18:09:20 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-03 18:09:21 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-03 18:09:22 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-03 18:09:23 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-03 18:09:24 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-03 18:09:25 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-03 18:09:26 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-03 18:09:27 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-03 18:09:28 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-03 18:09:29 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-03 18:09:30 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-03 18:09:31 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-03 18:09:32 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-03 18:09:33 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-03 18:09:33 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-03 18:09:34 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-03 18:09:35 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-03 18:09:36 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-03 18:09:37 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-03 18:09:38 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-03 18:09:48 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read ti
+2026-06-03 18:09:48 | INFO     | ✅ [NHL] 32 teams
+2026-06-03 18:09:49 | INFO     | ✅ [MLB] 30 teams
+2026-06-03 18:09:49 | INFO     | 🧠 [PHASE 2] Training ML models...
+2026-06-03 18:09:49 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-03 18:09:49 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-03 18:09:49 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-03 18:09:49 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-03 18:09:49 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-03 18:09:49 | INFO     | 🔑 [primary] totals → 8 events (rem:152)
+2026-06-03 18:09:49 | INFO     | 🔑 [primary] h2h → 8 events (rem:148)
+2026-06-03 18:09:49 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-03 18:09:49 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-03 18:09:49 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-03 18:09:53 | INFO     | [AI] Matteo Berrettini vs Matteo Arnaldi | SKIP | AI:68 Math:82 Final:75 | groq
+2026-06-03 18:09:53 | INFO     | ⏭️ AI_SKIP: Matteo Berrettini vs Matteo Arnaldi Math:82 AI:68 Final:75
+2026-06-03 18:09:55 | WARNING  | [AI] No data at all → cap 60
+2026-06-03 18:09:55 | INFO     | [AI] Seattle Mariners vs New York Mets | SKIP | AI:60 Math:45 Final:52 | groq
+2026-06-03 18:09:55 | INFO     | ⏭️ AI_SKIP: Seattle Mariners vs New York Mets Math:45 AI:60 Final:52
+2026-06-03 18:10:22 | WARNING  | [AI] No data at all → cap 60
+2026-06-03 18:10:22 | INFO     | [AI] Philadelphia Phillies vs San Diego Padres | SKIP | AI:60 Math:45 Final:52 | groq
+2026-06-03 18:10:22 | INFO     | ⏭️ AI_SKIP: Philadelphia Phillies vs San Diego Padres Math:45 AI:60 Final:52
+2026-06-03 18:10:47 | INFO     | [AI] Boston Red Sox vs Baltimore Orioles | SKIP | AI:52 Math:42 Final:47 | groq
+2026-06-03 18:10:47 | INFO     | ⏭️ AI_SKIP: Boston Red Sox vs Baltimore Orioles Math:42 AI:52 Final:47
+2026-06-03 18:10:47 | INFO     | =================================================================
+2026-06-03 18:10:47 | INFO     | 📊 Events:8  Analyzed:4  Sent:0
+2026-06-03 18:10:47 | INFO     |    Skip → {'no_opp': 4, 'ev': 0, 'sent': 0, 'math': 0, 'ai': 4, 'conf': 0}
+2026-06-03 18:10:47 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-03 18:10:47 | INFO     | =================================================================
