@@ -45,8 +45,10 @@
       "ev": 0.0202,
       "confidence": 72,
       "implied_prob": 0.3567,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338727+00:00"
     },
     {
       "id": "5027646c",
@@ -61,8 +63,10 @@
       "ev": 0.0387,
       "confidence": 66,
       "implied_prob": 0.1208,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338734+00:00"
     },
     {
       "id": "d0d8c431",
@@ -77,8 +81,10 @@
       "ev": 0.027,
       "confidence": 72,
       "implied_prob": 0.4175,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338739+00:00"
     },
     {
       "id": "e34f278f",
@@ -93,8 +99,10 @@
       "ev": 0.0273,
       "confidence": 72,
       "implied_prob": 0.3567,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338742+00:00"
     },
     {
       "id": "5351d621",
@@ -109,8 +117,10 @@
       "ev": 0.0223,
       "confidence": 72,
       "implied_prob": 0.5875,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338745+00:00"
     },
     {
       "id": "18230301",
@@ -125,8 +135,10 @@
       "ev": 0.0264,
       "confidence": 72,
       "implied_prob": 0.3774,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-03T08:39:28.338747+00:00"
     },
     {
       "id": "1ca63cf3",
@@ -477,7 +489,7 @@
     "win_rate": 0.308,
     "total_profit_loss_units": -3.19,
     "roi_pct": -24.54,
-    "last_updated": "2026-06-03T02:38:16.414244+00:00",
-    "pending_count": 16
+    "last_updated": "2026-06-03T08:39:26.242572+00:00",
+    "pending_count": 10
   }
 }

@@ -1,120 +1,6 @@
 {
   "pending": [
     {
-      "id": "3e0da326",
-      "timestamp": "2026-06-01T08:38:18.322392+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_wta_french_open",
-      "home": "Anastasia Potapova",
-      "away": "Anna Kalinskaya",
-      "pick": "Anna Kalinskaya",
-      "market": "h2h_lay",
-      "odds": 2.86,
-      "ev": 0.0202,
-      "confidence": 72,
-      "implied_prob": 0.3567,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848148+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231237+00:00"
-    },
-    {
-      "id": "5027646c",
-      "timestamp": "2026-06-01T08:38:23.045196+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Flavio Cobolli",
-      "away": "Zachary Svajda",
-      "pick": "Zachary Svajda",
-      "market": "h2h_lay",
-      "odds": 8.6,
-      "ev": 0.0387,
-      "confidence": 66,
-      "implied_prob": 0.1208,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848156+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231284+00:00"
-    },
-    {
-      "id": "d0d8c431",
-      "timestamp": "2026-06-01T08:38:28.043420+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_wta_french_open",
-      "home": "Madison Keys",
-      "away": "Diana Shnaider",
-      "pick": "Diana Shnaider",
-      "market": "h2h_lay",
-      "odds": 2.46,
-      "ev": 0.027,
-      "confidence": 72,
-      "implied_prob": 0.4175,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848159+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231556+00:00"
-    },
-    {
-      "id": "e34f278f",
-      "timestamp": "2026-06-01T08:38:32.470549+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_wta_french_open",
-      "home": "Maja Chwalinska",
-      "away": "Diane Parry",
-      "pick": "Diane Parry",
-      "market": "h2h_lay",
-      "odds": 2.88,
-      "ev": 0.0273,
-      "confidence": 72,
-      "implied_prob": 0.3567,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848162+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231612+00:00"
-    },
-    {
-      "id": "5351d621",
-      "timestamp": "2026-06-01T08:38:36.664315+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Juan Manuel Cerundolo",
-      "away": "Matteo Berrettini",
-      "pick": "Matteo Berrettini",
-      "market": "h2h_lay",
-      "odds": 1.74,
-      "ev": 0.0223,
-      "confidence": 72,
-      "implied_prob": 0.5875,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848165+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231667+00:00"
-    },
-    {
-      "id": "18230301",
-      "timestamp": "2026-06-01T08:38:40.982600+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Felix Auger-Aliassime",
-      "away": "Alejandro Tabilo",
-      "pick": "Alejandro Tabilo",
-      "market": "h2h_lay",
-      "odds": 2.72,
-      "ev": 0.0264,
-      "confidence": 72,
-      "implied_prob": 0.3774,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_since": "2026-06-02T13:46:35.848168+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231777+00:00"
-    },
-    {
       "id": "1ca63cf3",
       "timestamp": "2026-06-01T11:03:06.619115+00:00",
       "sport": "tennis",
@@ -130,8 +16,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848170+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231835+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337215+00:00"
     },
     {
       "id": "6d04e00d",
@@ -149,8 +35,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848177+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.231928+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337319+00:00"
     },
     {
       "id": "ac44cd45",
@@ -168,8 +54,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848181+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232019+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337414+00:00"
     },
     {
       "id": "8db1666c",
@@ -187,8 +73,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848185+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232145+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337550+00:00"
     },
     {
       "id": "308bb8e0",
@@ -206,8 +92,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848187+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232233+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337633+00:00"
     },
     {
       "id": "de321cdf",
@@ -225,8 +111,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848190+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232315+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337733+00:00"
     },
     {
       "id": "38b99e7f",
@@ -244,8 +130,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848194+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232391+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337862+00:00"
     },
     {
       "id": "b02883ef",
@@ -263,8 +149,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848198+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232439+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.337920+00:00"
     },
     {
       "id": "942eea95",
@@ -282,8 +168,8 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T13:46:35.848201+00:00",
-      "_retry_count": 9,
-      "_last_retry": "2026-06-03T02:38:17.232562+00:00"
+      "_retry_count": 10,
+      "_last_retry": "2026-06-03T08:39:28.338064+00:00"
     },
     {
       "id": "6b61c21d",
@@ -301,9 +187,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_since": "2026-06-02T20:00:05.466522+00:00",
-      "_retry_count": 6,
-      "_last_retry": "2026-06-03T02:38:17.232647+00:00"
+      "_retry_count": 7,
+      "_last_retry": "2026-06-03T08:39:28.338170+00:00"
     }
   ],
-  "last_updated": "2026-06-03T02:38:17.232652+00:00"
+  "last_updated": "2026-06-03T08:39:28.338176+00:00"
 }
