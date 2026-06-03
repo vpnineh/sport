@@ -10,5 +10,11 @@
     "pick": "TSV Hannover-Burgdorf",
     "market": "h2h",
     "sent_at": "2026-06-03T16:58:50.123360+00:00"
+  },
+  "048e515a68d399a7d818925e9539a6e7": {
+    "match": "Boston Red Sox vs Baltimore Orioles",
+    "pick": "Boston Red Sox",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-03T20:38:24.511747+00:00"
   }
 }

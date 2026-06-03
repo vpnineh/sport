@@ -1,6 +1,6 @@
 {
   "tennis_atp_french_open": {
-    "ts": "2026-06-03T16:59:33.314326+00:00",
+    "ts": "2026-06-03T20:38:57.382959+00:00",
     "data": [
       {
         "id": "82e09c833f76f59f4e640b27b7d2f275",
@@ -38,7 +38,7 @@
     ]
   },
   "tennis_wta_french_open": {
-    "ts": "2026-06-03T16:59:33.314335+00:00",
+    "ts": "2026-06-03T20:38:57.382972+00:00",
     "data": [
       {
         "id": "88386b9afa0bb2d85d19320d0d453ae3",
@@ -65,7 +65,7 @@
     ]
   },
   "baseball_ncaa": {
-    "ts": "2026-06-03T16:59:33.314339+00:00",
+    "ts": "2026-06-03T20:38:57.382976+00:00",
     "data": [
       {
         "id": "17062b897253db388064333b150d00e4",
@@ -152,6 +152,144 @@
         "completed": false,
         "home_team": "Alabama Crimson Tide",
         "away_team": "St. John's Red Storm",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "handball_germany_bundesliga": {
+    "ts": "2026-06-03T20:38:57.382978+00:00",
+    "data": [
+      {
+        "id": "a67f08f5fa9922c4ea53360ece091f57",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-03T16:59:46Z",
+        "completed": true,
+        "home_team": "GWD Minden",
+        "away_team": "THW Kiel",
+        "scores": [
+          {
+            "name": "GWD Minden",
+            "score": "34"
+          },
+          {
+            "name": "THW Kiel",
+            "score": "30"
+          }
+        ],
+        "last_update": "2026-06-03T20:38:47Z"
+      },
+      {
+        "id": "db044fdc746fbc96eecdec74de78a2e2",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-03T17:00:28Z",
+        "completed": true,
+        "home_team": "Frisch Auf Göppingen",
+        "away_team": "TVB Stuttgart",
+        "scores": [
+          {
+            "name": "Frisch Auf Göppingen",
+            "score": "32"
+          },
+          {
+            "name": "TVB Stuttgart",
+            "score": "33"
+          }
+        ],
+        "last_update": "2026-06-03T20:38:47Z"
+      },
+      {
+        "id": "78caf06540628438bd188e25c3222107",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-03T17:00:36Z",
+        "completed": true,
+        "home_team": "Rhein-Neckar Löwen",
+        "away_team": "TSV Hannover-Burgdorf",
+        "scores": [
+          {
+            "name": "Rhein-Neckar Löwen",
+            "score": "29"
+          },
+          {
+            "name": "TSV Hannover-Burgdorf",
+            "score": "28"
+          }
+        ],
+        "last_update": "2026-06-03T20:38:47Z"
+      },
+      {
+        "id": "e3f2736d7ba0abc153bcfba18e19ac5a",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-03T18:00:19Z",
+        "completed": true,
+        "home_team": "TBV Lemgo",
+        "away_team": "SC DHfK Leipzig",
+        "scores": [
+          {
+            "name": "TBV Lemgo",
+            "score": "30"
+          },
+          {
+            "name": "SC DHfK Leipzig",
+            "score": "28"
+          }
+        ],
+        "last_update": "2026-06-03T20:38:47Z"
+      },
+      {
+        "id": "9c297abf814a638046ff78e5ffe84c49",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-03T18:01:12Z",
+        "completed": true,
+        "home_team": "SC Magdeburg",
+        "away_team": "VfL Gummersbach",
+        "scores": [
+          {
+            "name": "SC Magdeburg",
+            "score": "38"
+          },
+          {
+            "name": "VfL Gummersbach",
+            "score": "35"
+          }
+        ],
+        "last_update": "2026-06-03T20:38:47Z"
+      },
+      {
+        "id": "05db23b82d06c7b5a49c0b8be8bed745",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-04T17:00:00Z",
+        "completed": false,
+        "home_team": "HSV Hamburg",
+        "away_team": "HSG Wetzlar",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "36c7e4b73886bc861d39df8f6b409354",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-04T17:00:00Z",
+        "completed": false,
+        "home_team": "SG Flensburg-Handewitt",
+        "away_team": "ThSV Eisenach",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "e3bc487a08fc9ca8a5d748c3de739e4a",
+        "sport_key": "handball_germany_bundesliga",
+        "sport_title": "Handball-Bundesliga",
+        "commence_time": "2026-06-04T18:00:00Z",
+        "completed": false,
+        "home_team": "MT Melsungen",
+        "away_team": "Füchse Berlin",
         "scores": null,
         "last_update": null
       }

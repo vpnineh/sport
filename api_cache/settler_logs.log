@@ -438,3 +438,25 @@
 2026-06-03 19:24:37 | INFO     | ⏳ RETRY 6: Mirra Andreeva vs Sorana Cirstea
 2026-06-03 19:24:37 | INFO     | ⏳ RETRY 6: Jakub Mensik vs Joao Fonseca
 2026-06-03 19:24:37 | INFO     | ⏳ No new settlements.
+2026-06-03 20:38:52 | INFO     | ============================================================
+2026-06-03 20:38:52 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-03 20:38:52 | INFO     | ============================================================
+2026-06-03 20:38:52 | INFO     | 📋 Pending: 9 | New: 2
+2026-06-03 20:38:54 | INFO     | ✅ [ESPN] 71 results loaded
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Frances Tiafoe vs Matteo Arnaldi
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Aryna Sabalenka vs Naomi Osaka
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Texas A&M Aggies vs USC Trojans
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Texas A&M Aggies vs USC Trojans
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Mirra Andreeva vs Sorana Cirstea
+2026-06-03 20:38:54 | INFO     | ⏳ RETRY 7: Jakub Mensik vs Joao Fonseca
+2026-06-03 20:38:56 | INFO     | ✅ [TSDB] GWD Minden vs THW Kiel → 28-28
+2026-06-03 20:38:56 | INFO     | 💰 GWD Minden vs THW Kiel → LOSS (-1.00u) [thesportsdb]
+2026-06-03 20:38:57 | INFO     | 📡 [ODDS-API] handball_germany_bundesliga → 8 (rem:130)
+2026-06-03 20:38:57 | INFO     | ✅ [ODDS-API] Rhein-Neckar Löwen vs TSV Hannover-Burgdorf → 29-28
+2026-06-03 20:38:57 | INFO     | 💰 Rhein-Neckar Löwen vs TSV Hannover-Burgdorf → LOSS (-1.00u) [odds_api]
+2026-06-03 20:38:57 | INFO     | 💾 Synced 2/2 bets.
+2026-06-03 20:38:57 | INFO     | 📤 Report sent.
+2026-06-03 20:38:57 | INFO     | ============================================================
+2026-06-03 20:38:57 | INFO     | 📊 Settled:2 Pending:7 WR:35.3% ROI:-17.1%
+2026-06-03 20:38:57 | INFO     | ============================================================

@@ -501,8 +501,10 @@
       "ev": 0.0593,
       "confidence": 84,
       "implied_prob": 0.6834,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-03T20:38:57.386491+00:00"
     },
     {
       "id": "c8f9cc04",
@@ -517,17 +519,35 @@
       "ev": 0.0637,
       "confidence": 71,
       "implied_prob": 0.3223,
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "odds_api",
+      "_settled_at": "2026-06-03T20:38:57.386502+00:00"
+    },
+    {
+      "id": "8555c17d",
+      "timestamp": "2026-06-03T20:38:24.512394+00:00",
+      "sport": "baseball",
+      "api_sport_key": "baseball_mlb",
+      "home": "Boston Red Sox",
+      "away": "Baltimore Orioles",
+      "pick": "Boston Red Sox",
+      "market": "h2h_lay",
+      "odds": 1.75,
+      "ev": 0.0245,
+      "confidence": 61,
+      "implied_prob": 0.5855,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 31,
-    "resolved": 15,
-    "win_rate": 0.4,
-    "total_profit_loss_units": -0.91,
-    "roi_pct": -6.07,
-    "last_updated": "2026-06-03T16:59:19.460353+00:00",
+    "total_signals": 32,
+    "resolved": 17,
+    "win_rate": 0.353,
+    "total_profit_loss_units": -2.91,
+    "roi_pct": -17.12,
+    "last_updated": "2026-06-03T20:38:52.968205+00:00",
     "pending_count": 7
   }
 }
