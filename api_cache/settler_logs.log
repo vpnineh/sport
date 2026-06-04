@@ -520,3 +520,16 @@
 2026-06-04 14:39:07 | INFO     | ============================================================
 2026-06-04 14:39:07 | INFO     | 📊 Settled:4 Pending:4 WR:36.8% ROI:-15.3%
 2026-06-04 14:39:07 | INFO     | ============================================================
+2026-06-04 20:29:43 | INFO     | ============================================================
+2026-06-04 20:29:43 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-04 20:29:43 | INFO     | ============================================================
+2026-06-04 20:29:43 | INFO     | 📋 Pending: 4 | New: 0
+2026-06-04 20:29:44 | INFO     | ✅ [ESPN] 80 results loaded
+2026-06-04 20:29:47 | INFO     | 📡 [ODDS-API] baseball_ncaa → 8 (rem:90)
+2026-06-04 20:29:47 | INFO     | ⏳ RETRY 3: Texas A&M Aggies vs USC Trojans
+2026-06-04 20:29:47 | INFO     | ⏳ RETRY 3: Texas A&M Aggies vs USC Trojans
+2026-06-04 20:29:48 | INFO     | 📡 [ODDS-API] tennis_wta_french_open → 1 (rem:88)
+2026-06-04 20:29:48 | INFO     | ⏳ RETRY 3: Mirra Andreeva vs Sorana Cirstea
+2026-06-04 20:29:49 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 2 (rem:86)
+2026-06-04 20:29:49 | INFO     | ⏳ RETRY 3: Jakub Mensik vs Joao Fonseca
+2026-06-04 20:29:49 | INFO     | ⏳ No new settlements.
