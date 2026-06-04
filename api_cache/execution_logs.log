@@ -7719,3 +7719,96 @@
 2026-06-04 02:38:32 | INFO     |    Skip → {'no_opp': 7, 'ev': 0, 'sent': 0, 'math': 0, 'ai': 0, 'conf': 0}
 2026-06-04 02:38:32 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
 2026-06-04 02:38:32 | INFO     | =================================================================
+2026-06-04 08:37:45 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-04 08:37:45 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-04 08:37:45 | INFO     | ✅ [BALLDONTLIE] NBA client ready
+2026-06-04 08:37:46 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-04 08:37:46 | INFO     | 🔑 [KEY] primary loaded
+2026-06-04 08:37:46 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-04 08:37:46 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-04 08:37:46 | INFO     | =================================================================
+2026-06-04 08:37:46 | INFO     |   ZBET90 ENGINE v9.0 | Multi-Source | API-Football+TSDB+GitHub
+2026-06-04 08:37:46 | INFO     | =================================================================
+2026-06-04 08:37:46 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-04 08:37:46 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-04 08:37:46 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-04 08:37:46 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-04 08:37:47 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-04 08:37:47 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-04 08:37:47 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-04 08:37:47 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-04 08:37:48 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-04 08:37:48 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-04 08:37:48 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-04 08:37:49 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-04 08:37:49 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-04 08:37:49 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-04 08:37:49 | INFO     | ✅ [RANKINGS] ATP
+2026-06-04 08:37:49 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-04 08:37:49 | INFO     | ✅ [RANKINGS] WTA
+2026-06-04 08:37:49 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-04 08:37:51 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-04 08:37:52 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-04 08:37:53 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-04 08:37:54 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-04 08:37:55 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-04 08:37:57 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-04 08:37:58 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-04 08:37:59 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-04 08:38:00 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-04 08:38:01 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-04 08:38:02 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-04 08:38:03 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-04 08:38:04 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-04 08:38:05 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-04 08:38:06 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-04 08:38:08 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-04 08:38:09 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-04 08:38:10 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-04 08:38:11 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-04 08:38:12 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-04 08:38:13 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-04 08:38:14 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-04 08:38:16 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-04 08:38:17 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-04 08:38:27 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read ti
+2026-06-04 08:38:27 | INFO     | ✅ [NHL] 32 teams
+2026-06-04 08:38:27 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-04 08:38:27 | INFO     | 🧠 [PHASE 2] Training ML models...
+2026-06-04 08:38:27 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-04 08:38:27 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-04 08:38:27 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-04 08:38:27 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-04 08:38:27 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-04 08:38:27 | INFO     | 🔑 [primary] h2h → 8 events (rem:118)
+2026-06-04 08:38:27 | INFO     | 🔑 [primary] totals → 8 events (rem:114)
+2026-06-04 08:38:28 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-04 08:38:28 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-04 08:38:28 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-04 08:38:28 | INFO     | 📊 [DATA] Gathering stats: Tokyo Yakult Swallows vs Chiba Lotte Marines [other]
+2026-06-04 08:38:28 | INFO     |   📦 Data: [NONE]
+2026-06-04 08:38:32 | WARNING  | [AI] No data at all → cap 60
+2026-06-04 08:38:32 | INFO     | [AI] Tokyo Yakult Swallows vs Chiba Lotte Marines | SKIP | AI:60 Math:68 Final:64 | groq
+2026-06-04 08:38:32 | INFO     | ⏭️ AI_SKIP: Tokyo Yakult Swallows vs Chiba Lotte Marines Math:68 AI:60 Final:64
+2026-06-04 08:38:32 | INFO     | 📊 [DATA] Gathering stats: Chunichi Dragons vs Fukuoka SoftBank Hawks [other]
+2026-06-04 08:38:33 | INFO     |   📦 Data: [NONE]
+2026-06-04 08:38:35 | WARNING  | [AI] No data at all → cap 60
+2026-06-04 08:38:35 | INFO     | [AI] Chunichi Dragons vs Fukuoka SoftBank Hawks | BET | AI:60 Math:78 Final:69 | groq
+2026-06-04 08:38:35 | INFO     | ✅ SIGNAL: Chunichi Dragons vs Fukuoka SoftBank Hawks | Math:78 AI:60 Final:69 EV=5.34%
+2026-06-04 08:38:36 | INFO     | 📤 SENT: Chunichi Dragons vs Fukuoka SoftBank Hawks EV=5.34% Conf=69%
+2026-06-04 08:38:39 | INFO     | 📊 [DATA] Gathering stats: Hanshin Tigers vs Saitama Seibu Lions [other]
+2026-06-04 08:38:40 | INFO     |   📦 Data: [NONE]
+2026-06-04 08:38:43 | WARNING  | [AI] No data at all → cap 60
+2026-06-04 08:38:43 | INFO     | [AI] Hanshin Tigers vs Saitama Seibu Lions | SKIP | AI:60 Math:68 Final:64 | groq
+2026-06-04 08:38:43 | INFO     | ⏭️ AI_SKIP: Hanshin Tigers vs Saitama Seibu Lions Math:68 AI:60 Final:64
+2026-06-04 08:38:43 | INFO     | 📊 [DATA] Gathering stats: Hiroshima Toyo Carp vs Hokkaido Nippon-Ham Fighters [other]
+2026-06-04 08:38:44 | INFO     |   📦 Data: [NONE]
+2026-06-04 08:39:07 | WARNING  | [AI] No data at all → cap 60
+2026-06-04 08:39:07 | INFO     | [AI] Hiroshima Toyo Carp vs Hokkaido Nippon-Ham Fighters | SKIP | AI:60 Math:64 Final:62 | groq
+2026-06-04 08:39:07 | INFO     | ⏭️ AI_SKIP: Hiroshima Toyo Carp vs Hokkaido Nippon-Ham Fighters Math:64 AI:60 Final:62
+2026-06-04 08:39:07 | INFO     | ⏭️ SENT: Adelaide Crows vs Geelong Cats
+2026-06-04 08:39:07 | INFO     | =================================================================
+2026-06-04 08:39:07 | INFO     | 📊 Events:8  Analyzed:5  Sent:1
+2026-06-04 08:39:07 | INFO     |    Skip → {'no_opp': 3, 'ev': 0, 'sent': 1, 'math': 0, 'ai': 3, 'conf': 0}
+2026-06-04 08:39:07 | INFO     | 📊 ✅ primary(1calls) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-04 08:39:07 | INFO     | =================================================================

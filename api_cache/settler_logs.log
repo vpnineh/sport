@@ -479,3 +479,25 @@
 2026-06-04 02:38:44 | INFO     | ============================================================
 2026-06-04 02:38:44 | INFO     | 📊 Settled:1 Pending:7 WR:35.3% ROI:-17.1%
 2026-06-04 02:38:44 | INFO     | ============================================================
+2026-06-04 08:39:08 | INFO     | ============================================================
+2026-06-04 08:39:08 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-04 08:39:08 | INFO     | ============================================================
+2026-06-04 08:39:08 | INFO     | 📋 Pending: 8 | New: 8
+2026-06-04 08:39:09 | INFO     | ✅ [ESPN] 67 results loaded
+2026-06-04 08:39:12 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 2 (rem:112)
+2026-06-04 08:39:12 | INFO     | ⏳ RETRY 1: Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-04 08:39:13 | INFO     | ⏳ RETRY 1: Frances Tiafoe vs Matteo Arnaldi
+2026-06-04 08:39:14 | INFO     | 📡 [ODDS-API] tennis_wta_french_open → 2 (rem:110)
+2026-06-04 08:39:14 | INFO     | ⏳ RETRY 1: Aryna Sabalenka vs Naomi Osaka
+2026-06-04 08:39:16 | INFO     | 📡 [ODDS-API] baseball_ncaa → 8 (rem:108)
+2026-06-04 08:39:16 | INFO     | ⏳ RETRY 1: Texas A&M Aggies vs USC Trojans
+2026-06-04 08:39:16 | INFO     | ⏳ RETRY 1: Texas A&M Aggies vs USC Trojans
+2026-06-04 08:39:18 | INFO     | ⏳ RETRY 1: Mirra Andreeva vs Sorana Cirstea
+2026-06-04 08:39:19 | INFO     | ⏳ RETRY 1: Jakub Mensik vs Joao Fonseca
+2026-06-04 08:39:22 | INFO     | ✅ [TSDB] Adelaide Crows vs Geelong Cats → 60-16
+2026-06-04 08:39:22 | INFO     | 💰 Adelaide Crows vs Geelong Cats → LOSS (-1.00u) [thesportsdb]
+2026-06-04 08:39:22 | INFO     | 💾 Synced 1/1 bets.
+2026-06-04 08:39:22 | INFO     | 📤 Report sent.
+2026-06-04 08:39:22 | INFO     | ============================================================
+2026-06-04 08:39:22 | INFO     | 📊 Settled:1 Pending:7 WR:33.3% ROI:-21.7%
+2026-06-04 08:39:22 | INFO     | ============================================================
