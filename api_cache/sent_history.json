@@ -16,5 +16,11 @@
     "pick": "Boston Red Sox",
     "market": "h2h_lay",
     "sent_at": "2026-06-03T20:38:24.511747+00:00"
+  },
+  "2aab6ae945017c94ea5811ee753c26d7": {
+    "match": "Adelaide Crows vs Geelong Cats",
+    "pick": "Geelong Cats",
+    "market": "h2h",
+    "sent_at": "2026-06-04T02:38:29.546113+00:00"
   }
 }

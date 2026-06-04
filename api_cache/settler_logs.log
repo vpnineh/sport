@@ -460,3 +460,22 @@
 2026-06-03 20:38:57 | INFO     | ============================================================
 2026-06-03 20:38:57 | INFO     | 📊 Settled:2 Pending:7 WR:35.3% ROI:-17.1%
 2026-06-03 20:38:57 | INFO     | ============================================================
+2026-06-04 02:38:33 | INFO     | ============================================================
+2026-06-04 02:38:33 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-04 02:38:33 | INFO     | ============================================================
+2026-06-04 02:38:33 | INFO     | 📋 Pending: 8 | New: 1
+2026-06-04 02:38:34 | INFO     | ✅ [ESPN] 58 results loaded
+2026-06-04 02:38:37 | INFO     | ⏳ RETRY 8: Juan Manuel Cerundolo vs Matteo Berrettini
+2026-06-04 02:38:38 | INFO     | ⏳ RETRY 8: Frances Tiafoe vs Matteo Arnaldi
+2026-06-04 02:38:38 | INFO     | ⏳ RETRY 8: Aryna Sabalenka vs Naomi Osaka
+2026-06-04 02:38:39 | INFO     | ⏳ RETRY 8: Texas A&M Aggies vs USC Trojans
+2026-06-04 02:38:39 | INFO     | ⏳ RETRY 8: Texas A&M Aggies vs USC Trojans
+2026-06-04 02:38:40 | INFO     | ⏳ RETRY 8: Mirra Andreeva vs Sorana Cirstea
+2026-06-04 02:38:41 | INFO     | ⏳ RETRY 8: Jakub Mensik vs Joao Fonseca
+2026-06-04 02:38:43 | INFO     | ✅ [TSDB] Boston Red Sox vs Baltimore Orioles → 8-1
+2026-06-04 02:38:43 | INFO     | 💰 Boston Red Sox vs Baltimore Orioles → VOID (0.00u) [thesportsdb]
+2026-06-04 02:38:43 | INFO     | 💾 Synced 1/1 bets.
+2026-06-04 02:38:44 | INFO     | 📤 Report sent.
+2026-06-04 02:38:44 | INFO     | ============================================================
+2026-06-04 02:38:44 | INFO     | 📊 Settled:1 Pending:7 WR:35.3% ROI:-17.1%
+2026-06-04 02:38:44 | INFO     | ============================================================

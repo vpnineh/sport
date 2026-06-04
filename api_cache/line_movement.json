@@ -1,59 +1,9 @@
 {
-  "f70dc991a98dd364db6002513931bb2c": {
-    "initial_odds": 3.4,
-    "current_odds": 3.4,
-    "timestamp": "2026-06-01T20:38:08.378395+00:00"
-  },
-  "59bd6da1cac6e96103e112ece0a259d4": {
-    "initial_odds": 2.2,
-    "current_odds": 2.2,
-    "timestamp": "2026-06-01T20:38:13.319293+00:00"
-  },
-  "456d7872f952708bdd4f47ed33b7979c": {
-    "initial_odds": 2.53,
-    "current_odds": 2.53,
-    "timestamp": "2026-06-01T20:38:17.594915+00:00"
-  },
   "f17cc631f290b8d881e1b352118678e9": {
     "initial_odds": 1.82,
     "current_odds": 2.04,
     "timestamp": "2026-06-03T14:39:13.166034+00:00",
     "first_seen": false
-  },
-  "b5b537dafcf6aa9e4d0881daa722b33f": {
-    "initial_odds": 2.6,
-    "current_odds": 2.6,
-    "timestamp": "2026-06-01T20:38:26.509950+00:00"
-  },
-  "8be2006486dd48824acb607aa8f03579": {
-    "initial_odds": 2.24,
-    "current_odds": 2.24,
-    "timestamp": "2026-06-01T23:20:02.443801+00:00"
-  },
-  "39b7a590a81d4f2e5fc16a13e6e41884": {
-    "initial_odds": 1.97,
-    "current_odds": 1.97,
-    "timestamp": "2026-06-01T23:20:06.942741+00:00"
-  },
-  "fdc8b8a79f09fa5df8cf7e1dd13b36c1": {
-    "initial_odds": 2.9,
-    "current_odds": 2.9,
-    "timestamp": "2026-06-01T23:20:11.328975+00:00"
-  },
-  "3e681df969a18f45a27995cade88ea20": {
-    "initial_odds": 2.56,
-    "current_odds": 2.56,
-    "timestamp": "2026-06-01T23:20:15.805238+00:00"
-  },
-  "5d4f90ad63d74d28a1f024ba2f72705b": {
-    "initial_odds": 7.0,
-    "current_odds": 7.0,
-    "timestamp": "2026-06-01T23:53:45.388231+00:00"
-  },
-  "806f289b05dcc505ef28f3928aa0e0fa": {
-    "initial_odds": 1.72,
-    "current_odds": 1.72,
-    "timestamp": "2026-06-01T23:53:49.498448+00:00"
   },
   "bed807fdf9f7f0c8f813a47ba2af3578": {
     "initial_odds": 2.24,
@@ -195,5 +145,10 @@
     "initial_odds": 2.42,
     "current_odds": 2.42,
     "timestamp": "2026-06-03T20:38:27.517191+00:00"
+  },
+  "d7a958a7c30882dce42af1518bdeebfc": {
+    "initial_odds": 1.61,
+    "current_odds": 1.61,
+    "timestamp": "2026-06-04T02:38:25.994827+00:00"
   }
 }

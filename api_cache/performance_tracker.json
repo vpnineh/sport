@@ -537,17 +537,35 @@
       "ev": 0.0245,
       "confidence": 61,
       "implied_prob": 0.5855,
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-04T02:38:43.828957+00:00"
+    },
+    {
+      "id": "9ce14057",
+      "timestamp": "2026-06-04T02:38:29.546692+00:00",
+      "sport": "other",
+      "api_sport_key": "aussierules_afl",
+      "home": "Adelaide Crows",
+      "away": "Geelong Cats",
+      "pick": "Geelong Cats",
+      "market": "h2h",
+      "odds": 1.61,
+      "ev": 0.0483,
+      "confidence": 67,
+      "implied_prob": 0.6511,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 32,
+    "total_signals": 33,
     "resolved": 17,
     "win_rate": 0.353,
     "total_profit_loss_units": -2.91,
     "roi_pct": -17.12,
-    "last_updated": "2026-06-03T20:38:52.968205+00:00",
+    "last_updated": "2026-06-04T02:38:33.221039+00:00",
     "pending_count": 7
   }
 }
