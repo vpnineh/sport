@@ -1,66 +1,6 @@
 {
   "pending": [
     {
-      "id": "1ca63cf3",
-      "timestamp": "2026-06-01T11:03:06.619115+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Juan Manuel Cerundolo",
-      "away": "Matteo Berrettini",
-      "pick": "Matteo Berrettini",
-      "market": "h2h",
-      "odds": 1.67,
-      "ev": 0.0158,
-      "confidence": 72,
-      "implied_prob": 0.6083,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "0e770396f510",
-      "_retry_count": 1,
-      "_pending_since": "2026-06-04T08:39:08.089483+00:00",
-      "_last_retry": "2026-06-04T08:39:12.591056+00:00"
-    },
-    {
-      "id": "6d04e00d",
-      "timestamp": "2026-06-01T11:03:13.040443+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Frances Tiafoe",
-      "away": "Matteo Arnaldi",
-      "pick": "Matteo Arnaldi",
-      "market": "h2h_lay",
-      "odds": 2.04,
-      "ev": 0.0251,
-      "confidence": 72,
-      "implied_prob": 0.5025,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "f5fd4be69c11",
-      "_retry_count": 1,
-      "_pending_since": "2026-06-04T08:39:08.089498+00:00",
-      "_last_retry": "2026-06-04T08:39:13.548890+00:00"
-    },
-    {
-      "id": "ac44cd45",
-      "timestamp": "2026-06-01T14:38:23.078601+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_wta_french_open",
-      "home": "Aryna Sabalenka",
-      "away": "Naomi Osaka",
-      "pick": "Naomi Osaka",
-      "market": "h2h_lay",
-      "odds": 5.1,
-      "ev": 0.035,
-      "confidence": 66,
-      "implied_prob": 0.2029,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "c4f72aec9636",
-      "_retry_count": 1,
-      "_pending_since": "2026-06-04T08:39:08.089511+00:00",
-      "_last_retry": "2026-06-04T08:39:14.936341+00:00"
-    },
-    {
       "id": "de321cdf",
       "timestamp": "2026-06-01T23:20:08.324594+00:00",
       "sport": "other",
@@ -76,9 +16,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "187bf0e5e9d9",
-      "_retry_count": 1,
+      "_retry_count": 2,
       "_pending_since": "2026-06-04T08:39:08.089523+00:00",
-      "_last_retry": "2026-06-04T08:39:16.593408+00:00"
+      "_last_retry": "2026-06-04T14:39:03.642012+00:00"
     },
     {
       "id": "38b99e7f",
@@ -96,9 +36,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "6abd15e1579e",
-      "_retry_count": 1,
+      "_retry_count": 2,
       "_pending_since": "2026-06-04T08:39:08.089534+00:00",
-      "_last_retry": "2026-06-04T08:39:16.611417+00:00"
+      "_last_retry": "2026-06-04T14:39:03.659029+00:00"
     },
     {
       "id": "b02883ef",
@@ -116,9 +56,9 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "834583df9c80",
-      "_retry_count": 1,
+      "_retry_count": 2,
       "_pending_since": "2026-06-04T08:39:08.089549+00:00",
-      "_last_retry": "2026-06-04T08:39:18.196184+00:00"
+      "_last_retry": "2026-06-04T14:39:04.184508+00:00"
     },
     {
       "id": "6b61c21d",
@@ -136,10 +76,10 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "efe8226b6127",
-      "_retry_count": 1,
+      "_retry_count": 2,
       "_pending_since": "2026-06-04T08:39:08.089562+00:00",
-      "_last_retry": "2026-06-04T08:39:19.346296+00:00"
+      "_last_retry": "2026-06-04T14:39:04.201157+00:00"
     }
   ],
-  "last_updated": "2026-06-04T08:39:22.231207+00:00"
+  "last_updated": "2026-06-04T14:39:06.882324+00:00"
 }

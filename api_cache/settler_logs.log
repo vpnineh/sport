@@ -501,3 +501,22 @@
 2026-06-04 08:39:22 | INFO     | ============================================================
 2026-06-04 08:39:22 | INFO     | 📊 Settled:1 Pending:7 WR:33.3% ROI:-21.7%
 2026-06-04 08:39:22 | INFO     | ============================================================
+2026-06-04 14:38:59 | INFO     | ============================================================
+2026-06-04 14:38:59 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-04 14:38:59 | INFO     | ============================================================
+2026-06-04 14:38:59 | INFO     | 📋 Pending: 8 | New: 1
+2026-06-04 14:39:01 | INFO     | ✅ [ESPN] 69 results loaded
+2026-06-04 14:39:03 | WARNING  | ⚪️ VOID: Juan Manuel Cerundolo vs Matteo Berrettini (76h old)
+2026-06-04 14:39:03 | WARNING  | ⚪️ VOID: Frances Tiafoe vs Matteo Arnaldi (76h old)
+2026-06-04 14:39:03 | WARNING  | ⚪️ VOID: Aryna Sabalenka vs Naomi Osaka (72h old)
+2026-06-04 14:39:03 | INFO     | ⏳ RETRY 2: Texas A&M Aggies vs USC Trojans
+2026-06-04 14:39:03 | INFO     | ⏳ RETRY 2: Texas A&M Aggies vs USC Trojans
+2026-06-04 14:39:04 | INFO     | ⏳ RETRY 2: Mirra Andreeva vs Sorana Cirstea
+2026-06-04 14:39:04 | INFO     | ⏳ RETRY 2: Jakub Mensik vs Joao Fonseca
+2026-06-04 14:39:06 | INFO     | ✅ [TSDB] Chunichi Dragons vs Fukuoka SoftBank Hawks → 5-8
+2026-06-04 14:39:06 | INFO     | 💰 Chunichi Dragons vs Fukuoka SoftBank Hawks → WIN (1.00u) [thesportsdb]
+2026-06-04 14:39:06 | INFO     | 💾 Synced 4/4 bets.
+2026-06-04 14:39:07 | INFO     | 📤 Report sent.
+2026-06-04 14:39:07 | INFO     | ============================================================
+2026-06-04 14:39:07 | INFO     | 📊 Settled:4 Pending:4 WR:36.8% ROI:-15.3%
+2026-06-04 14:39:07 | INFO     | ============================================================

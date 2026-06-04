@@ -153,8 +153,10 @@
       "ev": 0.0158,
       "confidence": 72,
       "implied_prob": 0.6083,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-04T14:39:06.882720+00:00"
     },
     {
       "id": "6d04e00d",
@@ -169,8 +171,10 @@
       "ev": 0.0251,
       "confidence": 72,
       "implied_prob": 0.5025,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-04T14:39:06.882730+00:00"
     },
     {
       "id": "ac44cd45",
@@ -185,8 +189,10 @@
       "ev": 0.035,
       "confidence": 66,
       "implied_prob": 0.2029,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-04T14:39:06.882734+00:00"
     },
     {
       "id": "fa5ad317",
@@ -573,17 +579,19 @@
       "ev": 0.0534,
       "confidence": 69,
       "implied_prob": 0.5267,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "win",
+      "profit_loss": 1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-04T14:39:06.882743+00:00"
     }
   ],
   "summary": {
     "total_signals": 34,
-    "resolved": 18,
-    "win_rate": 0.333,
-    "total_profit_loss_units": -3.91,
-    "roi_pct": -21.72,
-    "last_updated": "2026-06-04T08:39:08.089323+00:00",
-    "pending_count": 7
+    "resolved": 19,
+    "win_rate": 0.368,
+    "total_profit_loss_units": -2.91,
+    "roi_pct": -15.32,
+    "last_updated": "2026-06-04T14:38:59.532037+00:00",
+    "pending_count": 4
   }
 }
