@@ -443,8 +443,10 @@
       "ev": 0.029,
       "confidence": 65,
       "implied_prob": 0.3476,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "void",
+      "_settled_at": "2026-06-05T14:39:03.168092+00:00"
     },
     {
       "id": "13cf8a68",
@@ -669,15 +671,31 @@
       "implied_prob": 0.448,
       "outcome": null,
       "profit_loss": null
+    },
+    {
+      "id": "ff6b0492",
+      "timestamp": "2026-06-05T14:38:36.599864+00:00",
+      "sport": "cricket",
+      "api_sport_key": "cricket_t20_blast",
+      "home": "Yorkshire",
+      "away": "Lancashire",
+      "pick": "Lancashire",
+      "market": "h2h_lay",
+      "odds": 2.18,
+      "ev": 0.0426,
+      "confidence": 62,
+      "implied_prob": 0.4782,
+      "outcome": null,
+      "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 39,
+    "total_signals": 40,
     "resolved": 19,
     "win_rate": 0.368,
     "total_profit_loss_units": -2.91,
     "roi_pct": -15.32,
-    "last_updated": "2026-06-05T11:56:48.450322+00:00",
-    "pending_count": 1
+    "last_updated": "2026-06-05T14:38:58.284795+00:00",
+    "pending_count": 0
   }
 }

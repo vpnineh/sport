@@ -1,25 +1,4 @@
 {
-  "pending": [
-    {
-      "id": "6b61c21d",
-      "timestamp": "2026-06-02T13:46:31.556978+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_atp_french_open",
-      "home": "Jakub Mensik",
-      "away": "Joao Fonseca",
-      "pick": "Jakub Mensik",
-      "market": "h2h_lay",
-      "odds": 2.96,
-      "ev": 0.029,
-      "confidence": 65,
-      "implied_prob": 0.3476,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "efe8226b6127",
-      "_retry_count": 4,
-      "_pending_since": "2026-06-04T08:39:08.089562+00:00",
-      "_last_retry": "2026-06-05T11:56:55.719723+00:00"
-    }
-  ],
-  "last_updated": "2026-06-05T11:56:55.720038+00:00"
+  "pending": [],
+  "last_updated": "2026-06-05T14:39:03.167757+00:00"
 }
