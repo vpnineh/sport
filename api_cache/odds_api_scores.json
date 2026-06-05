@@ -1,6 +1,6 @@
 {
   "baseball_ncaa": {
-    "ts": "2026-06-05T11:56:55.718322+00:00",
+    "ts": "2026-06-05T17:53:34.585346+00:00",
     "data": [
       {
         "id": "17062b897253db388064333b150d00e4",
@@ -93,7 +93,7 @@
     ]
   },
   "tennis_wta_french_open": {
-    "ts": "2026-06-05T11:56:55.718337+00:00",
+    "ts": "2026-06-05T17:53:34.585356+00:00",
     "data": [
       {
         "id": "69fde123c71acd8bcf4d957dba6f97b3",
@@ -109,7 +109,7 @@
     ]
   },
   "tennis_atp_french_open": {
-    "ts": "2026-06-05T11:56:55.718341+00:00",
+    "ts": "2026-06-05T17:53:34.585359+00:00",
     "data": [
       {
         "id": "a4c247a3021a7854b7dc23b9d67524c6",
@@ -130,6 +130,66 @@
         "completed": false,
         "home_team": "Matteo Arnaldi",
         "away_team": "Flavio Cobolli",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "cricket_t20_blast": {
+    "ts": "2026-06-05T17:53:34.585360+00:00",
+    "data": [
+      {
+        "id": "d0c290da96578add1f9531c15c9eac16",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-05T18:00:00Z",
+        "completed": false,
+        "home_team": "Gloucestershire",
+        "away_team": "Somerset",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "c01d201153ee257fc047c0c4fd66c3dc",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-05T18:00:00Z",
+        "completed": false,
+        "home_team": "Yorkshire",
+        "away_team": "Lancashire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "0180db987cdaad5d56a6af3340efc8ac",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-05T18:00:00Z",
+        "completed": false,
+        "home_team": "Sussex",
+        "away_team": "Leicestershire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "3f55bbc0bb0b771f14a1eb341ff8229f",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-06T18:00:00Z",
+        "completed": false,
+        "home_team": "Durham",
+        "away_team": "Northamptonshire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "f5c495c9cd529d69135613d3edb926c6",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T14:30:00Z",
+        "completed": false,
+        "home_team": "Middlesex",
+        "away_team": "Essex",
         "scores": null,
         "last_update": null
       }

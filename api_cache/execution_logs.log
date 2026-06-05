@@ -8236,3 +8236,102 @@
 2026-06-05 14:38:57 | INFO     |   API-Football:   0/95 calls used today
 2026-06-05 14:38:57 | INFO     |   Keys:           ✅ primary(1calls rem:68) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
 2026-06-05 14:38:57 | INFO     | =================================================================
+2026-06-05 17:52:42 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-05 17:52:42 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-05 17:52:42 | INFO     | ✅ [OPENLIGADB] Client ready (no auth, 1000 req/h)
+2026-06-05 17:52:42 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-05 17:52:42 | INFO     | 🔑 [KEY] primary loaded
+2026-06-05 17:52:42 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-05 17:52:42 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-05 17:52:42 | INFO     | =================================================================
+2026-06-05 17:52:42 | INFO     |   ZBET90 ENGINE v9.1 | Production | Multi-Source
+2026-06-05 17:52:42 | INFO     | =================================================================
+2026-06-05 17:52:42 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-05 17:52:42 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-05 17:52:43 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-05 17:52:43 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-05 17:52:44 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-05 17:52:44 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-05 17:52:44 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-05 17:52:44 | INFO     | ✅ [RANKINGS] ATP
+2026-06-05 17:52:44 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-05 17:52:44 | INFO     | ✅ [RANKINGS] WTA
+2026-06-05 17:52:44 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-05 17:52:45 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-05 17:52:46 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-05 17:52:47 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-05 17:52:48 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-05 17:52:48 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-05 17:52:49 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-05 17:52:50 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-05 17:52:51 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-05 17:52:52 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-05 17:52:52 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-05 17:52:53 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-05 17:52:54 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-05 17:52:55 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-05 17:52:55 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-05 17:52:56 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-05 17:52:57 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-05 17:52:58 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-05 17:52:59 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-05 17:52:59 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-05 17:53:00 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-05 17:53:01 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-05 17:53:01 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-05 17:53:02 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-05 17:53:03 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-05 17:53:13 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-05 17:53:13 | INFO     | ✅ [NHL] 32 teams
+2026-06-05 17:53:14 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-05 17:53:14 | INFO     | ────────────────────────────────────────
+2026-06-05 17:53:14 | INFO     | 📦 DATA SOURCE STATUS:
+2026-06-05 17:53:14 | INFO     |   ├─ Tennis ATP:  13245 matches
+2026-06-05 17:53:14 | INFO     |   ├─ Tennis WTA:  12056 matches
+2026-06-05 17:53:14 | INFO     |   ├─ Football:    8822 matches
+2026-06-05 17:53:14 | INFO     |   ├─ NBA:         ❌ unavailable
+2026-06-05 17:53:14 | INFO     |   ├─ NHL:         32 teams
+2026-06-05 17:53:14 | INFO     |   ├─ MLB:         30 teams
+2026-06-05 17:53:14 | INFO     |   ├─ API-Football: ✅ active (0/95 calls)
+2026-06-05 17:53:14 | INFO     |   └─ FDOrg:       ✅ active
+2026-06-05 17:53:14 | INFO     | ────────────────────────────────────────
+2026-06-05 17:53:14 | INFO     | 🧠 [PHASE 2] Training/loading ML models...
+2026-06-05 17:53:14 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-05 17:53:14 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-05 17:53:14 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-05 17:53:14 | INFO     |   ├─ Football ML:  ✅ ready
+2026-06-05 17:53:14 | INFO     |   ├─ ATP ML:       ✅ ready
+2026-06-05 17:53:14 | INFO     |   └─ WTA ML:       ✅ ready
+2026-06-05 17:53:14 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-05 17:53:14 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-05 17:53:14 | INFO     | 🔑 [primary] totals → 8 events | used:440 remaining:60
+2026-06-05 17:53:14 | INFO     | 🔑 [primary] h2h → 8 events | used:444 remaining:56
+2026-06-05 17:53:14 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-05 17:53:14 | INFO     | 📊 Odds API usage → used:884 | remaining:56
+2026-06-05 17:53:14 | INFO     | 📊 Keys: ✅ primary(1calls rem:60) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-05 17:53:14 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-05 17:53:14 | INFO     | ⏭️  SENT: Gloucestershire vs Somerset
+2026-06-05 17:53:16 | INFO     |   📦 [Sussex vs Leicestershire] Sources: NONE ⚠️
+2026-06-05 17:53:18 | WARNING  | [AI] No data → cap 60
+2026-06-05 17:53:18 | INFO     | [AI] Sussex vs Leicestershire | BET | AI:60 Math:84 Final:72 | provider:groq
+2026-06-05 17:53:18 | INFO     | ✅ SIGNAL: Sussex vs Leicestershire | Math:84 AI:60 Final:72 | EV=9.80% | Kelly=2.2% | Sharp=True
+2026-06-05 17:53:18 | INFO     | 📤 SENT: Sussex vs Leicestershire | EV=9.80% | Conf=72%
+2026-06-05 17:53:21 | INFO     |   📦 [Chicago Cubs vs San Francisco Giants] Sources: US-Sports(H=mlb_api/good,A=mlb_api/good) | ML-WinRate(H=56%,A=44%)
+2026-06-05 17:53:23 | INFO     | [AI] Chicago Cubs vs San Francisco Giants | SKIP | AI:68 Math:76 Final:72 | provider:groq
+2026-06-05 17:53:23 | INFO     | ⏭️  AI_SKIP: Chicago Cubs vs San Francisco Giants Math:76 AI:68 Final:72
+2026-06-05 17:53:23 | INFO     | =================================================================
+2026-06-05 17:53:23 | INFO     | 📊 FINAL REPORT:
+2026-06-05 17:53:23 | INFO     |   Events total:   8
+2026-06-05 17:53:23 | INFO     |   Analyzed:       3
+2026-06-05 17:53:23 | INFO     |   Signals sent:   1
+2026-06-05 17:53:23 | INFO     |   Skip breakdown: no_opp=5 ev=0 sent=1 math=0 ai=1 conf=0
+2026-06-05 17:53:23 | INFO     |   API-Football:   0/95 calls used today
+2026-06-05 17:53:23 | INFO     |   Keys:           ✅ primary(1calls rem:60) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-05 17:53:23 | INFO     | =================================================================

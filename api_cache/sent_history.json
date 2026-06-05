@@ -1,16 +1,4 @@
 {
-  "54e53ff75121b36c6f23b639f72513a8": {
-    "match": "GWD Minden vs THW Kiel",
-    "pick": "THW Kiel",
-    "market": "h2h",
-    "sent_at": "2026-06-03T16:58:44.220415+00:00"
-  },
-  "fe42018f9825c5fa19db8d42a825928e": {
-    "match": "Rhein-Neckar Löwen vs TSV Hannover-Burgdorf",
-    "pick": "TSV Hannover-Burgdorf",
-    "market": "h2h",
-    "sent_at": "2026-06-03T16:58:50.123360+00:00"
-  },
   "048e515a68d399a7d818925e9539a6e7": {
     "match": "Boston Red Sox vs Baltimore Orioles",
     "pick": "Boston Red Sox",
@@ -64,5 +52,11 @@
     "pick": "Lancashire",
     "market": "h2h_lay",
     "sent_at": "2026-06-05T14:38:36.599195+00:00"
+  },
+  "95c34be880c96f6fb8d7cf201c744253": {
+    "match": "Sussex vs Leicestershire",
+    "pick": "Leicestershire",
+    "market": "h2h",
+    "sent_at": "2026-06-05T17:53:18.862701+00:00"
   }
 }

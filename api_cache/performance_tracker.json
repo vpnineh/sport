@@ -621,8 +621,10 @@
       "ev": 0.1447,
       "confidence": 70,
       "implied_prob": 0.511,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-05T17:53:36.557895+00:00"
     },
     {
       "id": "e7de8443",
@@ -637,8 +639,10 @@
       "ev": 0.1001,
       "confidence": 69,
       "implied_prob": 0.4297,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-05T17:53:36.557907+00:00"
     },
     {
       "id": "7d3bba97",
@@ -653,8 +657,10 @@
       "ev": 0.1206,
       "confidence": 69,
       "implied_prob": 0.4377,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-05T17:53:36.557914+00:00"
     },
     {
       "id": "71724541",
@@ -685,17 +691,35 @@
       "ev": 0.0426,
       "confidence": 62,
       "implied_prob": 0.4782,
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-05T17:53:36.557919+00:00"
+    },
+    {
+      "id": "fc700bf8",
+      "timestamp": "2026-06-05T17:53:18.863284+00:00",
+      "sport": "cricket",
+      "api_sport_key": "cricket_t20_blast",
+      "home": "Sussex",
+      "away": "Leicestershire",
+      "pick": "Leicestershire",
+      "market": "h2h",
+      "odds": 2.1,
+      "ev": 0.098,
+      "confidence": 72,
+      "implied_prob": 0.5228,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 40,
+    "total_signals": 41,
     "resolved": 19,
     "win_rate": 0.368,
     "total_profit_loss_units": -2.91,
     "roi_pct": -15.32,
-    "last_updated": "2026-06-05T14:38:58.284795+00:00",
-    "pending_count": 0
+    "last_updated": "2026-06-05T17:53:23.813983+00:00",
+    "pending_count": 2
   }
 }

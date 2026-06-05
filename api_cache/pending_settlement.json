@@ -1,4 +1,45 @@
 {
-  "pending": [],
-  "last_updated": "2026-06-05T14:39:03.167757+00:00"
+  "pending": [
+    {
+      "id": "3152eb3c",
+      "timestamp": "2026-06-05T11:55:53.339825+00:00",
+      "sport": "tennis",
+      "api_sport_key": "tennis_atp_french_open",
+      "home": "Jakub Mensik",
+      "away": "Alexander Zverev",
+      "pick": "Jakub Mensik",
+      "market": "h2h_lay",
+      "odds": 4.4,
+      "ev": 0.0502,
+      "confidence": 79,
+      "implied_prob": 0.2387,
+      "outcome": null,
+      "profit_loss": null,
+      "_pending_id": "a03c60e8dea0",
+      "_retry_count": 1,
+      "_pending_since": "2026-06-05T17:53:23.814082+00:00",
+      "_last_retry": "2026-06-05T17:53:27.646458+00:00"
+    },
+    {
+      "id": "71724541",
+      "timestamp": "2026-06-05T11:56:40.740673+00:00",
+      "sport": "cricket",
+      "api_sport_key": "cricket_t20_blast",
+      "home": "Gloucestershire",
+      "away": "Somerset",
+      "pick": "Gloucestershire",
+      "market": "h2h_lay",
+      "odds": 2.42,
+      "ev": 0.0841,
+      "confidence": 69,
+      "implied_prob": 0.448,
+      "outcome": null,
+      "profit_loss": null,
+      "_pending_id": "6d2da91dbd08",
+      "_retry_count": 1,
+      "_pending_since": "2026-06-05T17:53:23.814131+00:00",
+      "_last_retry": "2026-06-05T17:53:34.586404+00:00"
+    }
+  ],
+  "last_updated": "2026-06-05T17:53:36.557594+00:00"
 }
