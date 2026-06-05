@@ -1,66 +1,6 @@
 {
   "pending": [
     {
-      "id": "de321cdf",
-      "timestamp": "2026-06-01T23:20:08.324594+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_ncaa",
-      "home": "Texas A&M Aggies",
-      "away": "USC Trojans",
-      "pick": "Under 14.5",
-      "market": "totals",
-      "odds": 1.97,
-      "ev": 0.0655,
-      "confidence": 73,
-      "implied_prob": 0.5408,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "187bf0e5e9d9",
-      "_retry_count": 3,
-      "_pending_since": "2026-06-04T08:39:08.089523+00:00",
-      "_last_retry": "2026-06-04T20:29:47.694779+00:00"
-    },
-    {
-      "id": "38b99e7f",
-      "timestamp": "2026-06-01T23:53:52.153880+00:00",
-      "sport": "other",
-      "api_sport_key": "baseball_ncaa",
-      "home": "Texas A&M Aggies",
-      "away": "USC Trojans",
-      "pick": "Texas A&M Aggies",
-      "market": "h2h",
-      "odds": 1.72,
-      "ev": 0.0335,
-      "confidence": 69,
-      "implied_prob": 0.6009,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "6abd15e1579e",
-      "_retry_count": 3,
-      "_pending_since": "2026-06-04T08:39:08.089534+00:00",
-      "_last_retry": "2026-06-04T20:29:47.714928+00:00"
-    },
-    {
-      "id": "b02883ef",
-      "timestamp": "2026-06-02T08:38:07.592195+00:00",
-      "sport": "tennis",
-      "api_sport_key": "tennis_wta_french_open",
-      "home": "Mirra Andreeva",
-      "away": "Sorana Cirstea",
-      "pick": "Sorana Cirstea",
-      "market": "h2h_lay",
-      "odds": 2.98,
-      "ev": 0.0225,
-      "confidence": 62,
-      "implied_prob": 0.3431,
-      "outcome": null,
-      "profit_loss": null,
-      "_pending_id": "834583df9c80",
-      "_retry_count": 3,
-      "_pending_since": "2026-06-04T08:39:08.089549+00:00",
-      "_last_retry": "2026-06-04T20:29:48.737001+00:00"
-    },
-    {
       "id": "6b61c21d",
       "timestamp": "2026-06-02T13:46:31.556978+00:00",
       "sport": "tennis",
@@ -76,10 +16,10 @@
       "outcome": null,
       "profit_loss": null,
       "_pending_id": "efe8226b6127",
-      "_retry_count": 3,
+      "_retry_count": 4,
       "_pending_since": "2026-06-04T08:39:08.089562+00:00",
-      "_last_retry": "2026-06-04T20:29:49.280225+00:00"
+      "_last_retry": "2026-06-05T11:56:55.719723+00:00"
     }
   ],
-  "last_updated": "2026-06-04T20:29:49.280503+00:00"
+  "last_updated": "2026-06-05T11:56:55.720038+00:00"
 }

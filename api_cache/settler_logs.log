@@ -533,3 +533,20 @@
 2026-06-04 20:29:49 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 2 (rem:86)
 2026-06-04 20:29:49 | INFO     | ⏳ RETRY 3: Jakub Mensik vs Joao Fonseca
 2026-06-04 20:29:49 | INFO     | ⏳ No new settlements.
+2026-06-05 11:56:48 | INFO     | ============================================================
+2026-06-05 11:56:48 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-05 11:56:48 | INFO     | ============================================================
+2026-06-05 11:56:48 | INFO     | 📋 Pending: 4 | New: 0
+2026-06-05 11:56:49 | INFO     | ✅ [ESPN] 64 results loaded
+2026-06-05 11:56:53 | INFO     | 📡 [ODDS-API] baseball_ncaa → 8 (rem:76)
+2026-06-05 11:56:53 | WARNING  | ⚪️ VOID: Texas A&M Aggies vs USC Trojans (85h old)
+2026-06-05 11:56:53 | WARNING  | ⚪️ VOID: Texas A&M Aggies vs USC Trojans (84h old)
+2026-06-05 11:56:54 | INFO     | 📡 [ODDS-API] tennis_wta_french_open → 1 (rem:74)
+2026-06-05 11:56:54 | WARNING  | ⚪️ VOID: Mirra Andreeva vs Sorana Cirstea (75h old)
+2026-06-05 11:56:55 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 2 (rem:72)
+2026-06-05 11:56:55 | INFO     | ⏳ RETRY 4: Jakub Mensik vs Joao Fonseca
+2026-06-05 11:56:55 | INFO     | 💾 Synced 3/3 bets.
+2026-06-05 11:56:56 | INFO     | 📤 Report sent.
+2026-06-05 11:56:56 | INFO     | ============================================================
+2026-06-05 11:56:56 | INFO     | 📊 Settled:3 Pending:1 WR:36.8% ROI:-15.3%
+2026-06-05 11:56:56 | INFO     | ============================================================
