@@ -67,8 +67,7 @@ class Config:
     API_FOOTBALL_MAX_CALLS:  int   = 95
     FOOTBALL_DATA_ORG_KEY:   str   = ""
     FOOTBALL_DATA_ORG_TTL:   float = 6.0
-    TSDB_API_KEY:            str   = "3"
-    BALLDONTLIE_API_KEY:     str   = ""
+    TSDB_API_KEY:            str   = "123"
 
     MARKET_EXPECTED_OUTCOMES: Dict = field(default_factory=lambda: {
         "h2h":    {"min": 2, "max": 3},
@@ -95,7 +94,6 @@ class Config:
 CFG = Config()
 CFG.API_FOOTBALL_KEY      = os.getenv("API_FOOTBALL","").strip()
 CFG.FOOTBALL_DATA_ORG_KEY = os.getenv("FOOTBALL_DATA_ORG_KEY","").strip()
-CFG.BALLDONTLIE_API_KEY   = os.getenv("BALLDONTLIE_API_KEY","").strip()
 
 # =========================================================
 # 2. LOGGING
@@ -288,15 +286,221 @@ class TheSportsDBClient(_BaseAPIClient):
             })
         return result
 
-    def get_player_stats(self, name: str) -> dict:
-        p = self.search_player(name)
-        if not p: return {}
+    def get_league_table(self, league_id: int, season: str = None) -> List[dict]:
+        """Free endpoint — league standings table by league ID."""
+        if not season:
+            y = datetime.now().year
+            season = f"{y}-{y+1}"
+        d = self._get("lookuptable.php", {"l": str(league_id), "s": season}, ttl_h=4.0)
+        if d and d.get("table"):
+            return d["table"]
+        return []
+
+    def get_events_on_date(self, date_str: str, sport: str = None) -> List[dict]:
+        """Get all events on a given date (YYYY-MM-DD), optionally filtered by sport."""
+        params = {"d": date_str}
+        if sport:
+            params["s"] = sport
+        d = self._get("eventsday.php", params, ttl_h=1.0)
+        return d.get("events") or [] if d else []
+
+    def get_league_events_on_date(self, league_id: int, date_str: str) -> List[dict]:
+        """Events for a specific league on a date."""
+        d = self._get("eventsday.php", {"d": date_str, "l": str(league_id)}, ttl_h=1.0)
+        return d.get("events") or [] if d else []
+
+    def get_team_standing(self, team_name: str, league_id: int) -> dict:
+        """Lookup team rank in league table (free)."""
+        table = self.get_league_table(league_id)
+        for row in table:
+            if _fuzzy_match(team_name, str(row.get("strTeam",""))):
+                return {
+                    "rank":          int(row.get("intRank", 0) or 0),
+                    "played":        int(row.get("intPlayed", 0) or 0),
+                    "wins":          int(row.get("intWin", 0) or 0),
+                    "draws":         int(row.get("intDraw", 0) or 0),
+                    "losses":        int(row.get("intLoss", 0) or 0),
+                    "points":        int(row.get("intPoints", 0) or 0),
+                    "goals_for":     int(row.get("intGoalsFor", 0) or 0),
+                    "goals_against": int(row.get("intGoalsAgainst", 0) or 0),
+                    "total_teams":   len(table),
+                    "source":        "tsdb_table",
+                }
+        return {}
+
+
+# =========================================================
+# 4b. OPENLIGADB CLIENT — Free, No Auth, 1000 req/h
+# Covers: Bundesliga, 2.Bundesliga, Champions League,
+#         DFB Pokal, World Cup, many European leagues
+# Docs: https://api.openligadb.de
+# =========================================================
+class OpenLigaDBClient(_BaseAPIClient):
+    BASE = "https://api.openligadb.de"
+
+    # league shortcut → human name (all supported by OpenLigaDB)
+    LEAGUES = {
+        "bl1":  "Bundesliga",
+        "bl2":  "2. Bundesliga",
+        "bl3":  "3. Liga",
+        "ucl":  "Champions League",
+        "uel":  "Europa League",
+        "uecl": "Conference League",
+        "dfb":  "DFB Pokal",
+        "gb1":  "Premier League",
+        "es1":  "La Liga",
+        "it1":  "Serie A",
+        "fr1":  "Ligue 1",
+        "nl1":  "Eredivisie",
+        "pt1":  "Primeira Liga",
+        "wm26": "World Cup 2026",
+    }
+
+    def __init__(self):
+        self._cache_file   = CFG.CACHE_DIR / "openligadb_cache.json"
+        self._last_call    = 0.0
+        self._min_interval = 0.3   # polite — 1000 req/h limit
+        self._load_cache(ttl_h=4.0)
+        logger.info("✅ [OPENLIGADB] Client ready (no auth, 1000 req/h)")
+
+    def _get(self, path, ttl_h=4.0) -> Any:
+        url = f"{self.BASE}/{path.lstrip('/')}"
+        return self._fetch(url, None, {"Accept": "application/json"}, ttl_h)
+
+    def get_table(self, league: str, season: int = None) -> List[dict]:
+        """League standings. season=2024 means 2024/25."""
+        s = season or datetime.now().year - (1 if datetime.now().month < 7 else 0)
+        data = self._get(f"getbltable/{league}/{s}", ttl_h=2.0)
+        if not isinstance(data, list): return []
+        result = []
+        for row in data:
+            gp = max((row.get("wins",0) or 0) + (row.get("draws",0) or 0) + (row.get("losses",0) or 0), 1)
+            gf = row.get("goals",0) or 0; ga = row.get("opponentGoals",0) or 0
+            result.append({
+                "rank":          row.get("rank", 0),
+                "team":          row.get("teamName",""),
+                "short_name":    row.get("shortName",""),
+                "points":        row.get("points",0),
+                "played":        gp,
+                "wins":          row.get("wins",0) or 0,
+                "draws":         row.get("draws",0) or 0,
+                "losses":        row.get("losses",0) or 0,
+                "goals_for":     gf,
+                "goals_against": ga,
+                "goal_diff":     gf - ga,
+                "win_pct":       round((row.get("wins",0) or 0) / gp, 3),
+                "avg_scored":    round(gf / gp, 2),
+                "avg_conceded":  round(ga / gp, 2),
+            })
+        return result
+
+    def get_matches(self, league: str, season: int = None) -> List[dict]:
+        """All matches for a league/season."""
+        s = season or datetime.now().year - (1 if datetime.now().month < 7 else 0)
+        data = self._get(f"getmatchdata/{league}/{s}", ttl_h=1.0)
+        return data if isinstance(data, list) else []
+
+    def get_team_stats(self, team_name: str, league: str = None, season: int = None) -> dict:
+        """
+        Derive team stats from OpenLigaDB table + recent matches.
+        Tries all known leagues if none specified.
+        """
+        leagues_to_try = [league] if league else list(self.LEAGUES.keys())
+        s = season or datetime.now().year - (1 if datetime.now().month < 7 else 0)
+
+        for lg in leagues_to_try[:6]:   # cap at 6 attempts
+            table = self.get_table(lg, s)
+            if not table: continue
+            for row in table:
+                if _fuzzy_match(team_name, row["team"]) or _fuzzy_match(team_name, row.get("short_name","")):
+                    # Found — now enrich with recent match form
+                    result = {**row, "league": self.LEAGUES.get(lg, lg),
+                              "league_shortcut": lg, "source": "openligadb",
+                              "data_quality": "good" if row["played"] >= 10 else "limited"}
+                    form = self._get_recent_form(team_name, lg, s)
+                    if form: result.update(form)
+                    return result
+        return {}
+
+    def _get_recent_form(self, team_name: str, league: str, season: int) -> dict:
+        """Last 10 match form string from finished matches."""
+        matches = self.get_matches(league, season)
+        if not matches: return {}
+        finished = [m for m in matches
+                    if m.get("matchIsFinished") and
+                    m.get("matchResults")]
+        # Sort by date descending
+        finished.sort(key=lambda x: x.get("matchDateTime",""), reverse=True)
+        form = []; w=d=l=gs=gc=0
+        for m in finished[:15]:
+            t1 = m.get("team1",{}).get("teamName","")
+            t2 = m.get("team2",{}).get("teamName","")
+            res = m.get("matchResults",[])
+            # Final result is resultOrderID == 2 (fulltime), fallback to last
+            ft = next((r for r in res if r.get("resultTypeID")==2),
+                      res[-1] if res else None)
+            if not ft: continue
+            g1 = ft.get("pointsTeam1",0) or 0; g2 = ft.get("pointsTeam2",0) or 0
+            is_home = _fuzzy_match(team_name, t1)
+            is_away = _fuzzy_match(team_name, t2)
+            if not is_home and not is_away: continue
+            scored   = g1 if is_home else g2
+            conceded = g2 if is_home else g1
+            gs += scored; gc += conceded
+            if scored > conceded:   w+=1; form.append("W")
+            elif scored == conceded: d+=1; form.append("D")
+            else:                   l+=1; form.append("L")
+        n = len(form)
+        if n == 0: return {}
         return {
-            "player_id":   p.get("idPlayer"),
-            "player_name": p.get("strPlayer", name),
-            "nationality": p.get("strNationality",""),
-            "sport":       p.get("strSport",""),
-            "position":    p.get("strPosition",""),
+            "form":         "".join(form),
+            "win_rate":     round(w/n, 3),
+            "draw_rate":    round(d/n, 3),
+            "avg_scored":   round(gs/n, 2),
+            "avg_conceded": round(gc/n, 2),
+            "over25_rate":  round(sum(1 for i in range(min(n,10)) if
+                                      (form[i]!="") and False) / max(n,1), 3),  # placeholder
+        }
+
+    def get_h2h(self, team1: str, team2: str, league: str = None, season: int = None) -> dict:
+        """H2H stats between two teams from OpenLigaDB matches."""
+        leagues_to_try = [league] if league else ["bl1","bl2","ucl","gb1","es1","it1","fr1"]
+        s = season or datetime.now().year - (1 if datetime.now().month < 7 else 0)
+        t1w = t2w = draws = 0; total_goals = []
+
+        for lg in leagues_to_try[:4]:
+            matches = self.get_matches(lg, s)
+            for m in matches:
+                if not m.get("matchIsFinished"): continue
+                ht = m.get("team1",{}).get("teamName","")
+                at = m.get("team2",{}).get("teamName","")
+                if not ((_fuzzy_match(team1,ht) and _fuzzy_match(team2,at)) or
+                        (_fuzzy_match(team2,ht) and _fuzzy_match(team1,at))):
+                    continue
+                res = m.get("matchResults",[])
+                ft  = next((r for r in res if r.get("resultTypeID")==2), res[-1] if res else None)
+                if not ft: continue
+                g1 = ft.get("pointsTeam1",0) or 0; g2 = ft.get("pointsTeam2",0) or 0
+                total_goals.append(g1+g2)
+                t1_is_home = _fuzzy_match(team1, ht)
+                ts = g1 if t1_is_home else g2; os_ = g2 if t1_is_home else g1
+                if ts > os_: t1w += 1
+                elif ts < os_: t2w += 1
+                else: draws += 1
+
+        n = t1w + t2w + draws
+        if n == 0: return {}
+        return {
+            "total":          n,
+            f"{team1}_wins":  t1w,
+            f"{team2}_wins":  t2w,
+            "draws":          draws,
+            "avg_goals":      round(sum(total_goals)/n, 2),
+            "over25_rate":    round(sum(1 for g in total_goals if g > 2.5)/n, 3),
+            "btts_rate":      round(sum(1 for m in total_goals if m > 0)/n, 3),  # approx
+            "dominance":      f"{team1}_dominant" if t1w > t2w*1.5 else
+                              f"{team2}_dominant" if t2w > t1w*1.5 else "balanced",
+            "source":         "openligadb",
         }
 
 
@@ -479,98 +683,77 @@ class FootballDataOrgClient(_BaseAPIClient):
         return self._fetch(f"{self.BASE}/{ep}", params, hdrs, ttl_h)
 
     def get_team_matches(self, name: str, last_n=10) -> dict:
-        d = self._get("teams", {"name": name}, ttl_h=24.0)
-        if not d or not d.get("teams"): return {}
-        team = d["teams"][0]; tid = team.get("id")
-        if not tid: return {}
-        md = self._get(f"teams/{tid}/matches", {"status":"FINISHED","limit":last_n}, ttl_h=4.0)
+        """
+        Get recent finished matches for a team.
+        Loops through supported competitions to find the team,
+        then fetches its last N finished matches directly.
+        """
+        # Find team ID by scanning competitions
+        team_id = self._find_team_id(name)
+        if not team_id: return {}
+
+        md = self._get(f"teams/{team_id}/matches",
+                       {"status":"FINISHED","limit":last_n}, ttl_h=4.0)
         if not md or not md.get("matches"): return {}
         w=dr=l=gf=ga=0; form=[]
         for m in md["matches"]:
-            sc = m.get("score",{}).get("fullTime",{})
-            hs = sc.get("home",0) or 0; as_ = sc.get("away",0) or 0
-            is_home = _fuzzy_match(name, m.get("homeTeam",{}).get("name",""))
+            sc  = m.get("score",{}).get("fullTime",{})
+            hs  = sc.get("home",0) or 0; as_ = sc.get("away",0) or 0
+            is_home = (m.get("homeTeam",{}).get("id") == team_id)
             ts,os_ = (hs,as_) if is_home else (as_,hs)
             gf+=ts; ga+=os_
             if ts>os_:  w+=1; form.append("W")
             elif ts==os_: dr+=1; form.append("D")
             else:         l+=1; form.append("L")
-        n = len(md["matches"]); sp=max(n,1)
-        return {"played":n, "win_rate":round(w/sp,3),
-                "avg_scored":round(gf/sp,2), "avg_conceded":round(ga/sp,2),
+        n=len(md["matches"]); sp=max(n,1)
+        return {"played":n,"win_rate":round(w/sp,3),"draw_rate":round(dr/sp,3),
+                "avg_scored":round(gf/sp,2),"avg_conceded":round(ga/sp,2),
                 "form":"".join(reversed(form)),
                 "data_quality":"good" if n>=8 else "limited" if n>=4 else "poor",
                 "source":"football_data_org"}
 
-
-# =========================================================
-# 7. BALLDONTLIE CLIENT (NBA)
-# =========================================================
-class BallDontLieClient(_BaseAPIClient):
-    BASE = "https://api.balldontlie.io/v1"
-
-    def __init__(self):
-        self._key          = CFG.BALLDONTLIE_API_KEY
-        self._cache_file   = CFG.CACHE_DIR / "balldontlie_cache.json"
-        self._last_call    = 0.0
-        self._min_interval = 1.0
-        self._load_cache(ttl_h=6.0)
-        logger.info("✅ [BALLDONTLIE] NBA client ready")
-
-    def _get(self, ep, params=None, ttl_h=6.0):
-        hdrs = {"Accept":"application/json"}
-        if self._key: hdrs["Authorization"] = self._key
-        return self._fetch(f"{self.BASE}/{ep}", params, hdrs, ttl_h)
-
     def _find_team_id(self, name: str) -> Optional[int]:
-        d = self._get("teams", {"search": name}, ttl_h=24.0)
-        if d and d.get("data"): return d["data"][0].get("id")
+        """Find team ID by scanning all supported competitions."""
+        for code in self.COMP.values():
+            d = self._get(f"competitions/{code}/teams", {}, ttl_h=24.0)
+            if not d or not d.get("teams"): continue
+            for t in d["teams"]:
+                if _fuzzy_match(name, t.get("name","")) or _fuzzy_match(name, t.get("shortName","")):
+                    return t.get("id")
         return None
 
-    def get_team_stats(self, name: str) -> dict:
-        tid = self._find_team_id(name)
-        if not tid: return {}
-        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
-        d = self._get("season_averages", {"season":season,"team_ids[]":tid}, ttl_h=4.0)
-        if not d or not d.get("data"): return {"data_quality":"poor","source":"balldontlie"}
-        s = d["data"][0]
-        return {
-            "avg_pts":   round(float(s.get("pts",0) or 0),1),
-            "fg_pct":    round(float(s.get("fg_pct",0) or 0),3),
-            "fg3_pct":   round(float(s.get("fg3_pct",0) or 0),3),
-            "data_quality":"limited","source":"balldontlie"}
+    def get_standings(self, competition_code: str, season: int = None) -> List[dict]:
+        """League standings from football-data.org."""
+        params = {}
+        if season: params["season"] = season
+        d = self._get(f"competitions/{competition_code}/standings", params, ttl_h=4.0)
+        if not d: return []
+        try:
+            table = d["standings"][0]["table"]
+            return [{"rank":t["position"],"team":t["team"]["name"],
+                     "points":t["points"],"played":t["playedGames"],
+                     "wins":t["won"],"draws":t["draw"],"losses":t["lost"],
+                     "gf":t["goalsFor"],"ga":t["goalsAgainst"],
+                     "gd":t["goalDifference"],"form":t.get("form","")} for t in table]
+        except (KeyError,IndexError): return []
 
-    def get_recent_games(self, name: str, n=10) -> dict:
-        tid = self._find_team_id(name)
-        if not tid: return {}
-        season = datetime.now().year - (1 if datetime.now().month < 9 else 0)
-        d = self._get("games", {"seasons[]":season,"team_ids[]":tid,"per_page":n,"postseason":False}, ttl_h=4.0)
-        if not d or not d.get("data"): return {}
-        games = sorted([g for g in d["data"] if g.get("status")=="Final"],
-                       key=lambda x: x.get("date",""), reverse=True)[:n]
-        w=l=pf=pa=0; form=[]
-        for g in games:
-            is_home = g.get("home_team",{}).get("id") == tid
-            tp = g.get("home_team_score",0) if is_home else g.get("visitor_team_score",0)
-            op = g.get("visitor_team_score",0) if is_home else g.get("home_team_score",0)
-            pf+=tp or 0; pa+=op or 0
-            if tp>op: w+=1; form.append("W")
-            else:     l+=1; form.append("L")
-        n2=len(games); sp=max(n2,1)
-        return {
-            "recent_record":  f"{w}W-{l}L",
-            "win_rate":       round(w/sp,3),
-            "avg_pts_scored": round(pf/sp,1),
-            "avg_pts_allowed":round(pa/sp,1),
-            "form":           "".join(reversed(form)),
-            "data_quality":   "good" if n2>=8 else "limited","source":"balldontlie"}
 
+    def get_player_stats(self, name: str) -> dict:
+        p = self.search_player(name)
+        if not p: return {}
+        return {
+            "player_id":   p.get("idPlayer"),
+            "player_name": p.get("strPlayer", name),
+            "nationality": p.get("strNationality",""),
+            "sport":       p.get("strSport",""),
+            "position":    p.get("strPosition",""),
+        }
 
 # Singletons
-tsdb          = TheSportsDBClient()
-api_football  = APIFootballClient()
-fdo           = FootballDataOrgClient()
-balldontlie   = BallDontLieClient()
+tsdb         = TheSportsDBClient()
+api_football = APIFootballClient()
+fdo          = FootballDataOrgClient()
+openligadb   = OpenLigaDBClient()
 
 
 # =========================================================
@@ -1074,37 +1257,42 @@ class FreeDataEngine:
         self.nba_data=None
 
     def get_us_sports_stats(self, sport, team) -> dict:
-        """Unified lookup for NBA/MLB/NHL with TSDB fallback."""
+        """Unified lookup for NBA/WNBA/MLB/NHL. Falls back to TSDB for any sport."""
         sport_l = sport.lower(); cl = team.lower().strip()
-        # NBA
-        if "basketball" in sport_l or "nba" in sport_l:
-            try:
-                g = balldontlie.get_recent_games(team)
-                if g and g.get("data_quality") != "poor":
-                    return {**g, **balldontlie.get_team_stats(team)}
-            except Exception as e: logger.warning("[NBA BDL] %s", e)
-            if self.nba_data is not None and not self.nba_data.empty:
-                for col in ["TeamName","TEAM_NAME"]:
-                    if col in self.nba_data.columns:
-                        for _,row in self.nba_data.iterrows():
-                            if _fuzzy_match(cl, str(row[col])):
-                                return {"win_pct":float(row.get("WinPCT",row.get("WIN_PCT",0.5)) or 0.5),
-                                        "source":"nba_api","data_quality":"limited"}
-        # MLB / NHL
-        else:
-            df = self.mlb_data if ("baseball" in sport_l or "mlb" in sport_l) else self.nhl_data
-            if df is not None and not df.empty:
-                for _,row in df.iterrows():
-                    if _fuzzy_match(cl, str(row.get("team",""))):
-                        d=row.to_dict()
-                        src = "mlb_api" if "baseball" in sport_l or "mlb" in sport_l else "nhl_api"
-                        d.update({"data_quality":"good","source":src})
-                        return d
-        # TSDB fallback
+        is_nba     = "basketball" in sport_l or "nba" in sport_l
+        is_wnba    = "wnba" in sport_l or "women" in sport_l
+        is_baseball= "baseball" in sport_l or "mlb" in sport_l or "npb" in sport_l
+        is_hockey  = "hockey" in sport_l or "nhl" in sport_l
+
+        # MLB
+        if is_baseball and self.mlb_data is not None and not self.mlb_data.empty:
+            for _,row in self.mlb_data.iterrows():
+                if _fuzzy_match(cl, str(row.get("team",""))):
+                    d=row.to_dict(); d.update({"data_quality":"good","source":"mlb_api"}); return d
+
+        # NHL
+        if is_hockey and self.nhl_data is not None and not self.nhl_data.empty:
+            for _,row in self.nhl_data.iterrows():
+                if _fuzzy_match(cl, str(row.get("team",""))):
+                    d=row.to_dict(); d.update({"data_quality":"good","source":"nhl_api"}); return d
+
+        # NBA standings (non-WNBA only — WNBA teams not in NBA data)
+        if is_nba and not is_wnba and self.nba_data is not None and not self.nba_data.empty:
+            for col in ["TeamName","TEAM_NAME","TeamCity"]:
+                if col in self.nba_data.columns:
+                    for _,row in self.nba_data.iterrows():
+                        if _fuzzy_match(cl, str(row[col])):
+                            return {"win_pct": float(row.get("WinPCT", row.get("WIN_PCT", 0.5)) or 0.5),
+                                    "source":"nba_api","data_quality":"limited"}
+
+        # TSDB — works for WNBA, Japanese baseball, any sport TSDB covers
         try:
-            ts=tsdb.get_team_stats(team)
-            if ts and ts.get("data_quality") in ("good","limited"): return ts
-        except Exception as e: logger.warning("[TSDB fallback] %s", e)
+            ts = tsdb.get_team_stats(team)
+            if ts and ts.get("matches_analyzed",0) >= 3:
+                return ts
+        except Exception as e:
+            logger.warning("[TSDB get_us_sports_stats] %s: %s", team, e)
+
         return {}
 
 
@@ -1446,6 +1634,7 @@ class ConfidenceEngine:
 
 
 def _get_dq(stats: dict) -> str:
+    """Determine overall data quality from whatever sources are populated."""
     if stats.get("historical_data"):
         return stats["historical_data"].get("data_quality_summary",{}).get("overall","poor")
     if stats.get("football_stats"):
@@ -1453,6 +1642,18 @@ def _get_dq(stats: dict) -> str:
         aq=stats["football_stats"].get("away",{}).get("data_quality","poor")
         if hq=="good" and aq=="good": return "good"
         if hq!="poor" or aq!="poor": return "limited"
+        return "poor"
+    if stats.get("us_sports"):
+        hq=stats["us_sports"].get("home",{}).get("data_quality","poor")
+        aq=stats["us_sports"].get("away",{}).get("data_quality","poor")
+        if hq=="good" and aq=="good": return "good"
+        if hq!="poor" or aq!="poor": return "limited"
+        return "poor"
+    if stats.get("tsdb_stats"):
+        hq=stats["tsdb_stats"].get("home",{}).get("data_quality","poor")
+        aq=stats["tsdb_stats"].get("away",{}).get("data_quality","poor")
+        if hq=="good" and aq=="good": return "limited"   # TSDB alone = limited max
+        if hq!="poor" or aq!="poor": return "poor"
         return "poor"
     return "none"
 
@@ -1509,12 +1710,12 @@ def _sport_emoji(sk): return {"tennis":"🎾","football":"⚽","basketball":"�
 
 def normalize_sport(title: str) -> str:
     l=(title or "").lower()
-    if any(k in l for k in ["tennis","atp","wta"]):           return "tennis"
+    if any(k in l for k in ["tennis","atp","wta"]):                      return "tennis"
     if any(k in l for k in ["soccer","football","premier","liga","bundesliga","serie","ligue","champions"]): return "football"
-    if any(k in l for k in ["basketball","nba","euroleague"]): return "basketball"
-    if any(k in l for k in ["baseball","mlb"]):                return "baseball"
-    if any(k in l for k in ["hockey","nhl"]):                  return "hockey"
-    if any(k in l for k in ["cricket","ipl","t20"]):           return "cricket"
+    if any(k in l for k in ["basketball","nba","wnba","euroleague"]):     return "basketball"
+    if any(k in l for k in ["baseball","mlb","npb","softball"]):         return "baseball"
+    if any(k in l for k in ["hockey","nhl"]):                            return "hockey"
+    if any(k in l for k in ["cricket","ipl","t20"]):                     return "cricket"
     return "other"
 
 def clean_name(n): return re.sub(r"\s*\([^)]*\)","",str(n or "")).strip()
@@ -1602,16 +1803,11 @@ def make_ai_decision(home, away, sport, sport_key, opp, stats, math_score, ml_pr
     try: ai_conf=int(np.clip(float(ai_data.get("confidence",math_score)),0,100))
     except Exception: ai_conf=math_score
 
-    # Data quality caps
-    dq=_get_dq(stats)
-    if dq=="none":
-        h_q=stats.get("tsdb_stats",{}).get("home",{}).get("data_quality","none")
-        a_q=stats.get("tsdb_stats",{}).get("away",{}).get("data_quality","none")
-        if h_q=="good" and a_q=="good": dq="limited"
-        elif h_q in("good","limited") or a_q in("good","limited"): dq="poor"
-    if   dq=="none"    and ai_conf>60: ai_conf=60;   logger.warning("[AI] No data → cap 60")
-    elif dq=="poor"    and ai_conf>65: ai_conf=65;   logger.warning("[AI] Poor data → cap 65")
-    elif dq=="limited" and ai_conf>74: ai_conf=74;   logger.warning("[AI] Limited data → cap 74")
+    # Data quality caps — _get_dq covers all stat types: historical/football/us_sports/tsdb
+    dq = _get_dq(stats)
+    if   dq == "none"    and ai_conf > 60: ai_conf = 60; logger.warning("[AI] No data → cap 60")
+    elif dq == "poor"    and ai_conf > 65: ai_conf = 65; logger.warning("[AI] Poor data → cap 65")
+    elif dq == "limited" and ai_conf > 74: ai_conf = 74; logger.warning("[AI] Limited data → cap 74")
     if ai_manager.last_provider=="groq" and ai_conf>=70 and opp.get("ev",0)*100<2.5:
         ai_conf=min(ai_conf-7,68)
 
@@ -1845,8 +2041,7 @@ async def async_main():
     logger.info("  ├─ NHL:         %s", f"{len(de.nhl_data)} teams" if de.nhl_data is not None else "❌ unavailable")
     logger.info("  ├─ MLB:         %s", f"{len(de.mlb_data)} teams" if de.mlb_data is not None else "❌ unavailable")
     logger.info("  ├─ API-Football: %s", f"✅ active ({api_football._calls_today}/{CFG.API_FOOTBALL_MAX_CALLS} calls)" if CFG.API_FOOTBALL_KEY else "⚠️  no key")
-    logger.info("  ├─ FDOrg:       %s", "✅ active" if CFG.FOOTBALL_DATA_ORG_KEY else "⚠️  no key")
-    logger.info("  └─ BallDontLie: %s", "✅ active" if CFG.BALLDONTLIE_API_KEY else "⚠️  no key (rate-limited mode)")
+    logger.info("  └─ FDOrg:       %s", "✅ active" if CFG.FOOTBALL_DATA_ORG_KEY else "⚠️  no key")
     logger.info("─"*40)
 
     # ── Phase 2: ML models ────────────────────────────────
@@ -1915,7 +2110,7 @@ async def async_main():
                 if ml_pred: stats["ml_prediction"]=ml_pred; src_log.append("ML-Tennis")
 
         elif sport_key=="football":
-            # 1. API-Football (best stats)
+            # 1. API-Football (premium stats if key available)
             if CFG.API_FOOTBALL_KEY:
                 try:
                     h_af=api_football.get_team_stats(home); a_af=api_football.get_team_stats(away)
@@ -1930,7 +2125,35 @@ async def async_main():
                             a_st=api_football.get_team_standing(away,a_af["league_id"])
                             if a_st: stats["football_stats"]["away"]["standing"]=a_st
                 except Exception as e: logger.warning("  [API-Football] %s",str(e)[:80])
-            # 2. Football-Data.org (fallback)
+
+            # 2. OpenLigaDB — free, no auth, real-time standings + H2H
+            try:
+                h_ol = openligadb.get_team_stats(home)
+                a_ol = openligadb.get_team_stats(away)
+                if h_ol or a_ol:
+                    if "football_stats" not in stats:
+                        stats["football_stats"] = {"home": h_ol or {}, "away": a_ol or {}, "h2h": {}}
+                    else:
+                        # Enrich: fill in form/standing if API-Football didn't supply
+                        if h_ol and not stats["football_stats"]["home"].get("form"):
+                            stats["football_stats"]["home"].update({
+                                "form": h_ol.get("form",""), "win_rate": h_ol.get("win_rate",0),
+                                "avg_scored": h_ol.get("avg_scored",0), "avg_conceded": h_ol.get("avg_conceded",0),
+                                "standing": {"rank": h_ol.get("rank",0), "points": h_ol.get("points",0),
+                                             "played": h_ol.get("played",0)}})
+                        if a_ol and not stats["football_stats"]["away"].get("form"):
+                            stats["football_stats"]["away"].update({
+                                "form": a_ol.get("form",""), "win_rate": a_ol.get("win_rate",0),
+                                "avg_scored": a_ol.get("avg_scored",0), "avg_conceded": a_ol.get("avg_conceded",0),
+                                "standing": {"rank": a_ol.get("rank",0), "points": a_ol.get("points",0),
+                                             "played": a_ol.get("played",0)}})
+                    h2h_ol = openligadb.get_h2h(home, away)
+                    if h2h_ol and not stats.get("football_stats",{}).get("h2h"):
+                        stats["football_stats"]["h2h"] = h2h_ol
+                    src_log.append(f"OpenLigaDB(H={h_ol.get('data_quality','?') if h_ol else 'none'},A={a_ol.get('data_quality','?') if a_ol else 'none'})")
+            except Exception as e: logger.warning("  [OpenLigaDB] %s", str(e)[:80])
+
+            # 3. Football-Data.org (fallback — 10 competitions, unlimited calls)
             if not stats.get("football_stats") and CFG.FOOTBALL_DATA_ORG_KEY:
                 try:
                     h_fd=fdo.get_team_matches(home); a_fd=fdo.get_team_matches(away)
@@ -1938,7 +2161,8 @@ async def async_main():
                         stats["football_stats"]={"home":h_fd or {},"away":a_fd or {},"h2h":{}}
                         src_log.append(f"FDOrg(H={h_fd.get('data_quality','?') if h_fd else 'none'},A={a_fd.get('data_quality','?') if a_fd else 'none'})")
                 except Exception as e: logger.warning("  [FDOrg] %s",str(e)[:60])
-            # 3. GitHub CSV (historical baseline + H2H)
+
+            # 4. GitHub CSV (historical baseline + H2H for any league)
             try:
                 fs=de.get_football_stats(home,away)
                 if fs:
@@ -1948,9 +2172,10 @@ async def async_main():
                     else:
                         stats["football_stats"]["github"]=fs
                         if not stats["football_stats"].get("h2h"): stats["football_stats"]["h2h"]=fs.get("h2h",{})
-                        src_log.append("GitHub-Football(supplement)")
+                        src_log.append("GitHub-Football(H2H+history)")
             except Exception as e: logger.warning("  [GitHub Football] %s",str(e)[:60])
-            # 4. TSDB form enrich
+
+            # 5. TSDB form enrich (last resort for any league not covered above)
             try:
                 h_ts=tsdb.get_team_stats(home); a_ts=tsdb.get_team_stats(away)
                 if h_ts or a_ts:
@@ -1963,7 +2188,8 @@ async def async_main():
                             stats["football_stats"]["away"].update({"tsdb_form":a_ts.get("form",""),"tsdb_win_rate":a_ts.get("win_rate",0)})
                     src_log.append(f"TSDB(H={h_ts.get('data_quality','?') if h_ts else 'none'},A={a_ts.get('data_quality','?') if a_ts else 'none'})")
             except Exception as e: logger.warning("  [TSDB Football] %s",str(e)[:60])
-            # 5. ML + Poisson
+
+            # 6. ML + Poisson
             if ml.is_football_trained:
                 try:
                     ml_pred=ml.predict_football(home,away)
@@ -1975,38 +2201,50 @@ async def async_main():
             except Exception as e: logger.warning("  [Poisson] %s",e)
 
         elif sport_key in ("basketball","baseball","hockey"):
-            # Unified US sports with BDL first for NBA
-            if sport_key=="basketball":
-                try:
-                    h_bdl=balldontlie.get_recent_games(home); a_bdl=balldontlie.get_recent_games(away)
-                    if h_bdl or a_bdl:
-                        stats["us_sports"]={"home":{**(h_bdl or {}),**balldontlie.get_team_stats(home)},
-                                            "away":{**(a_bdl or {}),**balldontlie.get_team_stats(away)}}
-                        src_log.append(f"BallDontLie(H={h_bdl.get('data_quality','?') if h_bdl else 'none'},A={a_bdl.get('data_quality','?') if a_bdl else 'none'})")
-                except Exception as e: logger.warning("  [BDL] %s",e)
-            if not stats.get("us_sports"):
-                try:
-                    hs=de.get_us_sports_stats(sport,home); aws=de.get_us_sports_stats(sport,away)
-                    if hs or aws:
-                        stats["us_sports"]={"home":hs,"away":aws}
-                        src_log.append(f"US-Sports(H={hs.get('source','?') if hs else 'none'},A={aws.get('source','?') if aws else 'none'})")
-                except Exception as e: logger.warning("  [US Sports] %s",e)
-            # Derive ML from win rates
-            us=stats.get("us_sports",{}); hs=us.get("home",{}); aws=us.get("away",{})
-            h_wr=hs.get("win_rate",hs.get("win_pct",0)); a_wr=aws.get("win_rate",aws.get("win_pct",0))
-            if h_wr and a_wr:
-                cap=0.80 if sport_key=="basketball" else 0.75; floor=0.20 if sport_key=="basketball" else 0.25
-                hp=min(cap,max(floor,(h_wr/(h_wr+a_wr))*0.9+0.05))
-                ml_pred={f"{home}_win_prob":round(hp,4),f"{away}_win_prob":round(1-hp,4)}
-                stats["ml_prediction"]=ml_pred; src_log.append(f"ML-WinRate(H={hp*100:.0f}%,A={(1-hp)*100:.0f}%)")
-
-        else:  # cricket / other
+            is_wnba = "wnba" in sport.lower() or ("women" in sport.lower() and "basketball" in sport.lower())
             try:
-                h_ts=tsdb.get_team_stats(home); a_ts=tsdb.get_team_stats(away)
-                if h_ts or a_ts:
-                    stats["tsdb_stats"]={"home":h_ts or {},"away":a_ts or {}}
-                    src_log.append(f"TSDB-Other(H={h_ts.get('data_quality','?') if h_ts else 'none'},A={a_ts.get('data_quality','?') if a_ts else 'none'})")
-            except Exception as e: logger.warning("  [TSDB Other] %s",e)
+                hs  = de.get_us_sports_stats(sport, home)
+                aws = de.get_us_sports_stats(sport, away)
+                if hs or aws:
+                    stats["us_sports"] = {"home": hs or {}, "away": aws or {}}
+                    h_src = hs.get("source","?") if hs else "none"
+                    a_src = aws.get("source","?") if aws else "none"
+                    h_dq  = hs.get("data_quality","?") if hs else "none"
+                    a_dq  = aws.get("data_quality","?") if aws else "none"
+                    src_log.append(f"US-Sports(H={h_src}/{h_dq},A={a_src}/{a_dq})")
+                else:
+                    logger.info("  ⚠️  No US sports data found for %s vs %s [%s]", home, away, sport)
+            except Exception as e:
+                logger.warning("  [US Sports pipeline] %s", e)
+            # Derive win-rate ML
+            us  = stats.get("us_sports", {})
+            hs  = us.get("home", {}); aws = us.get("away", {})
+            h_wr = hs.get("win_rate", hs.get("win_pct", 0))
+            a_wr = aws.get("win_rate", aws.get("win_pct", 0))
+            if h_wr and a_wr:
+                cap   = 0.80 if sport_key == "basketball" else 0.75
+                floor = 0.20 if sport_key == "basketball" else 0.25
+                hp    = min(cap, max(floor, (h_wr / (h_wr + a_wr)) * 0.9 + 0.05))
+                ml_pred = {f"{home}_win_prob": round(hp, 4), f"{away}_win_prob": round(1-hp, 4)}
+                stats["ml_prediction"] = ml_pred
+                src_log.append(f"ML-WinRate(H={hp*100:.0f}%,A={(1-hp)*100:.0f}%)")
+
+        else:  # cricket / NPB / other
+            # Try US sports lookup first (covers NPB etc. via TSDB)
+            try:
+                hs  = de.get_us_sports_stats(sport, home)
+                aws = de.get_us_sports_stats(sport, away)
+                if hs or aws:
+                    stats["us_sports"] = {"home": hs or {}, "away": aws or {}}
+                    src_log.append(f"TSDB-Other(H={hs.get('data_quality','?') if hs else 'none'},A={aws.get('data_quality','?') if aws else 'none'})")
+                else:
+                    # Direct TSDB fallback
+                    h_ts = tsdb.get_team_stats(home); a_ts = tsdb.get_team_stats(away)
+                    if h_ts or a_ts:
+                        stats["tsdb_stats"] = {"home": h_ts or {}, "away": a_ts or {}}
+                        src_log.append(f"TSDB(H={h_ts.get('data_quality','?') if h_ts else 'none'},A={a_ts.get('data_quality','?') if a_ts else 'none'})")
+            except Exception as e:
+                logger.warning("  [Other sports pipeline] %s", e)
 
         logger.info("  📦 [%s vs %s] Sources: %s",
                     home[:20], away[:20], " | ".join(src_log) if src_log else "NONE ⚠️")
