@@ -1,10 +1,4 @@
 {
-  "030e73de3233df9c3bd5b19d8558086c": {
-    "match": "Chunichi Dragons vs Fukuoka SoftBank Hawks",
-    "pick": "Fukuoka SoftBank Hawks",
-    "market": "h2h",
-    "sent_at": "2026-06-04T08:38:36.338375+00:00"
-  },
   "25740ce69331fdeb9b75c2b94f128830": {
     "match": "Jakub Mensik vs Alexander Zverev",
     "pick": "Jakub Mensik",
@@ -58,5 +52,23 @@
     "pick": "Draw",
     "market": "h2h",
     "sent_at": "2026-06-06T08:38:14.811886+00:00"
+  },
+  "e70facbfca79608cae0b66edbb122e96": {
+    "match": "Cal Poly Mustangs vs West Virginia Mountaineers",
+    "pick": "Under 10.5",
+    "market": "totals",
+    "sent_at": "2026-06-06T14:38:19.722673+00:00"
+  },
+  "b32ccd0ba07a1f3295f420cba0c089fc": {
+    "match": "Minnesota Lynx vs Seattle Storm",
+    "pick": "Seattle Storm",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-06T14:38:26.259371+00:00"
+  },
+  "b94fcf550ff0d54969d36011fbc26484": {
+    "match": "Detroit Tigers vs Seattle Mariners",
+    "pick": "Over 8.5",
+    "market": "totals",
+    "sent_at": "2026-06-06T14:38:46.404471+00:00"
   }
 }

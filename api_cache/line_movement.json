@@ -250,5 +250,25 @@
     "initial_odds": 5.2,
     "current_odds": 5.2,
     "timestamp": "2026-06-06T08:38:21.202597+00:00"
+  },
+  "c2e12400957a85be83d76d48b2ca038d": {
+    "initial_odds": 19.0,
+    "current_odds": 19.0,
+    "timestamp": "2026-06-06T14:38:09.716990+00:00"
+  },
+  "c3d063217298f8fb2aab748cda46f016": {
+    "initial_odds": 2.28,
+    "current_odds": 2.28,
+    "timestamp": "2026-06-06T14:38:15.914474+00:00"
+  },
+  "40232776af6e9f570354fe4cf9cb0577": {
+    "initial_odds": 10.0,
+    "current_odds": 10.0,
+    "timestamp": "2026-06-06T14:38:22.728977+00:00"
+  },
+  "6148ea2e691e1a9ce85633fc4942c4f9": {
+    "initial_odds": 1.95,
+    "current_odds": 1.95,
+    "timestamp": "2026-06-06T14:38:29.264891+00:00"
   }
 }

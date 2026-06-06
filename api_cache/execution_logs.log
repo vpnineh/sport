@@ -8631,3 +8631,119 @@
 2026-06-06 08:38:24 | INFO     |   API-Football:   0/95 calls used today
 2026-06-06 08:38:24 | INFO     |   Keys:           ✅ primary(1calls rem:30) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
 2026-06-06 08:38:24 | INFO     | =================================================================
+2026-06-06 14:37:36 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-06 14:37:36 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-06 14:37:36 | INFO     | ✅ [OPENLIGADB] Client ready (no auth, 1000 req/h)
+2026-06-06 14:37:37 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-06 14:37:37 | INFO     | 🔑 [KEY] primary loaded
+2026-06-06 14:37:37 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-06 14:37:37 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-06 14:37:37 | INFO     | =================================================================
+2026-06-06 14:37:37 | INFO     |   ZBET90 ENGINE v9.1 | Production | Multi-Source
+2026-06-06 14:37:37 | INFO     | =================================================================
+2026-06-06 14:37:37 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-06 14:37:37 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-06 14:37:37 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-06 14:37:37 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-06 14:37:37 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-06 14:37:38 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-06 14:37:38 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-06 14:37:39 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-06 14:37:39 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-06 14:37:39 | INFO     | ✅ [RANKINGS] ATP
+2026-06-06 14:37:39 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-06 14:37:39 | INFO     | ✅ [RANKINGS] WTA
+2026-06-06 14:37:39 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-06 14:37:40 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-06 14:37:41 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-06 14:37:42 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-06 14:37:43 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-06 14:37:44 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-06 14:37:44 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-06 14:37:45 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-06 14:37:46 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-06 14:37:47 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-06 14:37:48 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-06 14:37:48 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-06 14:37:49 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-06 14:37:50 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-06 14:37:51 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-06 14:37:52 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-06 14:37:52 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-06 14:37:53 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-06 14:37:54 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-06 14:37:55 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-06 14:37:56 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-06 14:37:56 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-06 14:37:57 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-06 14:37:58 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-06 14:37:58 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-06 14:38:09 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-06 14:38:09 | INFO     | ✅ [NHL] 32 teams
+2026-06-06 14:38:09 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-06 14:38:09 | INFO     | ────────────────────────────────────────
+2026-06-06 14:38:09 | INFO     | 📦 DATA SOURCE STATUS:
+2026-06-06 14:38:09 | INFO     |   ├─ Tennis ATP:  13245 matches
+2026-06-06 14:38:09 | INFO     |   ├─ Tennis WTA:  12056 matches
+2026-06-06 14:38:09 | INFO     |   ├─ Football:    8822 matches
+2026-06-06 14:38:09 | INFO     |   ├─ NBA:         ❌ unavailable
+2026-06-06 14:38:09 | INFO     |   ├─ NHL:         32 teams
+2026-06-06 14:38:09 | INFO     |   ├─ MLB:         30 teams
+2026-06-06 14:38:09 | INFO     |   ├─ API-Football: ✅ active (0/95 calls)
+2026-06-06 14:38:09 | INFO     |   └─ FDOrg:       ✅ active
+2026-06-06 14:38:09 | INFO     | ────────────────────────────────────────
+2026-06-06 14:38:09 | INFO     | 🧠 [PHASE 2] Training/loading ML models...
+2026-06-06 14:38:09 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-06 14:38:09 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-06 14:38:09 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-06 14:38:09 | INFO     |   ├─ Football ML:  ✅ ready
+2026-06-06 14:38:09 | INFO     |   ├─ ATP ML:       ✅ ready
+2026-06-06 14:38:09 | INFO     |   └─ WTA ML:       ✅ ready
+2026-06-06 14:38:09 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-06 14:38:09 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-06 14:38:09 | INFO     | 🔑 [primary] totals → 8 events | used:478 remaining:22
+2026-06-06 14:38:09 | INFO     | 🔑 [primary] h2h → 8 events | used:482 remaining:18
+2026-06-06 14:38:09 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-06 14:38:09 | INFO     | 📊 Odds API usage → used:960 | remaining:18
+2026-06-06 14:38:09 | INFO     | 📊 Keys: ✅ primary(1calls rem:22) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-06 14:38:09 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-06 14:38:09 | WARNING  | [EV] Suspicious EV=30.7% for Aaron Sutton — skip
+2026-06-06 14:38:09 | WARNING  | [EV] Suspicious EV=30.7% for Lee Cutler — skip
+2026-06-06 14:38:09 | WARNING  | [EV] Suspicious EV=30.7% for Draw — skip
+2026-06-06 14:38:11 | INFO     |   📦 [Lee Cutler vs Aaron Sutton] Sources: NONE ⚠️
+2026-06-06 14:38:15 | WARNING  | [AI] No data → cap 60
+2026-06-06 14:38:15 | INFO     | [AI] Lee Cutler vs Aaron Sutton | SKIP | AI:60 Math:67 Final:63 | provider:groq
+2026-06-06 14:38:15 | INFO     | ⏭️  AI_SKIP: Lee Cutler vs Aaron Sutton Math:67 AI:60 Final:63
+2026-06-06 14:38:16 | INFO     |   ⚠️  No US sports data found for Cal Poly Mustangs vs West Virginia Mountaineers [NCAA Baseball]
+2026-06-06 14:38:16 | INFO     |   📦 [Cal Poly Mustangs vs West Virginia Mounta] Sources: NONE ⚠️
+2026-06-06 14:38:19 | WARNING  | [AI] No data → cap 60
+2026-06-06 14:38:19 | INFO     | [AI] Cal Poly Mustangs vs West Virginia Mountaineers | BET | AI:60 Math:65 Final:62 | provider:groq
+2026-06-06 14:38:19 | INFO     | ✅ SIGNAL: Cal Poly Mustangs vs West Virginia Mountaineers | Math:65 AI:60 Final:62 | EV=4.74% | Kelly=0.9% | Sharp=True
+2026-06-06 14:38:19 | INFO     | 📤 SENT: Cal Poly Mustangs vs West Virginia Mountaineers | EV=4.74% | Conf=62%
+2026-06-06 14:38:22 | WARNING  | [EV] Suspicious EV=32.8% for Draw — skip
+2026-06-06 14:38:22 | WARNING  | [EV] Suspicious EV=2355.1% for Casey James Streeter — skip
+2026-06-06 14:38:22 | WARNING  | [EV] Suspicious EV=8347.3% for Draw — skip
+2026-06-06 14:38:23 | INFO     |   ⚠️  No US sports data found for Minnesota Lynx vs Seattle Storm [WNBA]
+2026-06-06 14:38:23 | INFO     |   📦 [Minnesota Lynx vs Seattle Storm] Sources: NONE ⚠️
+2026-06-06 14:38:25 | INFO     | [AI] Sharp override → BET EV=5.0%
+2026-06-06 14:38:25 | INFO     | [AI] Minnesota Lynx vs Seattle Storm | BET | AI:60 Math:53 Final:63 | provider:groq
+2026-06-06 14:38:25 | INFO     | ✅ SIGNAL: Minnesota Lynx vs Seattle Storm | Math:53 AI:60 Final:63 | EV=5.00% | Kelly=0.1% | Sharp=True
+2026-06-06 14:38:26 | INFO     | 📤 SENT: Minnesota Lynx vs Seattle Storm | EV=5.00% | Conf=63%
+2026-06-06 14:38:29 | INFO     |   📦 [Detroit Tigers vs Seattle Mariners] Sources: US-Sports(H=mlb_api/good,A=mlb_api/good) | ML-WinRate(H=45%,A=55%)
+2026-06-06 14:38:45 | INFO     | [AI] Detroit Tigers vs Seattle Mariners | BET | AI:78 Math:82 Final:80 | provider:groq
+2026-06-06 14:38:45 | INFO     | ✅ SIGNAL: Detroit Tigers vs Seattle Mariners | Math:82 AI:78 Final:80 | EV=2.84% | Kelly=0.8% | Sharp=True
+2026-06-06 14:38:46 | INFO     | 📤 SENT: Detroit Tigers vs Seattle Mariners | EV=2.84% | Conf=80%
+2026-06-06 14:38:49 | INFO     | =================================================================
+2026-06-06 14:38:49 | INFO     | 📊 FINAL REPORT:
+2026-06-06 14:38:49 | INFO     |   Events total:   8
+2026-06-06 14:38:49 | INFO     |   Analyzed:       4
+2026-06-06 14:38:49 | INFO     |   Signals sent:   3
+2026-06-06 14:38:49 | INFO     |   Skip breakdown: no_opp=4 ev=0 sent=0 math=0 ai=1 conf=0
+2026-06-06 14:38:49 | INFO     |   API-Football:   0/95 calls used today
+2026-06-06 14:38:49 | INFO     |   Keys:           ✅ primary(1calls rem:22) | ✅ backup_1(0calls) | ✅ backup_2(0calls)
+2026-06-06 14:38:49 | INFO     | =================================================================
