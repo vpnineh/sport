@@ -70,5 +70,23 @@
     "pick": "Over 8.5",
     "market": "totals",
     "sent_at": "2026-06-06T14:38:46.404471+00:00"
+  },
+  "92bf9cc0dd17a2f8630f8063ce2d310e": {
+    "match": "CD Castellón vs Almería",
+    "pick": "Almería",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-06T19:01:51.725887+00:00"
+  },
+  "c616698613c4e6f5923f9cead85195ec": {
+    "match": "West Indies vs Sri Lanka",
+    "pick": "Sri Lanka",
+    "market": "h2h",
+    "sent_at": "2026-06-06T19:02:34.558493+00:00"
+  },
+  "dcb48a401be9077637cf5c20306ca74d": {
+    "match": "Joshua Padley vs Aqib Fiaz",
+    "pick": "Aqib Fiaz",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-06T19:02:44.883734+00:00"
   }
 }

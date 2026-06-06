@@ -636,3 +636,21 @@
 2026-06-06 14:38:58 | INFO     | ============================================================
 2026-06-06 14:38:58 | INFO     | 📊 Settled:1 Pending:2 WR:31.8% ROI:-26.9%
 2026-06-06 14:38:58 | INFO     | ============================================================
+2026-06-06 19:02:48 | INFO     | ============================================================
+2026-06-06 19:02:48 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-06 19:02:48 | INFO     | ============================================================
+2026-06-06 19:02:48 | INFO     | 📋 Pending: 5 | New: 3
+2026-06-06 19:02:50 | INFO     | ✅ [ESPN] 120 results loaded
+2026-06-06 19:02:52 | INFO     | ⏳ RETRY 6: Jakub Mensik vs Alexander Zverev
+2026-06-06 19:02:53 | INFO     | ⏳ RETRY 6: Gloucestershire vs Somerset
+2026-06-06 19:02:55 | INFO     | ✅ [TSDB] Cal Poly Mustangs vs West Virginia Mountaineers → 43-34
+2026-06-06 19:02:55 | INFO     | 💰 Cal Poly Mustangs vs West Virginia Mountaineers → LOSS (-1.00u) [thesportsdb]
+2026-06-06 19:02:57 | INFO     | ✅ [TSDB] Minnesota Lynx vs Seattle Storm → 87-84
+2026-06-06 19:02:57 | INFO     | 💰 Minnesota Lynx vs Seattle Storm → VOID (0.00u) [thesportsdb]
+2026-06-06 19:02:59 | INFO     | ✅ [TSDB] Detroit Tigers vs Seattle Mariners → 7-3
+2026-06-06 19:02:59 | INFO     | 💰 Detroit Tigers vs Seattle Mariners → WIN (0.95u) [thesportsdb]
+2026-06-06 19:02:59 | INFO     | 💾 Synced 3/3 bets.
+2026-06-06 19:03:00 | INFO     | 📤 Report sent.
+2026-06-06 19:03:00 | INFO     | ============================================================
+2026-06-06 19:03:00 | INFO     | 📊 Settled:3 Pending:2 WR:33.3% ROI:-24.8%
+2026-06-06 19:03:00 | INFO     | ============================================================

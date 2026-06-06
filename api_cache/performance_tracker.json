@@ -763,8 +763,10 @@
       "ev": 0.0474,
       "confidence": 62,
       "implied_prob": 0.4594,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-06T19:02:59.558191+00:00"
     },
     {
       "id": "b844e00e",
@@ -779,8 +781,10 @@
       "ev": 0.05,
       "confidence": 63,
       "implied_prob": 0.105,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-06T19:02:59.558203+00:00"
     },
     {
       "id": "51c425bb",
@@ -795,17 +799,67 @@
       "ev": 0.0284,
       "confidence": 80,
       "implied_prob": 0.5274,
+      "outcome": "win",
+      "profit_loss": 0.95,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-06T19:02:59.558209+00:00"
+    },
+    {
+      "id": "7f169557",
+      "timestamp": "2026-06-06T19:01:51.726558+00:00",
+      "sport": "football",
+      "api_sport_key": "soccer_spain_segunda_division",
+      "home": "CD Castellón",
+      "away": "Almería",
+      "pick": "Almería",
+      "market": "h2h_lay",
+      "odds": 4.6,
+      "ev": 0.0506,
+      "confidence": 73,
+      "implied_prob": 0.2284,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "720e1aa5",
+      "timestamp": "2026-06-06T19:02:34.559158+00:00",
+      "sport": "other",
+      "api_sport_key": "cricket_odi",
+      "home": "West Indies",
+      "away": "Sri Lanka",
+      "pick": "Sri Lanka",
+      "market": "h2h",
+      "odds": 1.9,
+      "ev": 0.0287,
+      "confidence": 62,
+      "implied_prob": 0.5414,
+      "outcome": null,
+      "profit_loss": null
+    },
+    {
+      "id": "089cffee",
+      "timestamp": "2026-06-06T19:02:44.884395+00:00",
+      "sport": "other",
+      "api_sport_key": "boxing_boxing",
+      "home": "Joshua Padley",
+      "away": "Aqib Fiaz",
+      "pick": "Aqib Fiaz",
+      "market": "h2h_lay",
+      "odds": 4.8,
+      "ev": 0.0776,
+      "confidence": 63,
+      "implied_prob": 0.2245,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 46,
-    "resolved": 22,
-    "win_rate": 0.318,
-    "total_profit_loss_units": -5.91,
-    "roi_pct": -26.86,
-    "last_updated": "2026-06-06T14:38:50.068629+00:00",
+    "total_signals": 49,
+    "resolved": 24,
+    "win_rate": 0.333,
+    "total_profit_loss_units": -5.96,
+    "roi_pct": -24.83,
+    "last_updated": "2026-06-06T19:02:48.392072+00:00",
     "pending_count": 2
   }
 }
