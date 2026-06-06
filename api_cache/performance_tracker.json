@@ -727,17 +727,35 @@
       "ev": 0.0954,
       "confidence": 67,
       "implied_prob": 0.0577,
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-06T08:38:31.057345+00:00"
+    },
+    {
+      "id": "fbfcb63e",
+      "timestamp": "2026-06-06T08:38:14.812616+00:00",
+      "sport": "other",
+      "api_sport_key": "rugbyleague_nrl",
+      "home": "Brisbane Broncos",
+      "away": "Gold Coast Titans",
+      "pick": "Draw",
+      "market": "h2h",
+      "odds": 31.0,
+      "ev": 0.1735,
+      "confidence": 65,
+      "implied_prob": 0.0379,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 42,
-    "resolved": 20,
-    "win_rate": 0.35,
-    "total_profit_loss_units": -3.91,
-    "roi_pct": -19.55,
-    "last_updated": "2026-06-06T02:38:29.130030+00:00",
+    "total_signals": 43,
+    "resolved": 21,
+    "win_rate": 0.333,
+    "total_profit_loss_units": -4.91,
+    "roi_pct": -23.38,
+    "last_updated": "2026-06-06T08:38:25.128644+00:00",
     "pending_count": 2
   }
 }

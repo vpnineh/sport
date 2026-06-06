@@ -1,10 +1,4 @@
 {
-  "2aab6ae945017c94ea5811ee753c26d7": {
-    "match": "Adelaide Crows vs Geelong Cats",
-    "pick": "Geelong Cats",
-    "market": "h2h",
-    "sent_at": "2026-06-04T02:38:29.546113+00:00"
-  },
   "030e73de3233df9c3bd5b19d8558086c": {
     "match": "Chunichi Dragons vs Fukuoka SoftBank Hawks",
     "pick": "Fukuoka SoftBank Hawks",
@@ -58,5 +52,11 @@
     "pick": "Afghanistan",
     "market": "h2h",
     "sent_at": "2026-06-06T02:38:23.363116+00:00"
+  },
+  "88284ce74c3c70dbe3a396cada14074e": {
+    "match": "Brisbane Broncos vs Gold Coast Titans",
+    "pick": "Draw",
+    "market": "h2h",
+    "sent_at": "2026-06-06T08:38:14.811886+00:00"
   }
 }
