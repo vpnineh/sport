@@ -1729,18 +1729,102 @@ def countdown(ct, now) -> str:
         return f"{mins}m" if mins>0 else "LIVE"
     except Exception: return "N/A"
 
-def translate_pick(pick, market, home, away) -> str:
-    pl=pick.lower().strip()
-    if market.lower()=="h2h":
-        hs=difflib.SequenceMatcher(None,home.lower(),pl).ratio()
-        as_=difflib.SequenceMatcher(None,away.lower(),pl).ratio()
-        if hs>as_ and hs>0.3: return f"{home} Win"
-        if as_>hs and as_>0.3: return f"{away} Win"
-        if "draw" in pl or "tie" in pl: return "Draw"
-    elif "total" in market.lower():
-        m=re.search(r"\b(over|under)\b\s*([\d.]+)",pl)
-        if m: return f"{m.group(1).capitalize()} {m.group(2)}"
-    return pick.title()
+def translate_pick(pick: str, market: str, home: str, away: str) -> str:
+    """
+    Convert raw Odds-API pick + market into a clear human-readable bet label.
+    Always produces an unambiguous string:
+      "Arsenal Win"  /  "Arsenal Win or Draw"  /  "Draw"
+      "Over 2.5 Goals"  /  "Under 2.5 Goals"
+      "BTTS - Yes"  /  "Arsenal -1.5 Handicap"
+    """
+    raw   = (pick or "").strip()
+    raw_l = raw.lower().strip()
+    mkt   = (market or "").lower().strip()
+
+    # ── H2H / Match Winner ────────────────────────────────────────────────
+    if mkt in ("h2h","match_winner","moneyline","1x2","match result"):
+        # Numeric / shorthand (some books send "1","2","X")
+        if raw_l in ("1","home","home win","hw","team 1"):              return f"{home} Win"
+        if raw_l in ("2","away","away win","aw","team 2"):              return f"{away} Win"
+        if raw_l in ("x","draw","tie","draw/tie","x (draw)"):          return "Draw"
+        # Double chance shorthand
+        if raw_l in ("1x","1 x","home/draw","home or draw","draw/home","h/d"): return f"{home} Win or Draw"
+        if raw_l in ("x2","x 2","away/draw","draw or away","draw/away","d/a"): return f"{away} Win or Draw"
+        if raw_l in ("12","1 2","1/2","home/away","home or away","no draw"):    return "Home or Away (No Draw)"
+        # "or draw" contained → double chance
+        if "or draw" in raw_l or ("draw" in raw_l and raw_l != "draw"):
+            for team in [home, away]:
+                if any(w in raw_l for w in _name_tokens(team)):
+                    return f"{team} Win or Draw"
+            return "Win or Draw"
+        # Team name similarity matching
+        h_score = _pick_team_similarity(raw_l, home)
+        a_score = _pick_team_similarity(raw_l, away)
+        if h_score >= a_score and h_score > 0.20: return f"{home} Win"
+        if a_score >  h_score and a_score > 0.20: return f"{away} Win"
+        return f"{raw} Win"   # last resort
+
+    # ── Totals / Over-Under ───────────────────────────────────────────────
+    if mkt in ("totals","total","over_under","goals") or "total" in mkt:
+        m = re.search(r"\b(over|under|o|u)\b[\s_]*([\d.]+)", raw_l)
+        if m:
+            direction = "Over" if m.group(1).lower().startswith("o") else "Under"
+            return f"{direction} {m.group(2)} Goals"
+        if raw_l.startswith("over"):  return f"{raw} Goals"
+        if raw_l.startswith("under"): return f"{raw} Goals"
+        return raw.title()
+
+    # ── Spreads / Handicap ────────────────────────────────────────────────
+    if mkt in ("spreads","spread","handicap","asian_handicap","run_line","puck_line") or "spread" in mkt or "handicap" in mkt:
+        m = re.search(r"([+-][\d.]+)\s*$", raw)
+        handicap = m.group(1) if m else ""
+        h_s = _pick_team_similarity(raw_l, home)
+        a_s = _pick_team_similarity(raw_l, away)
+        if h_s >= a_s and h_s > 0.20:
+            return f"{home} {handicap} Handicap".strip() if handicap else f"{home} Handicap"
+        if a_s >  h_s and a_s > 0.20:
+            return f"{away} {handicap} Handicap".strip() if handicap else f"{away} Handicap"
+        return f"{raw} Handicap"
+
+    # ── BTTS (Both Teams To Score) ────────────────────────────────────────
+    if any(k in mkt for k in ("btts","both_teams","both teams","bts","both to score")):
+        return "BTTS - Yes" if raw_l in ("yes","y","1","true","+","both score") else "BTTS - No"
+
+    # ── Draw No Bet ───────────────────────────────────────────────────────
+    if "draw_no_bet" in mkt or "draw no bet" in mkt:
+        h_s = _pick_team_similarity(raw_l, home)
+        a_s = _pick_team_similarity(raw_l, away)
+        if h_s >= a_s and h_s > 0.20: return f"{home} (Draw No Bet)"
+        if a_s >  h_s and a_s > 0.20: return f"{away} (Draw No Bet)"
+        return f"{raw} (Draw No Bet)"
+
+    # ── Outright / Tournament Winner ──────────────────────────────────────
+    if mkt in ("outrights","outright","futures","winner","tournament_winner"):
+        return f"{raw} To Win Tournament"
+
+    # ── Default — clean up raw pick ───────────────────────────────────────
+    return raw.title()
+
+
+def _name_tokens(name: str) -> List[str]:
+    """Return meaningful tokens (len>3) from a team/player name."""
+    return [w.lower() for w in name.split() if len(w) > 3]
+
+
+def _pick_team_similarity(pick_l: str, team: str) -> float:
+    """Score how well pick_l matches team name (0-1)."""
+    team_l = team.lower()
+    # Exact
+    if pick_l == team_l: return 1.0
+    # Substring
+    if pick_l in team_l or team_l in pick_l: return 0.85
+    # Token overlap
+    pt = set(pick_l.split()); tt = set(_name_tokens(team))
+    if pt and tt:
+        overlap = len(pt & tt) / max(len(tt), 1)
+        if overlap > 0: return 0.5 + overlap * 0.4
+    # SequenceMatcher
+    return difflib.SequenceMatcher(None, pick_l, team_l).ratio()
 
 def conf_label(fc: int) -> str:
     if fc>=78: return "Very Strong 🔥🔥"
@@ -2032,17 +2116,115 @@ async def async_main():
     de.load_nba_data(); de.load_nhl_data(); de.load_mlb_data()
 
     # Data source status report
-    logger.info("─"*40)
-    logger.info("📦 DATA SOURCE STATUS:")
-    logger.info("  ├─ Tennis ATP:  %s", f"{len(de.atp_matches)} matches" if de.atp_matches is not None else "❌ unavailable")
-    logger.info("  ├─ Tennis WTA:  %s", f"{len(de.wta_matches)} matches" if de.wta_matches is not None else "❌ unavailable")
-    logger.info("  ├─ Football:    %s", f"{len(de.football_data.get('all',pd.DataFrame()))} matches" if de.football_data.get("all") is not None else "❌ unavailable")
-    logger.info("  ├─ NBA:         %s", f"{len(de.nba_data)} teams" if de.nba_data is not None else "❌ unavailable")
-    logger.info("  ├─ NHL:         %s", f"{len(de.nhl_data)} teams" if de.nhl_data is not None else "❌ unavailable")
-    logger.info("  ├─ MLB:         %s", f"{len(de.mlb_data)} teams" if de.mlb_data is not None else "❌ unavailable")
-    logger.info("  ├─ API-Football: %s", f"✅ active ({api_football._calls_today}/{CFG.API_FOOTBALL_MAX_CALLS} calls)" if CFG.API_FOOTBALL_KEY else "⚠️  no key")
-    logger.info("  └─ FDOrg:       %s", "✅ active" if CFG.FOOTBALL_DATA_ORG_KEY else "⚠️  no key")
-    logger.info("─"*40)
+    logger.info("─"*65)
+    logger.info("📦 DATA SOURCE STATUS (GitHub/Static):")
+    logger.info("  ├─ Tennis ATP:   %s", f"✅ {len(de.atp_matches):,} matches" if de.atp_matches is not None else "❌ unavailable")
+    logger.info("  ├─ Tennis WTA:   %s", f"✅ {len(de.wta_matches):,} matches" if de.wta_matches is not None else "❌ unavailable")
+    logger.info("  ├─ Football CSV: %s", f"✅ {len(de.football_data.get('all',pd.DataFrame())):,} matches" if de.football_data.get("all") is not None else "❌ unavailable")
+    logger.info("  ├─ NBA:          %s", f"✅ {len(de.nba_data)} teams" if de.nba_data is not None else "❌ unavailable (stats.nba.com timeout)")
+    logger.info("  ├─ NHL:          %s", f"✅ {len(de.nhl_data)} teams" if de.nhl_data is not None else "❌ unavailable")
+    logger.info("  └─ MLB:          %s", f"✅ {len(de.mlb_data)} teams" if de.mlb_data is not None else "❌ unavailable")
+
+    # ── API health probes ─────────────────────────────────────────────────
+    logger.info("─"*65)
+    logger.info("🔌 API HEALTH CHECKS (live probes):")
+
+    # TheSportsDB — probe with a known team
+    try:
+        _probe = tsdb.search_team("Arsenal")
+        if _probe and _probe.get("idTeam"):
+            _probe_stats = tsdb.get_team_stats("Arsenal")
+            logger.info("  ├─ TheSportsDB (key=%s):  ✅ LIVE", tsdb._key)
+            logger.info("  │    Arsenal idTeam=%s | League=%s | Form=%s | WinRate=%.0f%%",
+                        _probe["idTeam"],
+                        _probe_stats.get("league","?"),
+                        _probe_stats.get("form","?"),
+                        _probe_stats.get("win_rate",0)*100)
+        else:
+            logger.warning("  ├─ TheSportsDB (key=%s):  ⚠️  returned no data — check key", tsdb._key)
+    except Exception as e:
+        logger.error("  ├─ TheSportsDB:           ❌ %s", str(e)[:80])
+
+    # OpenLigaDB — probe Bundesliga table
+    try:
+        _tbl = openligadb.get_table("bl1")
+        if _tbl:
+            _leader = _tbl[0]
+            logger.info("  ├─ OpenLigaDB:            ✅ LIVE")
+            logger.info("  │    Bundesliga: %d teams | Leader: %s pts=%s W=%s D=%s L=%s",
+                        len(_tbl), _leader.get("team","?"), _leader.get("points","?"),
+                        _leader.get("wins","?"), _leader.get("draws","?"), _leader.get("losses","?"))
+        else:
+            logger.warning("  ├─ OpenLigaDB:            ⚠️  empty response")
+    except Exception as e:
+        logger.error("  ├─ OpenLigaDB:            ❌ %s", str(e)[:80])
+
+    # API-Football — show call budget
+    if CFG.API_FOOTBALL_KEY:
+        logger.info("  ├─ API-Football:          ✅ key loaded | budget: %d/%d calls today",
+                    api_football._calls_today, CFG.API_FOOTBALL_MAX_CALLS)
+    else:
+        logger.warning("  ├─ API-Football:          ⚠️  no API key (set API_FOOTBALL env var)")
+
+    # Football-Data.org — probe PL standings
+    if CFG.FOOTBALL_DATA_ORG_KEY:
+        try:
+            _st = fdo.get_standings("PL")
+            if _st:
+                _top = _st[0]
+                logger.info("  ├─ Football-Data.org:     ✅ LIVE")
+                logger.info("  │    Premier League: %d teams | #1: %s pts=%s",
+                            len(_st), _top.get("team","?"), _top.get("points","?"))
+            else:
+                logger.warning("  ├─ Football-Data.org:     ⚠️  empty response (key may be invalid)")
+        except Exception as e:
+            logger.error("  ├─ Football-Data.org:     ❌ %s", str(e)[:80])
+    else:
+        logger.warning("  ├─ Football-Data.org:     ⚠️  no API key set")
+
+    # NHL
+    if de.nhl_data is not None and not de.nhl_data.empty:
+        _nhl_top = de.nhl_data.sort_values("points", ascending=False).iloc[0]
+        logger.info("  ├─ NHL API (nhle.com):    ✅ LIVE | %d teams | Top: %s pts=%s WinPct=%.0f%%",
+                    len(de.nhl_data), _nhl_top.get("team","?"),
+                    _nhl_top.get("points","?"), _nhl_top.get("win_pct",0)*100)
+    else:
+        logger.warning("  ├─ NHL API (nhle.com):    ❌ failed")
+
+    # MLB
+    if de.mlb_data is not None and not de.mlb_data.empty:
+        _mlb_top = de.mlb_data.sort_values("win_pct", ascending=False).iloc[0]
+        logger.info("  ├─ MLB API (statsapi.mlb): ✅ LIVE | %d teams | Top: %s WinPct=%.0f%%",
+                    len(de.mlb_data), _mlb_top.get("team","?"), _mlb_top.get("win_pct",0)*100)
+    else:
+        logger.warning("  ├─ MLB API (statsapi):    ❌ failed")
+
+    # NBA
+    if de.nba_data is not None and not de.nba_data.empty:
+        logger.info("  └─ NBA API (stats.nba):   ✅ LIVE | %d teams", len(de.nba_data))
+    else:
+        logger.warning("  └─ NBA API (stats.nba):   ⚠️  timed out — NBA uses TSDB fallback")
+
+    # GitHub CSV scrape summary
+    logger.info("─"*65)
+    logger.info("📂 GITHUB / STATIC DATA EXTRACTION:")
+    logger.info("  ├─ Tennis ATP CSV:  %s",
+                f"✅ {len(de.atp_matches):,} matches (2022-2026)" if de.atp_matches is not None else "❌ failed")
+    logger.info("  ├─ Tennis WTA CSV:  %s",
+                f"✅ {len(de.wta_matches):,} matches (2022-2026)" if de.wta_matches is not None else "❌ failed")
+    if de.atp_rankings is not None:
+        logger.info("  ├─ ATP Rankings:    ✅ %d players", len(de.atp_rankings))
+    if de.wta_rankings is not None:
+        logger.info("  ├─ WTA Rankings:    ✅ %d players", len(de.wta_rankings))
+    _fb = de.football_data.get("all")
+    if _fb is not None and not _fb.empty:
+        _seasons = _fb.get("Season", pd.Series()).unique() if "Season" in _fb.columns else []
+        _leagues = _fb.get("League", pd.Series()).unique() if "League" in _fb.columns else []
+        logger.info("  └─ Football CSV:    ✅ %d matches | %d leagues | seasons: %s",
+                    len(_fb), len(_leagues),
+                    ",".join(sorted([str(s) for s in _seasons])) if len(_seasons) else "N/A")
+    else:
+        logger.info("  └─ Football CSV:    ❌ failed")
 
     # ── Phase 2: ML models ────────────────────────────────
     logger.info("🧠 [PHASE 2] Training/loading ML models...")
@@ -2230,24 +2412,57 @@ async def async_main():
                 src_log.append(f"ML-WinRate(H={hp*100:.0f}%,A={(1-hp)*100:.0f}%)")
 
         else:  # cricket / NPB / other
-            # Try US sports lookup first (covers NPB etc. via TSDB)
+            # 1. TSDB eventsday — find today's event for this match to get live context
+            today_str = now.strftime("%Y-%m-%d")
+            sport_tsdb = {"cricket":"Cricket","baseball":"Baseball","american football":"American Football",
+                          "rugby":"Rugby"}.get(sport.lower(), sport)
             try:
-                hs  = de.get_us_sports_stats(sport, home)
-                aws = de.get_us_sports_stats(sport, away)
-                if hs or aws:
-                    stats["us_sports"] = {"home": hs or {}, "away": aws or {}}
-                    src_log.append(f"TSDB-Other(H={hs.get('data_quality','?') if hs else 'none'},A={aws.get('data_quality','?') if aws else 'none'})")
+                day_events = tsdb.get_events_on_date(today_str, sport_tsdb)
+                matched_ev = next(
+                    (e for e in day_events
+                     if _fuzzy_match(home, e.get("strHomeTeam","")) or
+                        _fuzzy_match(home, e.get("strAwayTeam",""))), None)
+                if matched_ev:
+                    logger.info("  ✅ TSDB eventsday: found %s vs %s",
+                                matched_ev.get("strHomeTeam","?"),
+                                matched_ev.get("strAwayTeam","?"))
+            except Exception: matched_ev = None
+
+            # 2. TSDB team stats lookup
+            try:
+                h_ts = tsdb.get_team_stats(home)
+                a_ts = tsdb.get_team_stats(away)
+                if h_ts or a_ts:
+                    stats["us_sports"] = {"home": h_ts or {}, "away": a_ts or {}}
+                    src_log.append(f"TSDB(H={h_ts.get('data_quality','?') if h_ts else 'none'}/matches={h_ts.get('matches_analyzed',0) if h_ts else 0},"
+                                   f"A={a_ts.get('data_quality','?') if a_ts else 'none'}/matches={a_ts.get('matches_analyzed',0) if a_ts else 0})")
                 else:
-                    # Direct TSDB fallback
-                    h_ts = tsdb.get_team_stats(home); a_ts = tsdb.get_team_stats(away)
-                    if h_ts or a_ts:
-                        stats["tsdb_stats"] = {"home": h_ts or {}, "away": a_ts or {}}
-                        src_log.append(f"TSDB(H={h_ts.get('data_quality','?') if h_ts else 'none'},A={a_ts.get('data_quality','?') if a_ts else 'none'})")
+                    logger.info("  ⚠️  TSDB: no team data found for [%s] or [%s] — sport=%s", home, away, sport)
             except Exception as e:
-                logger.warning("  [Other sports pipeline] %s", e)
+                logger.warning("  [TSDB Other] %s", e)
+
+            # 3. Direct US sports lookup as secondary (covers NPB etc.)
+            if not stats.get("us_sports"):
+                try:
+                    hs  = de.get_us_sports_stats(sport, home)
+                    aws = de.get_us_sports_stats(sport, away)
+                    if hs or aws:
+                        stats["us_sports"] = {"home": hs or {}, "away": aws or {}}
+                        src_log.append(f"USFallback(H={hs.get('source','?') if hs else 'none'},"
+                                       f"A={aws.get('source','?') if aws else 'none'})")
+                except Exception as e:
+                    logger.warning("  [Other US fallback] %s", e)
 
         logger.info("  📦 [%s vs %s] Sources: %s",
                     home[:20], away[:20], " | ".join(src_log) if src_log else "NONE ⚠️")
+
+        # ── No-data safety gate ─────────────────────────────────────────
+        # EV > 18% with zero data is almost always a thin/miscalibrated market
+        if not src_log and opp["ev"] > 0.18:
+            skip_counts["ev"] += 1
+            logger.warning("⏭️  SKIP(no_data+EV=%.1f%% suspiciously high) %s vs %s",
+                           opp["ev"]*100, home, away)
+            continue
 
         # ── Math score ──────────────────────────────────────
         math_score=ConfidenceEngine.score(opp,stats,ml_pred,poisson_pred)
