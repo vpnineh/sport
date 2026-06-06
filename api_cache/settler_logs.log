@@ -590,3 +590,19 @@
 2026-06-05 20:38:20 | INFO     | ⏳ RETRY 2: Jakub Mensik vs Alexander Zverev
 2026-06-05 20:38:20 | INFO     | ⏳ RETRY 2: Gloucestershire vs Somerset
 2026-06-05 20:38:20 | INFO     | ⏳ No new settlements.
+2026-06-06 02:38:29 | INFO     | ============================================================
+2026-06-06 02:38:29 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-06 02:38:29 | INFO     | ============================================================
+2026-06-06 02:38:29 | INFO     | 📋 Pending: 3 | New: 1
+2026-06-06 02:38:32 | INFO     | ✅ [ESPN] 81 results loaded
+2026-06-06 02:38:35 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 1 (rem:36)
+2026-06-06 02:38:35 | INFO     | ⏳ RETRY 3: Jakub Mensik vs Alexander Zverev
+2026-06-06 02:38:36 | INFO     | 📡 [ODDS-API] cricket_t20_blast → 8 (rem:34)
+2026-06-06 02:38:36 | INFO     | ⏳ RETRY 3: Gloucestershire vs Somerset
+2026-06-06 02:38:38 | INFO     | ✅ [TSDB] Sussex vs Leicestershire → 561-555
+2026-06-06 02:38:38 | INFO     | 💰 Sussex vs Leicestershire → LOSS (-1.00u) [thesportsdb]
+2026-06-06 02:38:38 | INFO     | 💾 Synced 1/1 bets.
+2026-06-06 02:38:38 | INFO     | 📤 Report sent.
+2026-06-06 02:38:38 | INFO     | ============================================================
+2026-06-06 02:38:38 | INFO     | 📊 Settled:1 Pending:2 WR:35.0% ROI:-19.6%
+2026-06-06 02:38:38 | INFO     | ============================================================

@@ -709,17 +709,35 @@
       "ev": 0.098,
       "confidence": 72,
       "implied_prob": 0.5228,
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-06T02:38:38.268424+00:00"
+    },
+    {
+      "id": "a0a870e8",
+      "timestamp": "2026-06-06T02:38:23.363707+00:00",
+      "sport": "other",
+      "api_sport_key": "cricket_test_match",
+      "home": "India",
+      "away": "Afghanistan",
+      "pick": "Afghanistan",
+      "market": "h2h",
+      "odds": 19.0,
+      "ev": 0.0954,
+      "confidence": 67,
+      "implied_prob": 0.0577,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 41,
-    "resolved": 19,
-    "win_rate": 0.368,
-    "total_profit_loss_units": -2.91,
-    "roi_pct": -15.32,
-    "last_updated": "2026-06-05T17:53:23.813983+00:00",
+    "total_signals": 42,
+    "resolved": 20,
+    "win_rate": 0.35,
+    "total_profit_loss_units": -3.91,
+    "roi_pct": -19.55,
+    "last_updated": "2026-06-06T02:38:29.130030+00:00",
     "pending_count": 2
   }
 }

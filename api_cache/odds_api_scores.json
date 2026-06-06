@@ -1,176 +1,23 @@
 {
-  "baseball_ncaa": {
-    "ts": "2026-06-05T17:53:34.585346+00:00",
-    "data": [
-      {
-        "id": "17062b897253db388064333b150d00e4",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-05T16:00:00Z",
-        "completed": false,
-        "home_team": "West Virginia Mountaineers",
-        "away_team": "Cal Poly Mustangs",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "6527dafc5a1021bdcc6796a7acc47f7c",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-05T19:00:00Z",
-        "completed": false,
-        "home_team": "North Carolina Tar Heels",
-        "away_team": "USC Trojans",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "9f62999128a2b96c92475c3cf744811d",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-05T21:00:00Z",
-        "completed": false,
-        "home_team": "Troy Trojans",
-        "away_team": "Arkansas-Little Rock Trojans",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "7121f244401ddbf415f59a7e60333346",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-06T00:00:00Z",
-        "completed": false,
-        "home_team": "Auburn Tigers",
-        "away_team": "Ole Miss Rebels",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "2c901d81c9188cbc1d23326d05075c64",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-06T15:00:00Z",
-        "completed": false,
-        "home_team": "Georgia Bulldogs",
-        "away_team": "Mississippi St Bulldogs",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "10e1c7d224045faa529d9f7dac58501f",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-06T22:00:00Z",
-        "completed": false,
-        "home_team": "Kansas Jayhawks",
-        "away_team": "Oklahoma Sooners",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "25f256aa97f41ce5ac624796cac62f59",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-07T00:00:00Z",
-        "completed": false,
-        "home_team": "Texas Longhorns",
-        "away_team": "Oregon Ducks",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "7db492af2c555bf8b5824d9c082de763",
-        "sport_key": "baseball_ncaa",
-        "sport_title": "NCAA Baseball",
-        "commence_time": "2026-06-07T01:00:00Z",
-        "completed": false,
-        "home_team": "Alabama Crimson Tide",
-        "away_team": "St. John's Red Storm",
-        "scores": null,
-        "last_update": null
-      }
-    ]
-  },
-  "tennis_wta_french_open": {
-    "ts": "2026-06-05T17:53:34.585356+00:00",
-    "data": [
-      {
-        "id": "69fde123c71acd8bcf4d957dba6f97b3",
-        "sport_key": "tennis_wta_french_open",
-        "sport_title": "WTA French Open",
-        "commence_time": "2026-06-06T13:00:00Z",
-        "completed": false,
-        "home_team": "Maja Chwalinska",
-        "away_team": "Mirra Andreeva",
-        "scores": null,
-        "last_update": null
-      }
-    ]
-  },
   "tennis_atp_french_open": {
-    "ts": "2026-06-05T17:53:34.585359+00:00",
+    "ts": "2026-06-06T02:38:36.732477+00:00",
     "data": [
       {
-        "id": "a4c247a3021a7854b7dc23b9d67524c6",
+        "id": "4b95e6de32c69dc11ab8bbdaf7929253",
         "sport_key": "tennis_atp_french_open",
         "sport_title": "ATP French Open",
-        "commence_time": "2026-06-05T12:30:00Z",
+        "commence_time": "2026-06-07T13:00:00Z",
         "completed": false,
-        "home_team": "Jakub Mensik",
+        "home_team": "Flavio Cobolli",
         "away_team": "Alexander Zverev",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "e8fd9e22f4de0704558bc7a7f08171ce",
-        "sport_key": "tennis_atp_french_open",
-        "sport_title": "ATP French Open",
-        "commence_time": "2026-06-05T17:00:00Z",
-        "completed": false,
-        "home_team": "Matteo Arnaldi",
-        "away_team": "Flavio Cobolli",
         "scores": null,
         "last_update": null
       }
     ]
   },
   "cricket_t20_blast": {
-    "ts": "2026-06-05T17:53:34.585360+00:00",
+    "ts": "2026-06-06T02:38:36.732488+00:00",
     "data": [
-      {
-        "id": "d0c290da96578add1f9531c15c9eac16",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-05T18:00:00Z",
-        "completed": false,
-        "home_team": "Gloucestershire",
-        "away_team": "Somerset",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "c01d201153ee257fc047c0c4fd66c3dc",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-05T18:00:00Z",
-        "completed": false,
-        "home_team": "Yorkshire",
-        "away_team": "Lancashire",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "0180db987cdaad5d56a6af3340efc8ac",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-05T18:00:00Z",
-        "completed": false,
-        "home_team": "Sussex",
-        "away_team": "Leicestershire",
-        "scores": null,
-        "last_update": null
-      },
       {
         "id": "3f55bbc0bb0b771f14a1eb341ff8229f",
         "sport_key": "cricket_t20_blast",
@@ -179,6 +26,72 @@
         "completed": false,
         "home_team": "Durham",
         "away_team": "Northamptonshire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "3cd78ccbc6b754a6ff00d628953ecf7d",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T13:30:00Z",
+        "completed": false,
+        "home_team": "Lancashire",
+        "away_team": "Glamorgan",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "267369846af73bab0e5cabb091a39d6e",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T13:30:00Z",
+        "completed": false,
+        "home_team": "Gloucestershire",
+        "away_team": "Worcestershire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "5c5b8132faf65159f936b8a30200b019",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T13:30:00Z",
+        "completed": false,
+        "home_team": "Sussex",
+        "away_team": "Kent",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "fca2f98d9da1890fece20db2276adcf0",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T13:30:00Z",
+        "completed": false,
+        "home_team": "Leicestershire",
+        "away_team": "Yorkshire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "ab6c68b25624162fa5dbc35a910b729a",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T14:00:00Z",
+        "completed": false,
+        "home_team": "Nottinghamshire",
+        "away_team": "Derbyshire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "9439483f2eaad94bba894f3642b13de9",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T14:30:00Z",
+        "completed": false,
+        "home_team": "Somerset",
+        "away_team": "Birmingham Bears",
         "scores": null,
         "last_update": null
       },
