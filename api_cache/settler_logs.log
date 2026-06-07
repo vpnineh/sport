@@ -704,3 +704,27 @@
 2026-06-07 08:39:05 | INFO     | ============================================================
 2026-06-07 08:39:05 | INFO     | 📊 Settled:1 Pending:4 WR:34.6% ROI:-7.5%
 2026-06-07 08:39:05 | INFO     | ============================================================
+2026-06-07 14:38:46 | INFO     | ============================================================
+2026-06-07 14:38:46 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-07 14:38:46 | INFO     | ============================================================
+2026-06-07 14:38:46 | INFO     | 📋 Pending: 5 | New: 1
+2026-06-07 14:38:48 | INFO     | ✅ [ESPN] 176 results loaded
+2026-06-07 14:38:50 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 14:38:51 | INFO     | 📡 [ODDS-API] boxing_boxing → 38 (rem:466)
+2026-06-07 14:38:51 | INFO     | ⏳ RETRY 3: Joshua Padley vs Aqib Fiaz
+2026-06-07 14:38:51 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 14:38:51 | INFO     | 📡 [ODDS-API] mma_mixed_martial_arts → 33 (rem:464)
+2026-06-07 14:38:51 | INFO     | ⏳ RETRY 3: Ketlen Souza vs Ariane Carnelossi
+2026-06-07 14:38:52 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 14:38:52 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 1 (rem:462)
+2026-06-07 14:38:52 | INFO     | ⏳ RETRY 2: Jakub Mensik vs Alexander Zverev
+2026-06-07 14:38:53 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 14:38:53 | INFO     | 📡 [ODDS-API] cricket_t20_blast → 2 (rem:460)
+2026-06-07 14:38:53 | INFO     | ⏳ RETRY 2: Gloucestershire vs Somerset
+2026-06-07 14:38:55 | INFO     | ✅ [TSDB] England vs New Zealand → 1-0
+2026-06-07 14:38:55 | INFO     | 💰 England vs New Zealand → VOID (0.00u) [thesportsdb]
+2026-06-07 14:38:55 | INFO     | 💾 Synced 1/1 bets.
+2026-06-07 14:38:55 | INFO     | 📤 Report sent.
+2026-06-07 14:38:55 | INFO     | ============================================================
+2026-06-07 14:38:55 | INFO     | 📊 Settled:1 Pending:4 WR:34.6% ROI:-7.5%
+2026-06-07 14:38:55 | INFO     | ============================================================

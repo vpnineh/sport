@@ -1,104 +1,6 @@
 {
-  "tennis_atp_french_open": {
-    "ts": "2026-06-07T02:38:55.680661+00:00",
-    "data": [
-      {
-        "id": "4b95e6de32c69dc11ab8bbdaf7929253",
-        "sport_key": "tennis_atp_french_open",
-        "sport_title": "ATP French Open",
-        "commence_time": "2026-06-07T13:00:00Z",
-        "completed": false,
-        "home_team": "Flavio Cobolli",
-        "away_team": "Alexander Zverev",
-        "scores": null,
-        "last_update": null
-      }
-    ]
-  },
-  "cricket_t20_blast": {
-    "ts": "2026-06-07T02:38:55.680675+00:00",
-    "data": [
-      {
-        "id": "3cd78ccbc6b754a6ff00d628953ecf7d",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T13:30:00Z",
-        "completed": false,
-        "home_team": "Lancashire",
-        "away_team": "Glamorgan",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "267369846af73bab0e5cabb091a39d6e",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T13:30:00Z",
-        "completed": false,
-        "home_team": "Gloucestershire",
-        "away_team": "Worcestershire",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "5c5b8132faf65159f936b8a30200b019",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T13:30:00Z",
-        "completed": false,
-        "home_team": "Sussex",
-        "away_team": "Kent",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "fca2f98d9da1890fece20db2276adcf0",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T13:30:00Z",
-        "completed": false,
-        "home_team": "Leicestershire",
-        "away_team": "Yorkshire",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "ab6c68b25624162fa5dbc35a910b729a",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T14:00:00Z",
-        "completed": false,
-        "home_team": "Nottinghamshire",
-        "away_team": "Derbyshire",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "9439483f2eaad94bba894f3642b13de9",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T14:30:00Z",
-        "completed": false,
-        "home_team": "Somerset",
-        "away_team": "Birmingham Bears",
-        "scores": null,
-        "last_update": null
-      },
-      {
-        "id": "f5c495c9cd529d69135613d3edb926c6",
-        "sport_key": "cricket_t20_blast",
-        "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T14:30:00Z",
-        "completed": false,
-        "home_team": "Middlesex",
-        "away_team": "Essex",
-        "scores": null,
-        "last_update": null
-      }
-    ]
-  },
   "boxing_boxing": {
-    "ts": "2026-06-07T02:38:55.680679+00:00",
+    "ts": "2026-06-07T14:38:53.280417+00:00",
     "data": [
       {
         "id": "7c42eb68c0ee9c6eefca0a76429fbc12",
@@ -130,6 +32,17 @@
         "completed": false,
         "home_team": "Arturo Cardenas",
         "away_team": "Jordan Martinez",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "7219749a81c6ea87c6d7bf07af70a555",
+        "sport_key": "boxing_boxing",
+        "sport_title": "Boxing",
+        "commence_time": "2026-06-14T02:45:00Z",
+        "completed": false,
+        "home_team": "Oshae Jones",
+        "away_team": "Elia Carranza",
         "scores": null,
         "last_update": null
       },
@@ -510,19 +423,8 @@
     ]
   },
   "mma_mixed_martial_arts": {
-    "ts": "2026-06-07T02:38:55.680682+00:00",
+    "ts": "2026-06-07T14:38:53.280428+00:00",
     "data": [
-      {
-        "id": "357b754688bbb0e3c6c8db405d85ab86",
-        "sport_key": "mma_mixed_martial_arts",
-        "sport_title": "MMA",
-        "commence_time": "2026-06-07T02:24:00Z",
-        "completed": false,
-        "home_team": "Belal Muhammad",
-        "away_team": "Gabriel Bonfim",
-        "scores": null,
-        "last_update": null
-      },
       {
         "id": "c8dbccd9eda383d9c76dc15e4a3c96a7",
         "sport_key": "mma_mixed_martial_arts",
@@ -883,6 +785,49 @@
         "completed": false,
         "home_team": "Islam Makhachev",
         "away_team": "Kamaru Usman",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "tennis_atp_french_open": {
+    "ts": "2026-06-07T14:38:53.280431+00:00",
+    "data": [
+      {
+        "id": "4b95e6de32c69dc11ab8bbdaf7929253",
+        "sport_key": "tennis_atp_french_open",
+        "sport_title": "ATP French Open",
+        "commence_time": "2026-06-07T13:25:00Z",
+        "completed": false,
+        "home_team": "Flavio Cobolli",
+        "away_team": "Alexander Zverev",
+        "scores": null,
+        "last_update": null
+      }
+    ]
+  },
+  "cricket_t20_blast": {
+    "ts": "2026-06-07T14:38:53.280433+00:00",
+    "data": [
+      {
+        "id": "9439483f2eaad94bba894f3642b13de9",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T14:30:00Z",
+        "completed": false,
+        "home_team": "Somerset",
+        "away_team": "Birmingham Bears",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "f5c495c9cd529d69135613d3edb926c6",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-07T14:30:00Z",
+        "completed": false,
+        "home_team": "Middlesex",
+        "away_team": "Essex",
         "scores": null,
         "last_update": null
       }
