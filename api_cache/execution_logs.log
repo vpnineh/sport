@@ -9382,3 +9382,112 @@
 2026-06-07 14:38:46 | INFO     |   API-Football:   2/95 calls used today
 2026-06-07 14:38:46 | INFO     |   Keys:           ✅ primary(1calls) | ✅ backup_1(1calls rem:472) | ✅ backup_2(0calls)
 2026-06-07 14:38:46 | INFO     | =================================================================
+2026-06-07 20:37:43 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 2/95)
+2026-06-07 20:37:43 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-07 20:37:43 | INFO     | ✅ [OPENLIGADB] Client ready (no auth, 1000 req/h)
+2026-06-07 20:37:44 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-07 20:37:44 | INFO     | 🔑 [KEY] primary loaded
+2026-06-07 20:37:44 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-07 20:37:44 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-07 20:37:44 | INFO     | =================================================================
+2026-06-07 20:37:44 | INFO     |   ZBET90 ENGINE v9.1 | Production | Multi-Source
+2026-06-07 20:37:44 | INFO     | =================================================================
+2026-06-07 20:37:44 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-07 20:37:44 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-07 20:37:45 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-07 20:37:45 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-07 20:37:46 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-07 20:37:46 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-07 20:37:46 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-07 20:37:46 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-07 20:37:46 | INFO     | ✅ [RANKINGS] ATP
+2026-06-07 20:37:46 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-07 20:37:46 | INFO     | ✅ [RANKINGS] WTA
+2026-06-07 20:37:46 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-07 20:37:47 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-07 20:37:48 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-07 20:37:49 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-07 20:37:50 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-07 20:37:50 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-07 20:37:51 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-07 20:37:52 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-07 20:37:53 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-07 20:37:54 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-07 20:37:55 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-07 20:37:55 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-07 20:37:56 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-07 20:37:57 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-07 20:37:57 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-07 20:37:58 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-07 20:37:59 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-07 20:38:00 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-07 20:38:00 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-07 20:38:01 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-07 20:38:02 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-07 20:38:03 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-07 20:38:03 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-07 20:38:05 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-07 20:38:05 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-07 20:38:15 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-07 20:38:16 | INFO     | ✅ [NHL] 32 teams
+2026-06-07 20:38:16 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-07 20:38:16 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 20:38:16 | INFO     | 📦 DATA SOURCE STATUS (GitHub/Static):
+2026-06-07 20:38:16 | INFO     |   ├─ Tennis ATP:   ✅ 13,245 matches
+2026-06-07 20:38:16 | INFO     |   ├─ Tennis WTA:   ✅ 12,056 matches
+2026-06-07 20:38:16 | INFO     |   ├─ Football CSV: ✅ 8,822 matches
+2026-06-07 20:38:16 | INFO     |   ├─ NBA:          ❌ unavailable (stats.nba.com timeout)
+2026-06-07 20:38:16 | INFO     |   ├─ NHL:          ✅ 32 teams
+2026-06-07 20:38:16 | INFO     |   └─ MLB:          ✅ 30 teams
+2026-06-07 20:38:16 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 20:38:16 | INFO     | 🔌 API HEALTH CHECKS (live probes):
+2026-06-07 20:38:16 | WARNING  |   ├─ TheSportsDB (key=):  ⚠️  returned no data — check key
+2026-06-07 20:38:17 | INFO     |   ├─ OpenLigaDB:            ✅ LIVE
+2026-06-07 20:38:17 | INFO     |   │    Bundesliga: 18 teams | Leader: FC Bayern München pts=89 W=0 D=0 L=0
+2026-06-07 20:38:17 | INFO     |   ├─ API-Football:          ✅ key loaded | budget: 2/95 calls today
+2026-06-07 20:38:17 | INFO     |   ├─ Football-Data.org:     ✅ LIVE
+2026-06-07 20:38:17 | INFO     |   │    Premier League: 20 teams | #1: Arsenal FC pts=85
+2026-06-07 20:38:17 | INFO     |   ├─ NHL API (nhle.com):    ✅ LIVE | 32 teams | Top: Colorado Avalanche pts=121 WinPct=67%
+2026-06-07 20:38:17 | INFO     |   ├─ MLB API (statsapi.mlb): ✅ LIVE | 30 teams | Top: Braves WinPct=68%
+2026-06-07 20:38:17 | WARNING  |   └─ NBA API (stats.nba):   ⚠️  timed out — NBA uses TSDB fallback
+2026-06-07 20:38:17 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 20:38:17 | INFO     | 📂 GITHUB / STATIC DATA EXTRACTION:
+2026-06-07 20:38:17 | INFO     |   ├─ Tennis ATP CSV:  ✅ 13,245 matches (2022-2026)
+2026-06-07 20:38:17 | INFO     |   ├─ Tennis WTA CSV:  ✅ 12,056 matches (2022-2026)
+2026-06-07 20:38:17 | INFO     |   ├─ ATP Rankings:    ✅ 34203 players
+2026-06-07 20:38:17 | INFO     |   ├─ WTA Rankings:    ✅ 32060 players
+2026-06-07 20:38:17 | INFO     |   └─ Football CSV:    ✅ 8822 matches | 8 leagues | seasons: 2223,2324,2425
+2026-06-07 20:38:17 | INFO     | 🧠 [PHASE 2] Training/loading ML models...
+2026-06-07 20:38:17 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-07 20:38:17 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-07 20:38:17 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-07 20:38:17 | INFO     |   ├─ Football ML:  ✅ ready
+2026-06-07 20:38:17 | INFO     |   ├─ ATP ML:       ✅ ready
+2026-06-07 20:38:17 | INFO     |   └─ WTA ML:       ✅ ready
+2026-06-07 20:38:17 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-07 20:38:17 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-07 20:38:17 | INFO     | 🔑 [backup_1] totals → 8 events | used:44 remaining:456
+2026-06-07 20:38:17 | INFO     | 🔑 [backup_1] h2h → 8 events | used:48 remaining:452
+2026-06-07 20:38:18 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-07 20:38:18 | INFO     | 📊 Odds API usage → used:92 | remaining:452
+2026-06-07 20:38:18 | INFO     | 📊 Keys: ✅ primary(1calls) | ✅ backup_1(1calls rem:456) | ✅ backup_2(0calls)
+2026-06-07 20:38:18 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-07 20:38:18 | INFO     |   ⚠️  No US sports data found for Los Angeles Sparks vs Portland Fire [WNBA]
+2026-06-07 20:38:18 | INFO     |   📦 [Los Angeles Sparks vs Portland Fire] Sources: NONE ⚠️
+2026-06-07 20:38:21 | INFO     | [AI] Los Angeles Sparks vs Portland Fire | SKIP | AI:52 Math:47 Final:49 | provider:groq
+2026-06-07 20:38:21 | INFO     | ⏭️  AI_SKIP: Los Angeles Sparks vs Portland Fire Math:47 AI:52 Final:49
+2026-06-07 20:38:21 | INFO     | =================================================================
+2026-06-07 20:38:21 | INFO     | 📊 FINAL REPORT:
+2026-06-07 20:38:21 | INFO     |   Events total:   8
+2026-06-07 20:38:21 | INFO     |   Analyzed:       1
+2026-06-07 20:38:21 | INFO     |   Signals sent:   0
+2026-06-07 20:38:21 | INFO     |   Skip breakdown: no_opp=7 ev=0 sent=0 math=0 ai=1 conf=0
+2026-06-07 20:38:21 | INFO     |   API-Football:   2/95 calls used today
+2026-06-07 20:38:21 | INFO     |   Keys:           ✅ primary(1calls) | ✅ backup_1(1calls rem:456) | ✅ backup_2(0calls)
+2026-06-07 20:38:21 | INFO     | =================================================================

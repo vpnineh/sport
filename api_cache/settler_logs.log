@@ -728,3 +728,19 @@
 2026-06-07 14:38:55 | INFO     | ============================================================
 2026-06-07 14:38:55 | INFO     | 📊 Settled:1 Pending:4 WR:34.6% ROI:-7.5%
 2026-06-07 14:38:55 | INFO     | ============================================================
+2026-06-07 20:38:22 | INFO     | ============================================================
+2026-06-07 20:38:22 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-07 20:38:22 | INFO     | ============================================================
+2026-06-07 20:38:22 | INFO     | 📋 Pending: 5 | New: 1
+2026-06-07 20:38:23 | INFO     | ✅ [ESPN] 201 results loaded
+2026-06-07 20:38:26 | INFO     | ⏳ RETRY 4: Joshua Padley vs Aqib Fiaz
+2026-06-07 20:38:27 | INFO     | ⏳ RETRY 4: Ketlen Souza vs Ariane Carnelossi
+2026-06-07 20:38:28 | INFO     | ⏳ RETRY 3: Jakub Mensik vs Alexander Zverev
+2026-06-07 20:38:29 | INFO     | ⏳ RETRY 3: Gloucestershire vs Somerset
+2026-06-07 20:38:32 | INFO     | ✅ [ESPN] Mississippi St Bulldogs vs Georgia Bulldogs → 0-2
+2026-06-07 20:38:32 | INFO     | 💰 Mississippi St Bulldogs vs Georgia Bulldogs → LOSS (-1.00u) [espn]
+2026-06-07 20:38:32 | INFO     | 💾 Synced 1/1 bets.
+2026-06-07 20:38:32 | INFO     | 📤 Report sent.
+2026-06-07 20:38:32 | INFO     | ============================================================
+2026-06-07 20:38:32 | INFO     | 📊 Settled:1 Pending:4 WR:33.3% ROI:-11.0%
+2026-06-07 20:38:32 | INFO     | ============================================================

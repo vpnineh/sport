@@ -921,17 +921,19 @@
       "ev": 0.0333,
       "confidence": 65,
       "implied_prob": 0.5167,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "espn",
+      "_settled_at": "2026-06-07T20:38:32.101682+00:00"
     }
   ],
   "summary": {
     "total_signals": 53,
-    "resolved": 26,
-    "win_rate": 0.346,
-    "total_profit_loss_units": -1.96,
-    "roi_pct": -7.54,
-    "last_updated": "2026-06-07T14:38:46.877313+00:00",
+    "resolved": 27,
+    "win_rate": 0.333,
+    "total_profit_loss_units": -2.96,
+    "roi_pct": -10.96,
+    "last_updated": "2026-06-07T20:38:22.027012+00:00",
     "pending_count": 4
   }
 }
