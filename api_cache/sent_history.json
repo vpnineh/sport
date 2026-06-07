@@ -100,5 +100,11 @@
     "pick": "Wests Tigers",
     "market": "h2h",
     "sent_at": "2026-06-07T02:38:34.042545+00:00"
+  },
+  "820fdce3b4d66607b9b248e6f15c51d9": {
+    "match": "England vs New Zealand",
+    "pick": "New Zealand",
+    "market": "h2h_lay",
+    "sent_at": "2026-06-07T08:38:34.655091+00:00"
   }
 }

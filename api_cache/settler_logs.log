@@ -688,3 +688,19 @@
 2026-06-07 02:38:56 | INFO     | ============================================================
 2026-06-07 02:38:56 | INFO     | 📊 Settled:2 Pending:4 WR:32.0% ROI:-27.8%
 2026-06-07 02:38:56 | INFO     | ============================================================
+2026-06-07 08:38:53 | INFO     | ============================================================
+2026-06-07 08:38:53 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-07 08:38:53 | INFO     | ============================================================
+2026-06-07 08:38:53 | INFO     | 📋 Pending: 5 | New: 3
+2026-06-07 08:38:56 | INFO     | ✅ [ESPN] 175 results loaded
+2026-06-07 08:38:58 | INFO     | ⏳ RETRY 2: Joshua Padley vs Aqib Fiaz
+2026-06-07 08:38:59 | INFO     | ⏳ RETRY 2: Ketlen Souza vs Ariane Carnelossi
+2026-06-07 08:39:01 | INFO     | ⏳ RETRY 1: Jakub Mensik vs Alexander Zverev
+2026-06-07 08:39:03 | INFO     | ⏳ RETRY 1: Gloucestershire vs Somerset
+2026-06-07 08:39:05 | INFO     | ✅ [TSDB] Wests Tigers vs Penrith Panthers → 22-16
+2026-06-07 08:39:05 | INFO     | 💰 Wests Tigers vs Penrith Panthers → WIN (5.00u) [thesportsdb]
+2026-06-07 08:39:05 | INFO     | 💾 Synced 1/1 bets.
+2026-06-07 08:39:05 | INFO     | 📤 Report sent.
+2026-06-07 08:39:05 | INFO     | ============================================================
+2026-06-07 08:39:05 | INFO     | 📊 Settled:1 Pending:4 WR:34.6% ROI:-7.5%
+2026-06-07 08:39:05 | INFO     | ============================================================

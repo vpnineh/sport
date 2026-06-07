@@ -9129,3 +9129,139 @@
 2026-06-07 02:38:42 | INFO     |   API-Football:   0/95 calls used today
 2026-06-07 02:38:42 | INFO     |   Keys:           ✅ primary(1calls) | ✅ backup_1(1calls rem:496) | ✅ backup_2(0calls)
 2026-06-07 02:38:42 | INFO     | =================================================================
+2026-06-07 08:37:42 | INFO     | ✅ [API-FOOTBALL] Key loaded (calls today: 0/95)
+2026-06-07 08:37:42 | INFO     | ✅ [FOOTBALL-DATA.ORG] Key loaded
+2026-06-07 08:37:42 | INFO     | ✅ [OPENLIGADB] Client ready (no auth, 1000 req/h)
+2026-06-07 08:37:43 | INFO     | ✅ [AI] Gemini:4 | Groq:1
+2026-06-07 08:37:43 | INFO     | 🔑 [KEY] primary loaded
+2026-06-07 08:37:43 | INFO     | 🔑 [KEY] backup_1 loaded
+2026-06-07 08:37:43 | INFO     | 🔑 [KEY] backup_2 loaded
+2026-06-07 08:37:43 | INFO     | =================================================================
+2026-06-07 08:37:43 | INFO     |   ZBET90 ENGINE v9.1 | Production | Multi-Source
+2026-06-07 08:37:43 | INFO     | =================================================================
+2026-06-07 08:37:43 | INFO     | 📥 [PHASE 1] Loading data sources...
+2026-06-07 08:37:43 | INFO     | [DATA] Downloading: atp_2022.csv
+2026-06-07 08:37:43 | INFO     | [DATA] Downloading: atp_2023.csv
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: atp_2024.csv
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: atp_2025.csv
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: atp_2026.csv
+2026-06-07 08:37:44 | INFO     | ✅ [TENNIS] ATP: 13245 matches
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: wta_2022.csv
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: wta_2023.csv
+2026-06-07 08:37:44 | INFO     | [DATA] Downloading: wta_2024.csv
+2026-06-07 08:37:45 | INFO     | [DATA] Downloading: wta_2025.csv
+2026-06-07 08:37:45 | INFO     | [DATA] Downloading: wta_2026.csv
+2026-06-07 08:37:45 | INFO     | ✅ [TENNIS] WTA: 12056 matches
+2026-06-07 08:37:45 | INFO     | [DATA] Downloading: atp_rankings.csv
+2026-06-07 08:37:45 | INFO     | ✅ [RANKINGS] ATP
+2026-06-07 08:37:45 | INFO     | [DATA] Downloading: wta_rankings.csv
+2026-06-07 08:37:45 | INFO     | ✅ [RANKINGS] WTA
+2026-06-07 08:37:45 | INFO     | [DATA] Downloading: football_E0_2223.csv
+2026-06-07 08:37:46 | INFO     | [DATA] Downloading: football_E1_2223.csv
+2026-06-07 08:37:47 | INFO     | [DATA] Downloading: football_D1_2223.csv
+2026-06-07 08:37:49 | INFO     | [DATA] Downloading: football_SP1_2223.csv
+2026-06-07 08:37:50 | INFO     | [DATA] Downloading: football_I1_2223.csv
+2026-06-07 08:37:51 | INFO     | [DATA] Downloading: football_F1_2223.csv
+2026-06-07 08:37:52 | INFO     | [DATA] Downloading: football_N1_2223.csv
+2026-06-07 08:37:52 | INFO     | [DATA] Downloading: football_P1_2223.csv
+2026-06-07 08:37:53 | INFO     | [DATA] Downloading: football_E0_2324.csv
+2026-06-07 08:37:54 | INFO     | [DATA] Downloading: football_E1_2324.csv
+2026-06-07 08:37:56 | INFO     | [DATA] Downloading: football_D1_2324.csv
+2026-06-07 08:37:56 | INFO     | [DATA] Downloading: football_SP1_2324.csv
+2026-06-07 08:37:57 | INFO     | [DATA] Downloading: football_I1_2324.csv
+2026-06-07 08:37:58 | INFO     | [DATA] Downloading: football_F1_2324.csv
+2026-06-07 08:37:59 | INFO     | [DATA] Downloading: football_N1_2324.csv
+2026-06-07 08:38:00 | INFO     | [DATA] Downloading: football_P1_2324.csv
+2026-06-07 08:38:01 | INFO     | [DATA] Downloading: football_E0_2425.csv
+2026-06-07 08:38:02 | INFO     | [DATA] Downloading: football_E1_2425.csv
+2026-06-07 08:38:03 | INFO     | [DATA] Downloading: football_D1_2425.csv
+2026-06-07 08:38:04 | INFO     | [DATA] Downloading: football_SP1_2425.csv
+2026-06-07 08:38:05 | INFO     | [DATA] Downloading: football_I1_2425.csv
+2026-06-07 08:38:06 | INFO     | [DATA] Downloading: football_F1_2425.csv
+2026-06-07 08:38:07 | INFO     | [DATA] Downloading: football_N1_2425.csv
+2026-06-07 08:38:08 | INFO     | [DATA] Downloading: football_P1_2425.csv
+2026-06-07 08:38:08 | INFO     | ✅ [FOOTBALL] 8822 matches loaded
+2026-06-07 08:38:19 | WARNING  | [NBA] HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeo
+2026-06-07 08:38:19 | INFO     | ✅ [NHL] 32 teams
+2026-06-07 08:38:19 | INFO     | ✅ [MLB] 30 teams (Season 2026)
+2026-06-07 08:38:19 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 08:38:19 | INFO     | 📦 DATA SOURCE STATUS (GitHub/Static):
+2026-06-07 08:38:19 | INFO     |   ├─ Tennis ATP:   ✅ 13,245 matches
+2026-06-07 08:38:19 | INFO     |   ├─ Tennis WTA:   ✅ 12,056 matches
+2026-06-07 08:38:19 | INFO     |   ├─ Football CSV: ✅ 8,822 matches
+2026-06-07 08:38:19 | INFO     |   ├─ NBA:          ❌ unavailable (stats.nba.com timeout)
+2026-06-07 08:38:19 | INFO     |   ├─ NHL:          ✅ 32 teams
+2026-06-07 08:38:19 | INFO     |   └─ MLB:          ✅ 30 teams
+2026-06-07 08:38:19 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 08:38:19 | INFO     | 🔌 API HEALTH CHECKS (live probes):
+2026-06-07 08:38:19 | WARNING  |   ├─ TheSportsDB (key=):  ⚠️  returned no data — check key
+2026-06-07 08:38:20 | INFO     |   ├─ OpenLigaDB:            ✅ LIVE
+2026-06-07 08:38:20 | INFO     |   │    Bundesliga: 18 teams | Leader: FC Bayern München pts=89 W=0 D=0 L=0
+2026-06-07 08:38:20 | INFO     |   ├─ API-Football:          ✅ key loaded | budget: 0/95 calls today
+2026-06-07 08:38:21 | INFO     |   ├─ Football-Data.org:     ✅ LIVE
+2026-06-07 08:38:21 | INFO     |   │    Premier League: 20 teams | #1: Arsenal FC pts=85
+2026-06-07 08:38:21 | INFO     |   ├─ NHL API (nhle.com):    ✅ LIVE | 32 teams | Top: Colorado Avalanche pts=121 WinPct=67%
+2026-06-07 08:38:21 | INFO     |   ├─ MLB API (statsapi.mlb): ✅ LIVE | 30 teams | Top: Braves WinPct=68%
+2026-06-07 08:38:21 | WARNING  |   └─ NBA API (stats.nba):   ⚠️  timed out — NBA uses TSDB fallback
+2026-06-07 08:38:21 | INFO     | ─────────────────────────────────────────────────────────────────
+2026-06-07 08:38:21 | INFO     | 📂 GITHUB / STATIC DATA EXTRACTION:
+2026-06-07 08:38:21 | INFO     |   ├─ Tennis ATP CSV:  ✅ 13,245 matches (2022-2026)
+2026-06-07 08:38:21 | INFO     |   ├─ Tennis WTA CSV:  ✅ 12,056 matches (2022-2026)
+2026-06-07 08:38:21 | INFO     |   ├─ ATP Rankings:    ✅ 34203 players
+2026-06-07 08:38:21 | INFO     |   ├─ WTA Rankings:    ✅ 32060 players
+2026-06-07 08:38:21 | INFO     |   └─ Football CSV:    ✅ 8822 matches | 8 leagues | seasons: 2223,2324,2425
+2026-06-07 08:38:21 | INFO     | 🧠 [PHASE 2] Training/loading ML models...
+2026-06-07 08:38:21 | INFO     | ⚡ [ML FOOTBALL] Loaded from cache
+2026-06-07 08:38:21 | INFO     | ⚡ [ML TENNIS ATP] Loaded
+2026-06-07 08:38:21 | INFO     | ⚡ [ML TENNIS WTA] Loaded
+2026-06-07 08:38:21 | INFO     |   ├─ Football ML:  ✅ ready
+2026-06-07 08:38:21 | INFO     |   ├─ ATP ML:       ✅ ready
+2026-06-07 08:38:21 | INFO     |   └─ WTA ML:       ✅ ready
+2026-06-07 08:38:21 | INFO     | 📡 [PHASE 3] Fetching odds (10.0h window)...
+2026-06-07 08:38:21 | INFO     | 📡 [ODDS] Fetching from API...
+2026-06-07 08:38:22 | INFO     | 🔑 [backup_1] totals → 8 events | used:20 remaining:480
+2026-06-07 08:38:22 | INFO     | 🔑 [backup_1] h2h → 8 events | used:24 remaining:476
+2026-06-07 08:38:22 | INFO     | 💾 [ODDS CACHE] Saved 8 events
+2026-06-07 08:38:22 | INFO     | 📊 Odds API usage → used:44 | remaining:476
+2026-06-07 08:38:22 | INFO     | 📊 Keys: ✅ primary(1calls) | ✅ backup_1(1calls rem:480) | ✅ backup_2(0calls)
+2026-06-07 08:38:22 | INFO     | 🔍 [PHASE 4] Analyzing 8 events...
+2026-06-07 08:38:24 | INFO     |   ⚠️  TSDB: no team data found for [Essendon Bombers] or [Carlton Blues] — sport=AFL
+2026-06-07 08:38:25 | INFO     |   📦 [Essendon Bombers vs Carlton Blues] Sources: NONE ⚠️
+2026-06-07 08:38:28 | WARNING  | [AI] No data → cap 60
+2026-06-07 08:38:28 | INFO     | [AI] Essendon Bombers vs Carlton Blues | SKIP | AI:60 Math:50 Final:55 | provider:groq
+2026-06-07 08:38:28 | INFO     | ⏭️  AI_SKIP: Essendon Bombers vs Carlton Blues Math:50 AI:60 Final:55
+2026-06-07 08:38:28 | WARNING  | [EV] Suspicious EV=105.1% for Draw — skip
+2026-06-07 08:38:29 | INFO     |   ⚠️  TSDB: no team data found for [England] or [New Zealand] — sport=Test Matches
+2026-06-07 08:38:31 | INFO     |   📦 [England vs New Zealand] Sources: NONE ⚠️
+2026-06-07 08:38:34 | WARNING  | [AI] No data → cap 60
+2026-06-07 08:38:34 | INFO     | [AI] Sharp override → BET EV=7.8%
+2026-06-07 08:38:34 | INFO     | [AI] England vs New Zealand | BET | AI:60 Math:57 Final:63 | provider:groq
+2026-06-07 08:38:34 | INFO     | ✅ SIGNAL: England vs New Zealand | Math:57 AI:60 Final:63 | EV=7.83% | Kelly=0.2% | Sharp=True
+2026-06-07 08:38:34 | INFO     | 📤 SENT: England vs New Zealand | EV=7.83% | Conf=63%
+2026-06-07 08:38:37 | INFO     |   📦 [Flavio Cobolli vs Alexander Zverev] Sources: GitHub-Tennis(Q=good) | ML-Tennis
+2026-06-07 08:38:41 | INFO     | [AI] Flavio Cobolli vs Alexander Zverev | SKIP | AI:58 Math:76 Final:67 | provider:groq
+2026-06-07 08:38:41 | INFO     | ⏭️  AI_SKIP: Flavio Cobolli vs Alexander Zverev Math:76 AI:58 Final:67
+2026-06-07 08:38:41 | WARNING  | [EV] Suspicious EV=23.0% for Bergischer HC — skip
+2026-06-07 08:38:41 | WARNING  | [EV] Suspicious EV=76.6% for Draw — skip
+2026-06-07 08:38:41 | WARNING  | [EV] Suspicious EV=65.4% for SG Flensburg-Handewitt — skip
+2026-06-07 08:38:41 | WARNING  | [EV] Suspicious EV=168.3% for Draw — skip
+2026-06-07 08:38:41 | WARNING  | [API-FOOTBALL] Error: {'access': 'Your account is suspended, check on https://dashboard.api-football.com.'}
+2026-06-07 08:38:41 | WARNING  | [API-FOOTBALL] Error: {'access': 'Your account is suspended, check on https://dashboard.api-football.com.'}
+2026-06-07 08:38:51 | INFO     |   📦 [Füchse Berlin vs SG Flensburg-Handewi] Sources: OpenLigaDB(H=limited,A=limited) | GitHub-Football(H2H+history)
+2026-06-07 08:38:53 | INFO     | [AI] Füchse Berlin vs SG Flensburg-Handewitt | SKIP | AI:65 Math:68 Final:66 | provider:groq
+2026-06-07 08:38:53 | INFO     | ⏭️  AI_SKIP: Füchse Berlin vs SG Flensburg-Handewitt Math:68 AI:65 Final:66
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=30.1% for SC DHfK Leipzig — skip
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=83.1% for Draw — skip
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=45.2% for HC Erlangen — skip
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=124.1% for Draw — skip
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=78.6% for HSG Wetzlar — skip
+2026-06-07 08:38:53 | WARNING  | [EV] Suspicious EV=214.3% for Draw — skip
+2026-06-07 08:38:53 | INFO     | =================================================================
+2026-06-07 08:38:53 | INFO     | 📊 FINAL REPORT:
+2026-06-07 08:38:53 | INFO     |   Events total:   8
+2026-06-07 08:38:53 | INFO     |   Analyzed:       4
+2026-06-07 08:38:53 | INFO     |   Signals sent:   1
+2026-06-07 08:38:53 | INFO     |   Skip breakdown: no_opp=4 ev=0 sent=0 math=0 ai=3 conf=0
+2026-06-07 08:38:53 | INFO     |   API-Football:   2/95 calls used today
+2026-06-07 08:38:53 | INFO     |   Keys:           ✅ primary(1calls) | ✅ backup_1(1calls rem:480) | ✅ backup_2(0calls)
+2026-06-07 08:38:53 | INFO     | =================================================================

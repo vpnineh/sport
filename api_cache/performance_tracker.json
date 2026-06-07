@@ -885,17 +885,35 @@
       "ev": 0.0799,
       "confidence": 65,
       "implied_prob": 0.18,
+      "outcome": "win",
+      "profit_loss": 5.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-07T08:39:05.502351+00:00"
+    },
+    {
+      "id": "58a87236",
+      "timestamp": "2026-06-07T08:38:34.655831+00:00",
+      "sport": "other",
+      "api_sport_key": "cricket_test_match",
+      "home": "England",
+      "away": "New Zealand",
+      "pick": "New Zealand",
+      "market": "h2h_lay",
+      "odds": 12.5,
+      "ev": 0.0783,
+      "confidence": 63,
+      "implied_prob": 0.0863,
       "outcome": null,
       "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 51,
-    "resolved": 25,
-    "win_rate": 0.32,
-    "total_profit_loss_units": -6.96,
-    "roi_pct": -27.84,
-    "last_updated": "2026-06-07T02:38:42.940679+00:00",
+    "total_signals": 52,
+    "resolved": 26,
+    "win_rate": 0.346,
+    "total_profit_loss_units": -1.96,
+    "roi_pct": -7.54,
+    "last_updated": "2026-06-07T08:38:53.715326+00:00",
     "pending_count": 4
   }
 }
