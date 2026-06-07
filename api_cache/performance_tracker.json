@@ -817,8 +817,10 @@
       "ev": 0.0506,
       "confidence": 73,
       "implied_prob": 0.2284,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "void",
+      "profit_loss": 0.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-07T02:38:55.683053+00:00"
     },
     {
       "id": "720e1aa5",
@@ -833,8 +835,10 @@
       "ev": 0.0287,
       "confidence": 62,
       "implied_prob": 0.5414,
-      "outcome": null,
-      "profit_loss": null
+      "outcome": "loss",
+      "profit_loss": -1.0,
+      "_settled_by": "thesportsdb",
+      "_settled_at": "2026-06-07T02:38:55.683064+00:00"
     },
     {
       "id": "089cffee",
@@ -867,15 +871,31 @@
       "implied_prob": 0.2477,
       "outcome": null,
       "profit_loss": null
+    },
+    {
+      "id": "04f7c044",
+      "timestamp": "2026-06-07T02:38:34.043229+00:00",
+      "sport": "other",
+      "api_sport_key": "rugbyleague_nrl",
+      "home": "Wests Tigers",
+      "away": "Penrith Panthers",
+      "pick": "Wests Tigers",
+      "market": "h2h",
+      "odds": 6.0,
+      "ev": 0.0799,
+      "confidence": 65,
+      "implied_prob": 0.18,
+      "outcome": null,
+      "profit_loss": null
     }
   ],
   "summary": {
-    "total_signals": 49,
-    "resolved": 24,
-    "win_rate": 0.333,
-    "total_profit_loss_units": -5.96,
-    "roi_pct": -24.83,
-    "last_updated": "2026-06-06T19:02:48.392072+00:00",
-    "pending_count": 2
+    "total_signals": 51,
+    "resolved": 25,
+    "win_rate": 0.32,
+    "total_profit_loss_units": -6.96,
+    "roi_pct": -27.84,
+    "last_updated": "2026-06-07T02:38:42.940679+00:00",
+    "pending_count": 4
   }
 }

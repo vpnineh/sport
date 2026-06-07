@@ -320,5 +320,15 @@
     "initial_odds": 2.7,
     "current_odds": 2.7,
     "timestamp": "2026-06-06T20:38:35.762691+00:00"
+  },
+  "253ba96c04dc5f316a9f9f9eec4d4881": {
+    "initial_odds": 6.0,
+    "current_odds": 6.0,
+    "timestamp": "2026-06-07T02:38:28.602088+00:00"
+  },
+  "05e80497cda98a17d7f14d1b466c780a": {
+    "initial_odds": 5.4,
+    "current_odds": 5.4,
+    "timestamp": "2026-06-07T02:38:37.048760+00:00"
   }
 }

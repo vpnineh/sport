@@ -662,3 +662,29 @@
 2026-06-06 20:38:42 | INFO     | ⏳ RETRY 7: Jakub Mensik vs Alexander Zverev
 2026-06-06 20:38:42 | INFO     | ⏳ RETRY 7: Gloucestershire vs Somerset
 2026-06-06 20:38:42 | INFO     | ⏳ No new settlements.
+2026-06-07 02:38:42 | INFO     | ============================================================
+2026-06-07 02:38:42 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-07 02:38:42 | INFO     | ============================================================
+2026-06-07 02:38:42 | INFO     | 📋 Pending: 6 | New: 4
+2026-06-07 02:38:44 | INFO     | ✅ [ESPN] 165 results loaded
+2026-06-07 02:38:47 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 02:38:47 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 1 (rem:490)
+2026-06-07 02:38:47 | INFO     | ⏳ RETRY 8: Jakub Mensik vs Alexander Zverev
+2026-06-07 02:38:48 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 02:38:49 | INFO     | 📡 [ODDS-API] cricket_t20_blast → 7 (rem:488)
+2026-06-07 02:38:49 | INFO     | ⏳ RETRY 8: Gloucestershire vs Somerset
+2026-06-07 02:38:51 | INFO     | ✅ [TSDB] CD Castellón vs Almería → 1-1
+2026-06-07 02:38:51 | INFO     | 💰 CD Castellón vs Almería → VOID (0.00u) [thesportsdb]
+2026-06-07 02:38:52 | INFO     | ✅ [TSDB] West Indies vs Sri Lanka → 177-178
+2026-06-07 02:38:52 | INFO     | 💰 West Indies vs Sri Lanka → LOSS (-1.00u) [thesportsdb]
+2026-06-07 02:38:54 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 02:38:54 | INFO     | 📡 [ODDS-API] boxing_boxing → 37 (rem:486)
+2026-06-07 02:38:54 | INFO     | ⏳ RETRY 1: Joshua Padley vs Aqib Fiaz
+2026-06-07 02:38:55 | WARNING  | [ODDS-API] Key exhausted
+2026-06-07 02:38:55 | INFO     | 📡 [ODDS-API] mma_mixed_martial_arts → 34 (rem:484)
+2026-06-07 02:38:55 | INFO     | ⏳ RETRY 1: Ketlen Souza vs Ariane Carnelossi
+2026-06-07 02:38:55 | INFO     | 💾 Synced 2/2 bets.
+2026-06-07 02:38:56 | INFO     | 📤 Report sent.
+2026-06-07 02:38:56 | INFO     | ============================================================
+2026-06-07 02:38:56 | INFO     | 📊 Settled:2 Pending:4 WR:32.0% ROI:-27.8%
+2026-06-07 02:38:56 | INFO     | ============================================================
