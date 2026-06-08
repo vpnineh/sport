@@ -1,6 +1,6 @@
 {
   "boxing_boxing": {
-    "ts": "2026-06-07T14:38:53.280417+00:00",
+    "ts": "2026-06-08T02:38:18.257444+00:00",
     "data": [
       {
         "id": "7c42eb68c0ee9c6eefca0a76429fbc12",
@@ -423,7 +423,7 @@
     ]
   },
   "mma_mixed_martial_arts": {
-    "ts": "2026-06-07T14:38:53.280428+00:00",
+    "ts": "2026-06-08T02:38:18.257461+00:00",
     "data": [
       {
         "id": "c8dbccd9eda383d9c76dc15e4a3c96a7",
@@ -791,43 +791,42 @@
     ]
   },
   "tennis_atp_french_open": {
-    "ts": "2026-06-07T14:38:53.280431+00:00",
-    "data": [
-      {
-        "id": "4b95e6de32c69dc11ab8bbdaf7929253",
-        "sport_key": "tennis_atp_french_open",
-        "sport_title": "ATP French Open",
-        "commence_time": "2026-06-07T13:25:00Z",
-        "completed": false,
-        "home_team": "Flavio Cobolli",
-        "away_team": "Alexander Zverev",
-        "scores": null,
-        "last_update": null
-      }
-    ]
+    "ts": "2026-06-08T02:38:18.257465+00:00",
+    "data": []
   },
   "cricket_t20_blast": {
-    "ts": "2026-06-07T14:38:53.280433+00:00",
+    "ts": "2026-06-08T02:38:18.257468+00:00",
     "data": [
       {
-        "id": "9439483f2eaad94bba894f3642b13de9",
+        "id": "86dfb3ec43d32073fc2b53addd4e336a",
         "sport_key": "cricket_t20_blast",
         "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T14:30:00Z",
+        "commence_time": "2026-06-09T17:30:00Z",
         "completed": false,
-        "home_team": "Somerset",
-        "away_team": "Birmingham Bears",
+        "home_team": "Durham",
+        "away_team": "Lancashire",
         "scores": null,
         "last_update": null
       },
       {
-        "id": "f5c495c9cd529d69135613d3edb926c6",
+        "id": "766993d85f5335c456583d8ceebba18c",
         "sport_key": "cricket_t20_blast",
         "sport_title": "T20 Blast",
-        "commence_time": "2026-06-07T14:30:00Z",
+        "commence_time": "2026-06-09T17:30:00Z",
         "completed": false,
-        "home_team": "Middlesex",
-        "away_team": "Essex",
+        "home_team": "Northamptonshire",
+        "away_team": "Worcestershire",
+        "scores": null,
+        "last_update": null
+      },
+      {
+        "id": "332104475a3e683368c427c0191c342e",
+        "sport_key": "cricket_t20_blast",
+        "sport_title": "T20 Blast",
+        "commence_time": "2026-06-09T18:00:00Z",
+        "completed": false,
+        "home_team": "Essex",
+        "away_team": "Kent",
         "scores": null,
         "last_update": null
       }

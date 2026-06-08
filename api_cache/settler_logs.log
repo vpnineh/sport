@@ -744,3 +744,21 @@
 2026-06-07 20:38:32 | INFO     | ============================================================
 2026-06-07 20:38:32 | INFO     | 📊 Settled:1 Pending:4 WR:33.3% ROI:-11.0%
 2026-06-07 20:38:32 | INFO     | ============================================================
+2026-06-08 02:38:13 | INFO     | ============================================================
+2026-06-08 02:38:13 | INFO     | ⚡ ZBET90 SETTLER v6.0 | TSDB → Odds-API → ESPN
+2026-06-08 02:38:13 | INFO     | ============================================================
+2026-06-08 02:38:13 | INFO     | 📋 Pending: 4 | New: 0
+2026-06-08 02:38:14 | INFO     | ✅ [ESPN] 159 results loaded
+2026-06-08 02:38:15 | WARNING  | [ODDS-API] Key exhausted
+2026-06-08 02:38:16 | INFO     | 📡 [ODDS-API] boxing_boxing → 38 (rem:442)
+2026-06-08 02:38:16 | INFO     | ⏳ RETRY 5: Joshua Padley vs Aqib Fiaz
+2026-06-08 02:38:16 | WARNING  | [ODDS-API] Key exhausted
+2026-06-08 02:38:16 | INFO     | 📡 [ODDS-API] mma_mixed_martial_arts → 33 (rem:440)
+2026-06-08 02:38:16 | INFO     | ⏳ RETRY 5: Ketlen Souza vs Ariane Carnelossi
+2026-06-08 02:38:17 | WARNING  | [ODDS-API] Key exhausted
+2026-06-08 02:38:17 | INFO     | 📡 [ODDS-API] tennis_atp_french_open → 0 (rem:440)
+2026-06-08 02:38:17 | INFO     | ⏳ RETRY 4: Jakub Mensik vs Alexander Zverev
+2026-06-08 02:38:18 | WARNING  | [ODDS-API] Key exhausted
+2026-06-08 02:38:18 | INFO     | 📡 [ODDS-API] cricket_t20_blast → 3 (rem:438)
+2026-06-08 02:38:18 | INFO     | ⏳ RETRY 4: Gloucestershire vs Somerset
+2026-06-08 02:38:18 | INFO     | ⏳ No new settlements.
